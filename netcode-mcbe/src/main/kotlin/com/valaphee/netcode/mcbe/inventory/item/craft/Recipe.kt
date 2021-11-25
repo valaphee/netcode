@@ -1,0 +1,66 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021, Valaphee.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package com.valaphee.netcode.mcbe.inventory.item.craft
+
+import com.valaphee.netcode.mcbe.inventory.item.stack.Stack
+import java.util.UUID
+
+fun recipeId(type: Recipe.Type, inputs: List<Stack?>, outputs: List<Stack?>): UUID = UUID.nameUUIDFromBytes("${type.ordinal}${if (type == Recipe.Type.Shapeless || type == Recipe.Type.ShapelessChemistry) inputs.filterNotNull().sortedBy { it.itemKey + it.subId + it.count }.joinToString { it.itemKey + it.subId + it.count } else inputs.joinToString { it?.let { it.itemKey + it.subId + it.count } ?: "" }}${outputs.joinToString { it?.let { it.itemKey + it.subId + it.count } ?: "" } }}".toByteArray())
+
+fun shapelessRecipe(type: Recipe.Type, name: String, inputs: List<Stack?>, outputs: List<Stack?>, tag: String, priority: Int, netId: Int) = Recipe(recipeId(type, inputs, outputs), name, type, 0, 0, inputs, outputs, tag, priority, netId)
+
+fun shapedRecipe(type: Recipe.Type, name: String, width: Int, height: Int, inputs: List<Stack?>, outputs: List<Stack?>, tag: String, priority: Int, netId: Int) = Recipe(recipeId(type, inputs, outputs), name, type, width, height, inputs, outputs, tag, priority, netId)
+
+fun furnaceRecipe(input: Stack, output: Stack?, tag: String) = Recipe(null, null, if (input.subId != -1) Recipe.Type.FurnaceData else Recipe.Type.Furnace, 0, 0, listOf(input), listOf(output), tag, 0, 0)
+
+fun multiRecipe(id: UUID, netId: Int) = Recipe(id, null, Recipe.Type.Multi, 0, 0, null, null, null, 0, netId)
+
+/**
+ * @author Kevin Ludwig
+ */
+data class Recipe(
+    val id: UUID?,
+    val name: String?,
+    val type: Type,
+    val width: Int,
+    val height: Int,
+    val inputs: List<Stack?>?,
+    val outputs: List<Stack?>?,
+    val tag: String?,
+    val priority: Int,
+    val netId: Int
+) {
+
+    enum class Type {
+        Shapeless,
+        Shaped,
+        Furnace,
+        FurnaceData,
+        Multi,
+        ShulkerBox,
+        ShapelessChemistry,
+        ShapedChemistry
+    }
+}
