@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.inventory.item
+package com.valaphee.netcode.mcbe.item
 
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer

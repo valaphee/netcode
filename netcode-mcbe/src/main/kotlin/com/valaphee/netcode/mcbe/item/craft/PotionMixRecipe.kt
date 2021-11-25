@@ -22,14 +22,16 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.inventory.item.craft
-
-import it.unimi.dsi.fastutil.ints.Int2IntMap
+package com.valaphee.netcode.mcbe.item.craft
 
 /**
  * @author Kevin Ludwig
  */
-data class MaterialReducer(
-    val inputId: Int,
-    val itemCounts: Int2IntMap
+data class PotionMixRecipe(
+    val inputKey: String,
+    val inputSubId: Int,
+    val reagentKey: String,
+    val reagentSubId: Int,
+    val outputKey: String,
+    val outputSubId: Int
 )

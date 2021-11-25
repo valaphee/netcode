@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.inventory.item.stack
+package com.valaphee.netcode.mcbe.item.stack
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser

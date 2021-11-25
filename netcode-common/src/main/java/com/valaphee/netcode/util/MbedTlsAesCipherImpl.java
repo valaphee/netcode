@@ -22,19 +22,17 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.util;
+package com.valaphee.netcode.util;
 
 /**
  * @author Kevin Ludwig
  */
-public enum MbedTlsSha256HasherImpl {
+public enum MbedTlsAesCipherImpl {
     ;
 
-    public static native long init();
+    public static native long init(boolean encrypt, byte[] key, byte[] iv);
 
-    public static native void update(long mbedTlsSha256Context, long buffer, int length);
+    public static native void cipher(long cipherContext, long in, long out, int length);
 
-    public static native byte[] digest(long mbedTlsSha256Context);
-
-    public static native void free(long mbedTlsSha256Context);
+    public static native void free(long cipherContext);
 }

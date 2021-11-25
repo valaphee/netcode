@@ -24,13 +24,13 @@
 
 package com.valaphee.netcode.mcbe.inventory
 
-import com.valaphee.netcode.mcbe.inventory.item.Enchantment
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
 import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
+import com.valaphee.netcode.mcbe.item.Enchantment
 import com.valaphee.netcode.mcbe.util.safeList
 
 /**

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.util
+package com.valaphee.netcode.util
 
 import io.netty.buffer.ByteBuf
 import java.io.Reader

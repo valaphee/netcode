@@ -22,13 +22,19 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.inventory.item.craft
+package com.valaphee.netcode.util;
 
 /**
  * @author Kevin Ludwig
  */
-data class ContainerMixRecipe(
-    val inputKey: String,
-    val reagentKey: String,
-    val outputKey: String
-)
+public enum MbedTlsSha256HasherImpl {
+    ;
+
+    public static native long init();
+
+    public static native void update(long mbedTlsSha256Context, long buffer, int length);
+
+    public static native byte[] digest(long mbedTlsSha256Context);
+
+    public static native void free(long mbedTlsSha256Context);
+}

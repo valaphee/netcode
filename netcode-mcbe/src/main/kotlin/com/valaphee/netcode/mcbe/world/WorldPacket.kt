@@ -36,7 +36,7 @@ import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
 import com.valaphee.netcode.mcbe.block.Block
 import com.valaphee.netcode.mcbe.entity.player.Rank
-import com.valaphee.netcode.mcbe.inventory.item.Item
+import com.valaphee.netcode.mcbe.item.Item
 import com.valaphee.netcode.mc.util.nbt.ListTag
 import com.valaphee.netcode.mcbe.util.safeGet
 import com.valaphee.netcode.mcbe.util.safeList

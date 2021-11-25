@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.inventory.item.craft
+package com.valaphee.netcode.mcbe.item.craft
 
-import com.valaphee.netcode.mcbe.inventory.item.stack.Stack
-import com.valaphee.netcode.mcbe.inventory.item.stack.readIngredient
-import com.valaphee.netcode.mcbe.inventory.item.stack.readStackInstance
-import com.valaphee.netcode.mcbe.inventory.item.stack.readStackPre431
-import com.valaphee.netcode.mcbe.inventory.item.stack.writeIngredient
-import com.valaphee.netcode.mcbe.inventory.item.stack.writeStackInstance
-import com.valaphee.netcode.mcbe.inventory.item.stack.writeStackPre431
+import com.valaphee.netcode.mcbe.item.stack.Stack
+import com.valaphee.netcode.mcbe.item.stack.readIngredient
+import com.valaphee.netcode.mcbe.item.stack.readStackInstance
+import com.valaphee.netcode.mcbe.item.stack.readStackPre431
+import com.valaphee.netcode.mcbe.item.stack.writeIngredient
+import com.valaphee.netcode.mcbe.item.stack.writeStackInstance
+import com.valaphee.netcode.mcbe.item.stack.writeStackPre431
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler

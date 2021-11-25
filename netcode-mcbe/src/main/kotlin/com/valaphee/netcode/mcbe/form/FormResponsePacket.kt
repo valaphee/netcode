@@ -31,7 +31,7 @@ import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
-import com.valaphee.netcode.mcbe.util.ByteBufStringReader
+import com.valaphee.netcode.util.ByteBufStringReader
 
 /**
  * @author Kevin Ludwig

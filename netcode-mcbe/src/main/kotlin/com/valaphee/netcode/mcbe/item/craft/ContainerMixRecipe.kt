@@ -22,12 +22,13 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.inventory.item
+package com.valaphee.netcode.mcbe.item.craft
 
 /**
  * @author Kevin Ludwig
  */
-class Item(
-    val key: String,
-    val componentBased: Boolean
+data class ContainerMixRecipe(
+    val inputKey: String,
+    val reagentKey: String,
+    val outputKey: String
 )

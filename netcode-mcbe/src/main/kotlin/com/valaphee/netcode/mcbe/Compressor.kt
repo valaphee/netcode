@@ -24,9 +24,9 @@
 
 package com.valaphee.netcode.mcbe
 
-import com.valaphee.netcode.mcbe.util.Compressor
-import com.valaphee.netcode.mcbe.util.ZlibCompressor
-import com.valaphee.netcode.mcbe.util.compressor
+import com.valaphee.netcode.util.Compressor
+import com.valaphee.netcode.util.ZlibCompressor
+import com.valaphee.netcode.util.compressor
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.CompositeByteBuf

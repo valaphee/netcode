@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.util
+package com.valaphee.netcode.mc.util
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject

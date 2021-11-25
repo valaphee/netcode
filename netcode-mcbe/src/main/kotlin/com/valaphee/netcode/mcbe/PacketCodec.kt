@@ -129,9 +129,9 @@ import com.valaphee.netcode.mcbe.inventory.TradePacketReader
 import com.valaphee.netcode.mcbe.inventory.WindowClosePacketReader
 import com.valaphee.netcode.mcbe.inventory.WindowOpenPacketReader
 import com.valaphee.netcode.mcbe.inventory.WindowPropertyPacketReader
-import com.valaphee.netcode.mcbe.inventory.item.ItemActionPacketReader
-import com.valaphee.netcode.mcbe.inventory.item.craft.CraftingEventPacketReader
-import com.valaphee.netcode.mcbe.inventory.item.craft.RecipesPacketReader
+import com.valaphee.netcode.mcbe.item.ItemActionPacketReader
+import com.valaphee.netcode.mcbe.item.craft.CraftingEventPacketReader
+import com.valaphee.netcode.mcbe.item.craft.RecipesPacketReader
 import com.valaphee.netcode.mcbe.pack.PackDataChunkPacketReader
 import com.valaphee.netcode.mcbe.pack.PackDataChunkRequestPacketReader
 import com.valaphee.netcode.mcbe.pack.PackDataPacketReader

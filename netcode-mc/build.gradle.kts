@@ -24,5 +24,8 @@
 
 dependencies {
     api(project(":netcode-common"))
+    api(libs.jackson.module.afterburner)
+    api(libs.jackson.module.kotlin)
+    api(libs.gson)
     api(libs.foundry.math)
 }

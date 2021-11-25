@@ -33,11 +33,11 @@ import com.valaphee.netcode.mcbe.entity.readLink
 import com.valaphee.netcode.mcbe.entity.readLinkPre407
 import com.valaphee.netcode.mcbe.entity.writeLink
 import com.valaphee.netcode.mcbe.entity.writeLinkPre407
-import com.valaphee.netcode.mcbe.inventory.item.stack.Stack
-import com.valaphee.netcode.mcbe.inventory.item.stack.readStack
-import com.valaphee.netcode.mcbe.inventory.item.stack.readStackPre431
-import com.valaphee.netcode.mcbe.inventory.item.stack.writeStack
-import com.valaphee.netcode.mcbe.inventory.item.stack.writeStackPre431
+import com.valaphee.netcode.mcbe.item.stack.Stack
+import com.valaphee.netcode.mcbe.item.stack.readStack
+import com.valaphee.netcode.mcbe.item.stack.readStackPre431
+import com.valaphee.netcode.mcbe.item.stack.writeStack
+import com.valaphee.netcode.mcbe.item.stack.writeStackPre431
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler

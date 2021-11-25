@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.util
+package com.valaphee.netcode.util
 
 import java.net.InetSocketAddress
 import java.util.regex.Pattern

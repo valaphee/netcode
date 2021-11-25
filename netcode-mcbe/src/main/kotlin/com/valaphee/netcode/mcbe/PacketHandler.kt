@@ -131,9 +131,9 @@ import com.valaphee.netcode.mcbe.inventory.TradePacket
 import com.valaphee.netcode.mcbe.inventory.WindowClosePacket
 import com.valaphee.netcode.mcbe.inventory.WindowOpenPacket
 import com.valaphee.netcode.mcbe.inventory.WindowPropertyPacket
-import com.valaphee.netcode.mcbe.inventory.item.ItemActionPacket
-import com.valaphee.netcode.mcbe.inventory.item.craft.CraftingEventPacket
-import com.valaphee.netcode.mcbe.inventory.item.craft.RecipesPacket
+import com.valaphee.netcode.mcbe.item.ItemActionPacket
+import com.valaphee.netcode.mcbe.item.craft.CraftingEventPacket
+import com.valaphee.netcode.mcbe.item.craft.RecipesPacket
 import com.valaphee.netcode.mcbe.pack.PackDataChunkPacket
 import com.valaphee.netcode.mcbe.pack.PackDataChunkRequestPacket
 import com.valaphee.netcode.mcbe.pack.PackDataPacket
