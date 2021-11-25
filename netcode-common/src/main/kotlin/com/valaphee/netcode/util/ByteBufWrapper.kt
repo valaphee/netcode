@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mc.util
+package com.valaphee.netcode.util
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator

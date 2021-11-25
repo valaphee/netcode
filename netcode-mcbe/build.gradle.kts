@@ -23,11 +23,11 @@
  */
 
 dependencies {
+    api(project(":netcode-mc"))
     api(libs.jackson.module.afterburner)
     api(libs.jackson.module.kotlin)
     api(libs.gson)
     api(libs.fastutil)
-    api(project(":netcode-mc"))
     api(libs.nettyraknet.client)
     api(libs.nettyraknet.server)
     api(libs.log4j.core)

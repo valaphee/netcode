@@ -23,5 +23,7 @@
  */
 
 dependencies {
-    api(libs.netty)
+    api(project(":netcode-common"))
+    api(libs.fastutil)
+    api(libs.log4j.core)
 }

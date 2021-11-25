@@ -22,7 +22,28 @@
  * SOFTWARE.
  */
 
-dependencies {
-    api(project(":netcode-common"))
-    api(libs.foundry.math)
+package com.valaphee.netcode.slitherio.base
+
+import com.valaphee.netcode.slitherio.Packet
+import com.valaphee.netcode.slitherio.PacketBuffer
+import com.valaphee.netcode.slitherio.PacketHandler
+import com.valaphee.netcode.slitherio.PacketReader
+import io.netty.buffer.ByteBuf
+
+/**
+ * @author Kevin Ludwig
+ */
+object ConnectPacket : Packet() {
+    override val id = 'c'
+
+    override fun write(buffer: PacketBuffer) = Unit
+
+    override fun handle(handler: PacketHandler) = handler.connect(this)
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ConnectPacketReader : PacketReader {
+    override fun read(buffer: ByteBuf) = ConnectPacket
 }

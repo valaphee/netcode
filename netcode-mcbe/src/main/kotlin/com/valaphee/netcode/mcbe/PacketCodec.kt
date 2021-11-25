@@ -25,6 +25,41 @@
 package com.valaphee.netcode.mcbe
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.valaphee.netcode.mcbe.base.BehaviorTreePacketReader
+import com.valaphee.netcode.mcbe.base.BiomeDefinitionsPacketReader
+import com.valaphee.netcode.mcbe.base.BlockComponentPacketReader
+import com.valaphee.netcode.mcbe.base.CacheBlobStatusPacketReader
+import com.valaphee.netcode.mcbe.base.CacheBlobsPacketReader
+import com.valaphee.netcode.mcbe.base.CacheStatusPacketReader
+import com.valaphee.netcode.mcbe.base.ClientToServerHandshakePacketReader
+import com.valaphee.netcode.mcbe.base.CustomEventPacketReader
+import com.valaphee.netcode.mcbe.base.DebugPacketReader
+import com.valaphee.netcode.mcbe.base.DebugRendererPacketReader
+import com.valaphee.netcode.mcbe.base.DisconnectPacketReader
+import com.valaphee.netcode.mcbe.base.EntityIdentifiersPacketReader
+import com.valaphee.netcode.mcbe.base.FilterPacketReader
+import com.valaphee.netcode.mcbe.base.ItemComponentPacketReader
+import com.valaphee.netcode.mcbe.base.LabTablePacketReader
+import com.valaphee.netcode.mcbe.base.LatencyPacketReader
+import com.valaphee.netcode.mcbe.base.LoginPacketReader
+import com.valaphee.netcode.mcbe.base.MultiplayerSettingsPacketReader
+import com.valaphee.netcode.mcbe.base.NetworkSettingsPacketReader
+import com.valaphee.netcode.mcbe.base.OnScreenTextureAnimationPacketReader
+import com.valaphee.netcode.mcbe.base.PositionTrackingDbClientRequestPacketReader
+import com.valaphee.netcode.mcbe.base.PositionTrackingDbServerBroadcastPacketReader
+import com.valaphee.netcode.mcbe.base.ProfilePacketReader
+import com.valaphee.netcode.mcbe.base.PurchaseReceiptPacketReader
+import com.valaphee.netcode.mcbe.base.ServerToClientHandshakePacketReader
+import com.valaphee.netcode.mcbe.base.SimulationPacketReader
+import com.valaphee.netcode.mcbe.base.StatusPacketReader
+import com.valaphee.netcode.mcbe.base.StoreOfferPacketReader
+import com.valaphee.netcode.mcbe.base.SubLoginPacketReader
+import com.valaphee.netcode.mcbe.base.TextPacketReader
+import com.valaphee.netcode.mcbe.base.TitlePacketReader
+import com.valaphee.netcode.mcbe.base.TransferPacketReader
+import com.valaphee.netcode.mcbe.base.VideoStreamPacketReader
+import com.valaphee.netcode.mcbe.base.ViolationPacketReader
+import com.valaphee.netcode.mcbe.base.WebSocketPacketReader
 import com.valaphee.netcode.mcbe.command.CommandPacketReader
 import com.valaphee.netcode.mcbe.command.CommandResponsePacketReader
 import com.valaphee.netcode.mcbe.command.CommandSettingsPacketReader
@@ -97,41 +132,6 @@ import com.valaphee.netcode.mcbe.inventory.WindowPropertyPacketReader
 import com.valaphee.netcode.mcbe.inventory.item.ItemActionPacketReader
 import com.valaphee.netcode.mcbe.inventory.item.craft.CraftingEventPacketReader
 import com.valaphee.netcode.mcbe.inventory.item.craft.RecipesPacketReader
-import com.valaphee.netcode.mcbe.base.BehaviorTreePacketReader
-import com.valaphee.netcode.mcbe.base.BiomeDefinitionsPacketReader
-import com.valaphee.netcode.mcbe.base.BlockComponentPacketReader
-import com.valaphee.netcode.mcbe.base.CacheBlobStatusPacketReader
-import com.valaphee.netcode.mcbe.base.CacheBlobsPacketReader
-import com.valaphee.netcode.mcbe.base.CacheStatusPacketReader
-import com.valaphee.netcode.mcbe.base.ClientToServerHandshakePacketReader
-import com.valaphee.netcode.mcbe.base.CustomEventPacketReader
-import com.valaphee.netcode.mcbe.base.DebugPacketReader
-import com.valaphee.netcode.mcbe.base.DebugRendererPacketReader
-import com.valaphee.netcode.mcbe.base.DisconnectPacketReader
-import com.valaphee.netcode.mcbe.base.EntityIdentifiersPacketReader
-import com.valaphee.netcode.mcbe.base.FilterPacketReader
-import com.valaphee.netcode.mcbe.base.ItemComponentPacketReader
-import com.valaphee.netcode.mcbe.base.LabTablePacketReader
-import com.valaphee.netcode.mcbe.base.LatencyPacketReader
-import com.valaphee.netcode.mcbe.base.LoginPacketReader
-import com.valaphee.netcode.mcbe.base.MultiplayerSettingsPacketReader
-import com.valaphee.netcode.mcbe.base.NetworkSettingsPacketReader
-import com.valaphee.netcode.mcbe.base.OnScreenTextureAnimationPacketReader
-import com.valaphee.netcode.mcbe.base.PositionTrackingDbClientRequestPacketReader
-import com.valaphee.netcode.mcbe.base.PositionTrackingDbServerBroadcastPacketReader
-import com.valaphee.netcode.mcbe.base.ProfilePacketReader
-import com.valaphee.netcode.mcbe.base.PurchaseReceiptPacketReader
-import com.valaphee.netcode.mcbe.base.ServerToClientHandshakePacketReader
-import com.valaphee.netcode.mcbe.base.SimulationPacketReader
-import com.valaphee.netcode.mcbe.base.StatusPacketReader
-import com.valaphee.netcode.mcbe.base.StoreOfferPacketReader
-import com.valaphee.netcode.mcbe.base.SubLoginPacketReader
-import com.valaphee.netcode.mcbe.base.TextPacketReader
-import com.valaphee.netcode.mcbe.base.TitlePacketReader
-import com.valaphee.netcode.mcbe.base.TransferPacketReader
-import com.valaphee.netcode.mcbe.base.VideoStreamPacketReader
-import com.valaphee.netcode.mcbe.base.ViolationPacketReader
-import com.valaphee.netcode.mcbe.base.WebSocketPacketReader
 import com.valaphee.netcode.mcbe.pack.PackDataChunkPacketReader
 import com.valaphee.netcode.mcbe.pack.PackDataChunkRequestPacketReader
 import com.valaphee.netcode.mcbe.pack.PackDataPacketReader
@@ -186,23 +186,30 @@ import com.valaphee.netcode.mcbe.world.scoreboard.ScoreboardIdentityPacketReader
 import com.valaphee.netcode.mcbe.world.scoreboard.ScoresPacketReader
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
-import io.netty.handler.codec.MessageToMessageDecoder
+import io.netty.handler.codec.ByteToMessageCodec
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import kotlin.reflect.full.findAnnotation
 
 /**
  * @author Kevin Ludwig
  */
-class PacketDecoder(
+class PacketCodec(
     private val client: Boolean,
     var version: Int = latestProtocolVersion
-) : MessageToMessageDecoder<ByteBuf>() {
+) : ByteToMessageCodec<Packet>() {
     var objectMapper: ObjectMapper? = null
-    var blockStates: Registry<String>? = null
-    var items: Registry<String>? = null
+    var blockStateLut: Registry<String>? = null
+    var itemLut: Registry<String>? = null
 
-    public override fun decode(context: ChannelHandlerContext, `in`: ByteBuf, out: MutableList<Any>) {
-        val buffer = PacketBuffer(`in`, false, objectMapper, blockStates, items)
+    override fun encode(context: ChannelHandlerContext, message: Packet, out: ByteBuf) {
+        PacketBuffer(out, false, objectMapper, blockStateLut, itemLut).apply {
+            writeVarUInt(message.id and Packet.idMask or ((message.senderId and Packet.senderIdMask) shl Packet.senderIdShift) or ((message.clientId and Packet.clientIdMask) shl Packet.clientIdShift))
+            message.write(this, version)
+        }
+    }
+
+    override fun decode(context: ChannelHandlerContext, `in`: ByteBuf, out: MutableList<Any>) {
+        val buffer = PacketBuffer(`in`, false, objectMapper, blockStateLut, itemLut)
         val header = buffer.readVarUInt()
         val dataIndex = buffer.readerIndex()
         val id = header and Packet.idMask
@@ -220,7 +227,7 @@ class PacketDecoder(
     }
 
     companion object {
-        const val NAME = "ta-packet-decoder"
+        const val NAME = "mcbe-packet-codec"
         private val readers = Int2ObjectOpenHashMap<PacketReader>().apply {
             this[0x01] = LoginPacketReader
             this[0x02] = StatusPacketReader

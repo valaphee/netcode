@@ -22,7 +22,23 @@
  * SOFTWARE.
  */
 
-dependencies {
-    api(project(":netcode-common"))
-    api(libs.foundry.math)
+package com.valaphee.netcode.slitherio.base
+
+import com.valaphee.netcode.slitherio.Packet
+import com.valaphee.netcode.slitherio.PacketBuffer
+import com.valaphee.netcode.slitherio.PacketHandler
+
+/**
+ * @author Kevin Ludwig
+ */
+class ChallengePacket(
+    val challenge: String
+) : Packet() {
+    override val id = '6'
+
+    override fun write(buffer: PacketBuffer) {
+        buffer.writeBytes(challenge.toByteArray(Charsets.UTF_8))
+    }
+
+    override fun handle(handler: PacketHandler) = handler.challenge(this)
 }

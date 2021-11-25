@@ -22,17 +22,37 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe
+package com.valaphee.netcode.slitherio
+
+import com.valaphee.netcode.ProtocolHandler
+import com.valaphee.netcode.slitherio.base.ChallengePacket
+import com.valaphee.netcode.slitherio.base.ChallengeResponsePacket
+import com.valaphee.netcode.slitherio.base.ConnectPacket
+import com.valaphee.netcode.slitherio.base.LoginPacket
+import com.valaphee.netcode.slitherio.base.PingPacket
+import com.valaphee.netcode.slitherio.base.PongPacket
+import com.valaphee.netcode.slitherio.base.SnakePacket
+import com.valaphee.netcode.slitherio.base.WorldPacket
 
 /**
  * @author Kevin Ludwig
  */
-interface ProtocolHandler {
-    fun initialize() {}
+interface PacketHandler : ProtocolHandler {
+    fun other(packet: Packet)
 
-    fun exceptionCaught(cause: Throwable) {}
+    fun connect(packet: ConnectPacket) = other(packet)
 
-    fun writabilityChanged() {}
+    fun challenge(packet: ChallengePacket) = other(packet)
 
-    fun destroy() {}
+    fun challengeResponse(packet: ChallengeResponsePacket) = other(packet)
+
+    fun login(packet: LoginPacket) = other(packet)
+
+    fun world(packet: WorldPacket) = other(packet)
+
+    fun ping(packet: PingPacket) = other(packet)
+
+    fun pong(packet: PongPacket) = other(packet)
+
+    fun snake(packet: SnakePacket) = other(packet)
 }

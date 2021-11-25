@@ -22,10 +22,13 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.util
+package com.valaphee.netcode.slitherio
 
-fun lazyToString(initialize: () -> String) = object {
-    private val value: String by lazy(initialize)
+import io.netty.buffer.ByteBuf
 
-    override fun toString() = value
+/**
+ * @author Kevin Ludwig
+ */
+interface PacketReader {
+    fun read(buffer: ByteBuf): Packet
 }

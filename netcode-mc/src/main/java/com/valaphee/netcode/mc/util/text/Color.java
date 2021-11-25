@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.util.text;
+package com.valaphee.netcode.mc.util.text;
 
 import java.util.HashMap;
 import java.util.Map;

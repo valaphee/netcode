@@ -22,7 +22,28 @@
  * SOFTWARE.
  */
 
-dependencies {
-    api(project(":netcode-common"))
-    api(libs.foundry.math)
+package com.valaphee.netcode.slitherio.base
+
+import com.valaphee.netcode.slitherio.Packet
+import com.valaphee.netcode.slitherio.PacketBuffer
+import com.valaphee.netcode.slitherio.PacketHandler
+import com.valaphee.netcode.slitherio.PacketReader
+import io.netty.buffer.ByteBuf
+
+/**
+ * @author Kevin Ludwig
+ */
+object PingPacket : Packet() {
+    override val id = 0xFB.toChar()
+
+    override fun write(buffer: PacketBuffer) = Unit
+
+    override fun handle(handler: PacketHandler) = handler.ping(this)
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object PingPacketReader : PacketReader {
+    override fun read(buffer: ByteBuf) = PingPacket
 }

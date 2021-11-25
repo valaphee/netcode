@@ -22,42 +22,33 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.util.text;
+package com.valaphee.netcode.slitherio.base
+
+import com.valaphee.netcode.slitherio.Packet
+import com.valaphee.netcode.slitherio.PacketBuffer
+import com.valaphee.netcode.slitherio.PacketHandler
+import com.valaphee.netcode.slitherio.PacketReader
+import io.netty.buffer.ByteBuf
+import io.netty.buffer.ByteBufUtil
 
 /**
  * @author Kevin Ludwig
  */
-public enum Format implements StyleCode {
-    Bold('l', "bold"),
-    Italic('o', "italic"),
-    Strikethrough('m', "strikethrough"),
-    Underlined('n', "underline"),
-    Obfuscated('k', "obfuscated"),
-    Reset('r', "reset");
+class ChallengeResponsePacket(
+    val challengeResponse: String
+) : Packet() {
+    override val id = 'Y'
 
-    private final char code;
-    private final String key;
-
-    @SuppressWarnings("ThisEscapedInObjectConstruction")
-    Format(final char code, final String key) {
-        this.code = code;
-        this.key = key;
-
-        values.add(this);
+    override fun write(buffer: PacketBuffer) {
+        buffer.writeBytes(challengeResponse.toByteArray(Charsets.UTF_8))
     }
 
-    @Override
-    public char getCode() {
-        return code;
-    }
+    override fun handle(handler: PacketHandler) = handler.challengeResponse(this)
+}
 
-    @Override
-    public String getKey() {
-        return key;
-    }
-
-    @Override
-    public String toString() {
-        return new String(new char[]{Prefix, code});
-    }
+/**
+ * @author Kevin Ludwig
+ */
+object ChallengeResponsePacketReader : PacketReader {
+    override fun read(buffer: ByteBuf) = ChallengeResponsePacket(ByteBufUtil.getBytes(buffer).toString(Charsets.UTF_8))
 }

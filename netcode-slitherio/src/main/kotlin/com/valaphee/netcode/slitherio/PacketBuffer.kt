@@ -22,7 +22,14 @@
  * SOFTWARE.
  */
 
-dependencies {
-    api(project(":netcode-common"))
-    api(libs.foundry.math)
-}
+package com.valaphee.netcode.slitherio
+
+import com.valaphee.netcode.util.ByteBufWrapper
+import io.netty.buffer.ByteBuf
+
+/**
+ * @author Kevin Ludwig
+ */
+class PacketBuffer(
+    buffer: ByteBuf
+) : ByteBufWrapper(buffer)

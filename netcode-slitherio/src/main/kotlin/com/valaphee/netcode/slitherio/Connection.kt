@@ -22,11 +22,8 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe
+package com.valaphee.netcode.slitherio
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.valaphee.netcode.mcbe.util.Registry
-import com.valaphee.netcode.util.lazyToString
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
@@ -37,9 +34,7 @@ import java.net.InetSocketAddress
 /**
  * @author Kevin Ludwig
  */
-class Connection(
-    version: Int = latestProtocolVersion
-) : SimpleChannelInboundHandler<Packet>() {
+class Connection : SimpleChannelInboundHandler<Packet>() {
     lateinit var context: ChannelHandlerContext
         private set
     lateinit var handler: PacketHandler
@@ -81,7 +76,7 @@ class Connection(
 
     override fun channelRead0(context: ChannelHandlerContext, packet: Packet) {
         if (notClosed) {
-            log.debug("In: {}", lazyToString(packet::toString))
+            println("In: ${packet}")
             packet.handle(handler)
         }
     }
@@ -96,32 +91,10 @@ class Connection(
         } else this.handler = handler
     }
 
-    var version = version
-        set(value) {
-            context.pipeline()[PacketCodec::class.java].version = value
-            field = value
-        }
-
-    var objectMapper: ObjectMapper? = null
-        set(value) {
-            context.pipeline()[PacketCodec::class.java].objectMapper = value
-            field = value
-        }
-    var blockStateLut: Registry<String>? = null
-        set(value) {
-            context.pipeline()[PacketCodec::class.java].blockStateLut = value
-            field = value
-        }
-    var itemLut: Registry<String>? = null
-        set(value) {
-            context.pipeline()[PacketCodec::class.java].itemLut = value
-            field = value
-        }
-
     fun write(packet: Packet) {
         if (notClosed) {
-            log.debug("Out: {}", lazyToString(packet::toString))
-            context.write(packet, context.voidPromise())
+            println("Out: ${packet}")
+            context.writeAndFlush(packet, context.voidPromise())
         }
     }
 
@@ -129,7 +102,7 @@ class Connection(
         if (notClosed) {
             notClosed = false
             if (packet != null && context.channel().isActive) {
-                log.debug("Out: {}", lazyToString(packet::toString))
+                println("Out: ${packet}")
                 context.writeAndFlush(packet).addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE)
             } else {
                 context.flush()

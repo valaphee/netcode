@@ -22,7 +22,15 @@
  * SOFTWARE.
  */
 
-dependencies {
-    api(project(":netcode-common"))
-    api(libs.foundry.math)
+package com.valaphee.netcode.slitherio
+
+/**
+ * @author Kevin Ludwig
+ */
+abstract class Packet {
+    abstract val id: Char
+
+    abstract fun write(buffer: PacketBuffer)
+
+    abstract fun handle(handler: PacketHandler)
 }

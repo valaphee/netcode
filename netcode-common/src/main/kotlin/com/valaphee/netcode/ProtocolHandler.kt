@@ -22,7 +22,17 @@
  * SOFTWARE.
  */
 
-dependencies {
-    api(project(":netcode-common"))
-    api(libs.foundry.math)
+package com.valaphee.netcode
+
+/**
+ * @author Kevin Ludwig
+ */
+interface ProtocolHandler {
+    fun initialize() {}
+
+    fun exceptionCaught(cause: Throwable) {}
+
+    fun writabilityChanged() {}
+
+    fun destroy() {}
 }

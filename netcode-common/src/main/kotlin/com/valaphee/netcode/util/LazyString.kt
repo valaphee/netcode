@@ -22,7 +22,10 @@
  * SOFTWARE.
  */
 
-dependencies {
-    api(project(":netcode-common"))
-    api(libs.foundry.math)
+package com.valaphee.netcode.util
+
+fun lazyToString(initialize: () -> String) = object {
+    private val value: String by lazy(initialize)
+
+    override fun toString() = value
 }
