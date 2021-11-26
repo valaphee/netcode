@@ -22,37 +22,31 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.slitherio.base
+package com.valaphee.netcode.slitherio.server
 
+import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.slitherio.Packet
-import com.valaphee.netcode.slitherio.PacketBuffer
 import com.valaphee.netcode.slitherio.PacketHandler
-import com.valaphee.netcode.slitherio.PacketReader
-import io.netty.buffer.ByteBuf
 
 /**
  * @author Kevin Ludwig
  */
-class LoginPacket(
-    val protocolVersion: Int,
-    val skinId: Int,
+class SnakePacket(
+    val snakeId: Int,
+    val action: Action,
+    val wantedAngle: Float,
+    val angle: Float,
+    val speed: Float,
+    val tailFullness: Float,
+    val skin: Int,
+    val position: Float2,
     val name: String,
+    val tail: Float2,
+    val parts: Array<Float2>
 ) : Packet() {
-    override val id = 's'
-
-    override fun write(buffer: PacketBuffer) {
-        buffer.writeByte(protocolVersion)
-        buffer.writeByte(skinId)
-        buffer.writeByte(name.length)
-        buffer.writeBytes(name.toByteArray(Charsets.UTF_8))
+    enum class Action {
+        Add, OutOfRange, Died
     }
 
-    override fun handle(handler: PacketHandler) = handler.login(this)
-}
-
-/**
- * @author Kevin Ludwig
- */
-object LoginPacketReader : PacketReader {
-    override fun read(buffer: ByteBuf) = LoginPacket(buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), ByteArray(buffer.readUnsignedByte().toInt()).apply { buffer.readBytes(this) }.toString(Charsets.UTF_8))
+    override fun handle(handler: PacketHandler) = handler.snake(this)
 }

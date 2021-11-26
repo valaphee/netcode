@@ -22,23 +22,16 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.slitherio.base
+package com.valaphee.netcode.slitherio.client
 
 import com.valaphee.netcode.slitherio.Packet
-import com.valaphee.netcode.slitherio.PacketBuffer
 import com.valaphee.netcode.slitherio.PacketHandler
 
 /**
  * @author Kevin Ludwig
  */
-class ChallengePacket(
-    val challenge: String
-) : Packet() {
-    override val id = '6'
+object ConnectPacket : Packet() {
+    override fun handle(handler: PacketHandler) = handler.connect(this)
 
-    override fun write(buffer: PacketBuffer) {
-        buffer.writeBytes(challenge.toByteArray(Charsets.UTF_8))
-    }
-
-    override fun handle(handler: PacketHandler) = handler.challenge(this)
+    override fun toString() = "ConnectPacket()"
 }

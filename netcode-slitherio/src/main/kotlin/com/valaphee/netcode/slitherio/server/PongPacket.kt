@@ -22,28 +22,16 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.slitherio.base
+package com.valaphee.netcode.slitherio.server
 
 import com.valaphee.netcode.slitherio.Packet
-import com.valaphee.netcode.slitherio.PacketBuffer
 import com.valaphee.netcode.slitherio.PacketHandler
-import com.valaphee.netcode.slitherio.PacketReader
-import io.netty.buffer.ByteBuf
 
 /**
  * @author Kevin Ludwig
  */
-object PingPacket : Packet() {
-    override val id = 0xFB.toChar()
+object PongPacket : Packet() {
+    override fun handle(handler: PacketHandler) = handler.pong(this)
 
-    override fun write(buffer: PacketBuffer) = Unit
-
-    override fun handle(handler: PacketHandler) = handler.ping(this)
-}
-
-/**
- * @author Kevin Ludwig
- */
-object PingPacketReader : PacketReader {
-    override fun read(buffer: ByteBuf) = PingPacket
+    override fun toString() = "PongPacket()"
 }

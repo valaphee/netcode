@@ -101,7 +101,6 @@ class Connection(
             context.pipeline()[PacketCodec::class.java].version = value
             field = value
         }
-
     var objectMapper: ObjectMapper? = null
         set(value) {
             context.pipeline()[PacketCodec::class.java].objectMapper = value

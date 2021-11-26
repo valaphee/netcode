@@ -211,16 +211,16 @@ class PacketCodec(
     public override fun decode(context: ChannelHandlerContext, `in`: ByteBuf, out: MutableList<Any>) {
         val buffer = PacketBuffer(`in`, false, objectMapper, blockStates, items)
         val header = buffer.readVarUInt()
-        val dataIndex = buffer.readerIndex()
         val id = header and Packet.idMask
         (if (client) clientReaders else serverReaders)[id]?.let {
+            val index = buffer.readerIndex()
             try {
                 out.add(it.read(buffer, version).apply {
                     senderId = (header shr Packet.senderIdShift) and Packet.senderIdMask
                     clientId = (header shr Packet.clientIdShift) and Packet.clientIdMask
                 })
             } catch (ex: Exception) {
-                throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} problematic at 0x${buffer.readerIndex().toString(16).uppercase()}", ex, buffer).also { out.add(UnknownPacket(id, PacketBuffer(buffer.readerIndex(dataIndex).retainedSlice()))) }
+                throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} problematic at 0x${buffer.readerIndex().toString(16).uppercase()}", ex, buffer).also { out.add(UnknownPacket(id, PacketBuffer(buffer.readerIndex(index).retainedSlice()))) }
             }
             if (buffer.readableBytes() > 0) throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} not fully read", buffer) else Unit
         } ?: out.add(UnknownPacket(id, PacketBuffer(buffer.retainedSlice())))

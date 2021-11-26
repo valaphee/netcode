@@ -24,18 +24,11 @@
 
 package com.valaphee.netcode.slitherio
 
-import com.valaphee.netcode.util.ByteBufWrapper
-import io.netty.buffer.ByteBuf
-
 /**
  * @author Kevin Ludwig
  */
-class PacketBuffer(
-    buffer: ByteBuf
-) : ByteBufWrapper(buffer) {
-    fun readAngle() = readMedium() * 360 / 16777215.0f
-
-    fun writeAngle(value: Float) {
-        writeMedium((value * 16777215 / 360).toInt())
-    }
+data class UnknownPacket(
+    val buffer: PacketBuffer
+) : Packet() {
+    override fun handle(handler: PacketHandler) = handler.unknown(this)
 }

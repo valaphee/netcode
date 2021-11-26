@@ -34,8 +34,8 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             pom.apply {
-                name.set("Netcode - Minecraft")
-                description.set("Netcode for Minecraft")
+                name.set("Minecraft Netcode")
+                description.set("Minecraft Netcode")
                 url.set("https://valaphee.com")
                 scm {
                     connection.set("https://github.com/valaphee/netcode.git")

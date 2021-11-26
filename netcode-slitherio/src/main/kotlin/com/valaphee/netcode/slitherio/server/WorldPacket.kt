@@ -22,20 +22,29 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.slitherio
+package com.valaphee.netcode.slitherio.server
 
-import com.valaphee.netcode.util.ByteBufWrapper
-import io.netty.buffer.ByteBuf
+import com.valaphee.netcode.slitherio.Packet
+import com.valaphee.netcode.slitherio.PacketHandler
 
 /**
  * @author Kevin Ludwig
  */
-class PacketBuffer(
-    buffer: ByteBuf
-) : ByteBufWrapper(buffer) {
-    fun readAngle() = readMedium() * 360 / 16777215.0f
+class WorldPacket(
+    val radius: Int,
+    val maximumSnakeLength: Int,
+    val sectorSize: Int,
+    val sectorCountAlongEdge: Int,
+    val angularSpeedCoef: Float,
+    val nodeSpeed1: Float,
+    val nodeSpeed2: Float,
+    val nodeSpeed3: Float,
+    val angularSpeed: Float,
+    val preyTurnSpeed: Float,
+    val snakeTailSpeedRatio: Float,
+    val protocolVersion: Int
+) : Packet() {
+    override fun handle(handler: PacketHandler) = handler.world(this)
 
-    fun writeAngle(value: Float) {
-        writeMedium((value * 16777215 / 360).toInt())
-    }
+    override fun toString() = "WorldPacket(radius=$radius, maximumSnakeLength=$maximumSnakeLength, sectorSize=$sectorSize, sectorCountAlongEdge=$sectorCountAlongEdge, angularSpeed=$angularSpeedCoef, nodeSpeed1=$nodeSpeed1, nodeSpeed2=$nodeSpeed2, nodeSpeed3=$nodeSpeed3, angularBaseSpeed=$angularSpeed, angularSpeedPrey=$preyTurnSpeed, snakeTailRatio=$snakeTailSpeedRatio, protocolVersion=$protocolVersion)"
 }

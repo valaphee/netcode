@@ -22,20 +22,29 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.slitherio
+package com.valaphee.netcode.slitherio.server
 
-import com.valaphee.netcode.util.ByteBufWrapper
-import io.netty.buffer.ByteBuf
+import com.valaphee.netcode.slitherio.Packet
+import com.valaphee.netcode.slitherio.PacketHandler
 
 /**
  * @author Kevin Ludwig
  */
-class PacketBuffer(
-    buffer: ByteBuf
-) : ByteBufWrapper(buffer) {
-    fun readAngle() = readMedium() * 360 / 16777215.0f
-
-    fun writeAngle(value: Float) {
-        writeMedium((value * 16777215 / 360).toInt())
+class PreyPacket(
+    val preyId: Int,
+    val action: Action,
+    val snakeId: Int,
+    val color: Int,
+    val x: Float,
+    val y: Float,
+    val size: Float,
+    val wantedAngle: Float,
+    val angle: Float,
+    val speed: Float
+) : Packet() {
+    enum class Action {
+        Add, Eat, Remove
     }
+
+    override fun handle(handler: PacketHandler) = handler.prey(this)
 }

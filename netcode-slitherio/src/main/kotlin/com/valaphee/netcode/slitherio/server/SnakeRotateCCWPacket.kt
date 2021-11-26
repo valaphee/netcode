@@ -22,13 +22,19 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.slitherio
+package com.valaphee.netcode.slitherio.server
 
-import io.netty.buffer.ByteBuf
+import com.valaphee.netcode.slitherio.Packet
+import com.valaphee.netcode.slitherio.PacketHandler
 
 /**
  * @author Kevin Ludwig
  */
-interface PacketReader {
-    fun read(buffer: ByteBuf): Packet
+class SnakeRotateCCWPacket(
+    val snakeId: Int,
+    val angle: Float?,
+    val wantedAngle: Float?,
+    val speed: Float?
+) : Packet() {
+    override fun handle(handler: PacketHandler) = handler.snakeRotateCCW(this)
 }

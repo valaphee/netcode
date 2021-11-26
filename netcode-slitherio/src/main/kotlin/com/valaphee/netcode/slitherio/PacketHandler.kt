@@ -25,13 +25,19 @@
 package com.valaphee.netcode.slitherio
 
 import com.valaphee.netcode.ProtocolHandler
-import com.valaphee.netcode.slitherio.base.ChallengePacket
-import com.valaphee.netcode.slitherio.base.ChallengeResponsePacket
-import com.valaphee.netcode.slitherio.base.ConnectPacket
-import com.valaphee.netcode.slitherio.base.LoginPacket
-import com.valaphee.netcode.slitherio.base.PingPacket
-import com.valaphee.netcode.slitherio.base.PongPacket
-import com.valaphee.netcode.slitherio.base.WorldPacket
+import com.valaphee.netcode.slitherio.client.AnglePacket
+import com.valaphee.netcode.slitherio.client.ChallengeResponsePacket
+import com.valaphee.netcode.slitherio.client.ConnectPacket
+import com.valaphee.netcode.slitherio.client.LoginPacket
+import com.valaphee.netcode.slitherio.client.PingPacket
+import com.valaphee.netcode.slitherio.server.ChallengePacket
+import com.valaphee.netcode.slitherio.server.DisconnectPacket
+import com.valaphee.netcode.slitherio.server.LeaderboardPacket
+import com.valaphee.netcode.slitherio.server.PongPacket
+import com.valaphee.netcode.slitherio.server.PreyPacket
+import com.valaphee.netcode.slitherio.server.SnakePacket
+import com.valaphee.netcode.slitherio.server.SnakeRotateCCWPacket
+import com.valaphee.netcode.slitherio.server.WorldPacket
 
 /**
  * @author Kevin Ludwig
@@ -39,17 +45,32 @@ import com.valaphee.netcode.slitherio.base.WorldPacket
 interface PacketHandler : ProtocolHandler {
     fun other(packet: Packet)
 
-    fun connect(packet: ConnectPacket) = other(packet)
+    fun unknown(packet: UnknownPacket) = other(packet)
 
     fun challenge(packet: ChallengePacket) = other(packet)
 
     fun challengeResponse(packet: ChallengeResponsePacket) = other(packet)
 
-    fun login(packet: LoginPacket) = other(packet)
-
     fun world(packet: WorldPacket) = other(packet)
+
+    fun connect(packet: ConnectPacket) = other(packet)
+
+    fun pong(packet: PongPacket) = other(packet)
+
+    fun login(packet: LoginPacket) = other(packet)
 
     fun ping(packet: PingPacket) = other(packet)
 
-    fun pong(packet: PongPacket) = other(packet)
+
+    fun snake(packet: SnakePacket) = other(packet)
+
+    fun prey(packet: PreyPacket) = other(packet)
+
+    fun leaderboard(packet: LeaderboardPacket) = other(packet)
+
+    fun disconnect(packet: DisconnectPacket) = other(packet)
+
+    fun angle(packet: AnglePacket) = other(packet)
+
+    fun snakeRotateCCW(packet: SnakeRotateCCWPacket) = other(packet)
 }

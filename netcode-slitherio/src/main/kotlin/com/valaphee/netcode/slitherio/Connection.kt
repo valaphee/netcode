@@ -24,6 +24,7 @@
 
 package com.valaphee.netcode.slitherio
 
+import com.valaphee.netcode.util.lazyToString
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
@@ -76,7 +77,7 @@ class Connection : SimpleChannelInboundHandler<Packet>() {
 
     override fun channelRead0(context: ChannelHandlerContext, packet: Packet) {
         if (notClosed) {
-            println("In: ${packet}")
+            log.debug("In: {}", lazyToString(packet::toString))
             packet.handle(handler)
         }
     }
@@ -91,9 +92,15 @@ class Connection : SimpleChannelInboundHandler<Packet>() {
         } else this.handler = handler
     }
 
+    var loggedIn = false
+        set(value) {
+            context.pipeline()[PacketCodec::class.java].loggedIn = value
+            field = value
+        }
+
     fun write(packet: Packet) {
         if (notClosed) {
-            println("Out: ${packet}")
+            log.debug("Out: {}", lazyToString(packet::toString))
             context.writeAndFlush(packet, context.voidPromise())
         }
     }
@@ -102,7 +109,7 @@ class Connection : SimpleChannelInboundHandler<Packet>() {
         if (notClosed) {
             notClosed = false
             if (packet != null && context.channel().isActive) {
-                println("Out: ${packet}")
+                log.debug("Out: {}", lazyToString(packet::toString))
                 context.writeAndFlush(packet).addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE)
             } else {
                 context.flush()

@@ -22,33 +22,21 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.slitherio.base
+package com.valaphee.netcode.slitherio
 
-import com.valaphee.netcode.slitherio.Packet
-import com.valaphee.netcode.slitherio.PacketBuffer
-import com.valaphee.netcode.slitherio.PacketHandler
-import com.valaphee.netcode.slitherio.PacketReader
-import io.netty.buffer.ByteBuf
-import io.netty.buffer.ByteBufUtil
+import io.netty.handler.codec.DecoderException
 
 /**
  * @author Kevin Ludwig
  */
-class ChallengeResponsePacket(
-    val challengeResponse: String
-) : Packet() {
-    override val id = 'Y'
+class PacketDecoderException : DecoderException {
+    val buffer: PacketBuffer
 
-    override fun write(buffer: PacketBuffer) {
-        buffer.writeBytes(challengeResponse.toByteArray(Charsets.UTF_8))
+    constructor(message: String, buffer: PacketBuffer) : super(message) {
+        this.buffer = buffer
     }
 
-    override fun handle(handler: PacketHandler) = handler.challengeResponse(this)
-}
-
-/**
- * @author Kevin Ludwig
- */
-object ChallengeResponsePacketReader : PacketReader {
-    override fun read(buffer: ByteBuf) = ChallengeResponsePacket(ByteBufUtil.getBytes(buffer).toString(Charsets.UTF_8))
+    constructor(message: String, cause: Throwable, buffer: PacketBuffer) : super(message, cause) {
+        this.buffer = buffer
+    }
 }

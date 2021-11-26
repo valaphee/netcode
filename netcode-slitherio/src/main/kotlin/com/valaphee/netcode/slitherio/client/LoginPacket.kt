@@ -22,45 +22,20 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.slitherio.base
+package com.valaphee.netcode.slitherio.client
 
 import com.valaphee.netcode.slitherio.Packet
-import com.valaphee.netcode.slitherio.PacketBuffer
 import com.valaphee.netcode.slitherio.PacketHandler
 
 /**
  * @author Kevin Ludwig
  */
-class WorldPacket(
-    val radius: Int,
-    val maximumSnakeLength: Int,
-    val sectorSize: Int,
-    val sectorCountAlongEdge: Int,
-    val angularSpeed: Float,
-    val nodeSpeed1: Float,
-    val nodeSpeed2: Float,
-    val nodeSpeed3: Float,
-    val angularBaseSpeed: Float,
-    val angularSpeedPrey: Float,
-    val snakeTailRatio: Float,
-    val protocolVersion: Int
+class LoginPacket(
+    val protocolVersion: Int,
+    val skin: Int,
+    val name: String,
 ) : Packet() {
-    override val id = 'a'
+    override fun handle(handler: PacketHandler) = handler.login(this)
 
-    override fun write(buffer: PacketBuffer) {
-        buffer.writeMedium(radius)
-        buffer.writeShort(maximumSnakeLength)
-        buffer.writeShort(sectorSize)
-        buffer.writeShort(sectorCountAlongEdge)
-        buffer.writeByte((angularSpeed * 10).toInt())
-        buffer.writeShort((nodeSpeed1 * 100).toInt())
-        buffer.writeShort((nodeSpeed2 * 100).toInt())
-        buffer.writeShort((nodeSpeed3 * 100).toInt())
-        buffer.writeShort((angularBaseSpeed * 1000).toInt())
-        buffer.writeShort((angularSpeedPrey * 1000).toInt())
-        buffer.writeShort((snakeTailRatio * 1000).toInt())
-        buffer.writeByte(protocolVersion)
-    }
-
-    override fun handle(handler: PacketHandler) = handler.world(this)
+    override fun toString() = "LoginPacket(protocolVersion=$protocolVersion, skin=$skin, name='$name')"
 }

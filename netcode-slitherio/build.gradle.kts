@@ -26,14 +26,15 @@ dependencies {
     api(project(":netcode-common"))
     api(libs.fastutil)
     api(libs.log4j.core)
+    api(libs.foundry.math)
 }
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
             pom.apply {
-                name.set("Netcode - Slither.io")
-                description.set("Netcode for Slither.io")
+                name.set("Slither.io Netcode")
+                description.set("Slither.io Netcode")
                 url.set("https://valaphee.com")
                 scm {
                     connection.set("https://github.com/valaphee/netcode.git")

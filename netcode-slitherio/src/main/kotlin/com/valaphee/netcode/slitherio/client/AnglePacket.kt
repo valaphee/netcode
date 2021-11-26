@@ -22,20 +22,18 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.slitherio
+package com.valaphee.netcode.slitherio.client
 
-import com.valaphee.netcode.util.ByteBufWrapper
-import io.netty.buffer.ByteBuf
+import com.valaphee.netcode.slitherio.Packet
+import com.valaphee.netcode.slitherio.PacketHandler
 
 /**
  * @author Kevin Ludwig
  */
-class PacketBuffer(
-    buffer: ByteBuf
-) : ByteBufWrapper(buffer) {
-    fun readAngle() = readMedium() * 360 / 16777215.0f
+class AnglePacket(
+    val angle: Float,
+) : Packet() {
+    override fun handle(handler: PacketHandler) = handler.angle(this)
 
-    fun writeAngle(value: Float) {
-        writeMedium((value * 16777215 / 360).toInt())
-    }
+    override fun toString() = "AnglePacket(angle=$angle)"
 }

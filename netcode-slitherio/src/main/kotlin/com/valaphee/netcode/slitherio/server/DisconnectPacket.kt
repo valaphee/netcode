@@ -22,28 +22,20 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.slitherio.base
+package com.valaphee.netcode.slitherio.server
 
 import com.valaphee.netcode.slitherio.Packet
-import com.valaphee.netcode.slitherio.PacketBuffer
 import com.valaphee.netcode.slitherio.PacketHandler
-import com.valaphee.netcode.slitherio.PacketReader
-import io.netty.buffer.ByteBuf
 
 /**
  * @author Kevin Ludwig
  */
-object PongPacket : Packet() {
-    override val id = 'p'
+class DisconnectPacket(
+    val reason: Reason
+) : Packet() {
+    enum class Reason {
+        Death, DeathHighscore
+    }
 
-    override fun write(buffer: PacketBuffer) = Unit
-
-    override fun handle(handler: PacketHandler) = handler.pong(this)
-}
-
-/**
- * @author Kevin Ludwig
- */
-object PongPacketReader : PacketReader {
-    override fun read(buffer: ByteBuf) = PongPacket
+    override fun handle(handler: PacketHandler) = handler.disconnect(this)
 }
