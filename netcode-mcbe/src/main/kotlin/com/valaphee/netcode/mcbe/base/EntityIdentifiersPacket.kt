@@ -38,18 +38,13 @@ import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufOutputStream
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
-class EntityIdentifiersPacket private constructor(
-    val data: ByteArray?,
+class EntityIdentifiersPacket(
     val tag: CompoundTag?
 ) : Packet() {
     override val id get() = 0x77
 
-    constructor(data: ByteArray) : this(data, null)
-
-    constructor(tag: CompoundTag?) : this(null, tag)
-
     override fun write(buffer: PacketBuffer, version: Int) {
-        data?.let { buffer.writeBytes(it) } ?: NbtOutputStream(LittleEndianVarIntByteBufOutputStream(buffer)).use { it.writeTag(tag) }
+        NbtOutputStream(LittleEndianVarIntByteBufOutputStream(buffer)).use { it.writeTag(tag) }
     }
 
     override fun handle(handler: PacketHandler) = handler.entityIdentifiers(this)

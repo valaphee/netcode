@@ -36,18 +36,13 @@ import com.valaphee.netcode.mcbe.Restriction
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
-class BlockComponentPacket private constructor(
-    val data: ByteArray?,
+class BlockComponentPacket(
     val tag: CompoundTag?
 ) : Packet() {
     override val id get() = 0x86
 
-    constructor(data: ByteArray) : this(data, null)
-
-    constructor(tag: CompoundTag?) : this(null, tag)
-
     override fun write(buffer: PacketBuffer, version: Int) {
-        data?.let { buffer.writeBytes(it) } ?: buffer.toNbtOutputStream().use { it.writeTag(tag) }
+        buffer.toNbtOutputStream().use { it.writeTag(tag) }
     }
 
     override fun handle(handler: PacketHandler) = handler.blockComponent(this)

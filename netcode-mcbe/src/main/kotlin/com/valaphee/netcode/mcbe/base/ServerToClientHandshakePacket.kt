@@ -36,17 +36,17 @@ import com.valaphee.netcode.mcbe.Restriction
  */
 @Restrict(Restriction.ToClient)
 class ServerToClientHandshakePacket(
-    val serverToClientHandshakeJws: String
+    val jws: String
 ) : Packet() {
     override val id get() = 0x03
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(serverToClientHandshakeJws)
+        buffer.writeString(jws)
     }
 
     override fun handle(handler: PacketHandler) = handler.serverToClientHandshake(this)
 
-    override fun toString() = "ServerToClientHandshakePacket(serverToClientHandshakeJws=$serverToClientHandshakeJws)"
+    override fun toString() = "ServerToClientHandshakePacket(jws=$jws)"
 }
 
 /**
