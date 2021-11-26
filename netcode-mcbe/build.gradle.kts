@@ -24,9 +24,44 @@
 
 dependencies {
     api(project(":netcode-mc"))
+    api(libs.classgraph)
     api(libs.fastutil)
     api(libs.nettyraknet.client)
     api(libs.nettyraknet.server)
     api(libs.log4j.core)
     api(libs.jose4j)
+    api(libs.lz4)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            pom.apply {
+                name.set("Netcode - Minecraft: Bedrock Edition")
+                description.set("Netcode for the Minecraft: Bedrock Edition")
+                url.set("https://valaphee.com")
+                scm {
+                    connection.set("https://github.com/valaphee/netcode.git")
+                    developerConnection.set("https://github.com/valaphee/netcode.git")
+                    url.set("https://github.com/valaphee/netcode")
+                }
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://raw.githubusercontent.com/valaphee/netcode/master/LICENSE.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("valaphee")
+                        name.set("Valaphee")
+                        email.set("iam@valaphee.com")
+                        roles.add("owner")
+                    }
+                }
+            }
+
+            from(components["java"])
+        }
+    }
 }

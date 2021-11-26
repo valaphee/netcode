@@ -25,12 +25,12 @@
 package com.valaphee.netcode.mcbe.entity.player
 
 import com.google.gson.JsonObject
-import com.valaphee.netcode.mcbe.entity.player.appearance.Appearance
-import com.valaphee.netcode.mcbe.entity.player.appearance.asAppearance
 import com.valaphee.netcode.mc.util.getBoolOrNull
 import com.valaphee.netcode.mc.util.getIntOrNull
 import com.valaphee.netcode.mc.util.getLong
 import com.valaphee.netcode.mc.util.getString
+import com.valaphee.netcode.mcbe.entity.player.appearance.Appearance
+import com.valaphee.netcode.mcbe.entity.player.appearance.asAppearance
 import java.util.Locale
 import java.util.UUID
 

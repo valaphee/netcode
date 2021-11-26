@@ -25,9 +25,9 @@
 package com.valaphee.netcode.mcbe
 
 import com.valaphee.netcode.mcbe.base.ServerToClientHandshakePacket
+import com.valaphee.netcode.mcbe.util.serverToClientHandshakeJws
 import com.valaphee.netcode.util.MbedTlsAesCipher
 import com.valaphee.netcode.util.aesCipher
-import com.valaphee.netcode.mcbe.util.serverToClientHandshakeJws
 import com.valaphee.netcode.util.sha256Hasher
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.PooledByteBufAllocator

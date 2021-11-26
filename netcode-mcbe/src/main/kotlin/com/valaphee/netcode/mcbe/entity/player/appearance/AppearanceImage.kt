@@ -25,8 +25,8 @@
 package com.valaphee.netcode.mcbe.entity.player.appearance
 
 import com.google.gson.JsonObject
-import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mc.util.getString
+import com.valaphee.netcode.mcbe.PacketBuffer
 import java.awt.Transparency
 import java.awt.color.ColorSpace
 import java.awt.image.BufferedImage

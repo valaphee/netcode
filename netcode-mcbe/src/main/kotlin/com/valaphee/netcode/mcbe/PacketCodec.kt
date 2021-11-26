@@ -198,18 +198,18 @@ class PacketCodec(
     var version: Int = latestProtocolVersion
 ) : ByteToMessageCodec<Packet>() {
     var objectMapper: ObjectMapper? = null
-    var blockStateLut: Registry<String>? = null
-    var itemLut: Registry<String>? = null
+    var blockStates: Registry<String>? = null
+    var items: Registry<String>? = null
 
-    override fun encode(context: ChannelHandlerContext, message: Packet, out: ByteBuf) {
-        PacketBuffer(out, false, objectMapper, blockStateLut, itemLut).apply {
+    public override fun encode(context: ChannelHandlerContext, message: Packet, out: ByteBuf) {
+        PacketBuffer(out, false, objectMapper, blockStates, items).apply {
             writeVarUInt(message.id and Packet.idMask or ((message.senderId and Packet.senderIdMask) shl Packet.senderIdShift) or ((message.clientId and Packet.clientIdMask) shl Packet.clientIdShift))
             message.write(this, version)
         }
     }
 
-    override fun decode(context: ChannelHandlerContext, `in`: ByteBuf, out: MutableList<Any>) {
-        val buffer = PacketBuffer(`in`, false, objectMapper, blockStateLut, itemLut)
+    public override fun decode(context: ChannelHandlerContext, `in`: ByteBuf, out: MutableList<Any>) {
+        val buffer = PacketBuffer(`in`, false, objectMapper, blockStates, items)
         val header = buffer.readVarUInt()
         val dataIndex = buffer.readerIndex()
         val id = header and Packet.idMask

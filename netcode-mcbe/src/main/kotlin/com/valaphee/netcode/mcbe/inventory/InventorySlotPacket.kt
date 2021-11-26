@@ -24,6 +24,12 @@
 
 package com.valaphee.netcode.mcbe.inventory
 
+import com.valaphee.netcode.mcbe.Packet
+import com.valaphee.netcode.mcbe.PacketBuffer
+import com.valaphee.netcode.mcbe.PacketHandler
+import com.valaphee.netcode.mcbe.PacketReader
+import com.valaphee.netcode.mcbe.Restrict
+import com.valaphee.netcode.mcbe.Restriction
 import com.valaphee.netcode.mcbe.item.stack.Stack
 import com.valaphee.netcode.mcbe.item.stack.readStack
 import com.valaphee.netcode.mcbe.item.stack.readStackPre431
@@ -31,12 +37,6 @@ import com.valaphee.netcode.mcbe.item.stack.readStackWithNetIdPre431
 import com.valaphee.netcode.mcbe.item.stack.writeStack
 import com.valaphee.netcode.mcbe.item.stack.writeStackPre431
 import com.valaphee.netcode.mcbe.item.stack.writeStackWithNetIdPre431
-import com.valaphee.netcode.mcbe.Packet
-import com.valaphee.netcode.mcbe.PacketBuffer
-import com.valaphee.netcode.mcbe.PacketHandler
-import com.valaphee.netcode.mcbe.PacketReader
-import com.valaphee.netcode.mcbe.Restrict
-import com.valaphee.netcode.mcbe.Restriction
 
 /**
  * @author Kevin Ludwig

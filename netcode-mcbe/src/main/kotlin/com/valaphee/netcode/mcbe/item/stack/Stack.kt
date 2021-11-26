@@ -33,17 +33,17 @@ import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.valaphee.netcode.mcbe.PacketBuffer
-import com.valaphee.netcode.mcbe.util.LittleEndianByteBufInputStream
-import com.valaphee.netcode.mcbe.util.LittleEndianByteBufOutputStream
-import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufInputStream
-import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufOutputStream
 import com.valaphee.netcode.mc.util.getCompoundTagOrNull
 import com.valaphee.netcode.mc.util.getIntOrNull
 import com.valaphee.netcode.mc.util.getString
 import com.valaphee.netcode.mc.util.nbt.CompoundTag
 import com.valaphee.netcode.mc.util.nbt.NbtInputStream
 import com.valaphee.netcode.mc.util.nbt.NbtOutputStream
+import com.valaphee.netcode.mcbe.PacketBuffer
+import com.valaphee.netcode.mcbe.util.LittleEndianByteBufInputStream
+import com.valaphee.netcode.mcbe.util.LittleEndianByteBufOutputStream
+import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufInputStream
+import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufOutputStream
 import io.netty.buffer.Unpooled
 import java.util.Base64
 

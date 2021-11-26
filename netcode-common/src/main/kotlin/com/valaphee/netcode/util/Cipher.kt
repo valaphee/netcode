@@ -42,7 +42,7 @@ fun aesCipher(encrypt: Boolean, key: ByteArray, iv: ByteArray, gcm: Boolean): Ci
 /**
  * @author Kevin Ludwig
  */
-private class JavaAesCipher(
+class JavaAesCipher(
     encrypt: Boolean,
     key: ByteArray,
     iv: ByteArray,
@@ -73,7 +73,7 @@ private class JavaAesCipher(
 /**
  * @author Kevin Ludwig
  */
-internal class MbedTlsAesCipher(
+class MbedTlsAesCipher(
     encrypt: Boolean,
     key: ByteArray,
     iv: ByteArray

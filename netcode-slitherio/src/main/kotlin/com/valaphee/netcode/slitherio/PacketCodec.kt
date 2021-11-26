@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap
  */
 class PacketCodec(
     private val client: Boolean
-): MessageToMessageCodec<BinaryWebSocketFrame, Packet>() {
+) : MessageToMessageCodec<BinaryWebSocketFrame, Packet>() {
     override fun encode(context: ChannelHandlerContext, `in`: Packet, out: MutableList<Any>) {
         out.add(BinaryWebSocketFrame(PacketBuffer(context.alloc().buffer()).apply {
             writeShort(0)

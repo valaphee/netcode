@@ -107,14 +107,14 @@ class Connection(
             context.pipeline()[PacketCodec::class.java].objectMapper = value
             field = value
         }
-    var blockStateLut: Registry<String>? = null
+    var blockStates: Registry<String>? = null
         set(value) {
-            context.pipeline()[PacketCodec::class.java].blockStateLut = value
+            context.pipeline()[PacketCodec::class.java].blockStates = value
             field = value
         }
-    var itemLut: Registry<String>? = null
+    var items: Registry<String>? = null
         set(value) {
-            context.pipeline()[PacketCodec::class.java].itemLut = value
+            context.pipeline()[PacketCodec::class.java].items = value
             field = value
         }
 

@@ -27,7 +27,7 @@ package com.valaphee.netcode.mcbe.item.craft
 import com.valaphee.netcode.mcbe.item.stack.Stack
 import java.util.UUID
 
-fun recipeId(type: Recipe.Type, inputs: List<Stack?>, outputs: List<Stack?>): UUID = UUID.nameUUIDFromBytes("${type.ordinal}${if (type == Recipe.Type.Shapeless || type == Recipe.Type.ShapelessChemistry) inputs.filterNotNull().sortedBy { it.itemKey + it.subId + it.count }.joinToString { it.itemKey + it.subId + it.count } else inputs.joinToString { it?.let { it.itemKey + it.subId + it.count } ?: "" }}${outputs.joinToString { it?.let { it.itemKey + it.subId + it.count } ?: "" } }}".toByteArray())
+fun recipeId(type: Recipe.Type, inputs: List<Stack?>, outputs: List<Stack?>): UUID = UUID.nameUUIDFromBytes("${type.ordinal}${if (type == Recipe.Type.Shapeless || type == Recipe.Type.ShapelessChemistry) inputs.filterNotNull().sortedBy { it.itemKey + it.subId + it.count }.joinToString { it.itemKey + it.subId + it.count } else inputs.joinToString { it?.let { it.itemKey + it.subId + it.count } ?: "" }}${outputs.joinToString { it?.let { it.itemKey + it.subId + it.count } ?: "" }}}".toByteArray())
 
 fun shapelessRecipe(type: Recipe.Type, name: String, inputs: List<Stack?>, outputs: List<Stack?>, tag: String, priority: Int, netId: Int) = Recipe(recipeId(type, inputs, outputs), name, type, 0, 0, inputs, outputs, tag, priority, netId)
 

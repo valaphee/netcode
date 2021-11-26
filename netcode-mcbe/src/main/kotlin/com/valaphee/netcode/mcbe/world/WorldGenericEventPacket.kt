@@ -24,13 +24,13 @@
 
 package com.valaphee.netcode.mcbe.world
 
+import com.valaphee.netcode.mc.util.nbt.Tag
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
 import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
-import com.valaphee.netcode.mc.util.nbt.Tag
 
 /**
  * @author Kevin Ludwig

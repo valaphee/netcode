@@ -29,6 +29,7 @@ import com.valaphee.netcode.mc.util.getListTagOrNull
 import com.valaphee.netcode.mc.util.getString
 import com.valaphee.netcode.mc.util.nbt.CompoundTag
 import com.valaphee.netcode.mc.util.nbt.TagType
+import com.valaphee.netcode.mcbe.pack.block.Block
 
 /**
  * @author Kevin Ludwig
@@ -38,6 +39,13 @@ class Block {
     val properties: Map<String, Set<*>>
     val states: List<BlockState>
     val tag: CompoundTag?
+
+    constructor(block: Block) {
+        this.key = block.description.key
+        properties = block.description.properties ?: emptyMap()
+        states = properties.values.reversed().fold(listOf(listOf<Any?>())) { acc, set -> acc.flatMap { list -> set.map { list + it } } }.map { BlockState(this@Block, properties.keys.zip(it.reversed()).toMap()) }
+        tag = block.toTag()
+    }
 
     constructor(key: String, states: List<Map<String, Any>>) {
         this.key = key

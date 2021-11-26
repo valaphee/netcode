@@ -41,7 +41,7 @@ fun compressor(compress: Boolean, raw: Boolean, level: Int = 7): Compressor = Ja
 /**
  * @author Kevin Ludwig
  */
-private class JavaZipCompressor(
+class JavaZipCompressor(
     private val compress: Boolean,
     raw: Boolean,
     level: Int

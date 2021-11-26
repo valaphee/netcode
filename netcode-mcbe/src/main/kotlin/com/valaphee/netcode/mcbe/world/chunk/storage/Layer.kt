@@ -24,7 +24,6 @@
 
 package com.valaphee.netcode.mcbe.world.chunk.storage
 
-import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mc.util.getCompoundTag
 import com.valaphee.netcode.mc.util.getString
 import com.valaphee.netcode.mc.util.nbt.TagType
@@ -32,6 +31,7 @@ import com.valaphee.netcode.mc.util.nbt.compoundTag
 import com.valaphee.netcode.mc.util.nbt.ofBool
 import com.valaphee.netcode.mc.util.nbt.ofInt
 import com.valaphee.netcode.mc.util.nbt.ofString
+import com.valaphee.netcode.mcbe.PacketBuffer
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 

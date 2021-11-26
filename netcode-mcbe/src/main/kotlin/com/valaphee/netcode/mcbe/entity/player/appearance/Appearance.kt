@@ -29,8 +29,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.internal.Streams
 import com.google.gson.stream.JsonReader
-import com.valaphee.netcode.mcbe.PacketBuffer
-import com.valaphee.netcode.util.ByteBufStringReader
 import com.valaphee.netcode.mc.util.getBool
 import com.valaphee.netcode.mc.util.getFloat
 import com.valaphee.netcode.mc.util.getInt
@@ -39,6 +37,8 @@ import com.valaphee.netcode.mc.util.getJsonArray
 import com.valaphee.netcode.mc.util.getJsonArrayOrNull
 import com.valaphee.netcode.mc.util.getString
 import com.valaphee.netcode.mc.util.getStringOrNull
+import com.valaphee.netcode.mcbe.PacketBuffer
+import com.valaphee.netcode.util.ByteBufStringReader
 import java.io.StringReader
 import java.nio.charset.StandardCharsets
 import java.util.Base64

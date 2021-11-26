@@ -43,7 +43,7 @@ fun sha256Hasher(): Hasher = JavaSha256Hasher()
 /**
  * @author Kevin Ludwig
  */
-private class JavaSha256Hasher : Hasher {
+class JavaSha256Hasher : Hasher {
     private var digest = MessageDigest.getInstance("SHA-256")
 
     override fun update(buffer: ByteBuf) {
@@ -58,7 +58,7 @@ private class JavaSha256Hasher : Hasher {
 /**
  * @author Kevin Ludwig
  */
-private class MbedTlsSha256Hasher : Hasher {
+class MbedTlsSha256Hasher : Hasher {
     private var mbedTlsSha256Context = MbedTlsSha256HasherImpl.init()
 
     override fun update(buffer: ByteBuf) {

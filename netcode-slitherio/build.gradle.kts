@@ -27,3 +27,36 @@ dependencies {
     api(libs.fastutil)
     api(libs.log4j.core)
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            pom.apply {
+                name.set("Netcode - Slither.io")
+                description.set("Netcode for Slither.io")
+                url.set("https://valaphee.com")
+                scm {
+                    connection.set("https://github.com/valaphee/netcode.git")
+                    developerConnection.set("https://github.com/valaphee/netcode.git")
+                    url.set("https://github.com/valaphee/netcode")
+                }
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://raw.githubusercontent.com/valaphee/netcode/master/LICENSE.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("valaphee")
+                        name.set("Valaphee")
+                        email.set("iam@valaphee.com")
+                        roles.add("owner")
+                    }
+                }
+            }
+
+            from(components["java"])
+        }
+    }
+}

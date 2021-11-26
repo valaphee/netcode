@@ -25,11 +25,11 @@
 package com.valaphee.netcode.mcbe.world.chunk
 
 import com.valaphee.foundry.math.Int3
+import com.valaphee.netcode.mc.util.nbt.CompoundTag
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
-import com.valaphee.netcode.mc.util.nbt.CompoundTag
 
 /**
  * @author Kevin Ludwig

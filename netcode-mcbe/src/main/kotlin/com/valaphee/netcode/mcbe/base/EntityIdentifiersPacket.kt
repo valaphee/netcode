@@ -24,6 +24,8 @@
 
 package com.valaphee.netcode.mcbe.base
 
+import com.valaphee.netcode.mc.util.nbt.CompoundTag
+import com.valaphee.netcode.mc.util.nbt.NbtOutputStream
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler
@@ -31,8 +33,6 @@ import com.valaphee.netcode.mcbe.PacketReader
 import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
 import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufOutputStream
-import com.valaphee.netcode.mc.util.nbt.CompoundTag
-import com.valaphee.netcode.mc.util.nbt.NbtOutputStream
 
 /**
  * @author Kevin Ludwig

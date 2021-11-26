@@ -31,7 +31,6 @@ import com.valaphee.netcode.slitherio.base.ConnectPacket
 import com.valaphee.netcode.slitherio.base.LoginPacket
 import com.valaphee.netcode.slitherio.base.PingPacket
 import com.valaphee.netcode.slitherio.base.PongPacket
-import com.valaphee.netcode.slitherio.base.SnakePacket
 import com.valaphee.netcode.slitherio.base.WorldPacket
 
 /**
@@ -53,6 +52,4 @@ interface PacketHandler : ProtocolHandler {
     fun ping(packet: PingPacket) = other(packet)
 
     fun pong(packet: PongPacket) = other(packet)
-
-    fun snake(packet: SnakePacket) = other(packet)
 }
