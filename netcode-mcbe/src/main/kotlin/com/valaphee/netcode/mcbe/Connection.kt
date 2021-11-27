@@ -25,7 +25,7 @@
 package com.valaphee.netcode.mcbe
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.valaphee.netcode.mcbe.util.Registry
+import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.util.lazyToString
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext

@@ -25,20 +25,21 @@
 package com.valaphee.netcode.mcbe.entity.attribute
 
 import com.valaphee.netcode.mcbe.PacketBuffer
+import java.util.EnumMap
 
 /**
  * @author Kevin Ludwig
  */
-class Attributes {
-    private val attributes = mutableMapOf<String, AttributeValue>()
+class Attributes(
+    val attributes: MutableMap<AttributeField, AttributeValue> = EnumMap(AttributeField::class.java)
+) {
+    operator fun get(field: AttributeField) = attributes[field]
 
-    operator fun get(field: AttributeField) = attributes[field.key]
+    fun getValue(field: AttributeField) = attributes[field]?.value ?: field.defaultValue
 
-    fun getValue(field: AttributeField) = attributes[field.key]?.value ?: field.defaultValue
+    fun add(field: AttributeField) = field.attributeValue().also { attributes[field] = it }
 
-    fun add(field: AttributeField) = field.attributeValue().also { attributes[field.key] = it }
-
-    operator fun set(field: AttributeField, value: Float) = attributes.getOrPut(field.key, field::attributeValue).apply { this.value = value }
+    operator fun set(field: AttributeField, value: Float) = attributes.getOrPut(field, field::attributeValue).apply { this.value = value }
 
     val modified get() = attributes.values.any { it.modified }
 
@@ -49,14 +50,14 @@ class Attributes {
                 val maximum = buffer.readFloatLE()
                 val value = buffer.readFloatLE()
                 val defaultValue = buffer.readFloatLE()
-                val key = buffer.readString()
-                attributes[key] = AttributeValue(key, minimum, maximum, defaultValue, value)
+                val field = AttributeField.byKey(buffer.readString())
+                attributes[field] = AttributeValue(field, minimum, maximum, defaultValue, value)
             } else {
-                val key = buffer.readString()
+                val field = AttributeField.byKey(buffer.readString())
                 val minimum = buffer.readFloatLE()
                 val value = buffer.readFloatLE()
                 val maximum = buffer.readFloatLE()
-                attributes[key] = AttributeValue(key, minimum, maximum, value)
+                attributes[field] = AttributeValue(field, minimum, maximum, value)
             }
         }
     }
@@ -70,14 +71,14 @@ class Attributes {
                 buffer.writeFloatLE(value.maximum)
                 buffer.writeFloatLE(value.value)
                 buffer.writeFloatLE(value.defaultValue)
-                buffer.writeString(field)
+                buffer.writeString(field.key)
             } else {
-                buffer.writeString(field)
+                buffer.writeString(field.key)
                 buffer.writeFloatLE(value.minimum)
                 buffer.writeFloatLE(value.value)
                 buffer.writeFloatLE(value.maximum)
             }
-            value.modified = false
+            value.flagAsSaved()
         }
     }
 

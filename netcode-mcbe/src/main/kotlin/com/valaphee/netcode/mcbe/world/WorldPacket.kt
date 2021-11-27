@@ -28,6 +28,7 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mc.util.nbt.ListTag
+import com.valaphee.netcode.mc.world.Difficulty
 import com.valaphee.netcode.mcbe.GamePublishMode
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer

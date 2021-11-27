@@ -25,10 +25,8 @@
 dependencies {
     api(project(":netcode-mc"))
     api(libs.classgraph)
-    api(libs.fastutil)
     api(libs.nettyraknet.client)
     api(libs.nettyraknet.server)
-    api(libs.log4j.core)
     api(libs.jose4j)
     api(libs.lz4)
 }

@@ -28,6 +28,7 @@ dependencies {
     api(libs.jackson.module.kotlin)
     api(libs.gson)
     api(libs.foundry.math)
+    api(libs.fastutil)
 }
 
 publishing {

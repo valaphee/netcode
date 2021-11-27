@@ -25,6 +25,7 @@
 package com.valaphee.netcode.mcbe
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.mcbe.base.BehaviorTreePacketReader
 import com.valaphee.netcode.mcbe.base.BiomeDefinitionsPacketReader
 import com.valaphee.netcode.mcbe.base.BlockComponentPacketReader
@@ -138,7 +139,6 @@ import com.valaphee.netcode.mcbe.pack.PackDataPacketReader
 import com.valaphee.netcode.mcbe.pack.PacksPacketReader
 import com.valaphee.netcode.mcbe.pack.PacksResponsePacketReader
 import com.valaphee.netcode.mcbe.pack.PacksStackPacketReader
-import com.valaphee.netcode.mcbe.util.Registry
 import com.valaphee.netcode.mcbe.world.BossBarPacketReader
 import com.valaphee.netcode.mcbe.world.CameraShakePacketReader
 import com.valaphee.netcode.mcbe.world.DefaultGameModePacketReader

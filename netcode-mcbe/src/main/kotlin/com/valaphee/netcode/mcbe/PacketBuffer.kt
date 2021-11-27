@@ -34,7 +34,7 @@ import com.valaphee.netcode.mcbe.util.LittleEndianByteBufInputStream
 import com.valaphee.netcode.mcbe.util.LittleEndianByteBufOutputStream
 import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufInputStream
 import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufOutputStream
-import com.valaphee.netcode.mcbe.util.Registry
+import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.util.ByteBufWrapper
 import io.netty.buffer.ByteBuf
 import io.netty.util.AsciiString

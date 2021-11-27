@@ -24,6 +24,7 @@
 
 dependencies {
     api(libs.netty)
+    api(libs.log4j.core)
 }
 
 publishing {

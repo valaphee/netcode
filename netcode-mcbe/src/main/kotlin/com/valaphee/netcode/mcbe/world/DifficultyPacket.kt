@@ -24,6 +24,7 @@
 
 package com.valaphee.netcode.mcbe.world
 
+import com.valaphee.netcode.mc.world.Difficulty
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler

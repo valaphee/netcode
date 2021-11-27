@@ -31,7 +31,7 @@ import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
 import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
-import com.valaphee.netcode.mcbe.util.Registry
+import com.valaphee.netcode.mc.util.Registry
 
 /**
  * @author Kevin Ludwig

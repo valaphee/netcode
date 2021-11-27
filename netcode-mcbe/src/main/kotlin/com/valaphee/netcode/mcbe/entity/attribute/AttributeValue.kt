@@ -28,7 +28,7 @@ package com.valaphee.netcode.mcbe.entity.attribute
  * @author Kevin Ludwig
  */
 class AttributeValue internal constructor(
-    val key: String,
+    val field: AttributeField,
     minimum: Float,
     maximum: Float,
     defaultValue: Float,
@@ -39,24 +39,27 @@ class AttributeValue internal constructor(
             field = value
             modified = true
         }
-
     var maximum = maximum
         set(value) {
             field = value
             modified = true
         }
-
     var defaultValue = defaultValue
         set(value) {
             field = value
             modified = true
         }
-
     var value = value
         set(value) {
             field = value
             modified = true
         }
-
     var modified = true
+        private set
+
+    fun flagAsSaved(): Boolean {
+        val previousModified = modified
+        this.modified = false
+        return previousModified
+    }
 }

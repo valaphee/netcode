@@ -24,7 +24,7 @@
 
 package com.valaphee.netcode.mcbe.world
 
-import com.valaphee.netcode.mcbe.util.Registry
+import com.valaphee.netcode.mc.util.Registry
 
 /**
  * @author Kevin Ludwig

@@ -27,7 +27,7 @@ package com.valaphee.netcode.mcbe
 /**
  * @author Kevin Ludwig
  */
-data class UnknownPacket(
+class UnknownPacket(
     override val id: Int,
     val buffer: PacketBuffer
 ) : Packet() {
@@ -36,4 +36,6 @@ data class UnknownPacket(
     }
 
     override fun handle(handler: PacketHandler) = handler.unknown(this)
+
+    override fun toString() = "UnknownPacket(id=$id)"
 }

@@ -26,9 +26,9 @@ package com.valaphee.netcode.mcbe.entity.metadata
 
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
+import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.mc.util.nbt.Tag
 import com.valaphee.netcode.mcbe.PacketBuffer
-import com.valaphee.netcode.mcbe.util.Registry
 
 /**
  * @author Kevin Ludwig

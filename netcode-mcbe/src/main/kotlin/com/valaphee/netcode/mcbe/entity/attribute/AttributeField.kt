@@ -49,5 +49,13 @@ enum class AttributeField(
 
     fun attributeValue() = AttributeValue(key, minimum, maximum, defaultValue)
 
+    fun inBounds(value: Float) = value.coerceIn(minimum, maximum)
+
     override fun toString() = key
+
+    companion object {
+        private val byKey = values().associateBy { it.key }
+
+        fun byKey(key: String) = byKey[key] ?: error(key)
+    }
 }
