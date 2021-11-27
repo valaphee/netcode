@@ -25,8 +25,8 @@
 package com.valaphee.netcode.mcbe.world.chunk.storage
 
 import com.valaphee.netcode.mcbe.PacketBuffer
-import com.valaphee.netcode.mcbe.util.NibbleArray
-import com.valaphee.netcode.mcbe.util.nibbleArray
+import com.valaphee.netcode.mc.util.NibbleArray
+import com.valaphee.netcode.mc.util.nibbleArray
 
 /**
  * @author Kevin Ludwig

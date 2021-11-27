@@ -117,7 +117,7 @@ fun parseAuthJws(authJws: String): Triple<Boolean, PublicKey, AuthExtra> {
     return Triple(verified, verificationKey!!, authJwsPayloadJson!!.getJsonObject("extraData").asAuthExtra)
 }
 
-fun userJws(keyPair: KeyPair, user: User) = JsonWebSignature().apply {
+fun userJws(keyPair: KeyPair, user: User): String = JsonWebSignature().apply {
     setHeader("alg", "ES384")
     setHeader("x5u", base64Encoder.encodeToString(keyPair.public.encoded))
     payload = JsonObject().apply(user::toJson).toString()

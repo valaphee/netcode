@@ -75,9 +75,7 @@ class BossBarPacket(
                 buffer.writeVarUInt(color)
                 buffer.writeVarUInt(overlay)
             }
-            Action.RegisterPlayer, Action.UnregisterPlayer -> buffer.writeVarLong(
-                playerUniqueEntityId
-            )
+            Action.RegisterPlayer, Action.UnregisterPlayer -> buffer.writeVarLong(playerUniqueEntityId)
             Action.SetPercentage -> buffer.writeFloatLE(percentage)
             Action.SetTitle -> buffer.writeString(title!!)
         }
