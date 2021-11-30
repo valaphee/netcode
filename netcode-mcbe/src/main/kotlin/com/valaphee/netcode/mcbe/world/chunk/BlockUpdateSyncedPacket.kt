@@ -39,7 +39,7 @@ import com.valaphee.netcode.mcbe.Restriction
 class BlockUpdateSyncedPacket(
     val position: Int3,
     val runtimeId: Int,
-    val flags: Collection<BlockUpdatePacket.Flag>,
+    val flags: Set<BlockUpdatePacket.Flag>,
     val layer: Int,
     val runtimeEntityId: Long,
     val type: Type
@@ -48,7 +48,7 @@ class BlockUpdateSyncedPacket(
         None, Create, Destroy
     }
 
-    constructor(position: Int3, runtimeId: Int, flags: Collection<BlockUpdatePacket.Flag>, layer: Int) : this(position, runtimeId, flags, layer, -1, Type.None)
+    constructor(position: Int3, runtimeId: Int, flags: Set<BlockUpdatePacket.Flag>, layer: Int) : this(position, runtimeId, flags, layer, -1, Type.None)
 
     override val id get() = 0x6E
 

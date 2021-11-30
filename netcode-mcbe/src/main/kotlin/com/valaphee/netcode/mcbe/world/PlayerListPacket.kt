@@ -42,7 +42,7 @@ import com.valaphee.netcode.mcbe.entity.player.appearance.writeAppearancePre390
 import com.valaphee.netcode.mcbe.entity.player.appearance.writeAppearancePre419
 import com.valaphee.netcode.mcbe.entity.player.appearance.writeAppearancePre428
 import com.valaphee.netcode.mcbe.entity.player.appearance.writeAppearancePre465
-import com.valaphee.netcode.mcbe.util.safeList
+import com.valaphee.netcode.util.safeList
 import java.util.UUID
 
 /**

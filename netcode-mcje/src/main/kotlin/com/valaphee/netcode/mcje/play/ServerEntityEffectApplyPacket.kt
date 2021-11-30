@@ -22,26 +22,42 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcje.world.chunk
+package com.valaphee.netcode.mcje.play
 
-import com.valaphee.foundry.math.Int2
-import com.valaphee.netcode.mcje.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
+import com.valaphee.netcode.mcje.PacketReader
+import com.valaphee.netcode.mcje.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
  * @author Kevin Ludwig
  */
-class ChunkPacket(
-    val position: Int2,
-    val data: ByteArray,
-) : Packet<ClientPlayPacketHandler> {
-    override fun write(buffer: PacketBuffer, version: Int) {
-        val (x, z) = position
-        buffer.writeInt(x)
-        buffer.writeInt(z)
-        buffer.writeByteArray(data)
+class ServerEntityEffectApplyPacket(
+    val entityId: Int,
+    val effect: NamespacedKey,
+    val amplifier: Int,
+    val duration: Int,
+    val flags: Set<Flag>
+) : Packet<ServerPlayPacketHandler> {
+    enum class Flag {
+        Ambient, ShowParticles, ShowIcon
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.chunk(this)
+    override fun write(buffer: PacketBuffer, version: Int) {
+        buffer.writeVarInt(entityId)
+        buffer.writeByte(buffer.registrySet.effects.getId(effect))
+        buffer.writeByte(amplifier)
+        buffer.writeVarInt(duration)
+        buffer.writeByteFlags(flags)
+    }
+
+    override fun handle(handler: ServerPlayPacketHandler) = handler.entityEffectApply(this)
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerEntityEffectApplyPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectApplyPacket(buffer.readVarInt(), buffer.registrySet.effects[buffer.readUnsignedByte().toInt()]!!, buffer.readUnsignedByte().toInt(), buffer.readVarInt(), buffer.readByteFlags())
 }

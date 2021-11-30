@@ -22,22 +22,34 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcje.world.chunk
+package com.valaphee.netcode.mcje.play
 
-import com.valaphee.foundry.math.Int2
+import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcje.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
+import com.valaphee.netcode.mcje.PacketReader
 
 /**
  * @author Kevin Ludwig
  */
-class ChunkPublishPacket(
-    val position: Int2
+class ClientRotationPacket(
+    val rotation: Float2,
+    val onGround: Boolean
 ) : Packet<ClientPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt2(position)
+        buffer.writeFloat2(rotation)
+        buffer.writeBoolean(onGround)
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.chunkPublish(this)
+    override fun handle(handler: ClientPlayPacketHandler) = handler.rotation(this)
+
+    override fun toString() = "ClientRotationPacket(rotation=$rotation, onGround=$onGround)"
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ClientRotationPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ClientRotationPacket(buffer.readFloat2(), buffer.readBoolean())
 }

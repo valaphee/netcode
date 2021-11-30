@@ -34,7 +34,7 @@ import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
 import com.valaphee.netcode.mcbe.entity.attribute.Attributes
 import com.valaphee.netcode.mcbe.entity.metadata.Metadata
-import com.valaphee.netcode.mcbe.util.safeList
+import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig

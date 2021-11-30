@@ -111,18 +111,18 @@ interface MetadataType<T> {
             }
         }
 
-        val Flags = object : MetadataType<Collection<Flag>> {
+        val Flags = object : MetadataType<Set<Flag>> {
             override fun read(buffer: PacketBuffer) = buffer.readVarLongFlags<Flag>()
 
-            override fun write(buffer: PacketBuffer, value: Collection<Flag>) {
+            override fun write(buffer: PacketBuffer, value: Set<Flag>) {
                 buffer.writeVarLongFlags(value)
             }
         }
 
-        val Flags2 = object : MetadataType<Collection<Flag2>> {
+        val Flags2 = object : MetadataType<Set<Flag2>> {
             override fun read(buffer: PacketBuffer) = buffer.readVarLongFlags<Flag2>()
 
-            override fun write(buffer: PacketBuffer, value: Collection<Flag2>) {
+            override fun write(buffer: PacketBuffer, value: Set<Flag2>) {
                 buffer.writeVarLongFlags(value)
             }
         }

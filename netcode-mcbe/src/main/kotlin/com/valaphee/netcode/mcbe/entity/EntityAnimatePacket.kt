@@ -28,6 +28,7 @@ import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
+import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig
@@ -38,7 +39,7 @@ class EntityAnimatePacket(
     val stopExpression: String,
     val controller: String,
     val blendOutTime: Float,
-    val runtimeEntityIds: LongArray
+    val runtimeEntityIds: List<Long>
 ) : Packet() {
     override val id get() = 0x9E
 
@@ -55,33 +56,7 @@ class EntityAnimatePacket(
 
     override fun handle(handler: PacketHandler) = handler.entityAnimate(this)
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as EntityAnimatePacket
-
-        if (animation != other.animation) return false
-        if (nextState != other.nextState) return false
-        if (stopExpression != other.stopExpression) return false
-        if (controller != other.controller) return false
-        if (blendOutTime != other.blendOutTime) return false
-        if (!runtimeEntityIds.contentEquals(other.runtimeEntityIds)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = animation.hashCode()
-        result = 31 * result + nextState.hashCode()
-        result = 31 * result + stopExpression.hashCode()
-        result = 31 * result + controller.hashCode()
-        result = 31 * result + blendOutTime.hashCode()
-        result = 31 * result + runtimeEntityIds.contentHashCode()
-        return result
-    }
-
-    override fun toString() = "EntityAnimatePacket(animation='$animation', nextState='$nextState', stopExpression='$stopExpression', controller='$controller', blendOutTime=$blendOutTime, runtimeEntityIds=${runtimeEntityIds.contentToString()})"
+    override fun toString() = "EntityAnimatePacket(animation='$animation', nextState='$nextState', stopExpression='$stopExpression', controller='$controller', blendOutTime=$blendOutTime, runtimeEntityIds=$runtimeEntityIds)"
 }
 
 /**
@@ -94,6 +69,6 @@ object EntityAnimatePacketReader : PacketReader {
         buffer.readString(),
         buffer.readString(),
         buffer.readFloatLE(),
-        LongArray(buffer.readVarUInt()) { buffer.readVarULong() },
+        safeList(buffer.readVarUInt()) { buffer.readVarULong() },
     )
 }

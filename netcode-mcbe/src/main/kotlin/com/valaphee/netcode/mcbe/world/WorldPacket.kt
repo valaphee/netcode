@@ -39,8 +39,8 @@ import com.valaphee.netcode.mcbe.Restriction
 import com.valaphee.netcode.mcbe.block.Block
 import com.valaphee.netcode.mcbe.entity.player.Rank
 import com.valaphee.netcode.mcbe.item.Item
-import com.valaphee.netcode.mcbe.util.safeGet
-import com.valaphee.netcode.mcbe.util.safeList
+import com.valaphee.netcode.util.safeGet
+import com.valaphee.netcode.util.safeList
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 

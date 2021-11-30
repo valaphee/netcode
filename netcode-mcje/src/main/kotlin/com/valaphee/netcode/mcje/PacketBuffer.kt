@@ -33,10 +33,14 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int2
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mc.util.Direction
+import com.valaphee.netcode.mc.util.nbt.NbtInputStream
+import com.valaphee.netcode.mc.util.nbt.NbtOutputStream
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.util.minecraftKey
 import com.valaphee.netcode.util.ByteBufWrapper
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
 import java.nio.charset.StandardCharsets
 import java.util.EnumSet
 import java.util.UUID
@@ -46,22 +50,23 @@ import java.util.UUID
  */
 class PacketBuffer(
     buffer: ByteBuf,
-    objectMapper: ObjectMapper? = null
+    objectMapper: ObjectMapper? = null,
+    registrySet: RegistrySet? = null
 ) : ByteBufWrapper(buffer) {
     lateinit var objectMapper: ObjectMapper
+    lateinit var registrySet: RegistrySet
 
     init {
         objectMapper?.let { this.objectMapper = it }
+        registrySet?.let { this.registrySet = it }
     }
 
-    inline fun <reified T : Enum<T>> readByteFlags(): Collection<T> {
+    inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
         val flagsValue = readByte().toInt()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1 shl it.ordinal)) != 0 }.forEach { add(it) } }
     }
 
-    inline fun <T : Enum<T>> writeByteFlags(flags: Collection<T>) {
-        writeByte(flags.map { 1 shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
-    }
+    inline fun <T : Enum<T>> writeByteFlags(flags: Set<T>) = writeByte(flags.map { 1 shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
 
     fun readUuid() = UUID(readLong(), readLong())
 
@@ -95,18 +100,6 @@ class PacketBuffer(
         }
     }
 
-    fun setMaximumLengthVarInt(index: Int, value: Int) {
-        setBytes(
-            index, byteArrayOf(
-                (value and 0x7F or 0x80).toByte(),
-                (value ushr 7 and 0x7F or 0x80).toByte(),
-                (value ushr 14 and 0x7F or 0x80).toByte(),
-                (value ushr 21 and 0x7F or 0x80).toByte(),
-                (value ushr 28 and 0x7F).toByte()
-            )
-        )
-    }
-
     fun readVarLong(): Long {
         var value: Long = 0
         var shift = 0
@@ -134,7 +127,8 @@ class PacketBuffer(
 
     fun readByteArray(maximumLength: Int = Short.MAX_VALUE.toInt()): ByteArray {
         val length = readVarInt()
-        check(length <= maximumLength) { "Maximum length of $maximumLength exceeded" }
+        check(length <= readableBytes()) { "Length of $length exceeds ${readableBytes()}" }
+        check(length <= maximumLength) { "Length of $length exceeds $maximumLength" }
         val bytes = ByteArray(length)
         readBytes(bytes)
         return bytes
@@ -145,7 +139,6 @@ class PacketBuffer(
         writeBytes(value)
     }
 
-    @JvmOverloads
     fun readString(maximumLength: Int = Short.MAX_VALUE.toInt()) = String(readByteArray(maximumLength), StandardCharsets.UTF_8)
 
     fun writeString(value: String) {
@@ -224,7 +217,7 @@ class PacketBuffer(
         writeDouble(value.z)
     }
 
-    companion object {
-        const val MaximumVarIntLength = 5
-    }
+    fun toNbtOutputStream() = NbtOutputStream(ByteBufOutputStream(buffer))
+
+    fun toNbtInputStream() = NbtInputStream(ByteBufInputStream(buffer))
 }

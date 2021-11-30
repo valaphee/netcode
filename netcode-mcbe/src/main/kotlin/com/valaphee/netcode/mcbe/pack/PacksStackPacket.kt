@@ -30,7 +30,7 @@ import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
 import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
-import com.valaphee.netcode.mcbe.util.safeList
+import com.valaphee.netcode.util.safeList
 import com.valaphee.netcode.mcbe.world.Experiment
 import com.valaphee.netcode.mcbe.world.readExperiment
 import com.valaphee.netcode.mcbe.world.writeExperiment

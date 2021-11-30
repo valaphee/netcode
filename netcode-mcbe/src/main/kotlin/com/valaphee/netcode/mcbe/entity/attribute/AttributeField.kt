@@ -47,7 +47,7 @@ enum class AttributeField(
     Luck("minecraft:luck", -1024.0f, 1024.0f, 0.0f),
     HorseJumpStrength("minecraft:horse.jump_strength", 0.0f, 2.0f, 0.7f);
 
-    fun attributeValue() = AttributeValue(key, minimum, maximum, defaultValue)
+    fun attributeValue() = AttributeValue(this, minimum, maximum, defaultValue)
 
     fun inBounds(value: Float) = value.coerceIn(minimum, maximum)
 

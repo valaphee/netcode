@@ -35,7 +35,7 @@ import com.valaphee.netcode.mcbe.item.stack.readStack
 import com.valaphee.netcode.mcbe.item.stack.readStackPre431
 import com.valaphee.netcode.mcbe.item.stack.writeStack
 import com.valaphee.netcode.mcbe.item.stack.writeStackPre431
-import com.valaphee.netcode.mcbe.util.safeList
+import com.valaphee.netcode.util.safeList
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 
 /**
@@ -160,7 +160,7 @@ class InventoryTransactionPacket(
                 if (version >= 431) buffer.writeStack(stackInHand) else buffer.writeStackPre431(stackInHand)
                 buffer.writeFloat3(fromPosition!!)
                 buffer.writeFloat3(clickPosition!!)
-                buffer.writeVarUInt(buffer.blockStates.getId(blockStateKey!!))
+                buffer.writeVarUInt(buffer.registrySet.blockStates.getId(blockStateKey!!))
             }
             Type.ItemUseOnEntity -> {
                 buffer.writeVarULong(runtimeEntityId)
@@ -222,7 +222,7 @@ object InventoryTransactionPacketReader : PacketReader {
                 fromPosition = buffer.readFloat3()
                 clickPosition = buffer.readFloat3()
                 headPosition = null
-                blockStateKey = buffer.blockStates[buffer.readVarUInt()]
+                blockStateKey = checkNotNull(buffer.registrySet.blockStates[buffer.readVarUInt()])
             }
             InventoryTransactionPacket.Type.ItemUseOnEntity -> {
                 runtimeEntityId = buffer.readVarULong()

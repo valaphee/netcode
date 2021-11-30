@@ -44,8 +44,8 @@ import com.valaphee.netcode.mcbe.item.stack.readStack
 import com.valaphee.netcode.mcbe.item.stack.readStackPre431
 import com.valaphee.netcode.mcbe.item.stack.writeStack
 import com.valaphee.netcode.mcbe.item.stack.writeStackPre431
-import com.valaphee.netcode.mcbe.util.safeList
 import com.valaphee.netcode.mcbe.world.WorldFlag
+import com.valaphee.netcode.util.safeList
 import java.util.UUID
 
 /**
@@ -64,9 +64,9 @@ class PlayerAddPacket(
     val headRotationYaw: Float,
     val stackInHand: Stack?,
     val metadata: Metadata,
-    val playerFlags: Collection<PlayerFlag>,
+    val playerFlags: Set<PlayerFlag>,
     val permission: Permission,
-    val worldFlags: Collection<WorldFlag>,
+    val worldFlags: Set<WorldFlag>,
     val rank: Rank,
     val customFlags: Int,
     val links: List<Link>,

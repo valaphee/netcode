@@ -42,7 +42,7 @@ class InputPacket(
     val position: Float3,
     val move: Float2,
     val headRotationYaw: Float,
-    val input: Collection<Input>,
+    val input: Set<Input>,
     val inputMode: User.InputMode,
     val playMode: PlayMode,
     val virtualRealityGazeDirection: Float3? = null,

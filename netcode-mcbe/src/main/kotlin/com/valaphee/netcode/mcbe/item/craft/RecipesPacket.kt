@@ -37,7 +37,7 @@ import com.valaphee.netcode.mcbe.item.stack.readStackPre431
 import com.valaphee.netcode.mcbe.item.stack.writeIngredient
 import com.valaphee.netcode.mcbe.item.stack.writeStackInstance
 import com.valaphee.netcode.mcbe.item.stack.writeStackPre431
-import com.valaphee.netcode.mcbe.util.safeList
+import com.valaphee.netcode.util.safeList
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
 
 /**
@@ -90,7 +90,7 @@ class RecipesPacket(
                 }
                 Recipe.Type.Furnace, Recipe.Type.FurnaceData -> {
                     val input = it.inputs!!.first()!!
-                    buffer.writeVarInt(buffer.items.getId(input.itemKey))
+                    buffer.writeVarInt(buffer.registrySet.items.getId(input.itemKey))
                     if (type == Recipe.Type.FurnaceData) buffer.writeVarInt(input.subId)
                     if (version >= 431) buffer.writeStackInstance(it.outputs!![0]) else buffer.writeStackPre431(it.outputs!![0])
                     buffer.writeString(it.tag!!)
@@ -103,18 +103,18 @@ class RecipesPacket(
         }
         buffer.writeVarUInt(potionMixRecipes.size)
         potionMixRecipes.forEach {
-            buffer.writeVarInt(buffer.items.getId(it.inputKey))
+            buffer.writeVarInt(buffer.registrySet.items.getId(it.inputKey))
             if (version >= 407) buffer.writeVarInt(it.inputSubId)
-            buffer.writeVarInt(buffer.items.getId(it.reagentKey))
+            buffer.writeVarInt(buffer.registrySet.items.getId(it.reagentKey))
             if (version >= 407) buffer.writeVarInt(it.reagentSubId)
-            buffer.writeVarInt(buffer.items.getId(it.outputKey))
+            buffer.writeVarInt(buffer.registrySet.items.getId(it.outputKey))
             if (version >= 407) buffer.writeVarInt(it.outputSubId)
         }
         buffer.writeVarUInt(containerMixRecipes.size)
         containerMixRecipes.forEach {
-            buffer.writeVarInt(buffer.items.getId(it.inputKey))
-            buffer.writeVarInt(buffer.items.getId(it.reagentKey))
-            buffer.writeVarInt(buffer.items.getId(it.outputKey))
+            buffer.writeVarInt(buffer.registrySet.items.getId(it.inputKey))
+            buffer.writeVarInt(buffer.registrySet.items.getId(it.reagentKey))
+            buffer.writeVarInt(buffer.registrySet.items.getId(it.outputKey))
         }
         if (version >= 465) {
             buffer.writeVarUInt(materialReducers.size)
@@ -156,12 +156,12 @@ object RecipesPacketReader : PacketReader {
                     val outputs = safeList(buffer.readVarUInt()) { if (version >= 431) buffer.readStackInstance() else buffer.readStackPre431() }
                     Recipe(buffer.readUuid(), name, type, width, height, inputs, outputs, buffer.readString(), buffer.readVarInt(), if (version >= 407) buffer.readVarUInt() else 0)
                 }
-                Recipe.Type.Furnace, Recipe.Type.FurnaceData -> furnaceRecipe(Stack(buffer.items[buffer.readVarInt()]!!, if (type == Recipe.Type.FurnaceData) buffer.readVarInt() else -1), if (version >= 431) buffer.readStackInstance() else buffer.readStackPre431(), buffer.readString())
+                Recipe.Type.Furnace, Recipe.Type.FurnaceData -> furnaceRecipe(Stack(buffer.registrySet.items[buffer.readVarInt()]!!, if (type == Recipe.Type.FurnaceData) buffer.readVarInt() else -1), if (version >= 431) buffer.readStackInstance() else buffer.readStackPre431(), buffer.readString())
                 Recipe.Type.Multi -> multiRecipe(buffer.readUuid(), if (version >= 407) buffer.readVarUInt() else 0)
             }
         },
-        safeList(buffer.readVarUInt()) { PotionMixRecipe(checkNotNull(buffer.items[buffer.readVarInt()]), if (version >= 407) buffer.readVarInt() else 0, checkNotNull(buffer.items[buffer.readVarInt()]), if (version >= 407) buffer.readVarInt() else 0, checkNotNull(buffer.items[buffer.readVarInt()]), if (version >= 407) buffer.readVarInt() else 0) },
-        safeList(buffer.readVarUInt()) { ContainerMixRecipe(checkNotNull(buffer.items[buffer.readVarInt()]), checkNotNull(buffer.items[buffer.readVarInt()]), checkNotNull(buffer.items[buffer.readVarInt()])) },
+        safeList(buffer.readVarUInt()) { PotionMixRecipe(buffer.registrySet.items[buffer.readVarInt()] ?: "minecraft:unknown", if (version >= 407) buffer.readVarInt() else 0, buffer.registrySet.items[buffer.readVarInt()] ?: "minecraft:unknown", if (version >= 407) buffer.readVarInt() else 0, buffer.registrySet.items[buffer.readVarInt()] ?: "minecraft:unknown", if (version >= 407) buffer.readVarInt() else 0) },
+        safeList(buffer.readVarUInt()) { ContainerMixRecipe(buffer.registrySet.items[buffer.readVarInt()] ?: "minecraft:unknown", buffer.registrySet.items[buffer.readVarInt()] ?: "minecraft:unknown", buffer.registrySet.items[buffer.readVarInt()] ?: "minecraft:unknown") },
         if (version >= 465) safeList(buffer.readVarUInt()) { MaterialReducer(buffer.readVarInt(), Int2IntOpenHashMap().apply { repeat(buffer.readVarUInt()) { this[buffer.readVarInt()] = buffer.readVarInt() } }) } else emptyList(),
         buffer.readBoolean()
     )

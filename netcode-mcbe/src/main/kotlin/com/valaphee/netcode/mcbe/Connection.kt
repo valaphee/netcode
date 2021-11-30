@@ -106,14 +106,9 @@ class Connection(
             context.pipeline()[PacketCodec::class.java].objectMapper = value
             field = value
         }
-    var blockStates: Registry<String>? = null
+    var registrySet: RegistrySet? = null
         set(value) {
-            context.pipeline()[PacketCodec::class.java].blockStates = value
-            field = value
-        }
-    var items: Registry<String>? = null
-        set(value) {
-            context.pipeline()[PacketCodec::class.java].items = value
+            context.pipeline()[PacketCodec::class.java].registrySet = registrySet
             field = value
         }
 

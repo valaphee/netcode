@@ -35,7 +35,7 @@ import com.valaphee.netcode.mcbe.PacketReader
 class EmotePacket(
     val runtimeEntityId: Long,
     val emoteId: String,
-    val flags: Collection<Flag>
+    val flags: Set<Flag>
 ) : Packet() {
     enum class Flag {
         Serverside

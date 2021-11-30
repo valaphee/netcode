@@ -166,7 +166,7 @@ fun CompoundTag.asStack() = Stack(getString("Name"), getIntOrNull("Damage") ?: 0
 fun PacketBuffer.readStackPre431(): Stack? {
     val id = readVarInt()
     if (id == 0) return null
-    val itemKey = items[id] ?: "minecraft:unknown"
+    val itemKey = registrySet.items[id] ?: "minecraft:unknown"
     val countAndSubId = readVarInt()
     return Stack(
         itemKey,
@@ -195,7 +195,7 @@ fun PacketBuffer.readStackWithNetIdPre431(): Stack? {
 fun PacketBuffer.readStack(): Stack? {
     val id = readVarInt()
     if (id == 0) return null
-    val itemKey = items[id] ?: "minecraft:unknown"
+    val itemKey = registrySet.items[id] ?: "minecraft:unknown"
     val count = readUnsignedShortLE()
     val subId = readVarUInt()
     val netId = if (readBoolean()) readVarInt() else 0
@@ -216,14 +216,14 @@ fun PacketBuffer.readStack(): Stack? {
         readIntLE().let { if (it == 0) null else Array(it) { readString16() } },
         if (itemKey == shieldKey) readLongLE() else 0,
         netId,
-        if (blockRuntimeId != 0) blockStates[blockRuntimeId] else null
+        if (blockRuntimeId != 0) registrySet.blockStates[blockRuntimeId] ?: "minecraft:unknown" else null
     )
 }
 
 fun PacketBuffer.readStackInstance(): Stack? {
     val id = readVarInt()
     if (id == 0) return null
-    val itemKey = items[id] ?: "minecraft:unknown"
+    val itemKey = registrySet.items[id] ?: "minecraft:unknown"
     val count = readUnsignedShortLE()
     val subId = readVarUInt()
     val blockRuntimeId = readVarInt()
@@ -243,19 +243,19 @@ fun PacketBuffer.readStackInstance(): Stack? {
         readIntLE().let { if (it == 0) null else Array(it) { readString16() } },
         if (itemKey == shieldKey) readLongLE() else 0,
         0,
-        if (blockRuntimeId != 0) blockStates[blockRuntimeId] else null
+        if (blockRuntimeId != 0) registrySet.blockStates[blockRuntimeId] ?: "minecraft:unknown" else null
     )
 }
 
 fun PacketBuffer.readIngredient(): Stack? {
     val id = readVarInt()
     if (id == 0) return null
-    return Stack(items[id] ?: "minecraft:unknown", readVarInt().let { if (it == Short.MAX_VALUE.toInt()) -1 else it }, readVarInt())
+    return Stack(registrySet.items[id] ?: "minecraft:unknown", readVarInt().let { if (it == Short.MAX_VALUE.toInt()) -1 else it }, readVarInt())
 }
 
 fun PacketBuffer.writeStackPre431(value: Stack?) {
     value?.let {
-        writeVarInt(items.getId(it.itemKey))
+        writeVarInt(registrySet.items.getId(it.itemKey))
         writeVarInt(((if (it.subId == -1) Short.MAX_VALUE.toInt() else it.subId) shl 8) or (it.count and 0xFF))
         it.tag?.let {
             writeShortLE(-1)
@@ -281,14 +281,14 @@ fun PacketBuffer.writeStackWithNetIdPre431(value: Stack?) {
 
 fun PacketBuffer.writeStack(value: Stack?) {
     value?.let {
-        writeVarInt(items.getId(it.itemKey))
+        writeVarInt(registrySet.items.getId(it.itemKey))
         writeShortLE(it.count)
         writeVarUInt(it.subId)
         if (it.netId != 0) {
             writeBoolean(true)
             writeVarInt(it.netId)
         } else writeBoolean(false)
-        writeVarInt(it.blockStateKey?.let { blockStates.getId(it) } ?: 0)
+        writeVarInt(it.blockStateKey?.let { registrySet.blockStates.getId(it) } ?: 0)
         val dataIndex = buffer.writerIndex()
         writeZero(PacketBuffer.MaximumVarUIntLength)
         it.tag?.let {
@@ -311,10 +311,10 @@ fun PacketBuffer.writeStack(value: Stack?) {
 
 fun PacketBuffer.writeStackInstance(value: Stack?) {
     value?.let {
-        writeVarInt(items.getId(it.itemKey))
+        writeVarInt(registrySet.items.getId(it.itemKey))
         writeShortLE(it.count)
         writeVarUInt(it.subId)
-        writeVarInt(it.blockStateKey?.let { blockStates.getId(it) } ?: 0)
+        writeVarInt(it.blockStateKey?.let { registrySet.blockStates.getId(it) } ?: 0)
         val dataIndex = buffer.writerIndex()
         writeZero(PacketBuffer.MaximumVarUIntLength)
         it.tag?.let {
@@ -337,7 +337,7 @@ fun PacketBuffer.writeStackInstance(value: Stack?) {
 
 fun PacketBuffer.writeIngredient(value: Stack?) {
     value?.let {
-        writeVarInt(items.getId(it.itemKey))
+        writeVarInt(registrySet.items.getId(it.itemKey))
         writeVarInt(if (value.subId == -1) Short.MAX_VALUE.toInt() else value.subId)
         writeVarInt(value.count)
     } ?: writeVarInt(0)

@@ -33,7 +33,7 @@ import com.valaphee.netcode.mcbe.item.stack.readStack
 import com.valaphee.netcode.mcbe.item.stack.readStackPre431
 import com.valaphee.netcode.mcbe.item.stack.writeStack
 import com.valaphee.netcode.mcbe.item.stack.writeStackPre431
-import com.valaphee.netcode.mcbe.util.safeList
+import com.valaphee.netcode.util.safeList
 import java.util.UUID
 
 /**

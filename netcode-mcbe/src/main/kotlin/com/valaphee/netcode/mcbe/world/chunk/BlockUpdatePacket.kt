@@ -40,7 +40,7 @@ import java.util.EnumSet
 class BlockUpdatePacket(
     val position: Int3,
     val runtimeId: Int,
-    val flags: Collection<Flag>,
+    val flags: Set<Flag>,
     val layer: Int
 ) : Packet() {
     enum class Flag {

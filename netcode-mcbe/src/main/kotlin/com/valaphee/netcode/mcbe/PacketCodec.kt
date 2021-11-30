@@ -25,7 +25,6 @@
 package com.valaphee.netcode.mcbe
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.mcbe.base.BehaviorTreePacketReader
 import com.valaphee.netcode.mcbe.base.BiomeDefinitionsPacketReader
 import com.valaphee.netcode.mcbe.base.BlockComponentPacketReader
@@ -198,18 +197,17 @@ class PacketCodec(
     var version: Int = latestProtocolVersion
 ) : ByteToMessageCodec<Packet>() {
     var objectMapper: ObjectMapper? = null
-    var blockStates: Registry<String>? = null
-    var items: Registry<String>? = null
+    var registrySet: RegistrySet? = null
 
     public override fun encode(context: ChannelHandlerContext, message: Packet, out: ByteBuf) {
-        PacketBuffer(out, false, objectMapper, blockStates, items).apply {
+        PacketBuffer(out, false, objectMapper, registrySet).apply {
             writeVarUInt(message.id and Packet.idMask or ((message.senderId and Packet.senderIdMask) shl Packet.senderIdShift) or ((message.clientId and Packet.clientIdMask) shl Packet.clientIdShift))
             message.write(this, version)
         }
     }
 
     public override fun decode(context: ChannelHandlerContext, `in`: ByteBuf, out: MutableList<Any>) {
-        val buffer = PacketBuffer(`in`, false, objectMapper, blockStates, items)
+        val buffer = PacketBuffer(`in`, false, objectMapper, registrySet)
         val header = buffer.readVarUInt()
         val id = header and Packet.idMask
         (if (client) clientReaders else serverReaders)[id]?.let {

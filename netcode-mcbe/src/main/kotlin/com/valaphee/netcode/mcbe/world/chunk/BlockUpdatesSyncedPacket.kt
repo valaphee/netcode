@@ -31,7 +31,7 @@ import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
 import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
-import com.valaphee.netcode.mcbe.util.safeList
+import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig
@@ -45,11 +45,11 @@ class BlockUpdatesSyncedPacket(
     data class Update(
         val position: Int3,
         val runtimeId: Int,
-        val flags: Collection<BlockUpdatePacket.Flag>,
+        val flags: Set<BlockUpdatePacket.Flag>,
         val runtimeEntityId: Long,
         val type: BlockUpdateSyncedPacket.Type
     ) {
-        constructor(position: Int3, runtimeId: Int, flags: Collection<BlockUpdatePacket.Flag>) : this(position, runtimeId, flags, -1, BlockUpdateSyncedPacket.Type.None)
+        constructor(position: Int3, runtimeId: Int, flags: Set<BlockUpdatePacket.Flag>) : this(position, runtimeId, flags, -1, BlockUpdateSyncedPacket.Type.None)
     }
 
     override val id get() = 0xAC

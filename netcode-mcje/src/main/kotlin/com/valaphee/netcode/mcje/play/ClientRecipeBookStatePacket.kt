@@ -22,22 +22,39 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcje.world.chunk
+package com.valaphee.netcode.mcje.play
 
-import com.valaphee.foundry.math.Int2
 import com.valaphee.netcode.mcje.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
+import com.valaphee.netcode.mcje.PacketReader
 
 /**
  * @author Kevin Ludwig
  */
-class ChunkUnloadPacket(
-    val position: Int2
+class ClientRecipeBookStatePacket(
+    val recipeBook: RecipeBook,
+    val recipeBookOpen: Boolean,
+    val recipeBookFilterActive: Boolean
 ) : Packet<ClientPlayPacketHandler> {
-    override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt2(position)
+    enum class RecipeBook {
+        Crafting, Smelting, Blasting, Smoking
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.chunkUnload(this)
+    override fun write(buffer: PacketBuffer, version: Int) {
+        buffer.writeVarInt(recipeBook.ordinal)
+        buffer.writeBoolean(recipeBookOpen)
+        buffer.writeBoolean(recipeBookFilterActive)
+    }
+
+    override fun handle(handler: ClientPlayPacketHandler) = handler.recipeBookState(this)
+
+    override fun toString() = "ClientRecipeBookStatePacket(recipeBook=$recipeBook, recipeBookOpen=$recipeBookOpen, recipeBookFilterActive=$recipeBookFilterActive)"
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ClientRecipeBookStatePacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ClientRecipeBookStatePacket(ClientRecipeBookStatePacket.RecipeBook.values()[buffer.readVarInt()], buffer.readBoolean(), buffer.readBoolean())
 }

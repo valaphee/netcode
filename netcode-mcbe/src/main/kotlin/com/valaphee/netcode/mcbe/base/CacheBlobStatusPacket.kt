@@ -58,11 +58,10 @@ class CacheBlobStatusPacket(
  */
 object CacheBlobStatusPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): CacheBlobStatusPacket {
-        val negativeAcknowledgeCount = buffer.readVarUInt()
-        val acknowledgeCount = buffer.readVarUInt()
-        return CacheBlobStatusPacket(
-            LongArray(negativeAcknowledgeCount) { buffer.readLongLE() },
-            LongArray(acknowledgeCount) { buffer.readLongLE() }
-        )
+        val missCount = buffer.readVarUInt()
+        val hitCount = buffer.readVarUInt()
+        val misses = LongArray(missCount) { buffer.readLongLE() }
+        val hits = LongArray(hitCount) { buffer.readLongLE() }
+        return CacheBlobStatusPacket(misses, hits)
     }
 }

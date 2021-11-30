@@ -34,7 +34,6 @@ import com.valaphee.netcode.mcbe.util.LittleEndianByteBufInputStream
 import com.valaphee.netcode.mcbe.util.LittleEndianByteBufOutputStream
 import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufInputStream
 import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufOutputStream
-import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.util.ByteBufWrapper
 import io.netty.buffer.ByteBuf
 import io.netty.util.AsciiString
@@ -49,32 +48,29 @@ class PacketBuffer(
     buffer: ByteBuf,
     private val local: Boolean = false,
     objectMapper: ObjectMapper? = null,
-    blockStates: Registry<String>? = null,
-    items: Registry<String>? = null
+    registrySet: RegistrySet? = null
 ) : ByteBufWrapper(buffer) {
     lateinit var objectMapper: ObjectMapper
-    lateinit var blockStates: Registry<String>
-    lateinit var items: Registry<String>
+    lateinit var registrySet: RegistrySet
 
     init {
         objectMapper?.let { this.objectMapper = it }
-        blockStates?.let { this.blockStates = it }
-        items?.let { this.items = it }
+        registrySet?.let { this.registrySet = it }
     }
 
-    inline fun <reified T : Enum<T>> readByteFlags(): Collection<T> {
+    inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
         val flagsValue = readByte().toInt()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1 shl it.ordinal)) != 0 }.forEach { add(it) } }
     }
 
-    fun <T : Enum<T>> writeByteFlags(flags: Collection<T>) = writeByte(flags.map { 1 shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
+    fun <T : Enum<T>> writeByteFlags(flags: Set<T>) = writeByte(flags.map { 1 shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
 
-    inline fun <reified T : Enum<T>> readShortLEFlags(): Collection<T> {
+    inline fun <reified T : Enum<T>> readShortLEFlags(): Set<T> {
         val flagsValue = readUnsignedShortLE()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1 shl it.ordinal)) != 0 }.forEach { add(it) } }
     }
 
-    fun <T : Enum<T>> writeShortLEFlags(flags: Collection<T>) = writeShortLE(flags.map { 1 shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
+    fun <T : Enum<T>> writeShortLEFlags(flags: Set<T>) = writeShortLE(flags.map { 1 shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
 
     fun readUuid() = UUID(readLongLE(), readLongLE())
 
@@ -147,12 +143,12 @@ class PacketBuffer(
         )
     }
 
-    inline fun <reified T : Enum<T>> readVarUIntFlags(): Collection<T> {
+    inline fun <reified T : Enum<T>> readVarUIntFlags(): Set<T> {
         val flagsValue = readVarUInt()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1 shl it.ordinal)) != 0 }.forEach { add(it) } }
     }
 
-    fun <T : Enum<T>> writeVarUIntFlags(flags: Collection<T>) = writeVarUInt(flags.map { 1 shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
+    fun <T : Enum<T>> writeVarUIntFlags(flags: Set<T>) = writeVarUInt(flags.map { 1 shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
 
     fun readVarInt() = if (local) readIntLE() else {
         val value = readVarUInt()
@@ -188,12 +184,12 @@ class PacketBuffer(
         }
     }
 
-    inline fun <reified T : Enum<T>> readVarULongFlags(): Collection<T> {
+    inline fun <reified T : Enum<T>> readVarULongFlags(): Set<T> {
         val flagsValue = readVarULong()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1L shl it.ordinal)) != 0L }.forEach { add(it) } }
     }
 
-    fun <T : Enum<T>> writeVarULongFlags(flags: Collection<T>) = writeVarULong(flags.map { 1L shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
+    fun <T : Enum<T>> writeVarULongFlags(flags: Set<T>) = writeVarULong(flags.map { 1L shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
 
     fun readVarLong(): Long {
         val value = readVarULong()
@@ -204,12 +200,12 @@ class PacketBuffer(
         writeVarULong((value shl 1) xor (value shr 63))
     }
 
-    inline fun <reified T : Enum<T>> readVarLongFlags(): Collection<T> {
+    inline fun <reified T : Enum<T>> readVarLongFlags(): Set<T> {
         val flagsValue = readVarLong()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1L shl it.ordinal)) != 0L }.forEach { add(it) } }
     }
 
-    fun <T : Enum<T>> writeVarLongFlags(flags: Collection<T>) = writeVarLong(flags.map { 1L shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
+    fun <T : Enum<T>> writeVarLongFlags(flags: Set<T>) = writeVarLong(flags.map { 1L shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
 
     fun readByteArray(): ByteArray {
         val length = readVarUInt()

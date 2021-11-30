@@ -36,9 +36,9 @@ import com.valaphee.netcode.mcbe.world.WorldFlag
  */
 class AdventureSettingsPacket(
     var uniqueEntityId: Long,
-    var playerFlags: Collection<PlayerFlag>,
+    var playerFlags: Set<PlayerFlag>,
     var permission: Permission,
-    var worldFlags: Collection<WorldFlag>,
+    var worldFlags: Set<WorldFlag>,
     var rank: Rank,
     var customFlags: Int
 ) : Packet() {

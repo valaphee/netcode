@@ -35,7 +35,7 @@ import com.valaphee.netcode.mcbe.item.stack.readStackInstance
 import com.valaphee.netcode.mcbe.item.stack.readStackPre431
 import com.valaphee.netcode.mcbe.item.stack.writeStackInstance
 import com.valaphee.netcode.mcbe.item.stack.writeStackPre431
-import com.valaphee.netcode.mcbe.util.safeList
+import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig

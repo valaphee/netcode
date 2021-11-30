@@ -30,7 +30,7 @@ package com.valaphee.netcode.mcbe.command
 data class Command(
     val name: String,
     val description: String,
-    val flags: Collection<Flag>,
+    val flags: Set<Flag>,
     val permission: Permission,
     val aliases: Enumeration?,
     val overloads: List<List<Parameter>>
@@ -42,7 +42,7 @@ data class Command(
     class Structure(
         val name: String,
         val description: String,
-        val flags: Collection<Flag>,
+        val flags: Set<Flag>,
         val permission: Permission,
         val aliasesIndex: Int,
         val overloadStructures: List<List<Parameter.Structure>>
