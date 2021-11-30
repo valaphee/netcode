@@ -30,7 +30,6 @@ import com.valaphee.foundry.math.MutableDouble3
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.entity.metadata.Metadata
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import java.util.UUID
 
@@ -44,55 +43,29 @@ class ServerEntityAddPacket(
     val position: Double3,
     val rotation: Float2,
     val headRotationYaw: Float,
-    val motion: Double3,
-    val metadata: Metadata?
+    val velocity: Double3
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        if (version >= 498) {
-            buffer.writeUuid(entityUid!!)
-            buffer.writeVarInt(buffer.registrySet.entityTypes.getId(entityTypeKey))
-            buffer.writeDouble3(position)
-        } else {
-            buffer.writeByte(buffer.registrySet.entityTypes.getId(entityTypeKey))
-            buffer.writeInt3(position.toMutableDouble3().scale(32.0).toInt3())
-        }
+        buffer.writeUuid(entityUid!!)
+        buffer.writeVarInt(buffer.registrySet.entityTypes.getId(entityTypeKey))
+        buffer.writeDouble3(position)
         buffer.writeAngle2(rotation)
         buffer.writeAngle(headRotationYaw)
-        val (motionX, motionY, motionZ) = motion.toMutableDouble3().scale(8000.0).toInt3()
-        buffer.writeShort(motionX)
-        buffer.writeShort(motionY)
-        buffer.writeShort(motionZ)
-        if (version < 578) metadata!!.writeToBuffer(buffer)
+        val (velocityX, velocityY, velocityZ) = velocity.toMutableDouble3().scale(8000.0).toInt3()
+        buffer.writeShort(velocityX)
+        buffer.writeShort(velocityY)
+        buffer.writeShort(velocityZ)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityAdd(this)
 
-    override fun toString() = "ServerEntityAddPacket(entityId=$entityId, entityUid=$entityUid, entityTypeKey=$entityTypeKey, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, motion=$motion, metadata=$metadata)"
+    override fun toString() = "ServerEntityAddPacket(entityId=$entityId, entityUid=$entityUid, entityTypeKey=$entityTypeKey, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, motion=$velocity)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerEntityAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerEntityAddPacket {
-        val entityId = buffer.readVarInt()
-        val entityUid: UUID?
-        val entityTypeKey: NamespacedKey
-        val position: Double3
-        if (version >= 498) {
-            entityUid = buffer.readUuid()
-            entityTypeKey = buffer.registrySet.entityTypes[buffer.readVarInt()]!!
-            position = buffer.readDouble3()
-        } else {
-            entityUid = null
-            entityTypeKey =  buffer.registrySet.entityTypes[buffer.readUnsignedByte().toInt()]!!
-            position = buffer.readInt3().toMutableDouble3().scale(1 / 32.0)
-        }
-        val rotation = buffer.readAngle2()
-        val headRotationYaw = buffer.readAngle()
-        val motion = MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0)
-        val metadata = if (version < 578) Metadata().apply { readFromBuffer(buffer) } else null
-        return ServerEntityAddPacket(entityId, entityUid, entityTypeKey, position, rotation, headRotationYaw, motion, metadata)
-    }
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAddPacket(buffer.readVarInt(), buffer.readUuid(), checkNotNull(buffer.registrySet.entityTypes[buffer.readVarInt()]), buffer.readDouble3(), buffer.readAngle2(), buffer.readAngle(), MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
 }

@@ -71,11 +71,11 @@ class ServerEntityEquipmentPacket(
  */
 object ServerEntityEquipmentPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEquipmentPacket(buffer.readVarInt(), if (version >= 754) ArrayList<ServerEntityEquipmentPacket.Equipment>().apply {
-            var slot: Int
-            do {
-                slot = buffer.readByte().toInt()
-                add(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[slot and 0b0111_1111], buffer.readStack()))
-            } while (slot and 0b1000_0000 != 0)
-        } else listOf(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[if (version >= 498) buffer.readVarInt() else buffer.readUnsignedShort()], buffer.readStack()))
+        var slot: Int
+        do {
+            slot = buffer.readByte().toInt()
+            add(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[slot and 0b0111_1111], buffer.readStack()))
+        } while (slot and 0b1000_0000 != 0)
+    } else listOf(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[if (version >= 498) buffer.readVarInt() else buffer.readUnsignedShort()], buffer.readStack()))
     )
 }

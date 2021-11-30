@@ -47,5 +47,5 @@ class ServerWindowClosePacket(
  * @author Kevin Ludwig
  */
 object ServerWindowClosePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowClosePacket(buffer.readByte().toInt())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowClosePacket(buffer.readUnsignedByte().toInt())
 }

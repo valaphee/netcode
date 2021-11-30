@@ -46,7 +46,7 @@ import java.util.UUID
  */
 class PacketBuffer(
     buffer: ByteBuf,
-    private val local: Boolean = false,
+    val local: Boolean = false,
     objectMapper: ObjectMapper? = null,
     registrySet: RegistrySet? = null
 ) : ByteBufWrapper(buffer) {

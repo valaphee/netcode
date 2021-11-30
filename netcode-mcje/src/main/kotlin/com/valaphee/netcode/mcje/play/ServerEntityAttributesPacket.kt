@@ -38,7 +38,7 @@ class ServerEntityAttributesPacket(
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        if (version >= 754) attributes.writeToBuffer(buffer) else attributes.writeToBufferPre754(buffer)
+        attributes.writeToBuffer(buffer)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityAttributes(this)
@@ -50,5 +50,5 @@ class ServerEntityAttributesPacket(
  * @author Kevin Ludwig
  */
 object ServerEntityAttributesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAttributesPacket(buffer.readVarInt(), Attributes().apply { if (version >= 754) readFromBuffer(buffer) else readFromBufferPre754(buffer) })
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAttributesPacket(buffer.readVarInt(), Attributes().apply { readFromBuffer(buffer) })
 }

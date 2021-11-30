@@ -22,34 +22,7 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcje.play
+package com.valaphee.netcode.mcje
 
-import com.valaphee.netcode.mcje.Packet
-import com.valaphee.netcode.mcje.PacketBuffer
-import com.valaphee.netcode.mcje.PacketReader
-
-/**
- * @author Kevin Ludwig
- */
-class ServerWindowPropertyPacket(
-    val windowId: Int,
-    val property: Int,
-    val value: Int
-) : Packet<ServerPlayPacketHandler> {
-    override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeByte(windowId)
-        buffer.writeShort(property)
-        buffer.writeShort(value)
-    }
-
-    override fun handle(handler: ServerPlayPacketHandler) = handler.windowProperty(this)
-
-    override fun toString() = "ServerWindowPropertyPacket(windowId=$windowId, property=$property, value=$value)"
-}
-
-/**
- * @author Kevin Ludwig
- */
-object ServerWindowPropertyPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowPropertyPacket(buffer.readUnsignedByte().toInt(), buffer.readShort().toInt(), buffer.readShort().toInt())
-}
+const val latestVersion = "1.16.4"
+const val latestProtocolVersion = 754

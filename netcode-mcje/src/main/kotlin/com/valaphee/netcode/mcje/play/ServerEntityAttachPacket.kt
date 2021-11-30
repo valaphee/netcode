@@ -33,23 +33,21 @@ import com.valaphee.netcode.mcje.PacketReader
  */
 class ServerEntityAttachPacket(
     val entityId: Int,
-    val holderEntityId: Int,
-    val leash: Boolean
+    val holderEntityId: Int
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt(entityId)
         buffer.writeInt(holderEntityId)
-        if (version < 498) buffer.writeBoolean(leash)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityAttach(this)
 
-    override fun toString() = "ServerEntityAttachPacket(entityId=$entityId, holderEntityId=$holderEntityId, leash=$leash)"
+    override fun toString() = "ServerEntityAttachPacket(entityId=$entityId, holderEntityId=$holderEntityId)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerEntityAttachPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAttachPacket(buffer.readInt(), buffer.readInt(), if (version < 498) buffer.readBoolean() else true)
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAttachPacket(buffer.readInt(), buffer.readInt())
 }

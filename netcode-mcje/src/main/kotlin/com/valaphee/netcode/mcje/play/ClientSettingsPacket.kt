@@ -53,7 +53,7 @@ class ClientSettingsPacket(
         buffer.writeVarInt(chatMode.ordinal)
         buffer.writeBoolean(chatColors)
         buffer.writeByteFlags(skinParts)
-        if (version >= 498) buffer.writeVarInt(mainHand.ordinal)
+        buffer.writeVarInt(mainHand.ordinal)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.settings(this)
@@ -65,5 +65,5 @@ class ClientSettingsPacket(
  * @author Kevin Ludwig
  */
 object ClientSettingsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientSettingsPacket(Locale.forLanguageTag(buffer.readString(16).replace('_', '-')), buffer.readUnsignedByte().toInt(), ClientSettingsPacket.ChatMode.values()[buffer.readVarInt()], buffer.readBoolean(), buffer.readByteFlags(), if (version >= 498) MainHand.values()[buffer.readVarInt()] else MainHand.Right, true)
+    override fun read(buffer: PacketBuffer, version: Int) = ClientSettingsPacket(Locale.forLanguageTag(buffer.readString(16).replace('_', '-')), buffer.readUnsignedByte().toInt(), ClientSettingsPacket.ChatMode.values()[buffer.readVarInt()], buffer.readBoolean(), buffer.readByteFlags(), MainHand.values()[buffer.readVarInt()], true)
 }

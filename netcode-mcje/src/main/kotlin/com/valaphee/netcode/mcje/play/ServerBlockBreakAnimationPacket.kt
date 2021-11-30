@@ -35,23 +35,17 @@ import com.valaphee.netcode.mcje.PacketReader
 class ServerBlockBreakAnimationPacket(
     val entityId: Int,
     val position: Int3,
-    val stage: Int
+    val progress: Int
 ) : Packet<ServerPlayPacketHandler> {
-    companion object Stage {
-        const val Start = 0
-        const val Abort = -1
-        const val Stop = 10
-    }
-
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeInt3UnsignedY(position)
-        buffer.writeByte(stage)
+        buffer.writeByte(progress)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.blockBreakAnimation(this)
 
-    override fun toString() = "ServerBlockBreakAnimationPacket(entityId=$entityId, position=$position, stage=$stage)"
+    override fun toString() = "ServerBlockBreakAnimationPacket(entityId=$entityId, position=$position, progress=$progress)"
 }
 
 /**

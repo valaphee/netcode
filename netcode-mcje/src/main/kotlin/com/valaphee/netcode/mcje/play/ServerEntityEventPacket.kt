@@ -109,5 +109,5 @@ class ServerEntityEventPacket(
  * @author Kevin Ludwig
  */
 object ServerEntityEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEventPacket(buffer.readInt(), ServerEntityEventPacket.Event.values()[buffer.readUnsignedByte().toInt()])
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEventPacket(buffer.readInt(), ServerEntityEventPacket.Event.values()[buffer.readByte().toInt()])
 }

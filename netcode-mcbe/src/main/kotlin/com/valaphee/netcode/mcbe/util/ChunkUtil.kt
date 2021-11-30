@@ -34,7 +34,7 @@ import io.netty.buffer.Unpooled
 fun chunkData(borderBlocks: List<Int2>, blockEntities: List<Tag>): ByteArray = PacketBuffer(Unpooled.buffer()).use { buffer ->
     buffer.writeByte(borderBlocks.size)
     borderBlocks.forEach { buffer.writeByte((it.x and 0xF) or ((it.y and 0xF) shl 4)) }
-    buffer.toNbtOutputStream().use { stream -> blockEntities.forEach { stream.writeTag(it) } }
+    buffer.toNbtOutputStream().use { stream -> blockEntities.forEach(stream::writeTag) }
     ByteBufUtil.getBytes(buffer)
 }
 
@@ -43,6 +43,6 @@ fun chunkData(blockStorage: BlockStorage, biomes: ByteArray, borderBlocks: List<
     buffer.writeBytes(biomes)
     buffer.writeByte(borderBlocks.size)
     borderBlocks.forEach { buffer.writeByte((it.x and 0xF) or ((it.y and 0xF) shl 4)) }
-    buffer.toNbtOutputStream().use { stream -> blockEntities.forEach { stream.writeTag(it) } }
+    buffer.toNbtOutputStream().use { stream -> blockEntities.forEach(stream::writeTag) }
     ByteBufUtil.getBytes(buffer)
 }

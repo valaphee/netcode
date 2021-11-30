@@ -29,10 +29,6 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.entity.metadata.Metadata
-import com.valaphee.netcode.mcje.item.stack.Stack
-import com.valaphee.netcode.mcje.item.stack.readStack
-import com.valaphee.netcode.mcje.item.stack.writeStack
 import java.util.UUID
 
 /**
@@ -42,44 +38,23 @@ class ServerPlayerAddPacket(
     val entityId: Int,
     val userId: UUID,
     val position: Double3,
-    val rotation: Float2,
-    val itemInHand: Stack?,
-    val metadata: Metadata?
+    val rotation: Float2
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeUuid(userId)
-        if (version >= 498) buffer.writeDouble3(position) else buffer.writeInt3(position.toMutableDouble3().scale(32.0).toInt3())
+        buffer.writeDouble3(position)
         buffer.writeAngle2(rotation)
-        if (version < 578) {
-            if (version < 498) buffer.writeStack(itemInHand)
-            metadata!!.writeToBuffer(buffer)
-        }
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.playerAdd(this)
 
-    override fun toString() = "ServerPlayerAddPacket(entityId=$entityId, userId=$userId, position=$position, rotation=$rotation, itemInHand=$itemInHand, metadata=$metadata)"
+    override fun toString() = "ServerPlayerAddPacket(entityId=$entityId, userId=$userId, position=$position, rotation=$rotation)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerPlayerAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerPlayerAddPacket {
-        val entityId = buffer.readVarInt()
-        val userId = buffer.readUuid()
-        val position = if (version >= 498) buffer.readDouble3() else buffer.readInt3().toMutableDouble3().scale(1 / 32.0)
-        val rotation = buffer.readAngle2()
-        val itemInHand: Stack?
-        val metadata: Metadata?
-        if (version < 578) {
-            itemInHand = if (version < 498) buffer.readStack() else null
-            metadata = Metadata().apply { readFromBuffer(buffer) }
-        } else {
-            itemInHand = null
-            metadata = null
-        }
-        return ServerPlayerAddPacket(entityId, userId, position, rotation, itemInHand, metadata)
-    }
+    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerAddPacket(buffer.readVarInt(), buffer.readUuid(), buffer.readDouble3(), buffer.readAngle2())
 }

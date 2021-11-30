@@ -25,9 +25,11 @@
 package com.valaphee.netcode.mcje.play
 
 import com.valaphee.foundry.math.Int2
+import com.valaphee.netcode.mc.util.nbt.Tag
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
+import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig
@@ -35,20 +37,23 @@ import com.valaphee.netcode.mcje.PacketReader
 class ServerChunkPacket(
     val position: Int2,
     val withSubChunks: Int,
+    val heightMap: Tag?,
     val biomes: IntArray?,
     val data: ByteArray,
+    val blockEntities: List<Tag?>
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt2(position)
         buffer.writeBoolean(biomes != null)
         buffer.writeVarInt(withSubChunks)
+        buffer.toNbtOutputStream().use { it.writeTag(heightMap) }
         biomes?.let {
-            if (version >= 754) {
-                buffer.writeVarInt(it.size)
-                it.forEach(buffer::writeVarInt)
-            } else it.forEach(buffer::writeInt)
+            buffer.writeVarInt(it.size)
+            it.forEach(buffer::writeVarInt)
         }
         buffer.writeByteArray(data)
+        buffer.writeVarInt(blockEntities.size)
+        buffer.toNbtOutputStream().use { stream -> blockEntities.forEach(stream::writeTag) }
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.chunk(this)
@@ -64,8 +69,10 @@ object ServerChunkPacketReader : PacketReader {
         val position = buffer.readInt2()
         val withBiomes = buffer.readBoolean()
         val withSubChunks = buffer.readVarInt()
-        val biomes = if (withBiomes) if (version >= 754) IntArray(buffer.readVarInt()) { buffer.readVarInt() } else IntArray(1024) { buffer.readInt() } else null
+        val heightMap = buffer.toNbtInputStream().use { it.readTag() }
+        val biomes = if (withBiomes) IntArray(buffer.readVarInt()) { buffer.readVarInt() } else null
         val data = buffer.readByteArray()
-        return ServerChunkPacket(position, withSubChunks, biomes, data)
+        val blockEntities = buffer.toNbtInputStream().use { stream -> safeList(buffer.readVarInt()) { stream.readTag() } }
+        return ServerChunkPacket(position, withSubChunks, heightMap, biomes, data, blockEntities)
     }
 }

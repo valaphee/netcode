@@ -39,7 +39,7 @@ class ServerExperienceOrbAddPacket(
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        if (version >= 498) buffer.writeDouble3(position) else buffer.writeInt3(position.toMutableDouble3().scale(32.0).toInt3())
+        buffer.writeDouble3(position)
         buffer.writeShort(amount)
     }
 
@@ -52,5 +52,5 @@ class ServerExperienceOrbAddPacket(
  * @author Kevin Ludwig
  */
 object ServerExperienceOrbAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerExperienceOrbAddPacket(buffer.readVarInt(), if (version >= 498) buffer.readDouble3() else buffer.readInt3().toMutableDouble3().scale(1 / 32.0), buffer.readShort().toInt())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerExperienceOrbAddPacket(buffer.readVarInt(), buffer.readDouble3(), buffer.readShort().toInt())
 }

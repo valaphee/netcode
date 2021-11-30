@@ -44,17 +44,8 @@ class ServerObjectivePacket(
         Create, Remove, Update
     }
 
-    enum class Type(
-        val key: String
-    ) {
-        Integer("integer"),
-        Hearts("hearts");
-
-        companion object {
-            private val byKey: Map<String, Type> = values().associateBy { it.key }
-
-            fun byKeyOrNull(key: String) = byKey[key]
-        }
+    enum class Type {
+        Integer, Hearts
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
@@ -62,7 +53,7 @@ class ServerObjectivePacket(
         buffer.writeByte(action.ordinal)
         if (action == Action.Create || action == Action.Update) {
             buffer.writeString(buffer.objectMapper.writeValueAsString(displayName!!))
-            if (version >= 498) buffer.writeVarInt(type!!.ordinal) else buffer.writeString(type!!.key)
+            buffer.writeVarInt(type!!.ordinal)
         }
     }
 
@@ -82,7 +73,7 @@ object ServerObjectivePacketReader : PacketReader {
         val type: ServerObjectivePacket.Type?
         if (action == ServerObjectivePacket.Action.Create || action == ServerObjectivePacket.Action.Update) {
             displayName = buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt()))
-            type = if (version >= 498) ServerObjectivePacket.Type.values()[buffer.readVarInt()] else ServerObjectivePacket.Type.byKeyOrNull(buffer.readString())
+            type = ServerObjectivePacket.Type.values()[buffer.readVarInt()]
         } else {
             displayName = null
             type = null

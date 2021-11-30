@@ -37,7 +37,7 @@ class ServerAbilitiesPacket(
     val walkSpeed: Float
 ) : Packet<ServerPlayPacketHandler> {
     enum class Flag {
-        CreativeMode, Flying, AllowFlight, Invulnerable
+        Invulnerable, Flying, AllowFlight, CreativeMode
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {

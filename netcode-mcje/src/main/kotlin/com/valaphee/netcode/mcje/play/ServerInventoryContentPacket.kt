@@ -54,5 +54,5 @@ class ServerInventoryContentPacket(
  * @author Kevin Ludwig
  */
 object ServerInventoryContentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerInventoryContentPacket(buffer.readByte().toInt(), safeList(buffer.readUnsignedShort()) { buffer.readStack() })
+    override fun read(buffer: PacketBuffer, version: Int) = ServerInventoryContentPacket(buffer.readUnsignedByte().toInt(), safeList(buffer.readShort().toInt()) { buffer.readStack() })
 }

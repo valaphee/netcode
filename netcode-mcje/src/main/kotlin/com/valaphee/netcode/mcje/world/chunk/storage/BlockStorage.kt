@@ -30,8 +30,5 @@ package com.valaphee.netcode.mcje.world.chunk.storage
 class BlockStorage {
     companion object {
         const val XZSize = 16
-        const val XZMask = XZSize - 1
-        const val SubChunkCount = 16
-        const val SubChunkMask = SubChunkCount - 1
     }
 }

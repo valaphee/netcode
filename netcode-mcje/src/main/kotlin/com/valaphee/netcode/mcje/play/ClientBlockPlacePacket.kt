@@ -26,15 +26,11 @@ package com.valaphee.netcode.mcje.play
 
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
-import com.valaphee.foundry.math.MutableFloat3
 import com.valaphee.netcode.mc.util.Direction
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
 import com.valaphee.netcode.mcje.entity.player.Hand
-import com.valaphee.netcode.mcje.item.stack.Stack
-import com.valaphee.netcode.mcje.item.stack.readStack
-import com.valaphee.netcode.mcje.item.stack.writeStack
 
 /**
  * @author Kevin Ludwig
@@ -43,29 +39,20 @@ class ClientBlockPlacePacket(
     val hand: Hand,
     val blockPosition: Int3,
     val blockFace: Direction?,
-    val itemInHand: Stack?,
     val clickPosition: Float3,
     val insideBlock: Boolean,
 ) : Packet<ClientPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        if (version >= 498) buffer.writeVarInt(hand.ordinal)
+        buffer.writeVarInt(hand.ordinal)
         buffer.writeInt3UnsignedY(blockPosition)
-        buffer.writeVarInt(blockFace?.ordinal ?: blockFaceNone)
-        if (version >= 498) {
-            buffer.writeFloat3(clickPosition)
-            buffer.writeBoolean(insideBlock)
-        } else {
-            buffer.writeStack(itemInHand)
-            val (clickPositionX, clickPositionY, clickPositionZ) = clickPosition.toMutableFloat3().scale(16.0f).toInt3()
-            buffer.writeByte(clickPositionX)
-            buffer.writeByte(clickPositionY)
-            buffer.writeByte(clickPositionZ)
-        }
+        buffer.writeVarInt(blockFace?.ordinal ?: 0xFF)
+        buffer.writeFloat3(clickPosition)
+        buffer.writeBoolean(insideBlock)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.blockPlace(this)
 
-    override fun toString() = "ClientBlockPlacePacket(hand=$hand, blockPosition=$blockPosition, blockFace=$blockFace, itemInHand=$itemInHand, clickPosition=$clickPosition, insideBlock=$insideBlock)"
+    override fun toString() = "ClientBlockPlacePacket(hand=$hand, blockPosition=$blockPosition, blockFace=$blockFace, clickPosition=$clickPosition, insideBlock=$insideBlock)"
 
     companion object {
         internal const val blockFaceNone = 0xFF
@@ -77,21 +64,11 @@ class ClientBlockPlacePacket(
  */
 object ClientBlockPlacePacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): ClientBlockPlacePacket {
-        val hand = if (version >= 498) Hand.values()[buffer.readVarInt()] else Hand.Main
+        val hand = Hand.values()[buffer.readVarInt()]
         val blockPosition = buffer.readInt3UnsignedY()
         val blockFace = buffer.readVarInt()
-        val clickPosition: Float3
-        val insideBlock: Boolean
-        val itemInHand: Stack?
-        if (version >= 498) {
-            clickPosition = buffer.readFloat3()
-            insideBlock = buffer.readBoolean()
-            itemInHand = null
-        } else {
-            itemInHand = buffer.readStack()
-            insideBlock = false
-            clickPosition = MutableFloat3(buffer.readByte().toFloat(), buffer.readByte().toFloat(), buffer.readByte().toFloat()).scale(1 / 16.0f)
-        }
-        return ClientBlockPlacePacket(hand, blockPosition, if (blockFace == ClientBlockPlacePacket.blockFaceNone) null else Direction.values()[blockFace], itemInHand, clickPosition, insideBlock)
+        val clickPosition = buffer.readFloat3()
+        val insideBlock = buffer.readBoolean()
+        return ClientBlockPlacePacket(hand, blockPosition, if (blockFace == 0xFF) null else Direction.values()[blockFace], clickPosition, insideBlock)
     }
 }

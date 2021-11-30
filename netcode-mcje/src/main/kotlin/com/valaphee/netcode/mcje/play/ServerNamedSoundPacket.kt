@@ -45,8 +45,8 @@ class ServerNamedSoundPacket(
         buffer.writeNamespacedKey(soundKey)
         buffer.writeVarInt(category.ordinal)
         buffer.writeInt3(position.toMutableFloat3().scale(8.0f).toInt3())
-        buffer.writeFloatLE(volume)
-        buffer.writeFloatLE(pitch)
+        buffer.writeFloat(volume)
+        buffer.writeFloat(pitch)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.namedSound(this)

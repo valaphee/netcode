@@ -40,10 +40,10 @@ class ServerEntityMovePacket(
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        val (deltaX, deltaY, deltaZ) = positionDelta.toMutableDouble3().scale(4096.0).toInt3()
-        buffer.writeShort(deltaX)
-        buffer.writeShort(deltaY)
-        buffer.writeShort(deltaZ)
+        val (x, y, z) = positionDelta.toMutableDouble3().scale(4096.0).toInt3()
+        buffer.writeShort(x)
+        buffer.writeShort(y)
+        buffer.writeShort(z)
         buffer.writeBoolean(onGround)
     }
 

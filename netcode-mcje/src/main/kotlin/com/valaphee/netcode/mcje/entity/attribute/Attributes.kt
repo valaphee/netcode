@@ -44,40 +44,12 @@ class Attributes(
 
     val modified get() = attributes.values.any { it.modified }
 
-    fun readFromBufferPre754(buffer: PacketBuffer) {
-        repeat(buffer.readInt()) {
-            val field = AttributeField.byLegacyKey(buffer.readString(64))
-            val value = AttributeValue(field, buffer.readDouble())
-            repeat(buffer.readVarInt()) { value.applyModifier(AttributeValueModifier(buffer.readUuid(), buffer.readDouble(), AttributeValueModifier.Operation.values()[buffer.readByte().toInt()])) }
-            attributes[field] = value
-        }
-    }
-
     fun readFromBuffer(buffer: PacketBuffer) {
         repeat(buffer.readInt()) {
             val field = AttributeField.byKey(buffer.readNamespacedKey())
             val value = AttributeValue(field, buffer.readDouble())
             repeat(buffer.readVarInt()) { value.applyModifier(AttributeValueModifier(buffer.readUuid(), buffer.readDouble(), AttributeValueModifier.Operation.values()[buffer.readByte().toInt()])) }
             attributes[field] = value
-        }
-    }
-
-    fun writeToBufferPre754(buffer: PacketBuffer) {
-        val modifiedAttributes = attributes.filter { it.value.modified }
-        buffer.writeInt(modifiedAttributes.count())
-        modifiedAttributes.forEach { (field, value) ->
-            if (value.modified) {
-                buffer.writeString(field.legacyKey)
-                buffer.writeDouble(value.value)
-                val modifiers = value.modifiers
-                buffer.writeVarInt(modifiers.size)
-                modifiers.forEach {
-                    buffer.writeUuid(it.id)
-                    buffer.writeDouble(it.value)
-                    buffer.writeByte(it.operation.ordinal)
-                }
-                value.flagAsSaved()
-            }
         }
     }
 

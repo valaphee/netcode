@@ -33,8 +33,8 @@ import com.valaphee.netcode.mcje.PacketReader
  * @author Kevin Ludwig
  */
 class ServerDifficultyPacket(
-    var difficulty: Difficulty,
-    var locked: Boolean
+    val difficulty: Difficulty,
+    val locked: Boolean
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(difficulty.ordinal);

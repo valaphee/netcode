@@ -28,6 +28,7 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
+import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
  * @author Kevin Ludwig
@@ -36,23 +37,23 @@ class ServerBlockEventPacket(
     val position: Int3,
     val data1: Int,
     val data2: Int,
-    val id: Int
+    val blockStateKey: NamespacedKey
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
         buffer.writeByte(data1)
         buffer.writeByte(data2)
-        buffer.writeVarInt(id)
+        buffer.writeVarInt(buffer.registrySet.blocks.getId(blockStateKey))
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.blockEvent(this)
 
-    override fun toString() = "ServerBlockEventPacket(position=$position, data1=$data1, data2=$data2, id=$id)"
+    override fun toString() = "ServerBlockEventPacket(position=$position, data1=$data1, data2=$data2, blockStateKey=$blockStateKey)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerBlockEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEventPacket(buffer.readInt3UnsignedY(), buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readVarInt())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEventPacket(buffer.readInt3UnsignedY(), buffer.readByte().toInt(), buffer.readByte().toInt(), checkNotNull(buffer.registrySet.blocks[buffer.readVarInt()]))
 }

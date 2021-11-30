@@ -39,7 +39,6 @@ class ServerResourcePackPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(url)
         buffer.writeString(hash)
-        if (version >= Int.MAX_VALUE) buffer.writeBoolean(forced)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.resourcePack(this)

@@ -33,8 +33,6 @@ import com.valaphee.netcode.mcje.PacketReader
  */
 class ClientAbilitiesPacket(
     val flags: Set<Flag>,
-    val flySpeed: Float,
-    val walkSpeed: Float,
 ) : Packet<ClientPlayPacketHandler> {
     enum class Flag {
         None, Flying
@@ -42,32 +40,16 @@ class ClientAbilitiesPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByteFlags(flags)
-        if (version < 754) {
-            buffer.writeFloat(flySpeed)
-            buffer.writeFloat(walkSpeed)
-        }
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.abilities(this)
 
-    override fun toString() = "ClientAbilitiesPacket(flags=$flags, flySpeed=$flySpeed, walkSpeed=$walkSpeed)"
+    override fun toString() = "ClientAbilitiesPacket(flags=$flags)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientAbilitiesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientAbilitiesPacket {
-        val flags = buffer.readByteFlags<ClientAbilitiesPacket.Flag>()
-        val flySpeed: Float
-        val walkSpeed: Float
-        if (version < 754) {
-            flySpeed = buffer.readFloat()
-            walkSpeed = buffer.readFloat()
-        } else {
-            flySpeed = 0.0f
-            walkSpeed = 0.0f
-        }
-        return ClientAbilitiesPacket(flags, flySpeed, walkSpeed)
-    }
+    override fun read(buffer: PacketBuffer, version: Int) = ClientAbilitiesPacket(buffer.readByteFlags())
 }

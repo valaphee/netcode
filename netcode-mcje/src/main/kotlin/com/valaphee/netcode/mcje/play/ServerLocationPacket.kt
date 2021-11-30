@@ -48,8 +48,7 @@ class ServerLocationPacket(
         buffer.writeDouble3(position)
         buffer.writeFloat2(rotation)
         buffer.writeByteFlags(flags)
-        if (version >= 498) buffer.writeVarInt(teleportId)
-        if (version >= Int.MAX_VALUE) buffer.writeBoolean(dismountVehicle)
+        buffer.writeVarInt(teleportId)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.location(this)
@@ -61,12 +60,5 @@ class ServerLocationPacket(
  * @author Kevin Ludwig
  */
 object ServerLocationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerLocationPacket {
-        val position = buffer.readDouble3()
-        val rotation = buffer.readFloat2()
-        val flags = buffer.readByteFlags<ServerLocationPacket.Flag>()
-        val teleportId = if (version >= 498) buffer.readVarInt() else 0
-        val dismountVehicle = if (version >= Int.MAX_VALUE) buffer.readBoolean() else false
-        return ServerLocationPacket(position, rotation, flags, teleportId, dismountVehicle)
-    }
+    override fun read(buffer: PacketBuffer, version: Int) = ServerLocationPacket(buffer.readDouble3(), buffer.readFloat2(), buffer.readByteFlags(), buffer.readVarInt(), false)
 }

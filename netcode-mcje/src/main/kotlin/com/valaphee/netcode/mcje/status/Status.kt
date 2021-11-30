@@ -35,7 +35,7 @@ import java.util.UUID
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Status(
     @get:JsonProperty("version") val version: Version,
-    /*@get:JsonProperty("modinfo") val mods: Mods?,*/
+    @get:JsonProperty("modinfo") val mods: Mods?,
     @get:JsonProperty("players") val players: Players,
     @get:JsonProperty("description") val description: Component,
     @get:JsonProperty("favicon") val favicon: String?

@@ -43,52 +43,29 @@ class ServerObjectAddPacket(
     val position: Double3,
     val rotation: Float2,
     val data: Int,
-    val motion: Double3
+    val velocity: Double3
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        if (version >= 498) {
-            buffer.writeUuid(entityUid!!)
-            buffer.writeVarInt(buffer.registrySet.entityTypes.getId(type))
-            buffer.writeDouble3(position)
-        } else {
-            buffer.writeByte(buffer.registrySet.entityTypes.getId(type))
-            buffer.writeInt3(position.toMutableDouble3().scale(32.0).toInt3())
-        }
+        buffer.writeUuid(entityUid!!)
+        buffer.writeVarInt(buffer.registrySet.entityTypes.getId(type))
+        buffer.writeDouble3(position)
         buffer.writeAngle2(rotation)
         buffer.writeInt(data)
-        val (motionX, motionY, motionZ) = motion.toMutableDouble3().scale(8000.0).toInt3()
-        buffer.writeShort(motionX)
-        buffer.writeShort(motionY)
-        buffer.writeShort(motionZ)
+        val (velocityX, velocityY, velocityZ) = velocity.toMutableDouble3().scale(8000.0).toInt3()
+        buffer.writeShort(velocityX)
+        buffer.writeShort(velocityY)
+        buffer.writeShort(velocityZ)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.objectAdd(this)
 
-    override fun toString() = "ServerObjectAddPacket(entityId=$entityId, entityUid=$entityUid, type=$type, position=$position, rotation=$rotation, data=$data, motion=$motion)"
+    override fun toString() = "ServerObjectAddPacket(entityId=$entityId, entityUid=$entityUid, type=$type, position=$position, rotation=$rotation, data=$data, velocity=$velocity)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerObjectAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerObjectAddPacket {
-        val entityId = buffer.readVarInt()
-        val entityUid: UUID?
-        val entityTypeKey: NamespacedKey
-        val position: Double3
-        if (version >= 498) {
-            entityUid = buffer.readUuid()
-            entityTypeKey = buffer.registrySet.entityTypes[buffer.readVarInt()]!!
-            position = buffer.readDouble3()
-        } else {
-            entityUid = null
-            entityTypeKey =  buffer.registrySet.entityTypes[buffer.readUnsignedByte().toInt()]!!
-            position = buffer.readInt3().toMutableDouble3().scale(1 / 32.0)
-        }
-        val rotation = buffer.readAngle2()
-        val data = buffer.readInt()
-        val motion = MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0)
-        return ServerObjectAddPacket(entityId, entityUid, entityTypeKey, position, rotation, data, motion)
-    }
+    override fun read(buffer: PacketBuffer, version: Int) = ServerObjectAddPacket(buffer.readVarInt(), buffer.readUuid(), checkNotNull(buffer.registrySet.entityTypes[buffer.readVarInt()]), buffer.readDouble3(), buffer.readAngle2(), buffer.readInt(), MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
 }

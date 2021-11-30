@@ -36,35 +36,28 @@ class ServerMapPacket(
     val scale: Int,
     val tracking: Boolean,
     val locked: Boolean,
-    val decorations: List<Decoration>?,
+    val decorations: List<Decoration>,
     val width: Int,
     val height: Int,
     val offsetX: Int,
     val offsetY: Int,
-    val data: ByteArray? = null
+    val data: ByteArray?
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(mapId)
         buffer.writeByte(scale)
-        if (version >= Int.MAX_VALUE) {
-            buffer.writeBoolean(locked)
-            buffer.writeBoolean(tracking)
-        } else if (version >= 498) {
-            buffer.writeBoolean(tracking)
-            buffer.writeBoolean(locked)
-        }
-        decorations!!.let {
-            buffer.writeVarInt(it.size)
-            it.forEach { (type, positionX, positionY, rotation, label) ->
-                buffer.writeVarInt(type.ordinal)
-                buffer.writeByte(rotation)
-                buffer.writeByte(positionX)
-                buffer.writeByte(positionY)
-                label?.let {
-                    buffer.writeBoolean(true)
-                    buffer.writeString(buffer.objectMapper.writeValueAsString(it))
-                } ?: buffer.writeBoolean(false)
-            }
+        buffer.writeBoolean(tracking)
+        buffer.writeBoolean(locked)
+        buffer.writeVarInt(decorations.size)
+        decorations.forEach { (type, positionX, positionY, rotation, label) ->
+            buffer.writeVarInt(type.ordinal)
+            buffer.writeByte(rotation)
+            buffer.writeByte(positionX)
+            buffer.writeByte(positionY)
+            label?.let {
+                buffer.writeBoolean(true)
+                buffer.writeString(buffer.objectMapper.writeValueAsString(it))
+            } ?: buffer.writeBoolean(false)
         }
         buffer.writeByte(width)
         if (width != 0) {
