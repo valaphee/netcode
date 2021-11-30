@@ -28,7 +28,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.foundry.math.MutableFloat3
 import com.valaphee.netcode.mc.util.Direction
-import com.valaphee.netcode.mcje.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader

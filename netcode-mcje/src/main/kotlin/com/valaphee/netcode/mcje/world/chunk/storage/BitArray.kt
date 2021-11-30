@@ -30,7 +30,7 @@ package com.valaphee.netcode.mcje.world.chunk.storage
 class BitArray(
     val bitsPerEntry: Int,
     val data: LongArray,
-) : Cloneable {
+) {
     val size = data.size shl (6 / bitsPerEntry)
     private val maximumEntryValue = (1L shl bitsPerEntry) - 1
     private val valuesPerLong = 64 / bitsPerEntry
@@ -64,19 +64,6 @@ class BitArray(
     private fun bitIndex(index: Int, cellIndex: Int) = (index - cellIndex * valuesPerLong) * bitsPerEntry
 
     val empty get() = data.all { it == 0L }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as BitArray
-
-        if (!data.contentEquals(other.data)) return false
-
-        return true
-    }
-
-    override fun hashCode() = data.contentHashCode()
 
     companion object {
         internal fun roundToNearest(value: Int, roundTo: Int): Int {

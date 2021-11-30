@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.griefergames.breakdown.world.map
+package com.valaphee.netcode.mcje.world.map
 
 import com.valaphee.netcode.mcje.util.text.Component
 

@@ -30,7 +30,6 @@ import com.valaphee.netcode.mc.util.nbt.compoundTag
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.util.minecraftKey
 import com.valaphee.netcode.mcje.world.GameMode
@@ -65,6 +64,8 @@ class ServerRespawnPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.respawn(this)
+
+    override fun toString() = "ServerRespawnPacket(dimension=$dimension, dimensionTag=$dimensionTag, worldName=$worldName, hashedSeed=$hashedSeed, gameMode=$gameMode, previousGameMode=$previousGameMode, debugGenerator=$debugGenerator, flatGenerator=$flatGenerator, keepMetadata=$keepMetadata)"
 }
 
 /**

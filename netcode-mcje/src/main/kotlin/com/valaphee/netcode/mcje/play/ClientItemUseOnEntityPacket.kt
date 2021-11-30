@@ -25,7 +25,6 @@
 package com.valaphee.netcode.mcje.play
 
 import com.valaphee.foundry.math.Float3
-import com.valaphee.netcode.mcje.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
@@ -42,7 +41,7 @@ class ClientItemUseOnEntityPacket(
     var sneaking: Boolean
 ) : Packet<ClientPlayPacketHandler> {
     enum class Type {
-        Interact, Attack, InteractAt;
+        Interact, Attack, InteractAt
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {

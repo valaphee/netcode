@@ -29,7 +29,6 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -48,6 +47,8 @@ class ServerEntityTeleportPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityTeleport(this)
+
+    override fun toString() = "ServerEntityTeleportPacket(entityId=$entityId, position=$position, rotation=$rotation, onGround=$onGround)"
 }
 
 /**

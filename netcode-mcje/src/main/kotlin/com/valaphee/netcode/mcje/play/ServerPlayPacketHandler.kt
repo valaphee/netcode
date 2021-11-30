@@ -22,98 +22,9 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcje
+package com.valaphee.netcode.mcje.play
 
-import com.valaphee.netcode.mcje.play.ServerAbilitiesPacket
-import com.valaphee.netcode.mcje.play.ServerActionResponsePacket
-import com.valaphee.netcode.mcje.play.ServerBlockBreakAnimationPacket
-import com.valaphee.netcode.mcje.play.ServerBlockEntityPacket
-import com.valaphee.netcode.mcje.play.ServerBlockEventPacket
-import com.valaphee.netcode.mcje.play.ServerBlockUpdatePacket
-import com.valaphee.netcode.mcje.play.ServerBlockUpdatesPacket
-import com.valaphee.netcode.mcje.play.ServerBookOpenPacket
-import com.valaphee.netcode.mcje.play.ServerBorderPacket
-import com.valaphee.netcode.mcje.play.ServerBossBarPacket
-import com.valaphee.netcode.mcje.play.ServerCameraPacket
-import com.valaphee.netcode.mcje.play.ServerChunkLightPacket
-import com.valaphee.netcode.mcje.play.ServerChunkPacket
-import com.valaphee.netcode.mcje.play.ServerChunkPublishPacket
-import com.valaphee.netcode.mcje.play.ServerChunkUnloadPacket
-import com.valaphee.netcode.mcje.play.ServerCraftPacket
-import com.valaphee.netcode.mcje.play.ServerCustomPayloadPacket
-import com.valaphee.netcode.mcje.play.ServerDifficultyPacket
-import com.valaphee.netcode.mcje.play.ServerDisconnectPacket
-import com.valaphee.netcode.mcje.play.ServerEntitiesRemovePacket
-import com.valaphee.netcode.mcje.play.ServerEntityAddPacket
-import com.valaphee.netcode.mcje.play.ServerEntityAnimationPacket
-import com.valaphee.netcode.mcje.play.ServerEntityAttachPacket
-import com.valaphee.netcode.mcje.play.ServerEntityAttributesPacket
-import com.valaphee.netcode.mcje.play.ServerEntityEffectApplyPacket
-import com.valaphee.netcode.mcje.play.ServerEntityEffectRevokePacket
-import com.valaphee.netcode.mcje.play.ServerEntityEquipmentPacket
-import com.valaphee.netcode.mcje.play.ServerEntityEventPacket
-import com.valaphee.netcode.mcje.play.ServerEntityHeadRotationPacket
-import com.valaphee.netcode.mcje.play.ServerEntityLocationPacket
-import com.valaphee.netcode.mcje.play.ServerEntityMetadataPacket
-import com.valaphee.netcode.mcje.play.ServerEntityMovePacket
-import com.valaphee.netcode.mcje.play.ServerEntityMoveRotatePacket
-import com.valaphee.netcode.mcje.play.ServerEntityPassengersPacket
-import com.valaphee.netcode.mcje.play.ServerEntityRotatePacket
-import com.valaphee.netcode.mcje.play.ServerEntitySoundPacket
-import com.valaphee.netcode.mcje.play.ServerEntityTeleportPacket
-import com.valaphee.netcode.mcje.play.ServerEntityVelocityPacket
-import com.valaphee.netcode.mcje.play.ServerExperienceOrbAddPacket
-import com.valaphee.netcode.mcje.play.ServerExperiencePacket
-import com.valaphee.netcode.mcje.play.ServerExplosionPacket
-import com.valaphee.netcode.mcje.play.ServerGameStatePacket
-import com.valaphee.netcode.mcje.play.ServerGlobalEntityAddPacket
-import com.valaphee.netcode.mcje.play.ServerHealthHungerSaturationPacket
-import com.valaphee.netcode.mcje.play.ServerHorseWindowOpenPacket
-import com.valaphee.netcode.mcje.play.ServerHotbarPacket
-import com.valaphee.netcode.mcje.play.ServerInventoryContentPacket
-import com.valaphee.netcode.mcje.play.ServerInventorySlotPacket
-import com.valaphee.netcode.mcje.play.ServerItemCooldownPacket
-import com.valaphee.netcode.mcje.play.ServerKeepAlivePacket
-import com.valaphee.netcode.mcje.play.ServerLocationPacket
-import com.valaphee.netcode.mcje.play.ServerLookAtPacket
-import com.valaphee.netcode.mcje.play.ServerMapPacket
-import com.valaphee.netcode.mcje.play.ServerNamedSoundPacket
-import com.valaphee.netcode.mcje.play.ServerObjectAddPacket
-import com.valaphee.netcode.mcje.play.ServerObjectivePacket
-import com.valaphee.netcode.mcje.play.ServerPaintingAddPacket
-import com.valaphee.netcode.mcje.play.ServerParticlePacket
-import com.valaphee.netcode.mcje.play.ServerPlayerAddPacket
-import com.valaphee.netcode.mcje.play.ServerPlayerCombatEventPacket
-import com.valaphee.netcode.mcje.play.ServerPlayerListHeaderFooterPacket
-import com.valaphee.netcode.mcje.play.ServerPlayerListPacket
-import com.valaphee.netcode.mcje.play.ServerQueryPacket
-import com.valaphee.netcode.mcje.play.ServerRecipeBookPacket
-import com.valaphee.netcode.mcje.play.ServerRecipesPacket
-import com.valaphee.netcode.mcje.play.ServerResourcePackPacket
-import com.valaphee.netcode.mcje.play.ServerRespawnPacket
-import com.valaphee.netcode.mcje.play.ServerScorePacket
-import com.valaphee.netcode.mcje.play.ServerScoreboardDisplayPacket
-import com.valaphee.netcode.mcje.play.ServerSculkVibrationSignalPacket
-import com.valaphee.netcode.mcje.play.ServerSignUpdatePacket
-import com.valaphee.netcode.mcje.play.ServerSoundPacket
-import com.valaphee.netcode.mcje.play.ServerSoundStopPacket
-import com.valaphee.netcode.mcje.play.ServerSpawnPositionPacket
-import com.valaphee.netcode.mcje.play.ServerStackTakePacket
-import com.valaphee.netcode.mcje.play.ServerStatisticsPacket
-import com.valaphee.netcode.mcje.play.ServerTabCompletePacket
-import com.valaphee.netcode.mcje.play.ServerTeamPacket
-import com.valaphee.netcode.mcje.play.ServerTextPacket
-import com.valaphee.netcode.mcje.play.ServerTimePacket
-import com.valaphee.netcode.mcje.play.ServerTitlePacket
-import com.valaphee.netcode.mcje.play.ServerTradePacket
-import com.valaphee.netcode.mcje.play.ServerVehicleLocationPacket
-import com.valaphee.netcode.mcje.play.ServerViewDistancePacket
-import com.valaphee.netcode.mcje.play.ServerWindowClosePacket
-import com.valaphee.netcode.mcje.play.ServerWindowConfirmPacket
-import com.valaphee.netcode.mcje.play.ServerWindowOpenPacket
-import com.valaphee.netcode.mcje.play.ServerWindowPropertyPacket
-import com.valaphee.netcode.mcje.play.ServerWorldEventPacket
-import com.valaphee.netcode.mcje.play.ServerWorldPacket
+import com.valaphee.netcode.mcje.PacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -127,7 +38,7 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun entityAdd(packet: ServerEntityAddPacket) = other(packet)
 
-    fun paintingAdd(packet: ServerPaintingAddPacket) = other(packet)
+    /*fun paintingAdd(packet: ServerPaintingAddPacket) = other(packet)*/
 
     fun playerAdd(packet: ServerPlayerAddPacket) = other(packet)
 
@@ -135,7 +46,7 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun entityAnimation(packet: ServerEntityAnimationPacket) = other(packet)
 
-    fun statistics(packet: ServerStatisticsPacket) = other(packet)
+    /*fun statistics(packet: ServerStatisticsPacket) = other(packet)*/
 
     fun actionResponse(packet: ServerActionResponsePacket) = other(packet)
 
@@ -189,9 +100,9 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun worldEvent(packet: ServerWorldEventPacket) = other(packet)
 
-    fun particle(packet: ServerParticlePacket) = other(packet)
+    /*fun particle(packet: ServerParticlePacket) = other(packet)
 
-    fun chunkLight(packet: ServerChunkLightPacket) = other(packet)
+    fun chunkLight(packet: ServerChunkLightPacket) = other(packet)*/
 
     fun world(packet: ServerWorldPacket) = other(packet)
 
@@ -297,5 +208,5 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun entityEffectApply(packet: ServerEntityEffectApplyPacket) = other(packet)
 
-    fun recipes(packet: ServerRecipesPacket) = other(packet)
+    /*fun recipes(packet: ServerRecipesPacket) = other(packet)*/
 }

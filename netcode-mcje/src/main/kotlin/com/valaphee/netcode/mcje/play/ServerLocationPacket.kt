@@ -29,7 +29,6 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -54,6 +53,8 @@ class ServerLocationPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.location(this)
+
+    override fun toString() = "ServerLocationPacket(position=$position, rotation=$rotation, flags=$flags, teleportId=$teleportId, dismountVehicle=$dismountVehicle)"
 }
 
 /**

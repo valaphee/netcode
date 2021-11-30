@@ -30,7 +30,6 @@ import com.valaphee.foundry.math.MutableDouble3
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.entity.metadata.Metadata
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import java.util.UUID
@@ -68,6 +67,8 @@ class ServerEntityAddPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityAdd(this)
+
+    override fun toString() = "ServerEntityAddPacket(entityId=$entityId, entityUid=$entityUid, entityTypeKey=$entityTypeKey, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, motion=$motion, metadata=$metadata)"
 }
 
 /**

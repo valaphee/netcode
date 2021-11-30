@@ -29,7 +29,6 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.entity.metadata.Metadata
 import com.valaphee.netcode.mcje.item.stack.Stack
 import com.valaphee.netcode.mcje.item.stack.readStack
@@ -59,6 +58,8 @@ class ServerPlayerAddPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.playerAdd(this)
+
+    override fun toString() = "ServerPlayerAddPacket(entityId=$entityId, userId=$userId, position=$position, rotation=$rotation, itemInHand=$itemInHand, metadata=$metadata)"
 }
 
 /**

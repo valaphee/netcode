@@ -28,7 +28,6 @@ import com.valaphee.foundry.math.Double3
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -54,6 +53,8 @@ class ServerLookAtPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.lookAt(this)
+
+    override fun toString() = "ServerLookAtPacket(feetOrEyes=$feetOrEyes, position=$position, entityId=$entityId, entityFeetOrEyes=$entityFeetOrEyes)"
 }
 
 /**

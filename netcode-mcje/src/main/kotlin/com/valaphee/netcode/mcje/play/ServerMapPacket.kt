@@ -26,8 +26,7 @@ package com.valaphee.netcode.mcje.play
 
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
-import net.griefergames.breakdown.world.map.Decoration
+import com.valaphee.netcode.mcje.world.map.Decoration
 
 /**
  * @author Kevin Ludwig

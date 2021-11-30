@@ -28,7 +28,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.text.Component
 import com.valaphee.netcode.util.ByteBufStringReader
 
@@ -68,6 +67,8 @@ class ServerObjectivePacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.objective(this)
+
+    override fun toString() = "ServerObjectivePacket(name='$name', action=$action, displayName=$displayName, type=$type)"
 }
 
 /**

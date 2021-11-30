@@ -28,7 +28,6 @@ import com.valaphee.foundry.math.Double3
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -45,6 +44,8 @@ class ServerExperienceOrbAddPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.experienceOrbAdd(this)
+
+    override fun toString() = "ServerExperienceOrbAddPacket(entityId=$entityId, position=$position, amount=$amount)"
 }
 
 /**

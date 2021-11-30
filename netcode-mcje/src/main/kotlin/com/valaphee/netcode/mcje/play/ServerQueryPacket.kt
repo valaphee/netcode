@@ -28,7 +28,6 @@ import com.valaphee.netcode.mc.util.nbt.CompoundTag
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -43,6 +42,8 @@ class ServerQueryPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.query(this)
+
+    override fun toString() = "ServerQueryPacket(id=$id, tag=$tag)"
 }
 
 /**

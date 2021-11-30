@@ -26,7 +26,6 @@ package com.valaphee.netcode.mcje.play
 
 import com.valaphee.foundry.math.Double3
 import com.valaphee.foundry.math.Float2
-import com.valaphee.netcode.mcje.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader

@@ -28,7 +28,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.world.SoundCategory
 
@@ -51,6 +50,8 @@ class ServerNamedSoundPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.namedSound(this)
+
+    override fun toString() = "ServerNamedSoundPacket(soundKey=$soundKey, category=$category, position=$position, volume=$volume, pitch=$pitch)"
 }
 
 /**

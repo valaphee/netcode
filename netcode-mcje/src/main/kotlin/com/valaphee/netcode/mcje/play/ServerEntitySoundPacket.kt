@@ -27,7 +27,6 @@ package com.valaphee.netcode.mcje.play
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.world.SoundCategory
 
@@ -50,6 +49,8 @@ class ServerEntitySoundPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entitySound(this)
+
+    override fun toString() = "ServerEntitySoundPacket(soundKey=$soundKey, category=$category, entityId=$entityId, volume=$volume, pitch=$pitch)"
 }
 
 /**

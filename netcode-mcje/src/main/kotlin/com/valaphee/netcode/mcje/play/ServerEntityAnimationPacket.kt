@@ -27,7 +27,6 @@ package com.valaphee.netcode.mcje.play
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -46,6 +45,8 @@ class ServerEntityAnimationPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityAnimation(this)
+
+    override fun toString() = "ServerEntityAnimationPacket(entityId=$entityId, animation=$animation)"
 }
 
 /**

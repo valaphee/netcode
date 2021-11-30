@@ -30,7 +30,7 @@ package com.valaphee.netcode.mcbe.command
 data class Parameter(
     val name: String,
     val optional: Boolean,
-    val options: Collection<Option>,
+    val options: Set<Option>,
     val enumeration: Enumeration?,
     val postfix: String?,
     val type: Int?
@@ -61,7 +61,7 @@ data class Parameter(
     class Structure(
         var name: String,
         var optional: Boolean,
-        var options: Collection<Option>,
+        var options: Set<Option>,
         var enumeration: Boolean,
         var softEnumeration: Boolean,
         var postfix: Boolean,

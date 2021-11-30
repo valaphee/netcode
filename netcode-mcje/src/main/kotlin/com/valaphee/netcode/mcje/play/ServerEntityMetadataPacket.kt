@@ -27,7 +27,6 @@ package com.valaphee.netcode.mcje.play
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.entity.metadata.Metadata
 
 /**
@@ -43,6 +42,8 @@ class ServerEntityMetadataPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityMetadata(this)
+
+    override fun toString() = "ServerEntityMetadataPacket(entityId=$entityId, metadata=$metadata)"
 }
 
 /**

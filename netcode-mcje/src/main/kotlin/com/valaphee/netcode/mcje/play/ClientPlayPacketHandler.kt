@@ -22,57 +22,9 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcje
+package com.valaphee.netcode.mcje.play
 
-import com.valaphee.netcode.mcje.play.ClientAbilitiesPacket
-import com.valaphee.netcode.mcje.play.ClientActionPacket
-import com.valaphee.netcode.mcje.play.ClientAdvancementTabPacket
-import com.valaphee.netcode.mcje.play.ClientBeaconUpdatePacket
-import com.valaphee.netcode.mcje.play.ClientBlockPlacePacket
-import com.valaphee.netcode.mcje.play.ClientBlockQueryPacket
-import com.valaphee.netcode.mcje.play.ClientBookEditPacket
-import com.valaphee.netcode.mcje.play.ClientCommandBlockMinecartUpdatePacket
-import com.valaphee.netcode.mcje.play.ClientCommandBlockUpdatePacket
-import com.valaphee.netcode.mcje.play.ClientCommandSuggestPacket
-import com.valaphee.netcode.mcje.play.ClientCraftPacket
-import com.valaphee.netcode.mcje.play.ClientCreativeInventorySlotPacket
-import com.valaphee.netcode.mcje.play.ClientCustomPayloadPacket
-import com.valaphee.netcode.mcje.play.ClientDifficultyPacket
-import com.valaphee.netcode.mcje.play.ClientEntityQueryPacket
-import com.valaphee.netcode.mcje.play.ClientGeneratePacket
-import com.valaphee.netcode.mcje.play.ClientHotbarPacket
-import com.valaphee.netcode.mcje.play.ClientItemNamePacket
-import com.valaphee.netcode.mcje.play.ClientItemPickPacket
-import com.valaphee.netcode.mcje.play.ClientItemUseOnEntityPacket
-import com.valaphee.netcode.mcje.play.ClientItemUsePacket
-import com.valaphee.netcode.mcje.play.ClientJigsawBlockUpdatePacket
-import com.valaphee.netcode.mcje.play.ClientKeepAlivePacket
-import com.valaphee.netcode.mcje.play.ClientLocationPacket
-import com.valaphee.netcode.mcje.play.ClientDifficultyLockPacket
-import com.valaphee.netcode.mcje.play.ClientPlayerActionPacket
-import com.valaphee.netcode.mcje.play.ClientPositionPacket
-import com.valaphee.netcode.mcje.play.ClientPositionRotationPacket
-import com.valaphee.netcode.mcje.play.ClientRecipeBookDisplayRecipePacket
-import com.valaphee.netcode.mcje.play.ClientRecipeBookPacket
-import com.valaphee.netcode.mcje.play.ClientRecipeBookStatePacket
-import com.valaphee.netcode.mcje.play.ClientResourcePackStatusPacket
-import com.valaphee.netcode.mcje.play.ClientRotationPacket
-import com.valaphee.netcode.mcje.play.ClientSettingsPacket
-import com.valaphee.netcode.mcje.play.ClientSignUpdatePacket
-import com.valaphee.netcode.mcje.play.ClientSpectatePacket
-import com.valaphee.netcode.mcje.play.ClientStatusPacket
-import com.valaphee.netcode.mcje.play.ClientSteerBoatPacket
-import com.valaphee.netcode.mcje.play.ClientSteerPacket
-import com.valaphee.netcode.mcje.play.ClientStructureBlockUpdatePacket
-import com.valaphee.netcode.mcje.play.ClientSwingArmPacket
-import com.valaphee.netcode.mcje.play.ClientTeleportConfirmPacket
-import com.valaphee.netcode.mcje.play.ClientTextPacket
-import com.valaphee.netcode.mcje.play.ClientTradePacket
-import com.valaphee.netcode.mcje.play.ClientVehicleLocationPacket
-import com.valaphee.netcode.mcje.play.ClientWindowClickButtonPacket
-import com.valaphee.netcode.mcje.play.ClientWindowClickPacket
-import com.valaphee.netcode.mcje.play.ClientWindowClosePacket
-import com.valaphee.netcode.mcje.play.ClientWindowConfirmPacket
+import com.valaphee.netcode.mcje.PacketHandler
 
 /**
  * @author Kevin Ludwig

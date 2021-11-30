@@ -25,9 +25,9 @@
 package com.valaphee.netcode.mcje.play
 
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mcje.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
+import com.valaphee.netcode.mcje.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -91,8 +91,29 @@ class ClientStructureBlockUpdatePacket(
     override fun toString() = "ClientStructureBlockUpdatePacket(position=$position, action=$action, mode=$mode, name='$name', offset=$offset, size=$size, mirror=$mirror, rotation=$rotation, metadata='$metadata', integrityValue=$integrityValue, integritySeed=$integritySeed, ignoreEntities=$ignoreEntities, showAir=$showAir, showBoundingBox=$showBoundingBox)"
 
     companion object {
-        private const val flagIgnoreEntities = 1
-        private const val flagShowAir = 1 shl 1
-        private const val flagShowBoundingBox = 1 shl 2
+        internal const val flagIgnoreEntities = 1
+        internal const val flagShowAir = 1 shl 1
+        internal const val flagShowBoundingBox = 1 shl 2
+    }
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ClientStructureBlockUpdatePacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int): ClientStructureBlockUpdatePacket {
+        val position = buffer.readInt3UnsignedY()
+        val action = ClientStructureBlockUpdatePacket.Action.values()[buffer.readVarInt()]
+        val mode = ClientStructureBlockUpdatePacket.Mode.values()[buffer.readVarInt()]
+        val name = buffer.readString()
+        val offset = Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt())
+        val size = Int3(buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt())
+        val mirror = ClientStructureBlockUpdatePacket.Mirror.values()[buffer.readVarInt()]
+        val rotation = ClientStructureBlockUpdatePacket.Rotation.values()[buffer.readVarInt()]
+        val metadata = buffer.readString()
+        val integrityValue = buffer.readFloat()
+        val integritySeed = buffer.readVarLong()
+        val flagsValue = buffer.readByte().toInt()
+        return ClientStructureBlockUpdatePacket(position, action, mode, name, offset, size, mirror, rotation, metadata, integrityValue, integritySeed, 0 != flagsValue and ClientStructureBlockUpdatePacket.flagIgnoreEntities, 0 != flagsValue and ClientStructureBlockUpdatePacket.flagShowAir, 0 != flagsValue and ClientStructureBlockUpdatePacket.flagShowBoundingBox)
     }
 }

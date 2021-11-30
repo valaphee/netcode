@@ -28,7 +28,6 @@ import com.valaphee.foundry.math.Double3
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -49,6 +48,8 @@ class ServerGlobalEntityAddPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.globalEntityAdd(this)
+
+    override fun toString() = "ServerGlobalEntityAddPacket(entityId=$entityId, type=$type, position=$position)"
 }
 
 /**

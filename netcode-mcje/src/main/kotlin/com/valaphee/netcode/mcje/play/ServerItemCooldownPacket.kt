@@ -27,7 +27,6 @@ package com.valaphee.netcode.mcje.play
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
@@ -43,6 +42,8 @@ class ServerItemCooldownPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.itemCooldown(this)
+
+    override fun toString() = "ServerItemCooldownPacket(itemKey=$itemKey, cooldown=$cooldown)"
 }
 
 /**

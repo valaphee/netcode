@@ -27,7 +27,6 @@ package com.valaphee.netcode.mcje.play
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.util.safeList
 
@@ -72,6 +71,8 @@ class ServerRecipeBookPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.recipeBook(this)
+
+    override fun toString() = "ServerRecipeBookPacket(action=$action, craftingRecipeBookOpen=$craftingRecipeBookOpen, craftingRecipeBookFilterActive=$craftingRecipeBookFilterActive, smeltingRecipeBookOpen=$smeltingRecipeBookOpen, smeltingRecipeBookFilterActive=$smeltingRecipeBookFilterActive, blastingRecipeBookOpen=$blastingRecipeBookOpen, blastingRecipeBookFilterActive=$blastingRecipeBookFilterActive, smokingRecipeBookOpen=$smokingRecipeBookOpen, smokingRecipeBookFilterActive=$smokingRecipeBookFilterActive, recipeIds=$recipeIds, availableRecipeIds=$availableRecipeIds)"
 }
 
 /**

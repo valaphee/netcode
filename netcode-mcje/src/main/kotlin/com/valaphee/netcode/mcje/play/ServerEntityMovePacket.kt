@@ -29,7 +29,6 @@ import com.valaphee.foundry.math.MutableDouble3
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -49,6 +48,8 @@ class ServerEntityMovePacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityMove(this)
+
+    override fun toString() = "ServerEntityMovePacket(entityId=$entityId, positionDelta=$positionDelta, onGround=$onGround)"
 }
 
 /**

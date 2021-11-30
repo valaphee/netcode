@@ -26,25 +26,26 @@ package com.valaphee.netcode.mcje.play
 
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.PacketReader
 import com.valaphee.netcode.mcje.item.stack.Stack
+import com.valaphee.netcode.mcje.item.stack.readStack
 import com.valaphee.netcode.mcje.item.stack.writeStack
 
 /**
  * @author Kevin Ludwig
  */
 class ServerEntityEquipmentPacket(
-    val entityId: Int = 0,
+    val entityId: Int,
     val equipments: List<Equipment>
 ) : Packet<ServerPlayPacketHandler> {
-    enum class Slot {
-        MainHand, OffHand, Boots, Leggings, Chestplate, Helmet
-    }
-
     class Equipment(
         var slot: Slot,
         var stack: Stack?
-    )
+    ) {
+        enum class Slot {
+            MainHand, OffHand, Boots, Leggings, Chestplate, Helmet
+        }
+    }
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
@@ -61,4 +62,20 @@ class ServerEntityEquipmentPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityEquipment(this)
+
+    override fun toString() = "ServerEntityEquipmentPacket(entityId=$entityId, equipments=$equipments)"
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerEntityEquipmentPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEquipmentPacket(buffer.readVarInt(), if (version >= 754) ArrayList<ServerEntityEquipmentPacket.Equipment>().apply {
+            var slot: Int
+            do {
+                slot = buffer.readByte().toInt()
+                add(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[slot and 0b0111_1111], buffer.readStack()))
+            } while (slot and 0b1000_0000 != 0)
+        } else listOf(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[if (version >= 498) buffer.readVarInt() else buffer.readUnsignedShort()], buffer.readStack()))
+    )
 }

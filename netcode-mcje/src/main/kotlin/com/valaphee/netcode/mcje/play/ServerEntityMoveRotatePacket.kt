@@ -29,7 +29,6 @@ import com.valaphee.foundry.math.MutableDouble3
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -51,6 +50,8 @@ class ServerEntityMoveRotatePacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityMoveRotate(this)
+
+    override fun toString() = "ServerEntityMoveRotatePacket(entityId=$entityId, positionDelta=$positionDelta, rotation=$rotation, onGround=$onGround)"
 }
 
 /**

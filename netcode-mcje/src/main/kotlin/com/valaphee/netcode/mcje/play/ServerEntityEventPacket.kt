@@ -27,7 +27,6 @@ package com.valaphee.netcode.mcje.play
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -102,6 +101,8 @@ class ServerEntityEventPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityEvent(this)
+
+    override fun toString() = "ServerEntityEventPacket(entityId=$entityId, event=$event)"
 }
 
 /**

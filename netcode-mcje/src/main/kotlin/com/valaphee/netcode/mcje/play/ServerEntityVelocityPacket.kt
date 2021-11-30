@@ -29,7 +29,6 @@ import com.valaphee.foundry.math.MutableDouble3
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
@@ -47,6 +46,8 @@ class ServerEntityVelocityPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityVelocity(this)
+
+    override fun toString() = "ServerEntityVelocityPacket(entityId=$entityId, velocity=$velocity)"
 }
 
 /**

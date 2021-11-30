@@ -28,7 +28,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.chunk.storage.SubChunk
 
 /**

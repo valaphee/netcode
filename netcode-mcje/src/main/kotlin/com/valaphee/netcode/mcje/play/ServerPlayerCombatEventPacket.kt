@@ -28,7 +28,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
-import com.valaphee.netcode.mcje.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.text.Component
 import com.valaphee.netcode.util.ByteBufStringReader
 
@@ -61,6 +60,8 @@ class ServerPlayerCombatEventPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.playerCombatEvent(this)
+
+    override fun toString() = "ServerPlayerCombatEventPacket(event=$event, durationOrPlayerEntityId=$durationOrPlayerEntityId, entityId=$entityId, message=$message)"
 }
 
 /**
