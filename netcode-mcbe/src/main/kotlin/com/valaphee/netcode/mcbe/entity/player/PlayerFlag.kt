@@ -38,5 +38,5 @@ enum class PlayerFlag {
     NoClip,
     WorldBuilder,
     Flying,
-    Muted
+    Mute
 }

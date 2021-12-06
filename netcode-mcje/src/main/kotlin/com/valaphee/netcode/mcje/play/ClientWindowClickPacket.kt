@@ -38,7 +38,7 @@ class ClientWindowClickPacket(
     val windowId: Int,
     val slotId: Int,
     val buttonSpecifier: Int,
-    val confirmId: Int,
+    var confirmId: Int,
     val button: Button,
     val stackInSlot: Stack?
 ) : Packet<ClientPlayPacketHandler> {

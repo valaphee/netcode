@@ -81,7 +81,7 @@ data class Stack(
         if (subId != other.subId) return false
         if (count != other.count) return false
         if (tag != other.tag) return false
-        if (blockStateKey != other.blockStateKey) return false
+        /*if (blockStateKey != other.blockStateKey) return false*/
 
         return true
     }
@@ -95,7 +95,7 @@ data class Stack(
         if (itemKey != other.itemKey) return false
         if (subId != other.subId) return false
         if (tag != other.tag) return false
-        if (blockStateKey != other.blockStateKey) return false
+        /*if (blockStateKey != other.blockStateKey) return false*/
 
         return true
     }

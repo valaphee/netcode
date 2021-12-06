@@ -24,11 +24,11 @@
 
 package com.valaphee.netcode.mcbe.entity
 
+import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
-import com.valaphee.netcode.mc.util.Registry
 
 /**
  * @author Kevin Ludwig

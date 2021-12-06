@@ -42,14 +42,6 @@ object ClientToServerHandshakePacket : Packet() {
 
     override fun handle(handler: PacketHandler) = handler.clientToServerHandshake(this)
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        return true
-    }
-
-    override fun hashCode() = javaClass.hashCode()
-
     override fun toString() = "ClientToServerHandshakePacket()"
 }
 

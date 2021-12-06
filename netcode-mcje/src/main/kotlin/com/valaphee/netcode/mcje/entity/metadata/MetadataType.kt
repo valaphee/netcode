@@ -33,6 +33,10 @@ import com.valaphee.netcode.mc.util.nbt.NbtInputStream
 import com.valaphee.netcode.mc.util.nbt.NbtOutputStream
 import com.valaphee.netcode.mc.util.nbt.Tag
 import com.valaphee.netcode.mcje.PacketBuffer
+import com.valaphee.netcode.mcje.item.stack.Stack
+import com.valaphee.netcode.mcje.item.stack.readStack
+import com.valaphee.netcode.mcje.item.stack.writeStack
+import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.util.text.Component
 import com.valaphee.netcode.util.ByteBufStringReader
 import io.netty.buffer.ByteBufInputStream
@@ -99,13 +103,13 @@ interface MetadataType<T> {
             }
         }
 
-        /*val Stack = object : MetadataType<Stack<*>?> {
+        val Stack = object : MetadataType<Stack?> {
             override fun read(buffer: PacketBuffer) = buffer.readStack()
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.writeStack(value as Stack<*>?)
+                buffer.writeStack(value as Stack?)
             }
-        }*/
+        }
 
         val Boolean = object : MetadataType<Boolean> {
             override fun read(buffer: PacketBuffer) = buffer.readBoolean()
@@ -161,16 +165,16 @@ interface MetadataType<T> {
             }
         }
 
-        /*val OptionalBlockState = object : MetadataType<BlockState?> {
-            override fun read(buffer: PacketBuffer): BlockState? {
+        val OptionalBlockState = object : MetadataType<NamespacedKey?> {
+            override fun read(buffer: PacketBuffer): NamespacedKey? {
                 val blockStateId = buffer.readVarInt()
-                return if (blockStateId == 0) null else BlockState.byId(blockStateId)
+                return if (blockStateId == 0) null else buffer.registrySet.blockStates[blockStateId]
             }
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                value?.let { buffer.writeVarInt((it as BlockState).id) } ?: buffer.writeVarInt(0)
+                value?.let { buffer.writeVarInt(buffer.registrySet.blockStates.getId(it as NamespacedKey)) } ?: buffer.writeVarInt(0)
             }
-        }*/
+        }
 
         val Nbt = object : MetadataType<Tag?> {
             override fun read(buffer: PacketBuffer) = NbtInputStream(ByteBufInputStream(buffer)).use { it.readTag() }
@@ -216,12 +220,12 @@ interface MetadataType<T> {
             }
         }
 
-        val Flags = object : MetadataType<Collection<Flag>> {
+        val Flags = object : MetadataType<Set<Flag>> {
             override fun read(buffer: PacketBuffer) = buffer.readByteFlags<Flag>()
 
             override fun write(buffer: PacketBuffer, value: Any?) {
                 @Suppress("UNCHECKED_CAST")
-                buffer.writeByteFlags(value as Collection<Flag>)
+                buffer.writeByteFlags(value as Set<Flag>)
             }
         }
 
@@ -233,14 +237,14 @@ interface MetadataType<T> {
             this[3] = String
             this[4] = Component
             this[5] = OptionalComponent
-            /*this[6] = Stack*/
+            this[6] = Stack
             this[7] = Boolean
             this[8] = Float3
             this[9] = Int3UnsignedY
             this[10] = OptionalInt3UnsignedY
             this[11] = Direction
             this[12] = OptionalUuid
-            /*this[13] = OptionalBlockState*/
+            this[13] = OptionalBlockState
             this[14] = Nbt
             /*this[15] = Particle*/
             this[16] = VillagerData

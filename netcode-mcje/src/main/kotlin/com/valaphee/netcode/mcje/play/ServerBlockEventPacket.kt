@@ -37,18 +37,18 @@ class ServerBlockEventPacket(
     val position: Int3,
     val data1: Int,
     val data2: Int,
-    val blockStateKey: NamespacedKey
+    val blockKey: NamespacedKey
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
         buffer.writeByte(data1)
         buffer.writeByte(data2)
-        buffer.writeVarInt(buffer.registrySet.blocks.getId(blockStateKey))
+        buffer.writeVarInt(buffer.registrySet.blocks.getId(blockKey))
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.blockEvent(this)
 
-    override fun toString() = "ServerBlockEventPacket(position=$position, data1=$data1, data2=$data2, blockStateKey=$blockStateKey)"
+    override fun toString() = "ServerBlockEventPacket(position=$position, data1=$data1, data2=$data2, blockKey=$blockKey)"
 }
 
 /**

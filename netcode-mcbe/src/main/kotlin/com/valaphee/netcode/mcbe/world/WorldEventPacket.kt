@@ -25,13 +25,13 @@
 package com.valaphee.netcode.mcbe.world
 
 import com.valaphee.foundry.math.Float3
+import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
 import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
-import com.valaphee.netcode.mc.util.Registry
 
 /**
  * @author Kevin Ludwig
@@ -248,7 +248,7 @@ class WorldEventPacket(
             private const val worldOffset = 3000
             private const val blockOffset = 3500
             private const val particleLegacyOffset = 0x4000
-            val registryPre407 = Registry(Undefined).apply {
+            private val registryPre407 = Registry(Undefined).apply {
                 this[soundOffset + 0] = SoundClick
                 this[soundOffset + 1] = SoundClickFail
                 this[soundOffset + 2] = SoundLaunch
@@ -396,7 +396,7 @@ class WorldEventPacket(
                 this[particleLegacyOffset + 66] = ParticleRisingDragonsBreath
                 this[particleLegacyOffset + 67] = ParticleDragonsBreath
             }
-            val registryPre428 = registryPre407.clone().apply {
+            private val registryPre428 = registryPre407.clone().apply {
                 this[soundOffset + 50] = SoundCamera
                 this[blockOffset + 100] = BlockStartBreak
                 this[blockOffset + 101] = BlockStopBreak
@@ -407,12 +407,12 @@ class WorldEventPacket(
                 this[particleLegacyOffset + 69] = ParticleSoul
                 this[particleLegacyOffset + 70] = ParticleObsidianTear
             }
-            val registryPre431 = registryPre428.clone().apply {
+            private val registryPre431 = registryPre428.clone().apply {
                 this[particleOffset + 27] = ParticleVibrationSignal
                 this[blockOffset + 14] = CauldronFillPowderSnow
                 this[blockOffset + 15] = CauldronTakePowderSnow
             }
-            val registryPre440 = registryPre431.clone().apply {
+            private val registryPre440 = registryPre431.clone().apply {
                 this[soundOffset + 64] = SoundPointedDripstoneLand
                 this[soundOffset + 65] = SoundDyeUsed
                 this[soundOffset + 66] = SoundInkSaceUsed
@@ -467,7 +467,7 @@ class WorldEventPacket(
                 this[particleLegacyOffset + 71] = ParticleSoul
                 this[particleLegacyOffset + 72] = ParticleObsidianTear
             }
-            val registryPre448 = registryPre440.clone().apply {
+            private val registryPre448 = registryPre440.clone().apply {
                 this[particleLegacyOffset + 73] = ParticlePortalReverse
                 this[particleLegacyOffset + 74] = ParticleSnowflake
                 this[particleLegacyOffset + 75] = ParticleVibrationSignal
@@ -477,7 +477,7 @@ class WorldEventPacket(
                 this[particleLegacyOffset + 79] = ParticleWax
                 this[particleLegacyOffset + 80] = ParticleElectricSpark
             }
-            val registryPre465 = registryPre448.clone().apply {
+            private val registryPre465 = registryPre448.clone().apply {
                 this[particleLegacyOffset + 9] = ParticleCandleFlame
                 this[particleLegacyOffset + 10] = ParticleLava
                 this[particleLegacyOffset + 11] = ParticleLargeSmoke
@@ -552,18 +552,18 @@ class WorldEventPacket(
                 this[particleLegacyOffset + 80] = ParticleWax
                 this[particleLegacyOffset + 81] = ParticleElectricSpark
             }
-            val registryPre471 = registryPre465.clone().apply {
+            private val registryPre471 = registryPre465.clone().apply {
                 this[particleOffset + 34] = ParticleTurtleEgg
                 this[particleOffset + 35] = ParticleSculkShriek
                 this[particleLegacyOffset + 82] = ParticleShriek
             }
-            val registry = registryPre471.clone().apply {
+            private val events = registryPre471.clone().apply {
                 this[particleOffset + 36] = ParticleSculkCatalystBloom
                 this[particleLegacyOffset + 83] = ParticleSculkSoul
             }
 
-            fun registryByVersion(version: Int): Registry<Event> =
-                if (version >= 471) registry
+            internal fun registryByVersion(version: Int) =
+                if (version >= 471) events
                 else if (version >= 465) registryPre471
                 else if (version >= 448) registryPre465
                 else if (version >= 440) registryPre448

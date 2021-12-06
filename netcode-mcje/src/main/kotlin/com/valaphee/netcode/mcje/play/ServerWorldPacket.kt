@@ -24,7 +24,7 @@
 
 package com.valaphee.netcode.mcje.play
 
-import com.valaphee.netcode.mc.util.nbt.CompoundTag
+import com.valaphee.netcode.mc.util.nbt.Tag
 import com.valaphee.netcode.mcje.Packet
 import com.valaphee.netcode.mcje.PacketBuffer
 import com.valaphee.netcode.mcje.PacketReader
@@ -40,8 +40,8 @@ class ServerWorldPacket(
     val gameMode: GameMode,
     val previousGameMode: GameMode,
     val worldNames: Array<NamespacedKey>,
-    val dimensionCodec: CompoundTag?,
-    val dimension: CompoundTag?,
+    val dimensionCodec: Tag?,
+    val dimension: Tag?,
     val worldName: NamespacedKey,
     val hashedSeed: Long,
     val maximumPlayers: Int,
@@ -79,5 +79,5 @@ class ServerWorldPacket(
  * @author Kevin Ludwig
  */
 object ServerWorldPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldPacket(buffer.readInt(), buffer.readBoolean(), GameMode.byIdOrNull(buffer.readByte().toInt())!!, GameMode.byIdOrNull(buffer.readByte().toInt())!!, Array(buffer.readVarInt()) { buffer.readNamespacedKey() }, buffer.toNbtInputStream().use { it.readTag()?.asCompoundTag() }, buffer.toNbtInputStream().use { it.readTag()?.asCompoundTag() }, buffer.readNamespacedKey(), buffer.readLong(), buffer.readVarInt(), buffer.readVarInt(), !buffer.readBoolean(), !buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldPacket(buffer.readInt(), buffer.readBoolean(), GameMode.byIdOrNull(buffer.readByte().toInt())!!, GameMode.byIdOrNull(buffer.readByte().toInt())!!, Array(buffer.readVarInt()) { buffer.readNamespacedKey() }, buffer.toNbtInputStream().use { it.readTag() }, buffer.toNbtInputStream().use { it.readTag() }, buffer.readNamespacedKey(), buffer.readLong(), buffer.readVarInt(), buffer.readVarInt(), !buffer.readBoolean(), !buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
 }

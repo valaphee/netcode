@@ -47,12 +47,12 @@ import com.valaphee.netcode.mcbe.base.NetworkSettingsPacketReader
 import com.valaphee.netcode.mcbe.base.OnScreenTextureAnimationPacketReader
 import com.valaphee.netcode.mcbe.base.PositionTrackingDbClientRequestPacketReader
 import com.valaphee.netcode.mcbe.base.PositionTrackingDbServerBroadcastPacketReader
-import com.valaphee.netcode.mcbe.base.ProfilePacketReader
 import com.valaphee.netcode.mcbe.base.PurchaseReceiptPacketReader
 import com.valaphee.netcode.mcbe.base.ServerToClientHandshakePacketReader
+import com.valaphee.netcode.mcbe.base.ShowProfilePacketReader
+import com.valaphee.netcode.mcbe.base.ShowStoreOfferPacketReader
 import com.valaphee.netcode.mcbe.base.SimulationPacketReader
 import com.valaphee.netcode.mcbe.base.StatusPacketReader
-import com.valaphee.netcode.mcbe.base.StoreOfferPacketReader
 import com.valaphee.netcode.mcbe.base.SubLoginPacketReader
 import com.valaphee.netcode.mcbe.base.TextPacketReader
 import com.valaphee.netcode.mcbe.base.TitlePacketReader
@@ -316,7 +316,7 @@ class PacketCodec(
             this[0x58] = TitlePacketReader
             this[0x59] = BehaviorTreePacketReader
             this[0x5A] = StructureBlockUpdatePacketReader
-            this[0x5B] = StoreOfferPacketReader
+            this[0x5B] = ShowStoreOfferPacketReader
             this[0x5C] = PurchaseReceiptPacketReader
             this[0x5D] = AppearancePacketReader
             this[0x5E] = SubLoginPacketReader
@@ -329,7 +329,7 @@ class PacketCodec(
             this[0x65] = FormResponsePacketReader
             this[0x66] = ServerSettingsRequestPacketReader
             this[0x67] = ServerSettingsPacketReader
-            this[0x68] = ProfilePacketReader
+            this[0x68] = ShowProfilePacketReader
             this[0x69] = DefaultGameModePacketReader
             this[0x6A] = ObjectiveRemovePacketReader
             this[0x6B] = ObjectiveSetPacketReader

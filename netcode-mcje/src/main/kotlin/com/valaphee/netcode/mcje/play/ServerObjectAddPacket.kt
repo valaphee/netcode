@@ -39,7 +39,7 @@ import java.util.UUID
 class ServerObjectAddPacket(
     val entityId: Int,
     val entityUid: UUID?,
-    val type: NamespacedKey,
+    val typeKey: NamespacedKey,
     val position: Double3,
     val rotation: Float2,
     val data: Int,
@@ -48,7 +48,7 @@ class ServerObjectAddPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeUuid(entityUid!!)
-        buffer.writeVarInt(buffer.registrySet.entityTypes.getId(type))
+        buffer.writeVarInt(buffer.registrySet.entityTypes.getId(typeKey))
         buffer.writeDouble3(position)
         buffer.writeAngle2(rotation)
         buffer.writeInt(data)
@@ -60,7 +60,7 @@ class ServerObjectAddPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.objectAdd(this)
 
-    override fun toString() = "ServerObjectAddPacket(entityId=$entityId, entityUid=$entityUid, type=$type, position=$position, rotation=$rotation, data=$data, velocity=$velocity)"
+    override fun toString() = "ServerObjectAddPacket(entityId=$entityId, entityUid=$entityUid, type=$typeKey, position=$position, rotation=$rotation, data=$data, velocity=$velocity)"
 }
 
 /**

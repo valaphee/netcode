@@ -35,23 +35,25 @@ import com.valaphee.netcode.mcbe.Restriction
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
-class ProfilePacket(
-    val xboxUserId: String
+class ShowStoreOfferPacket(
+    val offerId: String,
+    val shownToAll: Boolean
 ) : Packet() {
-    override val id get() = 0x68
+    override val id get() = 0x5B
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(xboxUserId)
+        buffer.writeString(offerId)
+        buffer.writeBoolean(shownToAll)
     }
 
-    override fun handle(handler: PacketHandler) = handler.profile(this)
+    override fun handle(handler: PacketHandler) = handler.showStoreOffer(this)
 
-    override fun toString() = "ProfilePacket(xboxUserId='$xboxUserId')"
+    override fun toString() = "ShowStoreOfferPacket(offerId='$offerId', shownToAll=$shownToAll)"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ProfilePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ProfilePacket(buffer.readString())
+object ShowStoreOfferPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ShowStoreOfferPacket(buffer.readString(), buffer.readBoolean())
 }

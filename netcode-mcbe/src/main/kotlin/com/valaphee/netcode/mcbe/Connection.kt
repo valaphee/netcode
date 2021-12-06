@@ -25,7 +25,6 @@
 package com.valaphee.netcode.mcbe
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.util.lazyToString
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
@@ -108,7 +107,7 @@ class Connection(
         }
     var registrySet: RegistrySet? = null
         set(value) {
-            context.pipeline()[PacketCodec::class.java].registrySet = registrySet
+            context.pipeline()[PacketCodec::class.java].registrySet = value
             field = value
         }
 

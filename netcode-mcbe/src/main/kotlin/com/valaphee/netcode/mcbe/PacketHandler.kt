@@ -47,12 +47,12 @@ import com.valaphee.netcode.mcbe.base.NetworkSettingsPacket
 import com.valaphee.netcode.mcbe.base.OnScreenTextureAnimationPacket
 import com.valaphee.netcode.mcbe.base.PositionTrackingDbClientRequestPacket
 import com.valaphee.netcode.mcbe.base.PositionTrackingDbServerBroadcastPacket
-import com.valaphee.netcode.mcbe.base.ProfilePacket
 import com.valaphee.netcode.mcbe.base.PurchaseReceiptPacket
 import com.valaphee.netcode.mcbe.base.ServerToClientHandshakePacket
+import com.valaphee.netcode.mcbe.base.ShowProfilePacket
+import com.valaphee.netcode.mcbe.base.ShowStoreOfferPacket
 import com.valaphee.netcode.mcbe.base.SimulationPacket
 import com.valaphee.netcode.mcbe.base.StatusPacket
-import com.valaphee.netcode.mcbe.base.StoreOfferPacket
 import com.valaphee.netcode.mcbe.base.SubLoginPacket
 import com.valaphee.netcode.mcbe.base.TextPacket
 import com.valaphee.netcode.mcbe.base.TitlePacket
@@ -370,7 +370,7 @@ interface PacketHandler : ProtocolHandler {
 
     fun structureBlockUpdate(packet: StructureBlockUpdatePacket) = other(packet)
 
-    fun storeOffer(packet: StoreOfferPacket) = other(packet)
+    fun showStoreOffer(packet: ShowStoreOfferPacket) = other(packet)
 
     fun purchaseReceipt(packet: PurchaseReceiptPacket) = other(packet)
 
@@ -396,7 +396,7 @@ interface PacketHandler : ProtocolHandler {
 
     fun serverSettings(packet: ServerSettingsPacket) = other(packet)
 
-    fun profile(packet: ProfilePacket) = other(packet)
+    fun showProfile(packet: ShowProfilePacket) = other(packet)
 
     fun defaultGameMode(packet: DefaultGameModePacket) = other(packet)
 

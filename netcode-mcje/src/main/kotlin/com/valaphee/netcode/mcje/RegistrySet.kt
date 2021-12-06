@@ -31,7 +31,6 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
  * @author Kevin Ludwig
  */
 class RegistrySet(
-    val dimensions: Registry<NamespacedKey>,
     val sounds: Registry<NamespacedKey>,
     val effects: Registry<NamespacedKey>,
     val blocks: Registry<NamespacedKey>,
@@ -40,5 +39,6 @@ class RegistrySet(
     val items: Registry<NamespacedKey>,
     val particleTypes: Registry<NamespacedKey>,
     val windowTypes: Registry<NamespacedKey>,
-    val recipeTypes: Registry<NamespacedKey>
+    val recipeTypes: Registry<NamespacedKey>,
+    val blockStates: Registry<NamespacedKey>,
 )

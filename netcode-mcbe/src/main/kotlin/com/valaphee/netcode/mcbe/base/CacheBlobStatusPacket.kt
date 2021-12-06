@@ -60,6 +60,8 @@ object CacheBlobStatusPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): CacheBlobStatusPacket {
         val missCount = buffer.readVarUInt()
         val hitCount = buffer.readVarUInt()
+        val length = (missCount + hitCount) * 8
+        check(length <= buffer.readableBytes()) { "Length of $length exceeds ${buffer.readableBytes()}" }
         val misses = LongArray(missCount) { buffer.readLongLE() }
         val hits = LongArray(hitCount) { buffer.readLongLE() }
         return CacheBlobStatusPacket(misses, hits)

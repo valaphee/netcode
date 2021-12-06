@@ -33,12 +33,12 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
  * @author Kevin Ludwig
  */
 class ClientBeaconUpdatePacket(
-    val primaryEffect: NamespacedKey,
-    val secondaryEffect: NamespacedKey
+    val primaryEffect: NamespacedKey?,
+    val secondaryEffect: NamespacedKey?
 ) : Packet<ClientPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(buffer.registrySet.effects.getId(primaryEffect))
-        buffer.writeVarInt(buffer.registrySet.effects.getId(secondaryEffect))
+        buffer.writeVarInt(primaryEffect?.let { buffer.registrySet.effects.getId(it) } ?: 0)
+        buffer.writeVarInt(secondaryEffect?.let { buffer.registrySet.effects.getId(it) } ?: 0)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.beaconUpdate(this)
@@ -50,5 +50,9 @@ class ClientBeaconUpdatePacket(
  * @author Kevin Ludwig
  */
 object ClientBeaconUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientBeaconUpdatePacket(checkNotNull(buffer.registrySet.effects[buffer.readVarInt()]), checkNotNull(buffer.registrySet.effects[buffer.readVarInt()]))
+    override fun read(buffer: PacketBuffer, version: Int): ClientBeaconUpdatePacket {
+        val primaryEffect = buffer.readVarInt()
+        val secondaryEffect = buffer.readVarInt()
+        return ClientBeaconUpdatePacket(if (primaryEffect == 0) null else checkNotNull(buffer.registrySet.effects[primaryEffect]), if (secondaryEffect == 0) null else checkNotNull(buffer.registrySet.effects[secondaryEffect]))
+    }
 }

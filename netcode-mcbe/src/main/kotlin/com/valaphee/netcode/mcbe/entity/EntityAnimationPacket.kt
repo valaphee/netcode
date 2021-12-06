@@ -24,11 +24,11 @@
 
 package com.valaphee.netcode.mcbe.entity
 
+import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
-import com.valaphee.netcode.mc.util.Registry
 
 /**
  * @author Kevin Ludwig
@@ -42,7 +42,7 @@ class EntityAnimationPacket(
         NoAction, SwingArm, WakeUp, CriticalHit, MagicCriticalHit, RowRight, RowLeft;
 
         companion object {
-            val registry = Registry<Animation>().apply {
+            internal val registry = Registry<Animation>().apply {
                 this[0x00] = NoAction
                 this[0x01] = SwingArm
                 this[0x03] = WakeUp
@@ -65,10 +65,6 @@ class EntityAnimationPacket(
     override fun handle(handler: PacketHandler) = handler.entityAnimation(this)
 
     override fun toString() = "EntityAnimationPacket(animation=$animation, runtimeEntityId=$runtimeEntityId, rowingTime=$rowingTime)"
-
-    companion object {
-
-    }
 }
 
 /**
