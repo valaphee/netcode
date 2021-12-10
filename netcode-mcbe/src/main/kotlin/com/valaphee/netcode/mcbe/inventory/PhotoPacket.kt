@@ -28,10 +28,13 @@ import com.valaphee.netcode.mcbe.Packet
 import com.valaphee.netcode.mcbe.PacketBuffer
 import com.valaphee.netcode.mcbe.PacketHandler
 import com.valaphee.netcode.mcbe.PacketReader
+import com.valaphee.netcode.mcbe.Restrict
+import com.valaphee.netcode.mcbe.Restriction
 
 /**
  * @author Kevin Ludwig
  */
+@Restrict(Restriction.ToClient)
 class PhotoPacket(
     val name: String,
     val data: ByteArray,

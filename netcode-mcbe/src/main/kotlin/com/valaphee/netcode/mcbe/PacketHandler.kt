@@ -32,11 +32,14 @@ import com.valaphee.netcode.mcbe.base.CacheBlobStatusPacket
 import com.valaphee.netcode.mcbe.base.CacheBlobsPacket
 import com.valaphee.netcode.mcbe.base.CacheStatusPacket
 import com.valaphee.netcode.mcbe.base.ClientToServerHandshakePacket
+import com.valaphee.netcode.mcbe.base.CodeBuilderPacket
 import com.valaphee.netcode.mcbe.base.CustomEventPacket
 import com.valaphee.netcode.mcbe.base.DebugPacket
 import com.valaphee.netcode.mcbe.base.DebugRendererPacket
 import com.valaphee.netcode.mcbe.base.DisconnectPacket
+import com.valaphee.netcode.mcbe.base.EducationUriResourcePacket
 import com.valaphee.netcode.mcbe.base.EntityIdentifiersPacket
+import com.valaphee.netcode.mcbe.base.EntityPropertiesPacket
 import com.valaphee.netcode.mcbe.base.FilterPacket
 import com.valaphee.netcode.mcbe.base.ItemComponentPacket
 import com.valaphee.netcode.mcbe.base.LabTablePacket
@@ -127,6 +130,7 @@ import com.valaphee.netcode.mcbe.inventory.InventorySlotPacket
 import com.valaphee.netcode.mcbe.inventory.InventoryTransactionPacket
 import com.valaphee.netcode.mcbe.inventory.PhotoItemPacket
 import com.valaphee.netcode.mcbe.inventory.PhotoPacket
+import com.valaphee.netcode.mcbe.inventory.PhotoRequestPacket
 import com.valaphee.netcode.mcbe.inventory.TradePacket
 import com.valaphee.netcode.mcbe.inventory.WindowClosePacket
 import com.valaphee.netcode.mcbe.inventory.WindowOpenPacket
@@ -480,6 +484,8 @@ interface PacketHandler : ProtocolHandler {
 
     fun playerArmorDamage(packet: PlayerArmorDamagePacket) = other(packet)
 
+    fun codeBuilder(packet: CodeBuilderPacket) = other(packet)
+
     fun playerGameMode(packet: PlayerGameModePacket) = other(packet)
 
     fun emotes(packet: EmotesPacket) = other(packet)
@@ -508,13 +514,19 @@ interface PacketHandler : ProtocolHandler {
 
     fun debugRenderer(packet: DebugRendererPacket) = other(packet)
 
+    fun entityProperties(packet: EntityPropertiesPacket) = other(packet)
+
     fun simulation(packet: SimulationPacket) = other(packet)
 
     fun npcDialogue(packet: NpcDialoguePacket) = other(packet)
 
+    fun educationUriResource(packet: EducationUriResourcePacket) = other(packet)
+
     fun photoItem(packet: PhotoItemPacket) = other(packet)
 
     fun blockUpdatesSynced(packet: BlockUpdatesSyncedPacket) = other(packet)
+
+    fun photoRequest(packet: PhotoRequestPacket) = other(packet)
 
     fun subChunk(packet: SubChunkPacket) = other(packet)
 

@@ -32,11 +32,14 @@ import com.valaphee.netcode.mcbe.base.CacheBlobStatusPacketReader
 import com.valaphee.netcode.mcbe.base.CacheBlobsPacketReader
 import com.valaphee.netcode.mcbe.base.CacheStatusPacketReader
 import com.valaphee.netcode.mcbe.base.ClientToServerHandshakePacketReader
+import com.valaphee.netcode.mcbe.base.CodeBuilderPacketReader
 import com.valaphee.netcode.mcbe.base.CustomEventPacketReader
 import com.valaphee.netcode.mcbe.base.DebugPacketReader
 import com.valaphee.netcode.mcbe.base.DebugRendererPacketReader
 import com.valaphee.netcode.mcbe.base.DisconnectPacketReader
+import com.valaphee.netcode.mcbe.base.EducationUriResourcePacketReader
 import com.valaphee.netcode.mcbe.base.EntityIdentifiersPacketReader
+import com.valaphee.netcode.mcbe.base.EntityPropertiesPacketReader
 import com.valaphee.netcode.mcbe.base.FilterPacketReader
 import com.valaphee.netcode.mcbe.base.ItemComponentPacketReader
 import com.valaphee.netcode.mcbe.base.LabTablePacketReader
@@ -125,6 +128,7 @@ import com.valaphee.netcode.mcbe.inventory.InventorySlotPacketReader
 import com.valaphee.netcode.mcbe.inventory.InventoryTransactionPacketReader
 import com.valaphee.netcode.mcbe.inventory.PhotoItemPacketReader
 import com.valaphee.netcode.mcbe.inventory.PhotoPacketReader
+import com.valaphee.netcode.mcbe.inventory.PhotoRequestPacketReader
 import com.valaphee.netcode.mcbe.inventory.TradePacketReader
 import com.valaphee.netcode.mcbe.inventory.WindowClosePacketReader
 import com.valaphee.netcode.mcbe.inventory.WindowOpenPacketReader
@@ -199,14 +203,14 @@ class PacketCodec(
     var objectMapper: ObjectMapper? = null
     var registrySet: RegistrySet? = null
 
-    public override fun encode(context: ChannelHandlerContext, message: Packet, out: ByteBuf) {
+    public override fun encode(context: ChannelHandlerContext?, message: Packet, out: ByteBuf) {
         PacketBuffer(out, false, objectMapper, registrySet).apply {
             writeVarUInt(message.id and Packet.idMask or ((message.senderId and Packet.senderIdMask) shl Packet.senderIdShift) or ((message.clientId and Packet.clientIdMask) shl Packet.clientIdShift))
             message.write(this, version)
         }
     }
 
-    public override fun decode(context: ChannelHandlerContext, `in`: ByteBuf, out: MutableList<Any>) {
+    public override fun decode(context: ChannelHandlerContext?, `in`: ByteBuf, out: MutableList<Any>) {
         val buffer = PacketBuffer(`in`, false, objectMapper, registrySet)
         val header = buffer.readVarUInt()
         val id = header and Packet.idMask
@@ -362,7 +366,7 @@ class PacketCodec(
             this[0x86] = BlockComponentPacketReader
             this[0x87] = CacheBlobStatusPacketReader
             this[0x88] = CacheBlobsPacketReader
-            //this[0x89] =
+            //this[0x89] = EducationSettingsPacket
             this[0x8A] = EmotePacketReader
             this[0x8B] = MultiplayerSettingsPacketReader
             this[0x8C] = SettingsCommandPacketReader
@@ -375,7 +379,7 @@ class PacketCodec(
             //this[0x93] = InventoryRequestPacketReader
             //this[0x94] = InventoryResponsePacketReader
             this[0x95] = PlayerArmorDamagePacketReader
-            //this[0x96] =
+            this[0x96] = CodeBuilderPacketReader
             this[0x97] = PlayerGameModePacketReader
             this[0x98] = EmotesPacketReader
             this[0x99] = PositionTrackingDbServerBroadcastPacketReader
@@ -390,15 +394,15 @@ class PacketCodec(
             this[0xA2] = ItemComponentPacketReader
             this[0xA3] = FilterPacketReader
             this[0xA4] = DebugRendererPacketReader
-            //this[0xA5] =
-            //this[0xA6] =
-            //this[0xA7] =
+            this[0xA5] = EntityPropertiesPacketReader
+            //this[0xA6] = VolumeEntityAddPacketReader
+            //this[0xA7] = VolumeEntityRemovePacketReader
             this[0xA8] = SimulationPacketReader
             this[0xA9] = NpcDialoguePacketReader
-            //this[0xAA] =
+            this[0xAA] = EducationUriResourcePacketReader
             this[0xAB] = PhotoItemPacketReader
             this[0xAC] = BlockUpdatesSyncedPacketReader
-            //this[0xAD] =
+            this[0xAD] = PhotoRequestPacketReader
             this[0xAE] = SubChunkPacketReader
             this[0xAF] = SubChunkRequestPacketReader
         }

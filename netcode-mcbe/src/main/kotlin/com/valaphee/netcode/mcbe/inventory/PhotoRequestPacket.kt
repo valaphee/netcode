@@ -22,44 +22,33 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.form
+package com.valaphee.netcode.mcbe.inventory
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.google.gson.JsonElement
+import com.valaphee.netcode.mcbe.Packet
+import com.valaphee.netcode.mcbe.PacketBuffer
+import com.valaphee.netcode.mcbe.PacketHandler
+import com.valaphee.netcode.mcbe.PacketReader
 
 /**
  * @author Kevin Ludwig
  */
-class ButtonList(
-    title: String,
-    @get:JsonProperty("content") val content: String,
-    @get:JsonProperty("buttons") val buttons: List<Button>
-) : Form<String>(title) {
-    override fun getResponse(json: JsonElement) = if (json.asInt >= buttons.size) null else buttons[json.asInt].text
+class PhotoRequestPacket(
+    val photoId: Long,
+) : Packet() {
+    override val id get() = 0xAD
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as ButtonList
-
-        if (title != other.title) return false
-        if (content != other.content) return false
-        if (buttons != other.buttons) return false
-
-        return true
+    override fun write(buffer: PacketBuffer, version: Int) {
+        buffer.writeVarLong(photoId)
     }
 
-    override fun hashCode(): Int {
-        var result = title.hashCode()
-        result = 31 * result + content.hashCode()
-        result = 31 * result + buttons.hashCode()
-        return result
-    }
+    override fun handle(handler: PacketHandler) = handler.photoRequest(this)
 
-    override fun toString() = "ButtonList(title=$title, content=$content, buttons=$buttons)"
+    override fun toString() = "PhotoRequestPacket(photoId=$photoId)"
 }
 
-data class Button(
-    @get:JsonProperty("text") val text: String
-)
+/**
+ * @author Kevin Ludwig
+ */
+object PhotoRequestPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = PhotoRequestPacket(buffer.readVarULong())
+}

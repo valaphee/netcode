@@ -34,6 +34,7 @@ plugins {
 allprojects {
     repositories {
         mavenCentral()
+        maven("https://repository.apache.org/snapshots/")
         maven("https://repo.codemc.org/repository/maven-public")
         mavenLocal()
     }

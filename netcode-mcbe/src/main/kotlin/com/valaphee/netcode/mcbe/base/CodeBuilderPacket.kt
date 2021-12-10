@@ -22,44 +22,35 @@
  * SOFTWARE.
  */
 
-package com.valaphee.netcode.mcbe.form
+package com.valaphee.netcode.mcbe.base
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.google.gson.JsonElement
+import com.valaphee.netcode.mcbe.Packet
+import com.valaphee.netcode.mcbe.PacketBuffer
+import com.valaphee.netcode.mcbe.PacketHandler
+import com.valaphee.netcode.mcbe.PacketReader
 
 /**
  * @author Kevin Ludwig
  */
-class ButtonList(
-    title: String,
-    @get:JsonProperty("content") val content: String,
-    @get:JsonProperty("buttons") val buttons: List<Button>
-) : Form<String>(title) {
-    override fun getResponse(json: JsonElement) = if (json.asInt >= buttons.size) null else buttons[json.asInt].text
+class CodeBuilderPacket(
+    val url: String,
+    val open: Boolean
+) : Packet() {
+    override val id get() = 0x96
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as ButtonList
-
-        if (title != other.title) return false
-        if (content != other.content) return false
-        if (buttons != other.buttons) return false
-
-        return true
+    override fun write(buffer: PacketBuffer, version: Int) {
+        buffer.writeString(url)
+        buffer.writeBoolean(open)
     }
 
-    override fun hashCode(): Int {
-        var result = title.hashCode()
-        result = 31 * result + content.hashCode()
-        result = 31 * result + buttons.hashCode()
-        return result
-    }
+    override fun handle(handler: PacketHandler) = handler.codeBuilder(this)
 
-    override fun toString() = "ButtonList(title=$title, content=$content, buttons=$buttons)"
+    override fun toString() = "CodeBuilderPacket(url=$url)"
 }
 
-data class Button(
-    @get:JsonProperty("text") val text: String
-)
+/**
+ * @author Kevin Ludwig
+ */
+object CodeBuilderPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = CodeBuilderPacket(buffer.readString(), buffer.readBoolean())
+}

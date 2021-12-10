@@ -2,7 +2,7 @@
 jackson = "2.13.0"
 foundry = "1.3.0.0"
 nettyraknet = "0.8-SNAPSHOT"
-log4j = "2.14.1"
+log4j = "2.15.0-SNAPSHOT"
 
 [libraries]
 jackson-module-afterburner = { module = "com.fasterxml.jackson.module:jackson-module-afterburner", version.ref = "jackson" }
