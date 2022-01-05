@@ -26,13 +26,11 @@ data class Link(
     val fromUniqueEntityId: Long,
     val toUniqueEntityId: Long,
     val immediate: Boolean,
-    val driversAction: Boolean
+    val driversAction: Boolean = false
 ) {
     enum class Type {
         Remove, Driver, Passenger
     }
-
-    constructor(type: Type, fromUniqueEntityId: Long, toUniqueEntityId: Long, immediate: Boolean) : this(type, fromUniqueEntityId, toUniqueEntityId, immediate, false)
 }
 
 fun PacketBuffer.readLinkPre407(): Link {

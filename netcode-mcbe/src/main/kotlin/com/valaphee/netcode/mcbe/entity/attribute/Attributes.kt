@@ -72,10 +72,8 @@ class Attributes(
             }
             value.flagAsSaved()
         }
+
     }
 
-    override fun toString() = StringBuilder("Attributes(").apply {
-        attributes.forEach { (field, value) -> append(field).append('=').append(value.value).append(',') }
-        if (attributes.isEmpty()) append(')') else setCharAt(length - 1, ')')
-    }.toString()
+    override fun toString() = "Attributes(${attributes.entries.joinToString { "${it.key}=${it.value.value}" }})"
 }

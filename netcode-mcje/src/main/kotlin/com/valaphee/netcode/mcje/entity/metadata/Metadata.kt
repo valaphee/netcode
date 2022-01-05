@@ -60,8 +60,5 @@ class Metadata {
         buffer.writeByte(-1)
     }
 
-    override fun toString() = StringBuilder("Metadata(").apply {
-        values.forEach { (fieldId, value) -> append(fieldId).append('=').append(value.value).append(',') }
-        if (values.isEmpty()) append(')') else setCharAt(length - 1, ')')
-    }.toString()
+    override fun toString() = "Metadata(${values.int2ObjectEntrySet().joinToString { "${it.intKey}=${it.value.value}" }})"
 }

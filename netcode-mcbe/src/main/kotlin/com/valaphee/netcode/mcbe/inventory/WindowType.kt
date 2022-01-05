@@ -45,10 +45,10 @@ enum class WindowType(
     Merchant(15, 3),
     CommandBlock(16),
     Jukebox(17),
-    CompoundCreator(20),
-    ElementConstructor(21),
-    MaterialReducer(22),
-    LabTable(23),
+    CompoundCreator(20, 3 * 3 + 1),
+    ElementConstructor(21, 1),
+    MaterialReducer(22, 10),
+    LabTable(23, 9),
     Loom(24, 4),
     Lectern(25, 1),
     Grindstone(26, 3),
@@ -58,7 +58,7 @@ enum class WindowType(
     Cartography(30, 3),
     Hud(31),
     JigsawEditor(32),
-    SmithingTable(33);
+    SmithingTable(33, 3);
 
     companion object {
         private val byId = Int2ObjectOpenHashMap<WindowType>(values().size).apply { values().forEach { this[it.id] = it } }
