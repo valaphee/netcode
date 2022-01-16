@@ -16,8 +16,8 @@
 
 package com.valaphee.netcode.mcbe.command
 
-import com.valaphee.netcode.mcbe.PacketBuffer
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.util.safeList
 
 /**
  * @author Kevin Ludwig

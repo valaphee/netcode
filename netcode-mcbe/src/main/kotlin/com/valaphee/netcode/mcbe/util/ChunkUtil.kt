@@ -17,24 +17,27 @@
 package com.valaphee.netcode.mcbe.util
 
 import com.valaphee.foundry.math.Int2
-import com.valaphee.netcode.mc.util.nbt.Tag
-import com.valaphee.netcode.mcbe.PacketBuffer
-import com.valaphee.netcode.mcbe.world.chunk.storage.BlockStorage
+import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.world.chunk.BlockStorage
+import io.netty.buffer.ByteBufOutputStream
 import io.netty.buffer.ByteBufUtil
 import io.netty.buffer.Unpooled
+import java.io.OutputStream
 
-fun chunkData(borderBlocks: List<Int2>, blockEntities: List<Tag>): ByteArray = PacketBuffer(Unpooled.buffer()).use { buffer ->
+fun chunkData(borderBlocks: List<Int2>, blockEntities: List<Any?>): ByteArray = PacketBuffer(Unpooled.buffer()).use { buffer ->
     buffer.writeByte(borderBlocks.size)
     borderBlocks.forEach { buffer.writeByte((it.x and 0xF) or ((it.y and 0xF) shl 4)) }
-    buffer.toNbtOutputStream().use { stream -> blockEntities.forEach(stream::writeTag) }
+    val stream = ByteBufOutputStream(buffer.buffer) as OutputStream
+    blockEntities.forEach { buffer.nbtObjectMapper!!.writeValue(stream , it) }
     ByteBufUtil.getBytes(buffer)
 }
 
-fun chunkData(blockStorage: BlockStorage, biomes: ByteArray, borderBlocks: List<Int2>, blockEntities: List<Tag>): ByteArray = PacketBuffer(Unpooled.buffer()).use { buffer ->
+fun chunkData(blockStorage: BlockStorage, biomes: ByteArray, borderBlocks: List<Int2>, blockEntities: List<Any?>): ByteArray = PacketBuffer(Unpooled.buffer()).use { buffer ->
     repeat(blockStorage.subChunkCount) { i -> blockStorage.subChunks[i].writeToBuffer(buffer) }
     buffer.writeBytes(biomes)
     buffer.writeByte(borderBlocks.size)
     borderBlocks.forEach { buffer.writeByte((it.x and 0xF) or ((it.y and 0xF) shl 4)) }
-    buffer.toNbtOutputStream().use { stream -> blockEntities.forEach(stream::writeTag) }
+    val stream = ByteBufOutputStream(buffer.buffer) as OutputStream
+    blockEntities.forEach { buffer.nbtObjectMapper!!.writeValue(stream , it) }
     ByteBufUtil.getBytes(buffer)
 }

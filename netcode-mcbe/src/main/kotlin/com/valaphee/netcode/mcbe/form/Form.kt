@@ -35,7 +35,7 @@ import com.google.gson.JsonElement
     JsonSubTypes.Type(CustomForm::class, name = "custom_form")
 )
 abstract class Form<T>(
-    @get:JsonProperty("title") val title: String
+    @JsonProperty("title") val title: String
 ) {
     abstract fun getResponse(json: JsonElement): T?
 }
