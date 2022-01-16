@@ -72,7 +72,6 @@ class Attributes(
             }
             value.flagAsSaved()
         }
-
     }
 
     override fun toString() = "Attributes(${attributes.entries.joinToString { "${it.key}=${it.value.value}" }})"

@@ -38,7 +38,7 @@ class BiomeDefinitionsPacket(
     override val id get() = 0x7A
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer.buffer) as OutputStream, data)
+        buffer.nbtObjectMapper!!.writeValue(ByteBufOutputStream(buffer.buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.biomeDefinitions(this)
@@ -50,5 +50,5 @@ class BiomeDefinitionsPacket(
  * @author Kevin Ludwig
  */
 object BiomeDefinitionsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BiomeDefinitionsPacket(buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer.buffer) as InputStream))
+    override fun read(buffer: PacketBuffer, version: Int) = BiomeDefinitionsPacket(buffer.nbtObjectMapper!!.readValue(ByteBufInputStream(buffer.buffer) as InputStream))
 }

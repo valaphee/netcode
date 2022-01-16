@@ -21,6 +21,8 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.internal.Streams
 import com.google.gson.stream.JsonReader
+import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.util.ByteBufStringReader
 import com.valaphee.netcode.mcbe.util.getBool
 import com.valaphee.netcode.mcbe.util.getFloat
 import com.valaphee.netcode.mcbe.util.getInt
@@ -29,8 +31,6 @@ import com.valaphee.netcode.mcbe.util.getJsonArray
 import com.valaphee.netcode.mcbe.util.getJsonArrayOrNull
 import com.valaphee.netcode.mcbe.util.getString
 import com.valaphee.netcode.mcbe.util.getStringOrNull
-import com.valaphee.netcode.mcbe.network.PacketBuffer
-import com.valaphee.netcode.mcbe.util.ByteBufStringReader
 import java.awt.Transparency
 import java.awt.color.ColorSpace
 import java.awt.image.BufferedImage

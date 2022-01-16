@@ -16,7 +16,6 @@
 
 package com.valaphee.netcode.mcbe.network
 
-import com.valaphee.netcode.util.Compressor
 import com.valaphee.netcode.util.ZlibCompressor
 import com.valaphee.netcode.util.compressor
 import io.netty.buffer.ByteBuf

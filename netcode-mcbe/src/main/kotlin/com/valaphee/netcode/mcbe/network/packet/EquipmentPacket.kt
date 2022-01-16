@@ -47,7 +47,7 @@ class EquipmentPacket(
         buffer.writeByte(type.id)
         buffer.writeVarInt(slotCount)
         buffer.writeVarLong(uniqueEntityId)
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer.buffer) as OutputStream, data)
+        buffer.nbtObjectMapper!!.writeValue(ByteBufOutputStream(buffer.buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.equipment(this)
@@ -59,5 +59,5 @@ class EquipmentPacket(
  * @author Kevin Ludwig
  */
 object EquipmentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EquipmentPacket(buffer.readByte().toInt(), WindowType.byId(buffer.readByte().toInt()), buffer.readVarInt(), buffer.readVarLong(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer.buffer) as InputStream))
+    override fun read(buffer: PacketBuffer, version: Int) = EquipmentPacket(buffer.readByte().toInt(), WindowType.byId(buffer.readByte().toInt()), buffer.readVarInt(), buffer.readVarLong(), buffer.nbtObjectMapper!!.readValue(ByteBufInputStream(buffer.buffer) as InputStream))
 }

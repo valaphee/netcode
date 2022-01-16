@@ -16,15 +16,15 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mcbe.network.Packet
-import com.valaphee.netcode.mcbe.network.PacketBuffer
-import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.item.stack.Stack
 import com.valaphee.netcode.mcbe.item.stack.readStack
 import com.valaphee.netcode.mcbe.item.stack.readStackPre431
 import com.valaphee.netcode.mcbe.item.stack.writeStack
 import com.valaphee.netcode.mcbe.item.stack.writeStackPre431
+import com.valaphee.netcode.mcbe.network.Packet
+import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.network.PacketHandler
+import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.util.safeList
 import java.util.UUID
 

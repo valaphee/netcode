@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.command.Permission
-import com.valaphee.netcode.mcbe.world.entity.metadata.Metadata
 import com.valaphee.netcode.mcbe.item.stack.Stack
 import com.valaphee.netcode.mcbe.item.stack.readStack
 import com.valaphee.netcode.mcbe.item.stack.readStackPre431
@@ -31,8 +30,10 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.util.safeList
 import com.valaphee.netcode.mcbe.world.WorldFlag
 import com.valaphee.netcode.mcbe.world.entity.Link
+import com.valaphee.netcode.mcbe.world.entity.metadata.Metadata
 import com.valaphee.netcode.mcbe.world.entity.player.PlayerFlag
 import com.valaphee.netcode.mcbe.world.entity.player.Rank
 import com.valaphee.netcode.mcbe.world.entity.player.User
@@ -40,7 +41,6 @@ import com.valaphee.netcode.mcbe.world.entity.readLink
 import com.valaphee.netcode.mcbe.world.entity.readLinkPre407
 import com.valaphee.netcode.mcbe.world.entity.writeLink
 import com.valaphee.netcode.mcbe.world.entity.writeLinkPre407
-import com.valaphee.netcode.mcbe.util.safeList
 import java.util.UUID
 
 /**

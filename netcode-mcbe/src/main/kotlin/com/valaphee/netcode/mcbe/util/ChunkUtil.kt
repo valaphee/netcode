@@ -28,7 +28,7 @@ fun chunkData(borderBlocks: List<Int2>, blockEntities: List<Any?>): ByteArray = 
     buffer.writeByte(borderBlocks.size)
     borderBlocks.forEach { buffer.writeByte((it.x and 0xF) or ((it.y and 0xF) shl 4)) }
     val stream = ByteBufOutputStream(buffer.buffer) as OutputStream
-    blockEntities.forEach { buffer.nbtObjectMapper!!.writeValue(stream , it) }
+    blockEntities.forEach { buffer.nbtObjectMapper!!.writeValue(stream, it) }
     ByteBufUtil.getBytes(buffer)
 }
 
@@ -38,6 +38,6 @@ fun chunkData(blockStorage: BlockStorage, biomes: ByteArray, borderBlocks: List<
     buffer.writeByte(borderBlocks.size)
     borderBlocks.forEach { buffer.writeByte((it.x and 0xF) or ((it.y and 0xF) shl 4)) }
     val stream = ByteBufOutputStream(buffer.buffer) as OutputStream
-    blockEntities.forEach { buffer.nbtObjectMapper!!.writeValue(stream , it) }
+    blockEntities.forEach { buffer.nbtObjectMapper!!.writeValue(stream, it) }
     ByteBufUtil.getBytes(buffer)
 }
