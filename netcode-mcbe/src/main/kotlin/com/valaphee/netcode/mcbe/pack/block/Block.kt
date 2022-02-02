@@ -17,6 +17,7 @@
 package com.valaphee.netcode.mcbe.pack.block
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.valaphee.netcode.mc.util.nbt.Nbt
@@ -27,13 +28,12 @@ import com.valaphee.netcode.mc.util.nbt.toTag
 import com.valaphee.netcode.mcbe.pack.ComponentsDeserializer
 import com.valaphee.netcode.mcbe.pack.ComponentsSerializer
 import com.valaphee.netcode.mcbe.pack.Data
-import com.valaphee.netcode.mcbe.pack.DataType
 import com.valaphee.netcode.mcbe.pack.DataTypeResolver
 
 /**
  * @author Kevin Ludwig
  */
-@DataType("minecraft:block")
+@JsonTypeName("minecraft:block")
 class Block(
     @get:JsonProperty("description") val description: Description,
     @get:JsonProperty("events") val events: Map<String, Map<String, Any>>? = null,

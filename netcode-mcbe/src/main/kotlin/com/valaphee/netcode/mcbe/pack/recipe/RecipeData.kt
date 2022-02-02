@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcbe.pack.recipe
 
-import com.valaphee.netcode.mcbe.item.craft.Recipe
+import com.valaphee.netcode.mcbe.world.item.craft.Recipe
 import com.valaphee.netcode.mcbe.pack.Data
 
 /**

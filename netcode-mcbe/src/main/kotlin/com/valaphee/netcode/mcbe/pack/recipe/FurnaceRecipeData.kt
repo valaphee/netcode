@@ -17,19 +17,19 @@
 package com.valaphee.netcode.mcbe.pack.recipe
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.item.craft.furnaceRecipe
-import com.valaphee.netcode.mcbe.item.stack.Stack
-import com.valaphee.netcode.mcbe.pack.DataType
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.valaphee.netcode.mcbe.world.item.craft.furnaceRecipe
+import com.valaphee.netcode.mcbe.world.item.ItemStack
 
 /**
  * @author Kevin Ludwig
  */
-@DataType("minecraft:recipe_furnace")
+@JsonTypeName("minecraft:recipe_furnace")
 class FurnaceRecipeData(
     @get:JsonProperty("description") val description: Description,
     @get:JsonProperty("tags") val tags: Array<String>,
-    @get:JsonProperty("input") val input: Stack,
-    @get:JsonProperty("output") val output: Stack
+    @get:JsonProperty("input") val input: ItemStack,
+    @get:JsonProperty("output") val output: ItemStack
 ) : RecipeData {
     class Description(
         @get:JsonProperty("identifier") val key: String

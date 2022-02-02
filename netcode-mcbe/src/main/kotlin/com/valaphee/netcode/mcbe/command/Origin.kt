@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcbe.command
 
-import com.valaphee.netcode.mcbe.PacketBuffer
+import com.valaphee.netcode.mcbe.network.PacketBuffer
 import java.util.UUID
 
 /**

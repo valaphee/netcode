@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe
+package com.valaphee.netcode.mcbe.network.packet
+
+import com.valaphee.netcode.mcbe.network.Packet
+import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.network.PacketHandler
 
 /**
  * @author Kevin Ludwig

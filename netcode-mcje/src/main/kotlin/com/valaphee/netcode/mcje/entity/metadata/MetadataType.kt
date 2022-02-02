@@ -24,7 +24,7 @@ import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.mc.util.nbt.NbtInputStream
 import com.valaphee.netcode.mc.util.nbt.NbtOutputStream
 import com.valaphee.netcode.mc.util.nbt.Tag
-import com.valaphee.netcode.mcje.PacketBuffer
+import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.item.stack.Stack
 import com.valaphee.netcode.mcje.item.stack.readStack
 import com.valaphee.netcode.mcje.item.stack.writeStack

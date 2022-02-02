@@ -17,22 +17,22 @@
 package com.valaphee.netcode.mcbe.pack.recipe
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.item.craft.Recipe
-import com.valaphee.netcode.mcbe.item.craft.shapedRecipe
-import com.valaphee.netcode.mcbe.item.stack.Stack
-import com.valaphee.netcode.mcbe.pack.DataType
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.valaphee.netcode.mcbe.world.item.craft.Recipe
+import com.valaphee.netcode.mcbe.world.item.craft.shapedRecipe
+import com.valaphee.netcode.mcbe.world.item.ItemStack
 
 /**
  * @author Kevin Ludwig
  */
-@DataType("minecraft:recipe_shaped")
+@JsonTypeName("minecraft:recipe_shaped")
 class ShapedRecipeData(
     @get:JsonProperty("description") val description: Description,
     @get:JsonProperty("tags") val tags: List<String>,
-    @get:JsonProperty("key") val key: Map<Char, Stack>,
+    @get:JsonProperty("key") val key: Map<Char, ItemStack>,
     @get:JsonProperty("pattern") val pattern: List<String>,
     @get:JsonProperty("priority") val priority: Int = 0,
-    @get:JsonProperty("result") val result: Stack
+    @get:JsonProperty("result") val result: ItemStack
 ) : RecipeData {
     class Description(
         @get:JsonProperty("identifier") val key: String
@@ -45,7 +45,7 @@ class ShapedRecipeData(
             val patternRowWidth = it.length
             if (patternRowWidth > width) width = patternRowWidth
         }
-        val inputs = arrayOfNulls<Stack?>(width * height)
+        val inputs = arrayOfNulls<ItemStack?>(width * height)
         pattern.forEachIndexed { i, patternRow -> patternRow.forEachIndexed { j, patternColumn -> inputs[i * width + j] = key[patternColumn] } }
         return shapedRecipe(Recipe.Type.Shaped, description.key, width, height, inputs.toList(), listOf(result), tags.first(), priority, netId)
     }

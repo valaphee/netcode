@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcje.entity.metadata
 
-import com.valaphee.netcode.mcje.PacketBuffer
+import com.valaphee.netcode.mcje.network.PacketBuffer
 
 /**
  * @author Kevin Ludwig

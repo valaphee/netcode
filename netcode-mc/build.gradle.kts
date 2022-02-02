@@ -15,12 +15,12 @@
  */
 
 dependencies {
+    api("com.fasterxml.jackson.module:jackson-module-afterburner:2.13.0")
+    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
+    api("com.google.code.gson:gson:2.8.9")
+    api("com.valaphee:foundry-math:1.3.0.0")
+    api("it.unimi.dsi:fastutil:8.5.6")
     api(project(":netcode-common"))
-    api(libs.jackson.module.afterburner)
-    api(libs.jackson.module.kotlin)
-    api(libs.gson)
-    api(libs.foundry.math)
-    api(libs.fastutil)
 }
 
 publishing {

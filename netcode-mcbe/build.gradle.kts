@@ -16,11 +16,11 @@
 
 dependencies {
     api(project(":netcode-mc"))
-    api(libs.classgraph)
-    api(libs.nettyraknet.client)
-    api(libs.nettyraknet.server)
-    api(libs.jose4j)
-    api(libs.lz4)
+    api("io.github.classgraph:classgraph:4.8.129")
+    api("network.ycc:netty-raknet-client:0.8-SNAPSHOT")
+    api("network.ycc:netty-raknet-server:0.8-SNAPSHOT")
+    api("org.bitbucket.b_c:jose4j:0.7.9")
+    api("org.lz4:lz4-java:1.8.0")
 }
 
 publishing {

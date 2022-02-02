@@ -15,8 +15,8 @@
  */
 
 dependencies {
-    api(libs.netty)
-    api(libs.log4j.core)
+    api("io.netty:netty-all:4.1.70.Final")
+    api("org.apache.logging.log4j:log4j-api:2.17.0")
 }
 
 publishing {

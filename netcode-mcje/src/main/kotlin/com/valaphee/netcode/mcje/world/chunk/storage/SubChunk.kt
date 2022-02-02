@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcje.world.chunk.storage
 
-import com.valaphee.netcode.mcje.PacketBuffer
+import com.valaphee.netcode.mcje.network.PacketBuffer
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
 

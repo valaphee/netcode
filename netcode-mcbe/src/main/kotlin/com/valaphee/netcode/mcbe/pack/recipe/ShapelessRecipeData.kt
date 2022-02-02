@@ -17,21 +17,21 @@
 package com.valaphee.netcode.mcbe.pack.recipe
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.item.craft.Recipe
-import com.valaphee.netcode.mcbe.item.craft.shapelessRecipe
-import com.valaphee.netcode.mcbe.item.stack.Stack
-import com.valaphee.netcode.mcbe.pack.DataType
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.valaphee.netcode.mcbe.world.item.craft.Recipe
+import com.valaphee.netcode.mcbe.world.item.craft.shapelessRecipe
+import com.valaphee.netcode.mcbe.world.item.ItemStack
 
 /**
  * @author Kevin Ludwig
  */
-@DataType("minecraft:recipe_shapeless")
+@JsonTypeName("minecraft:recipe_shapeless")
 class ShapelessRecipeData(
     @get:JsonProperty("description") val description: Description,
     @get:JsonProperty("tags") val tags: List<String>,
-    @get:JsonProperty("ingredients") val ingredients: List<Stack>,
+    @get:JsonProperty("ingredients") val ingredients: List<ItemStack>,
     @get:JsonProperty("priority") val priority: Int = 0,
-    @get:JsonProperty("result") val result: Stack
+    @get:JsonProperty("result") val result: ItemStack
 ) : RecipeData {
     class Description(
         @get:JsonProperty("identifier") val key: String

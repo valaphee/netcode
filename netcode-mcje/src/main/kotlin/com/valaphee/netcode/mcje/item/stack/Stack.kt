@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.item.stack
 import com.valaphee.netcode.mc.util.nbt.CompoundTag
 import com.valaphee.netcode.mc.util.nbt.NbtInputStream
 import com.valaphee.netcode.mc.util.nbt.NbtOutputStream
-import com.valaphee.netcode.mcje.PacketBuffer
+import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream

@@ -16,20 +16,14 @@
 
 package com.valaphee.netcode.mcbe.pack
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.databind.DatabindContext
-import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
-import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.github.classgraph.ClassGraph
 import java.io.File
-import kotlin.reflect.KClass
-import kotlin.reflect.jvm.jvmName
 
 /**
  * @author Kevin Ludwig
@@ -38,7 +32,9 @@ import kotlin.reflect.jvm.jvmName
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.WRAPPER_OBJECT
 )
-@JsonTypeIdResolver(DataTypeResolver::class)
+@JsonSubTypes(
+    
+)
 interface Data
 
 inline fun <reified T : Data> ObjectMapper.readData(file: File): Pair<T, String?> {
