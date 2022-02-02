@@ -26,6 +26,7 @@ plugins {
 allprojects {
     repositories {
         mavenCentral()
+        maven("https://repository.apache.org/snapshots/")
         maven("https://repo.codemc.org/repository/maven-public")
         mavenLocal()
     }
@@ -51,6 +52,7 @@ subprojects {
         withType<KotlinCompile> { kotlinOptions { jvmTarget = "16" } }
 
         withType<Test> { useJUnitPlatform() }
+
     }
 
     java {

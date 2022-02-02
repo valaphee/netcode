@@ -31,12 +31,12 @@ data class Command(
         Usage, Visible, Synchronized, Executable, Type, Cheat, Unknown6
     }
 
-    class Builder(
+    class Structure(
         val name: String,
         val description: String,
         val flags: Set<Flag>,
         val permission: Permission,
         val aliasesIndex: Int,
-        val overloads: List<List<Parameter.Builder>>
+        val overloadStructures: List<List<Parameter.Structure>>
     )
 }

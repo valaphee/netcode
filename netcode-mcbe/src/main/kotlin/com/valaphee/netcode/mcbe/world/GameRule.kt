@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcbe.world
 
-import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.PacketBuffer
 
 /**
  * @author Kevin Ludwig

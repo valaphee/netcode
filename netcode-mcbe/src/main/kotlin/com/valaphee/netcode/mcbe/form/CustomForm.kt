@@ -26,7 +26,7 @@ import com.google.gson.JsonElement
  */
 class CustomForm(
     title: String,
-    @JsonProperty("content") val elements: List<Element>
+    @get:JsonProperty("content") val elements: List<Element>
 ) : Form<Map<String, Any?>>(title) {
     override fun getResponse(json: JsonElement): Map<String, Any?> = json.asJsonArray.mapIndexed { i, jsonAnswer -> Pair(elements[i].text, elements[i].answer(jsonAnswer)) }.toMap()
 
@@ -65,7 +65,7 @@ class CustomForm(
     JsonSubTypes.Type(Toggle::class, name = "toggle"),
 )
 abstract class Element(
-    @JsonProperty("text") val text: String
+    @get:JsonProperty("text") val text: String
 ) {
     abstract fun answer(jsonAnswer: JsonElement): Any?
 
@@ -93,8 +93,8 @@ class Label(
 
 class Dropdown(
     text: String,
-    @JsonProperty("options") val values: List<String>,
-    @JsonProperty("default") var valueIndex: Int = 0
+    @get:JsonProperty("options") val values: List<String>,
+    @get:JsonProperty("default") var valueIndex: Int = 0
 ) : Element(text) {
     override fun answer(jsonAnswer: JsonElement): Any {
         valueIndex = jsonAnswer.asInt
@@ -106,8 +106,8 @@ class Dropdown(
 
 class Input(
     text: String,
-    @JsonProperty("placeholder") val placeholder: String,
-    @JsonProperty("default") var value: String = ""
+    @get:JsonProperty("placeholder") val placeholder: String,
+    @get:JsonProperty("default") var value: String = ""
 ) : Element(text) {
     override fun answer(jsonAnswer: JsonElement): Any {
         value = jsonAnswer.asString
@@ -119,10 +119,10 @@ class Input(
 
 class Slider(
     text: String,
-    @JsonProperty("min") val minimum: Number,
-    @JsonProperty("max") val maximum: Number,
-    @JsonProperty("step") val step: Number,
-    @JsonProperty("default") var value: Number
+    @get:JsonProperty("min") val minimum: Number,
+    @get:JsonProperty("max") val maximum: Number,
+    @get:JsonProperty("step") val step: Number,
+    @get:JsonProperty("default") var value: Number
 ) : Element(text) {
     override fun answer(jsonAnswer: JsonElement): Any {
         value = jsonAnswer.asDouble
@@ -134,8 +134,8 @@ class Slider(
 
 class StepSlider(
     text: String,
-    @JsonProperty("steps") val values: List<String>,
-    @JsonProperty("default") var valueIndex: Int = 0
+    @get:JsonProperty("steps") val values: List<String>,
+    @get:JsonProperty("default") var valueIndex: Int = 0
 ) : Element(text) {
     override fun answer(jsonAnswer: JsonElement): Any {
         valueIndex = jsonAnswer.asInt
@@ -147,7 +147,7 @@ class StepSlider(
 
 class Toggle(
     text: String,
-    @JsonProperty("default") var value: Boolean = false
+    @get:JsonProperty("default") var value: Boolean = false
 ) : Element(text) {
     override fun answer(jsonAnswer: JsonElement): Any {
         value = jsonAnswer.asBoolean

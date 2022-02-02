@@ -20,10 +20,13 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.internal.Streams
 import com.google.gson.stream.JsonReader
-import com.valaphee.netcode.mcbe.world.entity.player.AuthExtra
-import com.valaphee.netcode.mcbe.world.entity.player.User
-import com.valaphee.netcode.mcbe.world.entity.player.asAuthExtra
-import com.valaphee.netcode.mcbe.world.entity.player.asUser
+import com.valaphee.netcode.mc.util.getJsonArray
+import com.valaphee.netcode.mc.util.getJsonObject
+import com.valaphee.netcode.mc.util.getString
+import com.valaphee.netcode.mcbe.entity.player.AuthExtra
+import com.valaphee.netcode.mcbe.entity.player.User
+import com.valaphee.netcode.mcbe.entity.player.asAuthExtra
+import com.valaphee.netcode.mcbe.entity.player.asUser
 import org.jose4j.jwa.AlgorithmConstraints
 import org.jose4j.jws.JsonWebSignature
 import org.jose4j.jwt.consumer.InvalidJwtException

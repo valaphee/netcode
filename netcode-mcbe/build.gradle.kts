@@ -15,17 +15,10 @@
  */
 
 dependencies {
-    api(libs.jackson.module.afterburner)
-    api(libs.jackson.module.kotlin)
-    api(libs.gson)
-    api(libs.foundry.math)
-    api(libs.jackson.dataformat.nbt)
+    api(project(":netcode-mc"))
     api(libs.classgraph)
-    api(libs.netty)
-    api(libs.fastutil)
     api(libs.nettyraknet.client)
     api(libs.nettyraknet.server)
-    api(libs.log4j.core)
     api(libs.jose4j)
     api(libs.lz4)
 }
@@ -44,7 +37,7 @@ publishing {
                 }
                 licenses {
                     license {
-                        name.set("Apache License 2.0")
+                        name.set("MIT License")
                         url.set("https://raw.githubusercontent.com/valaphee/netcode/master/LICENSE.txt")
                     }
                 }

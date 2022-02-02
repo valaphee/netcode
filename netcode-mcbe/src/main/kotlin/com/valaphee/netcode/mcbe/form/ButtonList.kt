@@ -24,8 +24,8 @@ import com.google.gson.JsonElement
  */
 class ButtonList(
     title: String,
-    @JsonProperty("content") val content: String,
-    @JsonProperty("buttons") val buttons: List<Button>
+    @get:JsonProperty("content") val content: String,
+    @get:JsonProperty("buttons") val buttons: List<Button>
 ) : Form<String>(title) {
     override fun getResponse(json: JsonElement) = if (json.asInt >= buttons.size) null else buttons[json.asInt].text
 
@@ -53,5 +53,5 @@ class ButtonList(
 }
 
 data class Button(
-    @JsonProperty("text") val text: String
+    @get:JsonProperty("text") val text: String
 )

@@ -50,7 +50,7 @@ data class Parameter(
         Command
     }
 
-    class Builder(
+    class Structure(
         var name: String,
         var optional: Boolean,
         var options: Set<Option>,
