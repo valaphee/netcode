@@ -15,22 +15,19 @@
  */
 
 dependencies {
-    api("com.fasterxml.jackson.module:jackson-module-afterburner:2.13.1")
-    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
-    api("com.google.code.gson:gson:2.8.9")
-    api("com.valaphee:foundry-math:1.3.0.0")
-    api("com.valaphee:jackson-dataformat-nbt:1.0.0.0")
-    api("io.github.classgraph:classgraph:4.8.138")
-    api("io.netty:netty-all:4.1.72.Final")
-    api("it.unimi.dsi:fastutil:8.5.6")
-    api("network.ycc:netty-raknet-client:0.8-SNAPSHOT")
-    api("network.ycc:netty-raknet-server:0.8-SNAPSHOT")
-    api("org.apache.logging.log4j:log4j-core:2.17.1")
-    api("org.bitbucket.b_c:jose4j:0.7.9")
-    api("org.lz4:lz4-java:1.8.0")
-}
-repositories {
-    mavenCentral()
+    api(libs.jackson.module.afterburner)
+    api(libs.jackson.module.kotlin)
+    api(libs.gson)
+    api(libs.foundry.math)
+    api(libs.jackson.dataformat.nbt)
+    api(libs.classgraph)
+    api(libs.netty)
+    api(libs.fastutil)
+    api(libs.nettyraknet.client)
+    api(libs.nettyraknet.server)
+    api(libs.log4j.core)
+    api(libs.jose4j)
+    api(libs.lz4)
 }
 
 publishing {
