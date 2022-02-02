@@ -28,8 +28,8 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.util.safeList
 import com.valaphee.netcode.mcbe.world.inventory.WindowId
+import com.valaphee.netcode.mcbe.util.safeList
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 
 /**

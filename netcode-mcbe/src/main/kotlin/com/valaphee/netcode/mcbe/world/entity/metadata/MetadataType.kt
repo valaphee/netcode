@@ -19,8 +19,8 @@ package com.valaphee.netcode.mcbe.world.entity.metadata
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.util.Registry
+import com.valaphee.netcode.mcbe.network.PacketBuffer
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.InputStream

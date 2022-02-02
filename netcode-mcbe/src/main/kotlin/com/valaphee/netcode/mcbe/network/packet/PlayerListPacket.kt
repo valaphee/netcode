@@ -22,9 +22,8 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.mcbe.util.safeList
-import com.valaphee.netcode.mcbe.world.entity.player.Appearance
 import com.valaphee.netcode.mcbe.world.entity.player.User
+import com.valaphee.netcode.mcbe.world.entity.player.Appearance
 import com.valaphee.netcode.mcbe.world.entity.player.readAppearance
 import com.valaphee.netcode.mcbe.world.entity.player.readAppearancePre390
 import com.valaphee.netcode.mcbe.world.entity.player.readAppearancePre419
@@ -35,6 +34,7 @@ import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre390
 import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre419
 import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre428
 import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre465
+import com.valaphee.netcode.mcbe.util.safeList
 import java.util.UUID
 
 /**
