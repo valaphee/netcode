@@ -61,14 +61,22 @@ class Manifest(
         @get:JsonProperty("type") val type: Type?,
     ) {
         enum class Type {
-            @JsonProperty("invalid") Invalid,
-            @JsonProperty("resources") Resource,
-            @JsonProperty("data") Data,
-            @JsonProperty("plugin") Plugin,
-            @JsonProperty("client_data") ClientData,
-            @JsonProperty("interface") Interface,
-            @JsonProperty("mandatory") Mandatory,
-            @JsonProperty("world_template") WorldTemplate
+            @JsonProperty("invalid")
+            Invalid,
+            @JsonProperty("resources")
+            Resource,
+            @JsonProperty("data")
+            Data,
+            @JsonProperty("plugin")
+            Plugin,
+            @JsonProperty("client_data")
+            ClientData,
+            @JsonProperty("interface")
+            Interface,
+            @JsonProperty("mandatory")
+            Mandatory,
+            @JsonProperty("world_template")
+            WorldTemplate
         }
     }
 

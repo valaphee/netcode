@@ -16,19 +16,19 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
+import com.valaphee.netcode.mcbe.Restrict
+import com.valaphee.netcode.mcbe.Restriction
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.Restrict
-import com.valaphee.netcode.mcbe.Restriction
 
 /**
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
 class EntityRemovePacket(
-    val uniqueEntityId: Long = 0
+    val uniqueEntityId: Long
 ) : Packet() {
     override val id get() = 0x0E
 

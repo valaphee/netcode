@@ -18,16 +18,16 @@ package com.valaphee.netcode.mcbe.network.packet
 
 import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
+import com.valaphee.netcode.mcbe.network.Packet
+import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.network.PacketHandler
+import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.inventory.WindowSlotType
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readStackInstance
 import com.valaphee.netcode.mcbe.world.item.readStackPre431
 import com.valaphee.netcode.mcbe.world.item.writeStackInstance
 import com.valaphee.netcode.mcbe.world.item.writeStackPre431
-import com.valaphee.netcode.mcbe.network.Packet
-import com.valaphee.netcode.mcbe.network.PacketBuffer
-import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.util.safeList
 
 /**

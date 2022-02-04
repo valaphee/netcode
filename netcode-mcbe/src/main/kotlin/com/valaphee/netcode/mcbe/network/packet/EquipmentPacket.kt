@@ -19,11 +19,11 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mc.util.nbt.Tag
 import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
-import com.valaphee.netcode.mcbe.world.inventory.WindowType
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.world.inventory.WindowType
 
 /**
  * @author Kevin Ludwig

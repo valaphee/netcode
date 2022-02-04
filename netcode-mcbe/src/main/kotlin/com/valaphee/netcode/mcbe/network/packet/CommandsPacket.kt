@@ -172,19 +172,19 @@ object CommandsPacketReader : PacketReader {
             }
         }
         val enumerations = safeList(buffer.readVarUInt()) { Enumeration(buffer.readString(), safeList(buffer.readVarUInt()) { values[indexReader()] }, false) }
-        val commandStructures = safeList(buffer.readVarUInt()) {
+        val commandBuilders = safeList(buffer.readVarUInt()) {
             val name = buffer.readString()
             val description = buffer.readString()
             val flags = if (version >= 448) buffer.readShortLEFlags<Command.Flag>() else buffer.readByteFlags()
             val permission = Permission.values()[buffer.readByte().toInt()]
             val aliasesIndex = buffer.readIntLE()
-            val overloadStructures = safeList(buffer.readVarUInt()) {
+            val overloadBuilders = safeList(buffer.readVarUInt()) {
                 safeList(buffer.readVarUInt()) {
                     val parameterName = buffer.readString()
                     val type = buffer.readIntLE()
                     val optional = buffer.readBoolean()
                     val options = buffer.readByteFlags<Parameter.Option>()
-                    Parameter.Structure(
+                    Parameter.Builder(
                         parameterName,
                         optional,
                         options,
@@ -195,11 +195,11 @@ object CommandsPacketReader : PacketReader {
                     )
                 }
             }
-            Command.Structure(name, description, flags, permission, aliasesIndex, overloadStructures)
+            Command.Builder(name, description, flags, permission, aliasesIndex, overloadBuilders)
         }
         val softEnumerations = safeList(buffer.readVarUInt()) { buffer.readEnumeration(true) }
         val constraints = safeList(buffer.readVarUInt()) { buffer.readEnumerationConstraint(values, enumerations) }
-        return CommandsPacket(commandStructures.map {
+        return CommandsPacket(commandBuilders.map {
             val aliasesIndex = it.aliasesIndex
             Command(it.name, it.description, it.flags, it.permission, if (aliasesIndex == -1) null else enumerations[aliasesIndex], it.overloadStructures.map {
                 it.map {

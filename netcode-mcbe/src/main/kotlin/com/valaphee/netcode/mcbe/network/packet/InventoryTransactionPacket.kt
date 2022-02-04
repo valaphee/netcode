@@ -18,16 +18,16 @@ package com.valaphee.netcode.mcbe.network.packet
 
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
+import com.valaphee.netcode.mcbe.network.Packet
+import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.network.PacketHandler
+import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.inventory.WindowId
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readStack
 import com.valaphee.netcode.mcbe.world.item.readStackPre431
 import com.valaphee.netcode.mcbe.world.item.writeStack
 import com.valaphee.netcode.mcbe.world.item.writeStackPre431
-import com.valaphee.netcode.mcbe.network.Packet
-import com.valaphee.netcode.mcbe.network.PacketBuffer
-import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.util.safeList
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 

@@ -17,24 +17,24 @@
 package com.valaphee.netcode.mcbe.network.packet
 
 import com.valaphee.netcode.mcbe.command.Permission
-import com.valaphee.netcode.mcbe.world.entity.player.PlayerFlag
-import com.valaphee.netcode.mcbe.world.entity.player.Rank
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.WorldFlag
+import com.valaphee.netcode.mcbe.world.entity.player.PlayerFlag
+import com.valaphee.netcode.mcbe.world.entity.player.Rank
 
 /**
  * @author Kevin Ludwig
  */
 class AdventureSettingsPacket(
-    var uniqueEntityId: Long,
-    var playerFlags: Set<PlayerFlag>,
-    var permission: Permission,
-    var worldFlags: Set<WorldFlag>,
-    var rank: Rank,
-    var customFlags: Int
+    val uniqueEntityId: Long,
+    val playerFlags: Set<PlayerFlag>,
+    val permission: Permission,
+    val worldFlags: Set<WorldFlag>,
+    val rank: Rank,
+    val customFlags: Int
 ) : Packet() {
     override val id get() = 0x37
 

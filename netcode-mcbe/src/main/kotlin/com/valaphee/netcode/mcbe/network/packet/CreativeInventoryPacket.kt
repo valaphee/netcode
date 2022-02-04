@@ -16,17 +16,17 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
+import com.valaphee.netcode.mcbe.Restrict
+import com.valaphee.netcode.mcbe.Restriction
+import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.Restrict
-import com.valaphee.netcode.mcbe.Restriction
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readStackInstance
 import com.valaphee.netcode.mcbe.world.item.readStackWithNetIdPre431
 import com.valaphee.netcode.mcbe.world.item.writeStackInstance
 import com.valaphee.netcode.mcbe.world.item.writeStackWithNetIdPre431
-import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.util.safeList
 
 /**

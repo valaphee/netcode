@@ -18,8 +18,8 @@ package com.valaphee.netcode.mcbe.pack.recipe
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
-import com.valaphee.netcode.mcbe.world.item.craft.furnaceRecipe
 import com.valaphee.netcode.mcbe.world.item.ItemStack
+import com.valaphee.netcode.mcbe.world.item.craft.furnaceRecipe
 
 /**
  * @author Kevin Ludwig

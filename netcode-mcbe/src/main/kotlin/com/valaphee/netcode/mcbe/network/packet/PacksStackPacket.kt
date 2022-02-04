@@ -16,16 +16,16 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
+import com.valaphee.netcode.mcbe.Restrict
+import com.valaphee.netcode.mcbe.Restriction
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.Restrict
-import com.valaphee.netcode.mcbe.Restriction
-import com.valaphee.netcode.util.safeList
 import com.valaphee.netcode.mcbe.world.Experiment
 import com.valaphee.netcode.mcbe.world.readExperiment
 import com.valaphee.netcode.mcbe.world.writeExperiment
+import com.valaphee.netcode.util.safeList
 import java.util.UUID
 
 /**

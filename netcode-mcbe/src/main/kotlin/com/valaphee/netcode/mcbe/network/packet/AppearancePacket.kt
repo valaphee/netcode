@@ -16,6 +16,10 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
+import com.valaphee.netcode.mcbe.network.Packet
+import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.network.PacketHandler
+import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.entity.player.Appearance
 import com.valaphee.netcode.mcbe.world.entity.player.readAppearance
 import com.valaphee.netcode.mcbe.world.entity.player.readAppearancePre390
@@ -27,10 +31,6 @@ import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre390
 import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre419
 import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre428
 import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre465
-import com.valaphee.netcode.mcbe.network.Packet
-import com.valaphee.netcode.mcbe.network.PacketBuffer
-import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import java.util.UUID
 
 /**

@@ -20,11 +20,11 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
-import com.valaphee.netcode.mcbe.world.entity.player.User
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.world.entity.player.User
 
 /**
  * @author Kevin Ludwig

@@ -29,9 +29,9 @@ import com.valaphee.netcode.mcbe.network.PacketReader
  */
 @Restrict(Restriction.ToServer)
 class BlockPickPacket(
-    var position: Int3,
-    var withEntity: Boolean,
-    var hotbarSlot: Int
+    val position: Int3,
+    val withEntity: Boolean,
+    val hotbarSlot: Int
 ) : Packet() {
     override val id get() = 0x22
 

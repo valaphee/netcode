@@ -18,11 +18,11 @@ package com.valaphee.netcode.mcbe.network.packet
 
 import com.valaphee.netcode.mcbe.Restrict
 import com.valaphee.netcode.mcbe.Restriction
-import com.valaphee.netcode.mcbe.world.entity.attribute.Attributes
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.world.entity.attribute.Attributes
 
 /**
  * @author Kevin Ludwig

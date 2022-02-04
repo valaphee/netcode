@@ -33,7 +33,7 @@ import java.io.File
     include = JsonTypeInfo.As.WRAPPER_OBJECT
 )
 @JsonSubTypes(
-    
+
 )
 interface Data
 
