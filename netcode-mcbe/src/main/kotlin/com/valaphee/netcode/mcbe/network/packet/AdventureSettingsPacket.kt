@@ -30,11 +30,11 @@ import com.valaphee.netcode.mcbe.world.entity.player.Rank
  */
 class AdventureSettingsPacket(
     val uniqueEntityId: Long,
-    val playerFlags: Set<PlayerFlag>,
-    val permission: Permission,
-    val worldFlags: Set<WorldFlag>,
-    val rank: Rank,
-    val customFlags: Int
+    var playerFlags: Set<PlayerFlag>, // needed for je-be protocol translation
+    var permission: Permission, // needed for je-be protocol translation
+    var worldFlags: Set<WorldFlag>, // needed for je-be protocol translation
+    var rank: Rank, // needed for je-be protocol translation
+    var customFlags: Int // needed for je-be protocol translation
 ) : Packet() {
     override val id get() = 0x37
 

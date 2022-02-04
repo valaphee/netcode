@@ -20,6 +20,7 @@ plugins {
     id("com.palantir.git-version") version "0.12.3"
     kotlin("jvm") version "1.5.31"
     `maven-publish`
+    id("org.hibernate.build.maven-repo-auth") version "3.0.2"
     signing
 }
 
@@ -36,6 +37,7 @@ subprojects {
     apply(plugin = "com.palantir.git-version")
     apply(plugin = "kotlin")
     apply(plugin = "maven-publish")
+    apply(plugin = "org.hibernate.build.maven-repo-auth")
     apply(plugin = "signing")
 
     group = "com.valaphee"
@@ -63,5 +65,14 @@ subprojects {
     signing {
         useGpgCmd()
         sign(publishing.publications)
+    }
+
+    publishing {
+        repositories {
+            maven {
+                name = "gg-repo"
+                setUrl("https://artifactory.griefergames.dev/artifactory/gg-repo")
+            }
+        }
     }
 }
