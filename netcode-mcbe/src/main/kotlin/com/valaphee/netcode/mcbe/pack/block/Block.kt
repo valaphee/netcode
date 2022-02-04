@@ -19,11 +19,11 @@ package com.valaphee.netcode.mcbe.pack.block
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.valaphee.netcode.mc.util.nbt.Nbt
-import com.valaphee.netcode.mc.util.nbt.compoundTag
-import com.valaphee.netcode.mc.util.nbt.listTag
-import com.valaphee.netcode.mc.util.nbt.ofBool
-import com.valaphee.netcode.mc.util.nbt.toTag
+import com.valaphee.netcode.mc.nbt.Nbt
+import com.valaphee.netcode.mc.nbt.compoundTag
+import com.valaphee.netcode.mc.nbt.listTag
+import com.valaphee.netcode.mc.nbt.ofBool
+import com.valaphee.netcode.mc.nbt.toTag
 import com.valaphee.netcode.mcbe.pack.ComponentsDeserializer
 import com.valaphee.netcode.mcbe.pack.ComponentsSerializer
 import com.valaphee.netcode.mcbe.pack.Data

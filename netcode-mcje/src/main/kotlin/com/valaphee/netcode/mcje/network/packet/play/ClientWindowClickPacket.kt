@@ -16,13 +16,13 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
-import com.valaphee.netcode.mcje.item.stack.Stack
-import com.valaphee.netcode.mcje.item.stack.readStack
-import com.valaphee.netcode.mcje.item.stack.writeStack
-import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
+import com.valaphee.netcode.mcje.world.item.ItemStack
+import com.valaphee.netcode.mcje.world.item.readStack
+import com.valaphee.netcode.mcje.world.item.writeStack
 
 /**
  * @author Kevin Ludwig
@@ -33,7 +33,7 @@ class ClientWindowClickPacket(
     val buttonSpecifier: Int,
     var confirmId: Int,
     val button: Button,
-    val stackInSlot: Stack?
+    val itemStackInSlot: ItemStack?
 ) : Packet<ClientPlayPacketHandler> {
     enum class Button {
         Normal, Shift, Number, MiddleClick, QOrNoOp, Paint, DoubleClick
@@ -45,12 +45,12 @@ class ClientWindowClickPacket(
         buffer.writeByte(buttonSpecifier)
         buffer.writeShort(confirmId)
         buffer.writeVarInt(button.ordinal)
-        buffer.writeStack(stackInSlot)
+        buffer.writeStack(itemStackInSlot)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.windowClick(this)
 
-    override fun toString() = "ClientWindowClickPacket(windowId=$windowId, slotId=$slotId, buttonSpecifier=$buttonSpecifier, confirmId=$confirmId, button=$button, stackInSlot=$stackInSlot)"
+    override fun toString() = "ClientWindowClickPacket(windowId=$windowId, slotId=$slotId, buttonSpecifier=$buttonSpecifier, confirmId=$confirmId, button=$button, stackInSlot=$itemStackInSlot)"
 
     companion object {
         const val SlotIdNone = -999

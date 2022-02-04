@@ -17,9 +17,9 @@
 package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mc.util.nbt.CompoundTag
-import com.valaphee.netcode.mc.util.nbt.NbtInputStream
-import com.valaphee.netcode.mc.util.nbt.NbtOutputStream
+import com.valaphee.netcode.mc.nbt.CompoundTag
+import com.valaphee.netcode.mc.nbt.NbtInputStream
+import com.valaphee.netcode.mc.nbt.NbtOutputStream
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader

@@ -34,7 +34,7 @@ class SoundEventPacketV2(
     val babySound: Boolean,
     val relativeVolumeDisabled: Boolean
 ) : Packet() {
-    override val id get() = 0x18
+    override val id get() = 0x78
 
     override fun write(buffer: PacketBuffer, version: Int) {
         if (version >= 407) buffer.writeVarUInt(soundEvent.ordinal) else buffer.writeByte(soundEvent.ordinal)

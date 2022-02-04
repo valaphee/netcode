@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcje.world.map
 
-import com.valaphee.netcode.mcje.util.text.Component
+import com.valaphee.netcode.mcje.chat.Component
 
 /**
  * @author Kevin Ludwig

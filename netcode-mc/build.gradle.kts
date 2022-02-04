@@ -15,10 +15,11 @@
  */
 
 dependencies {
-    api("com.fasterxml.jackson.module:jackson-module-afterburner:2.13.0")
-    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
+    api("com.fasterxml.jackson.module:jackson-module-afterburner:2.13.1")
+    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
     api("com.google.code.gson:gson:2.8.9")
-    api("com.valaphee:foundry-math:1.3.0.0")
+    api("com.valaphee:foundry-math:1.4.0")
+    api("com.valaphee:jackson-dataformat-nbt:1.1.0")
     api("it.unimi.dsi:fastutil:8.5.6")
     api(project(":netcode-common"))
 }

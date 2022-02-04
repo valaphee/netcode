@@ -16,12 +16,12 @@
 
 package com.valaphee.netcode.mc.util
 
-import com.valaphee.netcode.mc.util.nbt.CompoundTag
-import com.valaphee.netcode.mc.util.nbt.ListTag
-import com.valaphee.netcode.mc.util.nbt.NbtException
-import com.valaphee.netcode.mc.util.nbt.compoundTag
-import com.valaphee.netcode.mc.util.nbt.listTag
-import com.valaphee.netcode.mc.util.nbt.ofBool
+import com.valaphee.netcode.mc.nbt.CompoundTag
+import com.valaphee.netcode.mc.nbt.ListTag
+import com.valaphee.netcode.mc.nbt.NbtException
+import com.valaphee.netcode.mc.nbt.compoundTag
+import com.valaphee.netcode.mc.nbt.listTag
+import com.valaphee.netcode.mc.nbt.ofBool
 
 fun CompoundTag.getBoolOrNull(key: String): Boolean? {
     val tag = this[key] ?: return null

@@ -16,11 +16,11 @@
 
 package com.valaphee.netcode.mcbe.world.block
 
+import com.valaphee.netcode.mc.nbt.CompoundTag
+import com.valaphee.netcode.mc.nbt.TagType
 import com.valaphee.netcode.mc.util.getListTag
 import com.valaphee.netcode.mc.util.getListTagOrNull
 import com.valaphee.netcode.mc.util.getString
-import com.valaphee.netcode.mc.util.nbt.CompoundTag
-import com.valaphee.netcode.mc.util.nbt.TagType
 import com.valaphee.netcode.mcbe.pack.block.Block
 
 /**

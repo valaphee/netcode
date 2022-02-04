@@ -19,10 +19,10 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
-import com.valaphee.netcode.mcje.item.stack.Stack
-import com.valaphee.netcode.mcje.item.stack.readStack
-import com.valaphee.netcode.mcje.item.stack.writeStack
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.world.item.ItemStack
+import com.valaphee.netcode.mcje.world.item.readStack
+import com.valaphee.netcode.mcje.world.item.writeStack
 
 /**
  * @author Kevin Ludwig
@@ -33,7 +33,7 @@ class ServerEntityEquipmentPacket(
 ) : Packet<ServerPlayPacketHandler> {
     class Equipment(
         var slot: Slot,
-        var stack: Stack?
+        var itemStack: ItemStack?
     ) {
         enum class Slot {
             MainHand, OffHand, Boots, Leggings, Chestplate, Helmet
@@ -45,12 +45,12 @@ class ServerEntityEquipmentPacket(
         if (version >= 754) {
             equipments.forEachIndexed { i, equipment ->
                 buffer.writeByte(equipment.slot.ordinal or (if (i == equipments.size - 1) 0 else 0b1000_0000))
-                buffer.writeStack(equipment.stack)
+                buffer.writeStack(equipment.itemStack)
             }
         } else {
             val equipment = equipments.first()
             if (version >= 498) buffer.writeVarInt(equipment.slot.ordinal) else buffer.writeShort(equipment.slot.ordinal)
-            buffer.writeStack(equipment.stack)
+            buffer.writeStack(equipment.itemStack)
         }
     }
 
@@ -69,6 +69,5 @@ object ServerEntityEquipmentPacketReader : PacketReader {
             slot = buffer.readByte().toInt()
             add(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[slot and 0b0111_1111], buffer.readStack()))
         } while (slot and 0b1000_0000 != 0)
-    } else listOf(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[if (version >= 498) buffer.readVarInt() else buffer.readUnsignedShort()], buffer.readStack()))
-    )
+    } else listOf(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[if (version >= 498) buffer.readVarInt() else buffer.readUnsignedShort()], buffer.readStack())))
 }

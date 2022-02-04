@@ -171,7 +171,6 @@ import com.valaphee.netcode.mcbe.network.packet.TimePacket
 import com.valaphee.netcode.mcbe.network.packet.TitlePacket
 import com.valaphee.netcode.mcbe.network.packet.TradePacket
 import com.valaphee.netcode.mcbe.network.packet.TransferPacket
-import com.valaphee.netcode.mcbe.network.packet.UnknownPacket
 import com.valaphee.netcode.mcbe.network.packet.VelocityPredictionPacket
 import com.valaphee.netcode.mcbe.network.packet.VideoStreamPacket
 import com.valaphee.netcode.mcbe.network.packet.ViewDistancePacket

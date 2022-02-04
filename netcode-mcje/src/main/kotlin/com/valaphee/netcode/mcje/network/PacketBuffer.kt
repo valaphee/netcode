@@ -24,9 +24,9 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int2
 import com.valaphee.foundry.math.Int3
+import com.valaphee.netcode.mc.nbt.NbtInputStream
+import com.valaphee.netcode.mc.nbt.NbtOutputStream
 import com.valaphee.netcode.mc.util.Direction
-import com.valaphee.netcode.mc.util.nbt.NbtInputStream
-import com.valaphee.netcode.mc.util.nbt.NbtOutputStream
 import com.valaphee.netcode.mcje.RegistrySet
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.util.minecraftKey

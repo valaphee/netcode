@@ -18,13 +18,13 @@ package com.valaphee.netcode.mcbe.network.packet
 
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
-import com.valaphee.netcode.mcbe.Restrict
-import com.valaphee.netcode.mcbe.Restriction
 import com.valaphee.netcode.mcbe.command.Permission
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.network.Restrict
+import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.WorldFlag
 import com.valaphee.netcode.mcbe.world.entity.Link
 import com.valaphee.netcode.mcbe.world.entity.metadata.Metadata

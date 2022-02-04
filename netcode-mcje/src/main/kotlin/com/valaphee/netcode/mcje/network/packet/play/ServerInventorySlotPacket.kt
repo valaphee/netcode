@@ -19,10 +19,10 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
-import com.valaphee.netcode.mcje.item.stack.Stack
-import com.valaphee.netcode.mcje.item.stack.readStack
-import com.valaphee.netcode.mcje.item.stack.writeStack
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.world.item.ItemStack
+import com.valaphee.netcode.mcje.world.item.readStack
+import com.valaphee.netcode.mcje.world.item.writeStack
 
 /**
  * @author Kevin Ludwig
@@ -30,17 +30,17 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerInventorySlotPacket(
     val windowId: Int,
     val slotId: Int,
-    val stack: Stack?
+    val itemStack: ItemStack?
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
         buffer.writeShort(slotId)
-        buffer.writeStack(stack)
+        buffer.writeStack(itemStack)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.inventorySlot(this)
 
-    override fun toString() = "ServerInventorySlotPacket(windowId=$windowId, slotId=$slotId, stack=$stack)"
+    override fun toString() = "ServerInventorySlotPacket(windowId=$windowId, slotId=$slotId, stack=$itemStack)"
 }
 
 /**

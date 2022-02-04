@@ -16,13 +16,13 @@
 
 package com.valaphee.netcode.mcbe.world.chunk
 
+import com.valaphee.netcode.mc.nbt.TagType
+import com.valaphee.netcode.mc.nbt.compoundTag
+import com.valaphee.netcode.mc.nbt.ofBool
+import com.valaphee.netcode.mc.nbt.ofInt
+import com.valaphee.netcode.mc.nbt.ofString
 import com.valaphee.netcode.mc.util.getCompoundTag
 import com.valaphee.netcode.mc.util.getString
-import com.valaphee.netcode.mc.util.nbt.TagType
-import com.valaphee.netcode.mc.util.nbt.compoundTag
-import com.valaphee.netcode.mc.util.nbt.ofBool
-import com.valaphee.netcode.mc.util.nbt.ofInt
-import com.valaphee.netcode.mc.util.nbt.ofString
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList

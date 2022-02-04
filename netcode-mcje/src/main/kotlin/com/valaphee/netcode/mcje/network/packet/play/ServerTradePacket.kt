@@ -19,10 +19,10 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
-import com.valaphee.netcode.mcje.item.stack.Stack
-import com.valaphee.netcode.mcje.item.stack.readStack
-import com.valaphee.netcode.mcje.item.stack.writeStack
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.world.item.ItemStack
+import com.valaphee.netcode.mcje.world.item.readStack
+import com.valaphee.netcode.mcje.world.item.writeStack
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -30,16 +30,16 @@ import com.valaphee.netcode.util.safeList
  */
 class ServerTradePacket(
     val windowId: Int,
-    val offers: MutableList<Offer>,
+    val offers: List<Offer>,
     val level: Int,
     val experience: Int,
     val regular: Boolean,
     val restock: Boolean
 ) : Packet<ServerPlayPacketHandler> {
     data class Offer(
-        val buyA: Stack?,
-        val sell: Stack?,
-        val buyB: Stack?,
+        val buyA: ItemStack?,
+        val sell: ItemStack?,
+        val buyB: ItemStack?,
         val disabled: Boolean,
         val sold: Int,
         val stock: Int,

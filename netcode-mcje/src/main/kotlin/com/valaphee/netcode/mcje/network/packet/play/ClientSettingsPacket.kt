@@ -16,12 +16,12 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
-import com.valaphee.netcode.mcje.entity.player.MainHand
-import com.valaphee.netcode.mcje.entity.player.SkinPart
-import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
+import com.valaphee.netcode.mcje.world.entity.player.MainHand
+import com.valaphee.netcode.mcje.world.entity.player.SkinPart
 import java.util.Locale
 
 /**

@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mc.util.nbt.NbtInputStream
-import com.valaphee.netcode.mc.util.nbt.NbtOutputStream
+import com.valaphee.netcode.mc.nbt.NbtInputStream
+import com.valaphee.netcode.mc.nbt.NbtOutputStream
 import com.valaphee.netcode.mcbe.RegistrySet
 import com.valaphee.netcode.mcbe.util.LittleEndianByteBufInputStream
 import com.valaphee.netcode.mcbe.util.LittleEndianByteBufOutputStream

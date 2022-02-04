@@ -16,32 +16,32 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
-import com.valaphee.netcode.mcje.entity.player.Hand
-import com.valaphee.netcode.mcje.item.stack.Stack
-import com.valaphee.netcode.mcje.item.stack.readStack
-import com.valaphee.netcode.mcje.item.stack.writeStack
-import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
+import com.valaphee.netcode.mcje.world.entity.player.Hand
+import com.valaphee.netcode.mcje.world.item.ItemStack
+import com.valaphee.netcode.mcje.world.item.readStack
+import com.valaphee.netcode.mcje.world.item.writeStack
 
 /**
  * @author Kevin Ludwig
  */
 class ClientBookEditPacket(
-    val stack: Stack?,
+    val itemStack: ItemStack?,
     val sign: Boolean,
     val hand: Hand
 ) : Packet<ClientPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeStack(stack)
+        buffer.writeStack(itemStack)
         buffer.writeBoolean(sign)
         buffer.writeVarInt(hand.ordinal)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.bookEdit(this)
 
-    override fun toString() = "ClientBookEditPacket(stack=$stack, sign=$sign, hand=$hand)"
+    override fun toString() = "ClientBookEditPacket(stack=$itemStack, sign=$sign, hand=$hand)"
 }
 
 /**

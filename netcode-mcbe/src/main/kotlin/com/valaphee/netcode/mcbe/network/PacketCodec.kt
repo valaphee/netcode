@@ -18,8 +18,6 @@ package com.valaphee.netcode.mcbe.network
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.valaphee.netcode.mcbe.RegistrySet
-import com.valaphee.netcode.mcbe.Restrict
-import com.valaphee.netcode.mcbe.Restriction
 import com.valaphee.netcode.mcbe.latestProtocolVersion
 import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsPacketReader
 import com.valaphee.netcode.mcbe.network.packet.AnvilDamagePacketReader
@@ -172,7 +170,6 @@ import com.valaphee.netcode.mcbe.network.packet.TimePacketReader
 import com.valaphee.netcode.mcbe.network.packet.TitlePacketReader
 import com.valaphee.netcode.mcbe.network.packet.TradePacketReader
 import com.valaphee.netcode.mcbe.network.packet.TransferPacketReader
-import com.valaphee.netcode.mcbe.network.packet.UnknownPacket
 import com.valaphee.netcode.mcbe.network.packet.VelocityPredictionPacketReader
 import com.valaphee.netcode.mcbe.network.packet.VideoStreamPacketReader
 import com.valaphee.netcode.mcbe.network.packet.ViewDistancePacketReader

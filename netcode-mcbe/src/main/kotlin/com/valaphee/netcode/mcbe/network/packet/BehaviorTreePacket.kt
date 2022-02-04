@@ -19,12 +19,12 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.google.gson.JsonElement
 import com.google.gson.internal.Streams
 import com.google.gson.stream.JsonReader
-import com.valaphee.netcode.mcbe.Restrict
-import com.valaphee.netcode.mcbe.Restriction
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.network.Restrict
+import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.util.ByteBufStringReader
 
 /**

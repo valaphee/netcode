@@ -19,9 +19,9 @@ package com.valaphee.netcode.mcbe.pack.block
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import com.valaphee.foundry.math.Float3
-import com.valaphee.netcode.mc.util.nbt.Nbt
-import com.valaphee.netcode.mc.util.nbt.compoundTag
-import com.valaphee.netcode.mc.util.nbt.toTag
+import com.valaphee.netcode.mc.nbt.Nbt
+import com.valaphee.netcode.mc.nbt.compoundTag
+import com.valaphee.netcode.mc.nbt.toTag
 import com.valaphee.netcode.mc.util.setBool
 import com.valaphee.netcode.mcbe.pack.Component
 import com.valaphee.netcode.mcbe.pack.DataType
