@@ -42,7 +42,8 @@ class BossBarPacket(
         SetPercentage,
         SetTitle,
         SetDarkenSky,
-        SetStyle
+        SetStyle,
+        Query
     }
 
     override val id get() = 0x4A

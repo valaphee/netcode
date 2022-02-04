@@ -17,7 +17,7 @@
 package com.valaphee.netcode.mcbe.pack.recipe
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonTypeName
+import com.valaphee.netcode.mcbe.pack.DataType
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.craft.Recipe
 import com.valaphee.netcode.mcbe.world.item.craft.shapedRecipe
@@ -25,7 +25,7 @@ import com.valaphee.netcode.mcbe.world.item.craft.shapedRecipe
 /**
  * @author Kevin Ludwig
  */
-@JsonTypeName("minecraft:recipe_shaped")
+@DataType("minecraft:recipe_shaped")
 class ShapedRecipeData(
     @get:JsonProperty("description") val description: Description,
     @get:JsonProperty("tags") val tags: List<String>,

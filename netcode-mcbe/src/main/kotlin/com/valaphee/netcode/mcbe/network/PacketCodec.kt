@@ -402,6 +402,9 @@ class PacketCodec(
             this[0xAD] = PhotoRequestPacketReader
             this[0xAE] = SubChunkPacketReader
             this[0xAF] = SubChunkRequestPacketReader
+            //this[0xB0] = ItemCooldownPacketReader
+            //this[0xB1] = ScriptMessagePacketReader
+            //this[0xB2] = CodeBuilderSourcePacketReader
         }
         private val clientReaders = readers.filterValues { it::class.java.getMethod("read", PacketBuffer::class.java, Int::class.java).returnType.kotlin.findAnnotation<Restrict>()?.value?.contains(Restriction.ToClient) ?: true }
         private val serverReaders = readers.filterValues { it::class.java.getMethod("read", PacketBuffer::class.java, Int::class.java).returnType.kotlin.findAnnotation<Restrict>()?.value?.contains(Restriction.ToServer) ?: true }

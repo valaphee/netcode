@@ -23,6 +23,7 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig
@@ -31,12 +32,23 @@ import com.valaphee.netcode.mcbe.network.PacketReader
 class SubChunkRequestPacket(
     val dimension: Int,
     val position: Int3,
+    val requestCount: Int,
+    val requests: List<Int3>
 ) : Packet() {
     override val id get() = 0xAF
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(dimension)
         buffer.writeInt3(position)
+        if (version >= 486) {
+            buffer.writeIntLE(requestCount)
+            buffer.writeShortLE(requests.size)
+            requests.forEach {
+                buffer.writeByte(it.x)
+                buffer.writeByte(it.y)
+                buffer.writeByte(it.z)
+            }
+        }
     }
 
     override fun handle(handler: PacketHandler) = handler.subChunkRequest(this)
@@ -48,8 +60,18 @@ class SubChunkRequestPacket(
  * @author Kevin Ludwig
  */
 object SubChunkRequestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = SubChunkRequestPacket(
-        buffer.readVarInt(),
-        buffer.readInt3()
-    )
+    override fun read(buffer: PacketBuffer, version: Int): SubChunkRequestPacket {
+        val dimension = buffer.readVarInt()
+        val position = buffer.readInt3()
+        val requestCount: Int
+        val requests: List<Int3>
+        if (version >= 486) {
+            requestCount = buffer.readIntLE()
+            requests = safeList(buffer.readUnsignedShortLE()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) }
+        } else {
+            requestCount = 0
+            requests = emptyList()
+        }
+        return SubChunkRequestPacket(dimension, position, requestCount, requests)
+    }
 }

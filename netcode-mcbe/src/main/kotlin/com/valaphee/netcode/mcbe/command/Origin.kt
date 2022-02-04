@@ -43,7 +43,8 @@ data class Origin(
         EntityServer,
         PreCompiled,
         GameMasterEntityServer,
-        Script
+        Script,
+        ExecuteContext
     }
 }
 

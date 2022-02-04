@@ -54,5 +54,7 @@ enum class Flag2 {
     RamAttack,
     PlayingDead,
     IsAscendableBlock,
-    OverDescendalbeBlock
+    OverDescendalbeBlock,
+    Croaking,
+    EatMob
 }

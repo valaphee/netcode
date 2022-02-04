@@ -33,6 +33,7 @@ class ChunkPacket(
     val subChunkCount: Int,
     val data: ByteArray,
     val blobIds: LongArray? = null,
+    val request: Boolean = false,
 ) : Packet() {
     override val id get() = 0x3A
 
@@ -40,7 +41,10 @@ class ChunkPacket(
         val (x, z) = position
         buffer.writeVarInt(x)
         buffer.writeVarInt(z)
-        buffer.writeVarUInt(subChunkCount)
+        if (!request || version < 471) buffer.writeVarUInt(subChunkCount) else if (subChunkCount < 0 || version < 486) buffer.writeVarUInt(-1) else {
+            buffer.writeVarUInt(-2)
+            buffer.writeShortLE(subChunkCount)
+        }
         blobIds?.let {
             buffer.writeBoolean(true)
             buffer.writeVarUInt(it.size)
@@ -51,7 +55,7 @@ class ChunkPacket(
 
     override fun handle(handler: PacketHandler) = handler.chunk(this)
 
-    override fun toString() = "ChunkPacket(position=$position, subChunkCount=$subChunkCount, blobIds=${blobIds?.contentToString()})"
+    override fun toString() = "ChunkPacket(position=$position, subChunkCount=$subChunkCount, blobIds=${blobIds?.contentToString()}, request=$request)"
 }
 
 /**
@@ -60,9 +64,11 @@ class ChunkPacket(
 object ChunkPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): ChunkPacket {
         val position = Int2(buffer.readVarInt(), buffer.readVarInt())
-        val subChunkCount = buffer.readVarUInt()
+        var subChunkCount = buffer.readVarUInt()
+        val request = subChunkCount == -1 || subChunkCount == -2
+        if (subChunkCount == -2) subChunkCount = buffer.readShortLE().toInt()
         val blobIds = if (buffer.readBoolean()) LongArray(buffer.readVarUInt()) { buffer.readLongLE() } else null
         val data = buffer.readByteArray()
-        return ChunkPacket(position, subChunkCount, data, blobIds)
+        return ChunkPacket(position, subChunkCount, data, blobIds, request)
     }
 }
