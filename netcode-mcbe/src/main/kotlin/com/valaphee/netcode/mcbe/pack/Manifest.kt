@@ -16,16 +16,12 @@
 
 package com.valaphee.netcode.mcbe.pack
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
 class Manifest(
     @get:JsonProperty("format_version") val version: String,
     @get:JsonProperty("header") val header: Header,
@@ -35,8 +31,6 @@ class Manifest(
     @get:JsonProperty("capabilities") val capabilities: List<String>?,
     @get:JsonProperty("subpacks") val subPacks: List<SubPack>?
 ) {
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonIgnoreProperties(ignoreUnknown = true)
     class Header(
         @get:JsonProperty("uuid") val id: UUID,
         @get:JsonProperty("name") val name: String,
@@ -52,8 +46,6 @@ class Manifest(
         @get:JsonProperty("population_control") val populationControl: Boolean?
     )
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonIgnoreProperties(ignoreUnknown = true)
     class Module(
         @get:JsonProperty("uuid") val id: UUID,
         @get:JsonProperty("version") val version: Version,
@@ -61,49 +53,28 @@ class Manifest(
         @get:JsonProperty("type") val type: Type?,
     ) {
         enum class Type {
-            @JsonProperty("invalid")
-            Invalid,
-
-            @JsonProperty("resources")
-            Resource,
-
-            @JsonProperty("data")
-            Data,
-
-            @JsonProperty("plugin")
-            Plugin,
-
-            @JsonProperty("client_data")
-            ClientData,
-
-            @JsonProperty("interface")
-            Interface,
-
-            @JsonProperty("mandatory")
-            Mandatory,
-
-            @JsonProperty("world_template")
-            WorldTemplate
+            @JsonProperty("invalid") Invalid,
+            @JsonProperty("resources") Resource,
+            @JsonProperty("data") Data,
+            @JsonProperty("plugin") Plugin,
+            @JsonProperty("client_data") ClientData,
+            @JsonProperty("interface") Interface,
+            @JsonProperty("mandatory") Mandatory,
+            @JsonProperty("world_template") WorldTemplate
         }
     }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonIgnoreProperties(ignoreUnknown = true)
     class Metadata(
         val authors: List<String>?,
         @get:JsonProperty("license") val license: String?,
         @get:JsonProperty("url") val website: String?
     )
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonIgnoreProperties(ignoreUnknown = true)
     class Dependency(
         @get:JsonProperty("uuid") val id: UUID,
         @get:JsonProperty("version") val version: Version
     )
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonIgnoreProperties(ignoreUnknown = true)
     class SubPack(
         @get:JsonProperty("folder_name") val path: String? = null,
         @get:JsonProperty("name") val name: String? = null,

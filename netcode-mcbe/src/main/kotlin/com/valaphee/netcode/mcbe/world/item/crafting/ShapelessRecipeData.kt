@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.pack.recipe
+package com.valaphee.netcode.mcbe.world.item.crafting
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.pack.DataType
+import com.fasterxml.jackson.annotation.JsonTypeName
 import com.valaphee.netcode.mcbe.world.item.ItemStack
-import com.valaphee.netcode.mcbe.world.item.craft.Recipe
-import com.valaphee.netcode.mcbe.world.item.craft.shapelessRecipe
 
 /**
  * @author Kevin Ludwig
  */
-@DataType("minecraft:recipe_shapeless")
+@JsonTypeName("minecraft:recipe_shapeless")
 class ShapelessRecipeData(
     @get:JsonProperty("description") val description: Description,
     @get:JsonProperty("tags") val tags: List<String>,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.world.item.craft
+package com.valaphee.netcode.mcbe.world.item.crafting
 
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import java.util.UUID

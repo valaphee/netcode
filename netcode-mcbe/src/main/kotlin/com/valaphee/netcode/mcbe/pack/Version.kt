@@ -19,11 +19,11 @@ package com.valaphee.netcode.mcbe.pack
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.ser.std.StdSerializer
 
 /**
  * @author Kevin Ludwig
@@ -47,17 +47,13 @@ data class Version(
 
     override fun toString() = "$major.$minor.$patch${if (build != 0) ".$build" else ""}"
 
-    internal class Serializer(
-        `class`: Class<Version>? = null
-    ) : StdSerializer<Version>(`class`) {
+    internal object Serializer : JsonSerializer<Version>() {
         override fun serialize(value: Version, generator: JsonGenerator, provider: SerializerProvider) {
             generator.writeArray(intArrayOf(value.major, value.minor, value.patch), 0, 3)
         }
     }
 
-    internal class Deserializer(
-        `class`: Class<*>? = null
-    ) : StdDeserializer<Version>(`class`) {
+    internal object Deserializer : JsonDeserializer<Version>() {
         override fun deserialize(parser: JsonParser, context: DeserializationContext): Version {
             val array = parser.codec.readValue(parser, IntArray::class.java)
             return Version(array[0], array[1], array[2], if (array.size >= 4) array[3] else 0)

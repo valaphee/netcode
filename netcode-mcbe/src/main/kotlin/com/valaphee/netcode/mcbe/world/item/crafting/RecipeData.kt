@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.pack
+package com.valaphee.netcode.mcbe.world.item.crafting
+
+import com.valaphee.netcode.mcbe.pack.Data
+import com.valaphee.netcode.mcbe.world.item.crafting.Recipe
 
 /**
  * @author Kevin Ludwig
  */
-class UnknownDataTypeException : Exception {
-    constructor() : super()
-
-    constructor(message: String) : super(message)
-
-    constructor(message: String, cause: Throwable) : super(message, cause)
-
-    constructor(cause: Throwable) : super(cause)
+interface RecipeData : Data {
+    fun toRecipe(netId: Int): Recipe
 }

@@ -14,28 +14,54 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mc.util.text;
+package com.valaphee.netcode.mc.chat;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Kevin Ludwig
  */
-public enum Format implements StyleCode {
-    Bold('l', "bold"),
-    Italic('o', "italic"),
-    Strikethrough('m', "strikethrough"),
-    Underlined('n', "underline"),
-    Obfuscated('k', "obfuscated"),
-    Reset('r', "reset");
+public enum Color implements StyleCode {
+    White('f', "white"),
+    Yellow('e', "yellow"),
+    LightPurple('d', "light_purple"),
+    Red('c', "red"),
+    Aqua('b', "aqua"),
+    Green('a', "green"),
+    Blue('9', "blue"),
+    DarkGray('8', "dark_gray"),
+    Gray('7', "gray"),
+    Gold('6', "gold"),
+    DarkPurple('5', "dark_purple"),
+    DarkRed('4', "dark_red"),
+    DarkAqua('3', "dark_aqua"),
+    DarkGreen('2', "dark_green"),
+    DarkBlue('1', "dark_blue"),
+    Black('0', "black");
+
+    private static final Map<String, Color> byKey;
+
+    static {
+        byKey = new HashMap<>(values().length);
+        for (final Color color : values()) {
+            byKey.put(color.key, color);
+        }
+    }
 
     private final char code;
     private final String key;
 
     @SuppressWarnings("ThisEscapedInObjectConstruction")
-    Format(final char code, final String key) {
+    Color(final char code, final String key) {
         this.code = code;
         this.key = key;
 
         values.add(this);
+    }
+
+    public static Color byKey(final String key) {
+        return byKey.get(key);
     }
 
     @Override

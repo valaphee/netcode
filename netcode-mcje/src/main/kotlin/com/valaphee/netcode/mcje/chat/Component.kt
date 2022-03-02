@@ -26,11 +26,11 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import java.util.regex.Pattern
 
 /**
@@ -47,17 +47,13 @@ sealed class Component {
 
     override fun toString() = StringBuilder().apply { print(this) }.toString()
 
-    internal class Serializer(
-        `class`: Class<Component>? = null
-    ) : StdSerializer<Component>(`class`) {
+    internal class Serializer : JsonSerializer<Component>() {
         override fun serialize(value: Component, generator: JsonGenerator, provider: SerializerProvider) {
             if (value is TextComponent && value.style.empty) generator.writeString(value.text) else generator.writeObject(value)
         }
     }
 
-    internal class Deserializer(
-        `class`: Class<*>? = null
-    ) : StdDeserializer<Component>(`class`) {
+    internal class Deserializer : JsonDeserializer<Component>() {
         override fun deserialize(parser: JsonParser, context: DeserializationContext): Component {
             val treeNode = parser.readValueAsTree<TreeNode>()
             return when (treeNode.asToken()) {
@@ -81,10 +77,10 @@ sealed class Component {
 @JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
 @JsonSubTypes(
     JsonSubTypes.Type(TextComponent::class),
-    JsonSubTypes.Type(TranslateComponent::class),
+    JsonSubTypes.Type(TranslatableComponent::class),
     JsonSubTypes.Type(ScoreComponent::class),
     JsonSubTypes.Type(SelectorComponent::class),
-    JsonSubTypes.Type(KeyBindComponent::class)
+    JsonSubTypes.Type(KeybindComponent::class)
 )
 @JsonSerialize
 @JsonDeserialize
@@ -100,8 +96,7 @@ abstract class BaseComponent(
     @JsonProperty("clickEvent") clickEvent: ClickEvent? = null,
     @get:JsonProperty("extra") val siblings: MutableList<Component>
 ) : Component() {
-    @get:JsonUnwrapped
-    override var style = Style(color, bold, italic, underlined, strikethrough, obfuscated, insertion, hoverEvent, clickEvent)
+    @get:JsonUnwrapped override var style = Style(color, bold, italic, underlined, strikethrough, obfuscated, insertion, hoverEvent, clickEvent)
         set(value) {
             field = value
             siblings.forEach { (it as BaseComponent).style.parent = style }
@@ -134,10 +129,10 @@ class TextComponent(
 /**
  * @author Kevin Ludwig
  */
-class TranslateComponent(
+class TranslatableComponent(
     siblings: MutableList<Component> = mutableListOf(),
     @get:JsonProperty("translate") var key: String,
-    @get:JsonProperty("with") var arguments: Array<Component> = emptyArray()
+    @get:JsonProperty("with") var arguments: List<Component> = emptyList()
 ) : BaseComponent(siblings = siblings) {
     override fun print(stringBuilder: StringBuilder) {
         val value = key
@@ -202,7 +197,7 @@ class SelectorComponent(
 /**
  * @author Kevin Ludwig
  */
-class KeyBindComponent(
+class KeybindComponent(
     siblings: MutableList<Component> = mutableListOf(),
     @get:JsonProperty("keybind") var binding: String
 ) : BaseComponent(siblings = siblings) {

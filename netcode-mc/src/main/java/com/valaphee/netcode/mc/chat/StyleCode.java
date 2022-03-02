@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.pack.recipe
+package com.valaphee.netcode.mc.chat;
 
-import com.valaphee.netcode.mcbe.pack.Data
-import com.valaphee.netcode.mcbe.world.item.craft.Recipe
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kevin Ludwig
  */
-interface RecipeData : Data {
-    fun toRecipe(netId: Int): Recipe
+public interface StyleCode {
+    char Prefix = '\u00A7';
+    char AlternativePrefix = '&';
+    List<StyleCode> values = new ArrayList<>();
+
+    char getCode();
+
+    String getKey();
+
+    int ordinal();
 }

@@ -16,11 +16,9 @@
 
 package com.valaphee.netcode.mcbe.world.entity.player
 
-import com.google.gson.JsonObject
-import com.valaphee.netcode.mc.util.getBoolOrNull
-import com.valaphee.netcode.mc.util.getIntOrNull
-import com.valaphee.netcode.mc.util.getLong
-import com.valaphee.netcode.mc.util.getString
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonUnwrapped
 import java.util.Locale
 import java.util.UUID
 
@@ -28,24 +26,25 @@ import java.util.UUID
  * @author Kevin Ludwig
  */
 data class User constructor(
-    val selfSignedId: UUID,
-    val clientId: Long,
-    val thirdPartyName: String,
-    val thirdPartyNameOnly: Boolean,
-    val appearance: Appearance,
-    val platformOfflineId: String,
-    val platformOnlineId: String,
-    val deviceId: String,
-    val deviceModel: String,
-    val operatingSystem: OperatingSystem,
-    val version: String,
-    val locale: Locale,
-    val defaultInputMode: InputMode,
-    val currentInputMode: InputMode,
-    val guiScale: Int,
-    val uiProfile: UiProfile,
-    val serverAddress: String
+    @get:JsonProperty("SelfSignedId") val selfSignedId: UUID,
+    @get:JsonProperty("ClientRandomId") val clientId: Long,
+    @get:JsonProperty("ThirdPartyName") val thirdPartyName: String,
+    @get:JsonProperty("ThirdPartyNameOnly") val thirdPartyNameOnly: Boolean = false,
+    @get:JsonUnwrapped val appearance: Appearance,
+    @get:JsonProperty("PlatformOfflineId") val platformOfflineId: String,
+    @get:JsonProperty("PlatformOnlineId") val platformOnlineId: String,
+    @get:JsonProperty("DeviceId") val deviceId: String,
+    @get:JsonProperty("DeviceModel") val deviceModel: String,
+    @get:JsonProperty("DeviceOS") val operatingSystem: OperatingSystem = OperatingSystem.Unknown,
+    @get:JsonProperty("GameVersion") val version: String,
+    @get:JsonProperty("LanguageCode") val locale: Locale,
+    @get:JsonProperty("DefaultInputMode") val defaultInputMode: InputMode = InputMode.Unknown,
+    @get:JsonProperty("CurrentInputMode") val currentInputMode: InputMode = InputMode.Unknown,
+    @get:JsonProperty("GuiScale") val guiScale: Int = 0,
+    @get:JsonProperty("UIProfile") val uiProfile: UiProfile = UiProfile.Classic,
+    @get:JsonProperty("ServerAddress") val serverAddress: String
 ) {
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     enum class OperatingSystem {
         Unknown,
         Android,
@@ -64,52 +63,13 @@ data class User constructor(
         WindowsPhone
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     enum class InputMode {
         Unknown, KeyboardAndMouse, Touchscreen, GamePad, MotionControlled
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     enum class UiProfile {
         Classic, Pocket, Unknown2, Unknown3
     }
-
-    fun toJson(json: JsonObject) {
-        json.addProperty("SelfSignedId", selfSignedId.toString())
-        json.addProperty("ClientRandomId", clientId)
-        json.addProperty("ThirdPartyName", thirdPartyName)
-        json.addProperty("ThirdPartyNameOnly", thirdPartyNameOnly)
-        appearance.toJson(json)
-        json.addProperty("PlatformOfflineId", platformOfflineId)
-        json.addProperty("PlatformOnlineId", platformOnlineId)
-        json.addProperty("DeviceId", deviceId)
-        json.addProperty("DeviceModel", deviceModel)
-        json.addProperty("DeviceOS", operatingSystem.ordinal)
-        json.addProperty("GameVersion", version)
-        json.addProperty("LanguageCode", locale.toString())
-        json.addProperty("DefaultInputMode", defaultInputMode.ordinal)
-        json.addProperty("CurrentInputMode", currentInputMode.ordinal)
-        json.addProperty("GuiScale", guiScale)
-        json.addProperty("UIProfile", uiProfile.ordinal)
-        json.addProperty("ServerAddress", serverAddress)
-    }
 }
-
-val JsonObject.asUser
-    get() = User(
-        UUID.fromString(getString("SelfSignedId")),
-        getLong("ClientRandomId"),
-        getString("ThirdPartyName"),
-        getBoolOrNull("ThirdPartyNameOnly") ?: false,
-        asAppearance,
-        getString("PlatformOfflineId"),
-        getString("PlatformOnlineId"),
-        getString("DeviceId"),
-        getString("DeviceModel"),
-        User.OperatingSystem.values()[getIntOrNull("DeviceOS") ?: 0],
-        getString("GameVersion"),
-        Locale.forLanguageTag(getString("LanguageCode").replace('_', '-')),
-        User.InputMode.values()[getIntOrNull("DefaultInputMode") ?: 0],
-        User.InputMode.values()[getIntOrNull("CurrentInputMode") ?: 0],
-        getIntOrNull("GuiScale") ?: 0,
-        User.UiProfile.values()[getIntOrNull("UIProfile") ?: 0],
-        getString("ServerAddress")
-    )

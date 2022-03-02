@@ -16,6 +16,7 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
@@ -43,8 +44,11 @@ import com.valaphee.netcode.mcbe.world.writeGameRule
 import com.valaphee.netcode.mcbe.world.writeGameRulePre440
 import com.valaphee.netcode.util.safeGet
 import com.valaphee.netcode.util.safeList
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -219,8 +223,8 @@ class WorldPacket(
         if (version >= 419) {
             buffer.writeVarUInt(blocks!!.size)
             blocks.forEach {
-                buffer.writeString(it.key)
-                buffer.toNbtOutputStream().use { stream -> stream.writeTag(it.tag) }
+                buffer.writeString(it.description.key)
+                buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.tag)
             }
         } else buffer.toNbtOutputStream().use { it.writeTag(blocksTag) }
         buffer.writeVarUInt(items.size)
@@ -359,7 +363,7 @@ object WorldPacketReader : PacketReader {
         val blocks: List<Block>?
         if (version >= 419) {
             blocksTag = null
-            blocks = buffer.toNbtInputStream().use { stream -> safeList(buffer.readVarUInt()) { Block(buffer.readString(), stream.readTag()?.asCompoundTag()) } }
+            blocks = safeList(buffer.readVarUInt()) { Block(buffer.readString(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))) }
         } else {
             blocksTag = buffer.toNbtInputStream().use { it.readTag()!!.asListTag()!! }
             blocks = null

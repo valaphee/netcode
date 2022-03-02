@@ -96,7 +96,7 @@ class Connection(
         }
     var objectMapper: ObjectMapper? = null
         set(value) {
-            context.pipeline()[PacketCodec::class.java].objectMapper = value
+            context.pipeline()[PacketCodec::class.java].jsonObjectMapper = value
             field = value
         }
     var registrySet: RegistrySet? = null

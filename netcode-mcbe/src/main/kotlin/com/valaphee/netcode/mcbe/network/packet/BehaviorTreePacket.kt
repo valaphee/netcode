@@ -16,38 +16,35 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.google.gson.JsonElement
-import com.google.gson.internal.Streams
-import com.google.gson.stream.JsonReader
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.util.ByteBufStringReader
 
 /**
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
 class BehaviorTreePacket(
-    val json: JsonElement
+    val data: Any?
 ) : Packet() {
     override val id get() = 0x59
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(json.toString())
+        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(data))
     }
 
     override fun handle(handler: PacketHandler) = handler.behaviorTree(this)
 
-    override fun toString() = "BehaviorTreePacket(json=$json)"
+    override fun toString() = "BehaviorTreePacket(data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object BehaviorTreePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BehaviorTreePacket(Streams.parse(JsonReader(ByteBufStringReader(buffer, buffer.readVarUInt()))))
+    override fun read(buffer: PacketBuffer, version: Int) = BehaviorTreePacket(buffer.jsonObjectMapper.readValue(buffer.readString()))
 }

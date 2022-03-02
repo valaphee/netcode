@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.world.item
+package com.valaphee.netcode.mcbe.world.item.enchanting
 
 /**
  * @author Kevin Ludwig

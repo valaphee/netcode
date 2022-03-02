@@ -16,23 +16,14 @@
 
 package com.valaphee.netcode.mcbe.world.entity.player
 
-import com.google.gson.JsonObject
-import com.valaphee.netcode.mc.util.getString
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
 data class AuthExtra(
-    val userId: UUID,
-    val xboxUserId: String,
-    val userName: String
-) {
-    fun toJson(json: JsonObject) {
-        json.addProperty("identity", userId.toString())
-        json.addProperty("XUID", xboxUserId)
-        json.addProperty("displayName", userName)
-    }
-}
-
-val JsonObject.asAuthExtra get() = AuthExtra(UUID.fromString(getString("identity")), getString("XUID"), getString("displayName"))
+    @get:JsonProperty("identity") val userId: UUID,
+    @get:JsonProperty("XUID") val xboxUserId: String,
+    @get:JsonProperty("displayName") val userName: String
+)

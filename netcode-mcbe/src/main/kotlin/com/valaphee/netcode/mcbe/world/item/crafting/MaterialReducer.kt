@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mc.util.text;
+package com.valaphee.netcode.mcbe.world.item.crafting
 
-import java.util.ArrayList;
-import java.util.List;
+import it.unimi.dsi.fastutil.ints.Int2IntMap
 
 /**
  * @author Kevin Ludwig
  */
-public interface StyleCode {
-    char Prefix = '\u00A7';
-    char AlternativePrefix = '&';
-    List<StyleCode> values = new ArrayList<>();
-
-    char getCode();
-
-    String getKey();
-
-    int ordinal();
-}
+data class MaterialReducer(
+    val inputId: Int,
+    val itemCounts: Int2IntMap
+)

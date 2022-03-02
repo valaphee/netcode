@@ -16,13 +16,14 @@
 
 package com.valaphee.netcode.mcbe.pack
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.valaphee.netcode.mcbe.world.block.Block
 import java.io.File
 
 /**
@@ -32,7 +33,9 @@ import java.io.File
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.WRAPPER_OBJECT
 )
-@JsonTypeIdResolver(DataTypeResolver::class)
+@JsonSubTypes(
+    JsonSubTypes.Type(Block::class)
+)
 interface Data
 
 inline fun <reified T : Data> ObjectMapper.readData(file: File): Pair<T, String?> {

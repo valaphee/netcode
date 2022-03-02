@@ -37,7 +37,7 @@ class ServerSettingsPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarUInt(formId)
-        buffer.writeString(buffer.objectMapper.writeValueAsString(form))
+        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(form))
     }
 
     override fun handle(handler: PacketHandler) = handler.serverSettings(this)
@@ -49,5 +49,5 @@ class ServerSettingsPacket(
  * @author Kevin Ludwig
  */
 object ServerSettingsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerSettingsPacket(buffer.readVarUInt(), buffer.objectMapper.readValue(buffer.readString()))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerSettingsPacket(buffer.readVarUInt(), buffer.jsonObjectMapper.readValue(buffer.readString()))
 }

@@ -16,37 +16,34 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.google.gson.JsonElement
-import com.google.gson.internal.Streams
-import com.google.gson.stream.JsonReader
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.util.ByteBufStringReader
 
 /**
  * @author Kevin Ludwig
  */
 class CustomEventPacket(
     val eventName: String,
-    val json: JsonElement
+    val data: Any?
 ) : Packet() {
     override val id get() = 0x75
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(eventName)
-        buffer.writeString(json.toString())
+        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(data))
     }
 
     override fun handle(handler: PacketHandler) = handler.customEvent(this)
 
-    override fun toString() = "CustomEventPacket(eventName='$eventName', json=$json)"
+    override fun toString() = "CustomEventPacket(eventName='$eventName', data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object CustomEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = CustomEventPacket(buffer.readString(), Streams.parse(JsonReader(ByteBufStringReader(buffer, buffer.readVarUInt()))))
+    override fun read(buffer: PacketBuffer, version: Int) = CustomEventPacket(buffer.readString(), buffer.jsonObjectMapper.readValue(buffer.readString()))
 }

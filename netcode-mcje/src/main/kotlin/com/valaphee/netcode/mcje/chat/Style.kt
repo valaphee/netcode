@@ -18,8 +18,8 @@ package com.valaphee.netcode.mcje.chat
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mc.util.text.Color
-import com.valaphee.netcode.mc.util.text.Format
+import com.valaphee.netcode.mc.chat.Color
+import com.valaphee.netcode.mc.chat.Format
 
 /**
  * @author Kevin Ludwig

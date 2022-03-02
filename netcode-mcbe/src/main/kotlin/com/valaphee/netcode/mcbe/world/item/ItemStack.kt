@@ -16,53 +16,31 @@
 
 package com.valaphee.netcode.mcbe.world.item
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.valaphee.netcode.mc.nbt.CompoundTag
-import com.valaphee.netcode.mc.nbt.NbtInputStream
-import com.valaphee.netcode.mc.nbt.NbtOutputStream
-import com.valaphee.netcode.mc.util.getCompoundTagOrNull
-import com.valaphee.netcode.mc.util.getIntOrNull
-import com.valaphee.netcode.mc.util.getString
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.valaphee.jackson.dataformat.nbt.NbtFactory
 import com.valaphee.netcode.mcbe.network.PacketBuffer
-import com.valaphee.netcode.mcbe.util.LittleEndianByteBufInputStream
-import com.valaphee.netcode.mcbe.util.LittleEndianByteBufOutputStream
-import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufInputStream
-import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufOutputStream
-import io.netty.buffer.Unpooled
-import java.util.Base64
+import com.valaphee.netcode.util.safeList
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
  */
-@JsonSerialize(using = ItemStackSerializer::class)
-@JsonDeserialize(using = ItemStackDeserializer::class)
 data class ItemStack(
-    val itemKey: String,
-    var subId: Int = 0,
-    var count: Int = 1,
-    var tag: CompoundTag? = null,
-    var canPlaceOn: Array<String>? = null,
-    var canDestroy: Array<String>? = null,
-    var blockingTicks: Long = 0,
-    var netId: Int = 0,
-    var blockStateKey: String? = null
+    @get:JsonProperty("item") val itemKey: String,
+    @get:JsonProperty("sub_id") var subId: Int = 0,
+    @get:JsonProperty("count") var count: Int = 1,
+    @get:JsonProperty("tag") var tag: Map<String, Any>? = null,
+    @get:JsonIgnore var canPlaceOn: List<String>? = null,
+    @get:JsonIgnore var canDestroy: List<String>? = null,
+    @get:JsonIgnore var blockingTicks: Long = 0,
+    @get:JsonIgnore var netId: Int = 0,
+    @get:JsonProperty("block_state") var blockStateKey: String? = null
 ) {
-    fun toTag(tag: CompoundTag): CompoundTag {
-        tag.setString("Name", itemKey)
-        tag.setShort("Damage", subId.toShort())
-        tag.setByte("Count", count.toByte())
-        this.tag?.let { tag["tag"] = it }
-        return tag
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -101,60 +79,6 @@ data class ItemStack(
     }
 }
 
-/**
- * @author Kevin Ludwig
- */
-object ItemStackSerializer : JsonSerializer<ItemStack?>() {
-    private val base64Encoder = Base64.getEncoder()
-
-    override fun serialize(value: ItemStack?, generator: JsonGenerator, provider: SerializerProvider) {
-        value?.let {
-            generator.writeStartObject()
-            generator.writeStringField("item", it.itemKey)
-            if (it.subId != 0) generator.writeNumberField("subId", it.subId)
-            if (it.count != 1) generator.writeNumberField("count", it.count)
-            it.tag?.let { tag ->
-                var buffer: PacketBuffer? = null
-                try {
-                    buffer = PacketBuffer(Unpooled.buffer(), true).also { it.toNbtOutputStream().use { it.writeTag(tag) } }
-                    val array = ByteArray(buffer.readableBytes())
-                    buffer.readBytes(array)
-                    generator.writeStringField("tag", base64Encoder.encodeToString(array))
-                } finally {
-                    buffer?.release()
-                }
-            }
-            it.blockStateKey?.let { generator.writeStringField("blockState", it) }
-            generator.writeEndObject()
-        } ?: generator.writeNull()
-    }
-}
-
-/**
- * @author Kevin Ludwig
- */
-class ItemStackDeserializer : JsonDeserializer<ItemStack?>() {
-    private val base64Decoder = Base64.getDecoder()
-
-    override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack? {
-        val node = parser.readValueAsTree<JsonNode>()
-        return if (node.isNull) null else {
-            var tag: CompoundTag? = null
-            node["tag"]?.let {
-                var buffer: PacketBuffer? = null
-                try {
-                    buffer = PacketBuffer(Unpooled.wrappedBuffer(base64Decoder.decode(it.asText())), true).also { tag = it.toNbtInputStream().use { it.readTag()?.asCompoundTag() } }
-                } finally {
-                    buffer?.release()
-                }
-            }
-            ItemStack(checkNotNull(node["item"].asText()), node["subId"]?.asInt() ?: 0, node["count"]?.asInt() ?: 1, tag, blockStateKey = node["blockState"]?.asText())
-        }
-    }
-}
-
-fun CompoundTag.asStack() = ItemStack(getString("Name"), getIntOrNull("Damage") ?: 0, getIntOrNull("Count") ?: 1, getCompoundTagOrNull("tag"))
-
 fun PacketBuffer.readStackPre431(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
@@ -166,13 +90,13 @@ fun PacketBuffer.readStackPre431(): ItemStack? {
         countAndSubId and 0xFF,
         readShortLE().toInt().let {
             when {
-                it > 0 -> NbtInputStream(LittleEndianByteBufInputStream(readSlice(it))).use { it.readTag()?.asCompoundTag() }
-                it == -1 -> NbtInputStream(LittleEndianVarIntByteBufInputStream(this)).use { if (readVarUInt() == 1) it.readTag()?.asCompoundTag() else null }
+                it > 0 -> littleEndianNbtObjectMapper.readValue(ByteBufInputStream(readSlice(it)))
+                it == -1 -> if (readVarUInt() == 1) littleEndianVarIntNbtObjectMapper.readValue(ByteBufInputStream(readSlice(it))) else null
                 else -> null
             }
         },
-        readVarInt().let { if (it == 0) null else Array(it) { readString() } },
-        readVarInt().let { if (it == 0) null else Array(it) { readString() } },
+        readVarInt().let { if (it == 0) null else safeList(it) { readString() } },
+        readVarInt().let { if (it == 0) null else safeList(it) { readString() } },
         if (itemKey == shieldKey) readVarLong() else 0
     )
 }
@@ -199,13 +123,13 @@ fun PacketBuffer.readStack(): ItemStack? {
         count,
         readShortLE().toInt().let {
             when {
-                it > 0 -> NbtInputStream(LittleEndianByteBufInputStream(readSlice(it))).use { it.readTag()?.asCompoundTag() }
-                it == -1 -> NbtInputStream(LittleEndianByteBufInputStream(this)).use { if (readUnsignedByte().toInt() == 1) it.readTag()?.asCompoundTag() else null }
+                it > 0 -> littleEndianNbtObjectMapper.readValue(ByteBufInputStream(readSlice(it)))
+                it == -1 -> if (readUnsignedByte().toInt() == 1) littleEndianNbtObjectMapper.readValue(ByteBufInputStream(readSlice(it))) else null
                 else -> null
             }
         },
-        readIntLE().let { if (it == 0) null else Array(it) { readString16() } },
-        readIntLE().let { if (it == 0) null else Array(it) { readString16() } },
+        readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
+        readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
         if (itemKey == shieldKey) readLongLE() else 0,
         netId,
         if (blockRuntimeId != 0) registrySet.blockStates[blockRuntimeId] ?: "minecraft:unknown" else null
@@ -226,13 +150,13 @@ fun PacketBuffer.readStackInstance(): ItemStack? {
         count,
         readShortLE().toInt().let {
             when {
-                it > 0 -> NbtInputStream(LittleEndianByteBufInputStream(readSlice(it))).use { it.readTag()?.asCompoundTag() }
-                it == -1 -> NbtInputStream(LittleEndianByteBufInputStream(this)).use { if (readUnsignedByte().toInt() == 1) it.readTag()?.asCompoundTag() else null }
+                it > 0 -> littleEndianNbtObjectMapper.readValue(ByteBufInputStream(readSlice(it)))
+                it == -1 -> if (readUnsignedByte().toInt() == 1) littleEndianNbtObjectMapper.readValue(ByteBufInputStream(readSlice(it))) else null
                 else -> null
             }
         },
-        readIntLE().let { if (it == 0) null else Array(it) { readString16() } },
-        readIntLE().let { if (it == 0) null else Array(it) { readString16() } },
+        readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
+        readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
         if (itemKey == shieldKey) readLongLE() else 0,
         0,
         if (blockRuntimeId != 0) registrySet.blockStates[blockRuntimeId] ?: "minecraft:unknown" else null
@@ -252,7 +176,7 @@ fun PacketBuffer.writeStackPre431(value: ItemStack?) {
         it.tag?.let {
             writeShortLE(-1)
             writeVarUInt(1)
-            NbtOutputStream(LittleEndianVarIntByteBufOutputStream(this)).use { stream -> stream.writeTag(it) }
+            littleEndianVarIntNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
         } ?: writeShortLE(0)
         it.canPlaceOn?.let {
             writeVarInt(it.size)
@@ -286,7 +210,7 @@ fun PacketBuffer.writeStack(value: ItemStack?) {
         it.tag?.let {
             writeShortLE(-1)
             writeByte(1)
-            NbtOutputStream(LittleEndianByteBufOutputStream(this)).use { stream -> stream.writeTag(it) }
+            littleEndianNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
         } ?: writeShortLE(0)
         it.canPlaceOn?.let {
             writeIntLE(it.size)
@@ -312,7 +236,7 @@ fun PacketBuffer.writeStackInstance(value: ItemStack?) {
         it.tag?.let {
             writeShortLE(-1)
             writeVarUInt(1)
-            NbtOutputStream(LittleEndianByteBufOutputStream(this)).use { stream -> stream.writeTag(it) }
+            littleEndianNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
         } ?: writeShortLE(0)
         it.canPlaceOn?.let {
             writeIntLE(it.size)
@@ -336,3 +260,8 @@ fun PacketBuffer.writeIngredient(value: ItemStack?) {
 }
 
 private const val shieldKey = "minecraft:shield"
+private val littleEndianNbtObjectMapper = ObjectMapper(NbtFactory().apply { enable(NbtFactory.Feature.LittleEndian) })
+private val littleEndianVarIntNbtObjectMapper = ObjectMapper(NbtFactory().apply {
+    enable(NbtFactory.Feature.LittleEndian)
+    enable(NbtFactory.Feature.VarInt)
+})

@@ -17,9 +17,12 @@
 package com.valaphee.netcode.mcbe.network
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
+import com.valaphee.jackson.dataformat.nbt.NbtFactory
 import com.valaphee.netcode.mc.nbt.NbtInputStream
 import com.valaphee.netcode.mc.nbt.NbtOutputStream
 import com.valaphee.netcode.mcbe.RegistrySet
@@ -40,17 +43,10 @@ import java.util.UUID
 class PacketBuffer(
     buffer: ByteBuf,
     val local: Boolean = false,
-    objectMapper: ObjectMapper? = null,
-    registrySet: RegistrySet? = null
+    val jsonObjectMapper: ObjectMapper = jacksonObjectMapper(),
+    val nbtObjectMapper: ObjectMapper = ObjectMapper(NbtFactory()).apply { registerKotlinModule() },
+    val registrySet: RegistrySet
 ) : ByteBufWrapper(buffer) {
-    lateinit var objectMapper: ObjectMapper
-    lateinit var registrySet: RegistrySet
-
-    init {
-        objectMapper?.let { this.objectMapper = it }
-        registrySet?.let { this.registrySet = it }
-    }
-
     inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
         val flagsValue = readByte().toInt()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1 shl it.ordinal)) != 0 }.forEach { add(it) } }

@@ -17,6 +17,7 @@
 package com.valaphee.netcode.mcbe.command
 
 import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig
@@ -24,30 +25,10 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 data class Message(
     val success: Boolean,
     val message: String,
-    val arguments: Array<String>
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+    val arguments: List<String>
+)
 
-        other as Message
-
-        if (success != other.success) return false
-        if (message != other.message) return false
-        if (!arguments.contentEquals(other.arguments)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = success.hashCode()
-        result = 31 * result + message.hashCode()
-        result = 31 * result + arguments.contentHashCode()
-        return result
-    }
-}
-
-fun PacketBuffer.readMessage() = Message(readBoolean(), readString(), Array(readVarUInt()) { readString() })
+fun PacketBuffer.readMessage() = Message(readBoolean(), readString(), safeList(readVarUInt()) { readString() })
 
 fun PacketBuffer.writeMessage(value: Message) {
     writeBoolean(value.success)

@@ -37,7 +37,7 @@ class FormPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarUInt(formId)
-        buffer.writeString(buffer.objectMapper.writeValueAsString(form))
+        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(form))
     }
 
     override fun handle(handler: PacketHandler) = handler.form(this)
@@ -49,5 +49,5 @@ class FormPacket(
  * @author Kevin Ludwig
  */
 object FormPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = FormPacket(buffer.readVarUInt(), buffer.objectMapper.readValue(buffer.readString()))
+    override fun read(buffer: PacketBuffer, version: Int) = FormPacket(buffer.readVarUInt(), buffer.jsonObjectMapper.readValue(buffer.readString()))
 }

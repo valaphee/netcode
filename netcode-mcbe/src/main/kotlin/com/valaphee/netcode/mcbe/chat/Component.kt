@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 @JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
 @JsonSubTypes(
     JsonSubTypes.Type(TextComponent::class),
-    JsonSubTypes.Type(TranslateComponent::class),
+    JsonSubTypes.Type(TranslatableComponent::class),
     JsonSubTypes.Type(ScoreComponent::class)
 )
 @JsonSerialize
@@ -45,7 +45,7 @@ data class TextComponent(
 /**
  * @author Kevin Ludwig
  */
-data class TranslateComponent(
+data class TranslatableComponent(
     @get:JsonProperty("translate") var name: String,
     @get:JsonProperty("with") var arguments: Array<Component> = emptyArray()
 ) : Component() {
@@ -53,7 +53,7 @@ data class TranslateComponent(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as TranslateComponent
+        other as TranslatableComponent
 
         if (name != other.name) return false
         if (!arguments.contentEquals(other.arguments)) return false

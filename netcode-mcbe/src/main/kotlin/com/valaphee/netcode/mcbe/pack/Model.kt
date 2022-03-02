@@ -24,14 +24,6 @@ import com.valaphee.foundry.math.Float3
 /**
  * @author Kevin Ludwig
  */
-class ModelData(
-    @get:JsonProperty("format_version") val version: String,
-    @get:JsonProperty("minecraft:geometry") val geometry: List<Model>,
-)
-
-/**
- * @author Kevin Ludwig
- */
 @JsonTypeName("minecraft:geometry")
 class Model(
     @get:JsonProperty("description") val description: Description,

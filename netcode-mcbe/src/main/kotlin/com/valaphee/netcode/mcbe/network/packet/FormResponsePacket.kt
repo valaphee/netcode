@@ -16,37 +16,34 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.google.gson.JsonElement
-import com.google.gson.internal.Streams
-import com.google.gson.stream.JsonReader
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.util.ByteBufStringReader
 
 /**
  * @author Kevin Ludwig
  */
 class FormResponsePacket(
     val formId: Int,
-    val json: JsonElement
+    val data: Any?
 ) : Packet() {
     override val id get() = 0x65
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarUInt(formId)
-        buffer.writeString(json.toString())
+        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(data))
     }
 
     override fun handle(handler: PacketHandler) = handler.formResponse(this)
 
-    override fun toString() = "FormResponsePacket(formId=$formId, json=$json)"
+    override fun toString() = "FormResponsePacket(formId=$formId, data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object FormResponsePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = FormResponsePacket(buffer.readVarUInt(), Streams.parse(JsonReader(ByteBufStringReader(buffer, buffer.readVarUInt()))))
+    override fun read(buffer: PacketBuffer, version: Int) = FormResponsePacket(buffer.readVarUInt(), buffer.jsonObjectMapper.readValue(buffer.readString()))
 }
