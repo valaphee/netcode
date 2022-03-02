@@ -175,7 +175,7 @@ object CommandsPacketReader : PacketReader {
         val commandBuilders = safeList(buffer.readVarUInt()) {
             val name = buffer.readString()
             val description = buffer.readString()
-            val flags = if (version >= 448) buffer.readShortLEFlags<Command.Flag>() else buffer.readByteFlags()
+            val flags: Set<Command.Flag> = if (version >= 448) buffer.readShortLEFlags() else buffer.readByteFlags()
             val permission = Permission.values()[buffer.readByte().toInt()]
             val aliasesIndex = buffer.readIntLE()
             val overloadBuilders = safeList(buffer.readVarUInt()) {

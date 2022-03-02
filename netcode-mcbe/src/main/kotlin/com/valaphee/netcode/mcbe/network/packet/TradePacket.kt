@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mc.nbt.Tag
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
@@ -24,6 +24,9 @@ import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.inventory.WindowType
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -39,7 +42,7 @@ class TradePacket(
     val title: String,
     val v2: Boolean,
     val restock: Boolean,
-    val tag: Tag?
+    val data: Any?
 ) : Packet() {
     override val id get() = 0x50
 
@@ -53,12 +56,12 @@ class TradePacket(
         buffer.writeString(title)
         buffer.writeBoolean(v2)
         buffer.writeBoolean(restock)
-        buffer.toNbtOutputStream().use { it.writeTag(tag) }
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.trade(this)
 
-    override fun toString() = "TradePacket(windowId=$windowId, type=$type, experience=$experience, level=$level, uniqueEntityId=$uniqueEntityId, playerUniqueEntityId=$playerUniqueEntityId, title='$title', v2=$v2, restock=$restock, tag=$tag)"
+    override fun toString() = "TradePacket(windowId=$windowId, type=$type, experience=$experience, level=$level, uniqueEntityId=$uniqueEntityId, playerUniqueEntityId=$playerUniqueEntityId, title='$title', v2=$v2, restock=$restock, data=$data)"
 }
 
 /**
@@ -75,6 +78,6 @@ object TradePacketReader : PacketReader {
         buffer.readString(),
         buffer.readBoolean(),
         buffer.readBoolean(),
-        buffer.toNbtInputStream().use { it.readTag() }
+        buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
     )
 }

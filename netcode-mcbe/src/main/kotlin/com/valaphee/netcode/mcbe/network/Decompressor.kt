@@ -16,58 +16,38 @@
 
 package com.valaphee.netcode.mcbe.network
 
-import com.valaphee.netcode.util.Compressor
-import com.valaphee.netcode.util.ZlibCompressor
-import com.valaphee.netcode.util.compressor
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.unix.Buffer
 import io.netty.handler.codec.MessageToMessageDecoder
 import io.netty.util.ReferenceCountUtil
+import java.util.zip.Inflater
 
 /**
  * @author Kevin Ludwig
  */
 class Decompressor : MessageToMessageDecoder<ByteBuf>() {
-    private lateinit var compressor: Compressor
+    private val buffer = ByteArray(8192)
+
+    private lateinit var inflater: Inflater
 
     override fun handlerAdded(context: ChannelHandlerContext) {
         super.handlerAdded(context)
-        compressor = compressor(false, true)
+        inflater = Inflater(true)
     }
 
     override fun handlerRemoved(context: ChannelHandlerContext) {
-        compressor.close()
+        inflater.end()
         super.handlerRemoved(context)
     }
 
     override fun decode(context: ChannelHandlerContext, `in`: ByteBuf, out: MutableList<Any>) {
         var out0: ByteBuf? = null
         try {
-            if (compressor is ZlibCompressor) {
-                val zlibCompressor: ZlibCompressor = compressor as ZlibCompressor
-                val allocator = context.alloc()
-                val out1 = allocator.compositeDirectBuffer(128).also { out0 = it }
-                val buffers = `in`.nioBuffers()
-                var bufferIndex = 0
-                var temporaryOut = allocator.directBuffer(chunkSize, chunkSize)
-                while (!zlibCompressor.isFinished && bufferIndex != buffers.size) {
-                    if (chunkFloor > temporaryOut.writableBytes()) {
-                        out1.addComponent(true, temporaryOut)
-                        temporaryOut = allocator.directBuffer(chunkSize, chunkSize)
-                    }
-                    val buffer = buffers[bufferIndex.coerceAtMost(buffers.size - 1)]
-                    temporaryOut.writerIndex(temporaryOut.writerIndex() + zlibCompressor.process(Buffer.memoryAddress(buffer) + buffer.position(), buffer.remaining(), temporaryOut.memoryAddress() + temporaryOut.writerIndex(), temporaryOut.writableBytes()))
-                    buffer.position(buffer.position() + zlibCompressor.consumed)
-                    if (!buffer.hasRemaining()) bufferIndex++
-                }
-                if (temporaryOut.isReadable) out1.addComponent(true, temporaryOut) else temporaryOut.release()
-                zlibCompressor.reset()
-            } else {
-                out0 = context.alloc().ioBuffer(`in`.readableBytes() shl 2)
-                compressor.process(`in`, out0!!)
-            }
-            while (out0!!.isReadable) out.add(out0!!.readRetainedSlice(readVarInt(out0)))
+            out0 = context.alloc().ioBuffer(`in`.readableBytes() shl 2)
+            inflater.setInput(`in`.nioBuffer())
+            while (!inflater.finished() && inflater.totalIn < `in`.readableBytes()) out0.writeBytes(buffer, 0, inflater.inflate(buffer))
+            inflater.reset()
+            while (out0.isReadable) out.add(out0.readRetainedSlice(readVarInt(out0)))
         } finally {
             out0?.let { ReferenceCountUtil.safeRelease(out0) }
         }

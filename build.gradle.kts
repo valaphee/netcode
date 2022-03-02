@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.palantir.git-version") version "0.12.3"
-    kotlin("jvm") version "1.5.31"
+    kotlin("jvm") version "1.6.10"
     `maven-publish`
     id("org.hibernate.build.maven-repo-auth") version "3.0.2"
     signing
@@ -54,7 +54,6 @@ subprojects {
         withType<KotlinCompile> { kotlinOptions { jvmTarget = "16" } }
 
         withType<Test> { useJUnitPlatform() }
-
     }
 
     java {

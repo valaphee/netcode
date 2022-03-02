@@ -16,35 +16,38 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mc.nbt.CompoundTag
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
  */
 class BlockEntityPacket(
     val position: Int3,
-    val tag: CompoundTag?
+    val data: Any?
 ) : Packet() {
     override val id get() = 0x38
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
-        buffer.toNbtOutputStream().use { it.writeTag(tag) }
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.blockEntity(this)
 
-    override fun toString() = "BlockEntityPacket(position=$position, tag=$tag)"
+    override fun toString() = "BlockEntityPacket(position=$position, data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object BlockEntityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BlockEntityPacket(buffer.readInt3UnsignedY(), buffer.toNbtInputStream().use { it.readTag()?.asCompoundTag() })
+    override fun read(buffer: PacketBuffer, version: Int) = BlockEntityPacket(buffer.readInt3UnsignedY(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

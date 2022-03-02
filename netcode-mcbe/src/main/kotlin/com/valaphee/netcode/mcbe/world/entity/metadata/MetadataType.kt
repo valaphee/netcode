@@ -16,11 +16,14 @@
 
 package com.valaphee.netcode.mcbe.world.entity.metadata
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mc.nbt.Tag
 import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.mcbe.network.PacketBuffer
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -71,11 +74,11 @@ interface MetadataType<T> {
             }
         }
 
-        val Tag = object : MetadataType<Tag?> {
-            override fun read(buffer: PacketBuffer) = buffer.toNbtInputStream().use { it.readTag() }
+        val Nbt = object : MetadataType<Any?> {
+            override fun read(buffer: PacketBuffer) = buffer.nbtObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
 
-            override fun write(buffer: PacketBuffer, value: Tag?) {
-                buffer.toNbtOutputStream().use { it.writeTag(value) }
+            override fun write(buffer: PacketBuffer, value: Any?) {
+                buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, value)
             }
         }
 

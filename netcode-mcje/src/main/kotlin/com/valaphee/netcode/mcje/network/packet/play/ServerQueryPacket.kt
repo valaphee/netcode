@@ -16,32 +16,35 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.valaphee.netcode.mc.nbt.CompoundTag
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
  */
 class ServerQueryPacket(
     val id: Int,
-    val tag: CompoundTag?
+    val data: Any?
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(id)
-        buffer.toNbtOutputStream().use { it.writeTag(tag) }
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.query(this)
 
-    override fun toString() = "ServerQueryPacket(id=$id, tag=$tag)"
+    override fun toString() = "ServerQueryPacket(id=$id, data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerQueryPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerQueryPacket(buffer.readVarInt(), buffer.toNbtInputStream().use { it.readTag()?.asCompoundTag() })
+    override fun read(buffer: PacketBuffer, version: Int) = ServerQueryPacket(buffer.readVarInt(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

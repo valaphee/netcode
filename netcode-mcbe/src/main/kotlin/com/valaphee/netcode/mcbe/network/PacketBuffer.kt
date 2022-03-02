@@ -23,13 +23,7 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.jackson.dataformat.nbt.NbtFactory
-import com.valaphee.netcode.mc.nbt.NbtInputStream
-import com.valaphee.netcode.mc.nbt.NbtOutputStream
 import com.valaphee.netcode.mcbe.RegistrySet
-import com.valaphee.netcode.mcbe.util.LittleEndianByteBufInputStream
-import com.valaphee.netcode.mcbe.util.LittleEndianByteBufOutputStream
-import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufInputStream
-import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufOutputStream
 import com.valaphee.netcode.util.ByteBufWrapper
 import io.netty.buffer.ByteBuf
 import io.netty.util.AsciiString
@@ -44,7 +38,10 @@ class PacketBuffer(
     buffer: ByteBuf,
     val local: Boolean = false,
     val jsonObjectMapper: ObjectMapper = jacksonObjectMapper(),
-    val nbtObjectMapper: ObjectMapper = ObjectMapper(NbtFactory()).apply { registerKotlinModule() },
+    val nbtObjectMapper: ObjectMapper = ObjectMapper(NbtFactory().apply {
+        enable(NbtFactory.Feature.LittleEndian)
+        configure(NbtFactory.Feature.VarInt, !local)
+    }).apply { registerKotlinModule() },
     val registrySet: RegistrySet
 ) : ByteBufWrapper(buffer) {
     inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
@@ -266,10 +263,6 @@ class PacketBuffer(
         writeFloatLE(value.y)
         writeFloatLE(value.z)
     }
-
-    fun toNbtOutputStream() = NbtOutputStream(if (local) LittleEndianByteBufOutputStream(buffer) else LittleEndianVarIntByteBufOutputStream(buffer))
-
-    fun toNbtInputStream() = NbtInputStream(if (local) LittleEndianByteBufInputStream(buffer) else LittleEndianVarIntByteBufInputStream(buffer))
 
     companion object {
         const val MaximumVarUIntLength = 5

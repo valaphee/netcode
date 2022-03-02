@@ -19,21 +19,19 @@
 package com.valaphee.netcode.mcje.network
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.valaphee.foundry.math.Double3
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int2
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mc.nbt.NbtInputStream
-import com.valaphee.netcode.mc.nbt.NbtOutputStream
+import com.valaphee.jackson.dataformat.nbt.NbtFactory
 import com.valaphee.netcode.mc.util.Direction
 import com.valaphee.netcode.mcje.RegistrySet
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.util.minecraftKey
 import com.valaphee.netcode.util.ByteBufWrapper
 import io.netty.buffer.ByteBuf
-import io.netty.buffer.ByteBufInputStream
-import io.netty.buffer.ByteBufOutputStream
 import java.nio.charset.StandardCharsets
 import java.util.EnumSet
 import java.util.UUID
@@ -43,17 +41,10 @@ import java.util.UUID
  */
 class PacketBuffer(
     buffer: ByteBuf,
-    objectMapper: ObjectMapper? = null,
-    registrySet: RegistrySet? = null
+    val jsonObjectMapper: ObjectMapper = jacksonObjectMapper(),
+    val nbtObjectMapper: ObjectMapper = ObjectMapper(NbtFactory()),
+    val registrySet: RegistrySet
 ) : ByteBufWrapper(buffer) {
-    lateinit var objectMapper: ObjectMapper
-    lateinit var registrySet: RegistrySet
-
-    init {
-        objectMapper?.let { this.objectMapper = it }
-        registrySet?.let { this.registrySet = it }
-    }
-
     inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
         val flagsValue = readByte().toInt()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1 shl it.ordinal)) != 0 }.forEach { add(it) } }
@@ -209,8 +200,4 @@ class PacketBuffer(
         writeDouble(value.y)
         writeDouble(value.z)
     }
-
-    fun toNbtOutputStream() = NbtOutputStream(ByteBufOutputStream(buffer))
-
-    fun toNbtInputStream() = NbtInputStream(ByteBufInputStream(buffer))
 }

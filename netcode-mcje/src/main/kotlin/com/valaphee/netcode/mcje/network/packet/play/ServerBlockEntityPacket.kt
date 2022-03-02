@@ -16,16 +16,15 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mc.nbt.CompoundTag
-import com.valaphee.netcode.mc.nbt.NbtInputStream
-import com.valaphee.netcode.mc.nbt.NbtOutputStream
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -33,7 +32,7 @@ import io.netty.buffer.ByteBufOutputStream
 class ServerBlockEntityPacket(
     val position: Int3,
     val type: Type,
-    val tag: CompoundTag?
+    val data: Any?
 ) : Packet<ServerPlayPacketHandler> {
     enum class Type {
         Unused,
@@ -56,17 +55,17 @@ class ServerBlockEntityPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
         buffer.writeByte(type.ordinal)
-        NbtOutputStream(ByteBufOutputStream(buffer)).use { it.writeTag(tag!!) }
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.blockEntity(this)
 
-    override fun toString() = "ServerBlockEntityPacket(position=$position, type=$type, tag=$tag)"
+    override fun toString() = "ServerBlockEntityPacket(position=$position, type=$type, data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerBlockEntityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEntityPacket(buffer.readInt3UnsignedY(), ServerBlockEntityPacket.Type.values()[buffer.readByte().toInt()], NbtInputStream(ByteBufInputStream(buffer)).use { it.readTag() }?.asCompoundTag())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEntityPacket(buffer.readInt3UnsignedY(), ServerBlockEntityPacket.Type.values()[buffer.readByte().toInt()], buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

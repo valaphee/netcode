@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.form
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.google.gson.JsonElement
 
 /**
  * @author Kevin Ludwig
@@ -37,5 +36,5 @@ import com.google.gson.JsonElement
 abstract class Form<T>(
     @get:JsonProperty("title") val title: String
 ) {
-    abstract fun getResponse(json: JsonElement): T?
+    abstract fun getResponse(response: Any?): T?
 }

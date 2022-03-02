@@ -22,7 +22,6 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.util.ByteBufStringReader
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -48,7 +47,7 @@ class ServerTabCompletePacket(
             buffer.writeString(it.match)
             it.tooltip?.let {
                 buffer.writeBoolean(true)
-                buffer.writeString(buffer.objectMapper.writeValueAsString(it))
+                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(it))
             } ?: buffer.writeBoolean(false)
         }
     }
@@ -62,5 +61,5 @@ class ServerTabCompletePacket(
  * @author Kevin Ludwig
  */
 object ServerTabCompletePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTabCompletePacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(), safeList(buffer.readVarInt()) { ServerTabCompletePacket.Match(buffer.readString(), if (buffer.readBoolean()) buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt())) else null) })
+    override fun read(buffer: PacketBuffer, version: Int) = ServerTabCompletePacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(), safeList(buffer.readVarInt()) { ServerTabCompletePacket.Match(buffer.readString(), if (buffer.readBoolean()) buffer.jsonObjectMapper.readValue(buffer.readString()) else null) })
 }

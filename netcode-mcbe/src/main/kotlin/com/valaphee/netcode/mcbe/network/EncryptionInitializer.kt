@@ -17,10 +17,6 @@
 package com.valaphee.netcode.mcbe.network
 
 import com.valaphee.netcode.mcbe.network.packet.ServerToClientHandshakePacket
-import com.valaphee.netcode.mcbe.util.serverToClientHandshakeJws
-import com.valaphee.netcode.util.MbedTlsAesCipher
-import com.valaphee.netcode.util.aesCipher
-import com.valaphee.netcode.util.sha256Hasher
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.channel.Channel
@@ -29,13 +25,16 @@ import io.netty.channel.ChannelInboundHandlerAdapter
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.ChannelOutboundHandlerAdapter
 import io.netty.channel.ChannelPromise
-import io.netty.channel.unix.Buffer
 import io.netty.handler.codec.DecoderException
 import io.netty.util.ReferenceCountUtil
 import java.security.Key
 import java.security.KeyPair
+import java.security.MessageDigest
 import java.security.SecureRandom
+import javax.crypto.Cipher
 import javax.crypto.KeyAgreement
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 /**
  * @author Kevin Ludwig
@@ -56,17 +55,17 @@ class EncryptionInitializer(
             init(keyPair.private)
             doPhase(otherPublicKey, true)
         }.generateSecret()
-        val hasher = hasherLocal.get()
-        val buffer = PooledByteBufAllocator.DEFAULT.directBuffer(salt.size + secret.size)
+        val sha256 = sha256Local.get()
+        val sha256Data = PooledByteBufAllocator.DEFAULT.directBuffer(salt.size + secret.size)
         try {
-            buffer.writeBytes(salt)
-            buffer.writeBytes(secret)
-            hasher.update(buffer)
+            sha256Data.writeBytes(salt)
+            sha256Data.writeBytes(secret)
+            sha256.update(sha256Data.nioBuffer())
         } finally {
-            buffer.release()
+            sha256Data.release()
         }
-        serverToClientHandshakePacket = ServerToClientHandshakePacket(serverToClientHandshakeJws(keyPair, salt))
-        key = hasher.digest()
+        serverToClientHandshakePacket = ServerToClientHandshakePacket("serverToClientHandshakeJws(keyPair, salt)")
+        key = sha256.digest()
         if (gcm) {
             iv = ByteArray(16)
             System.arraycopy(key, 0, iv, 0, 12)
@@ -85,43 +84,37 @@ class EncryptionInitializer(
     }
 
     private inner class Encryptor : ChannelOutboundHandlerAdapter() {
-        private val cipher = aesCipher(true, key, iv, gcm)
+        private val aes = Cipher.getInstance(if (gcm) "AES/CTR/NoPadding" else "AES/CFB8/NoPadding").apply { init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(iv)) }
         private var counter = 0L
-
-        override fun handlerRemoved(context: ChannelHandlerContext) {
-            cipher.close()
-            super.handlerRemoved(context)
-        }
 
         override fun write(context: ChannelHandlerContext, message: Any, promise: ChannelPromise) {
             if (message is ByteBuf) {
                 try {
                     val readerIndex = message.readerIndex()
-                    val hasher = hasherLocal.get()
-                    val hash = context.alloc().directBuffer()
+                    val sha256 = sha256Local.get()
+                    val sha256Data = context.alloc().directBuffer()
                     try {
-                        hash.writeLongLE(counter++)
-                        hash.writeBytes(message)
+                        sha256Data.writeLongLE(counter++)
+                        sha256Data.writeBytes(message)
                         keyBuffer.markReaderIndex()
-                        hash.writeBytes(keyBuffer)
+                        sha256Data.writeBytes(keyBuffer)
                         keyBuffer.resetReaderIndex()
-                        hasher.update(hash)
+                        sha256.update(sha256Data.nioBuffer())
                     } finally {
-                        hash.release()
+                        sha256Data.release()
                     }
                     message.readerIndex(readerIndex)
-                    message.writeBytes(hasher.digest().copyOf(8))
-                    if (cipher is MbedTlsAesCipher) {
-                        if (message.hasMemoryAddress()) {
-                            val address = message.memoryAddress() + message.readerIndex()
-                            cipher.cipher(address, address, message.readableBytes())
-                        } else message.nioBuffers().forEach {
-                            if (it.remaining() > 0) {
-                                val address = Buffer.memoryAddress(it) + it.position()
-                                cipher.cipher(address, address, it.remaining())
-                            }
-                        }
-                    } else cipher.cipher(message.duplicate(), message.duplicate().writerIndex(message.readerIndex()))
+                    message.writeBytes(sha256.digest().copyOf(8))
+
+                    val readableBytes = message.readableBytes()
+                    var heapIn = heapInLocal.get()
+                    if (heapIn.size < readableBytes) heapInLocal.set(ByteArray(readableBytes).also { heapIn = it })
+                    message.duplicate().readBytes(heapIn, 0, readableBytes)
+                    var heapOut = heapOutLocal.get()
+                    val outputSize = aes.getOutputSize(readableBytes)
+                    if (heapOut.size < outputSize) heapOutLocal.set(ByteArray(outputSize).also { heapOut = it })
+                    message.duplicate().writerIndex(message.readerIndex()).writeBytes(heapOut, 0, aes.update(heapIn, 0, readableBytes, heapOut))
+
                     super.write(context, message.retain(), promise)
                 } finally {
                     ReferenceCountUtil.safeRelease(message)
@@ -131,13 +124,8 @@ class EncryptionInitializer(
     }
 
     private inner class Decryptor : ChannelInboundHandlerAdapter() {
-        private val cipher = aesCipher(false, key, iv, gcm)
+        private val aes = Cipher.getInstance(if (gcm) "AES/CTR/NoPadding" else "AES/CFB8/NoPadding").apply { init(Cipher.DECRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(iv)) }
         private var count = 0L
-
-        override fun handlerRemoved(context: ChannelHandlerContext) {
-            cipher.close()
-            super.handlerRemoved(context)
-        }
 
         override fun channelRead(context: ChannelHandlerContext, message: Any) {
             if (message is ByteBuf) {
@@ -150,31 +138,30 @@ class EncryptionInitializer(
                 try {
                     val inReaderIndex = `in`.readerIndex()
                     val inWriterIndex = `in`.writerIndex()
-                    if (cipher is MbedTlsAesCipher) {
-                        if (`in`.hasMemoryAddress()) {
-                            val inAddress = `in`.memoryAddress() + `in`.readerIndex()
-                            cipher.cipher(inAddress, inAddress, `in`.readableBytes())
-                        } else `in`.nioBuffers().forEach {
-                            if (it.remaining() > 0) {
-                                val bufferAddress: Long = Buffer.memoryAddress(it) + it.position()
-                                cipher.cipher(bufferAddress, bufferAddress, it.remaining())
-                            }
-                        }
-                    } else cipher.cipher(`in`.duplicate(), `in`.duplicate().writerIndex(`in`.readerIndex()))
-                    val hasher = hasherLocal.get()
-                    val hash = context.alloc().directBuffer()
+
+                    val readableBytes = `in`.readableBytes()
+                    var heapIn = heapInLocal.get()
+                    if (heapIn.size < readableBytes) heapInLocal.set(ByteArray(readableBytes).also { heapIn = it })
+                    `in`.duplicate().readBytes(heapIn, 0, readableBytes)
+                    var heapOut = heapOutLocal.get()
+                    val outputSize = aes.getOutputSize(readableBytes)
+                    if (heapOut.size < outputSize) heapOutLocal.set(ByteArray(outputSize).also { heapOut = it })
+                    `in`.duplicate().writerIndex(`in`.readerIndex()).writeBytes(heapOut, 0, aes.update(heapIn, 0, readableBytes, heapOut))
+
+                    val sha256 = sha256Local.get()
+                    val sha256Data = context.alloc().directBuffer()
                     try {
-                        hash.writeLongLE(count++)
-                        hash.writeBytes(`in`.readerIndex(inReaderIndex).writerIndex(inWriterIndex - 8))
+                        sha256Data.writeLongLE(count++)
+                        sha256Data.writeBytes(`in`.readerIndex(inReaderIndex).writerIndex(inWriterIndex - 8))
                         keyBuffer.markReaderIndex()
-                        hash.writeBytes(keyBuffer)
+                        sha256Data.writeBytes(keyBuffer)
                         keyBuffer.resetReaderIndex()
-                        hasher.update(hash)
+                        sha256.update(sha256Data.nioBuffer())
                     } finally {
-                        hash.release()
+                        sha256Data.release()
                     }
                     `in`.writerIndex(inWriterIndex)
-                    if (hasher.digest().copyOf(8).any { it != `in`.readByte() }) throw DecoderException("Checksum mismatch")
+                    if (sha256.digest().copyOf(8).any { it != `in`.readByte() }) throw DecoderException("Checksum mismatch")
                     super.channelRead(context, `in`.readerIndex(inReaderIndex).writerIndex(inWriterIndex - 8).retain())
                 } finally {
                     ReferenceCountUtil.safeRelease(`in`)
@@ -184,7 +171,9 @@ class EncryptionInitializer(
     }
 
     companion object {
-        private val hasherLocal = ThreadLocal.withInitial { sha256Hasher() }
+        private val heapInLocal = ThreadLocal.withInitial { ByteArray(0) }
+        private val heapOutLocal = ThreadLocal.withInitial { ByteArray(0) }
+        private val sha256Local = ThreadLocal.withInitial { MessageDigest.getInstance("SHA-256") }
         private val random = SecureRandom()
     }
 }

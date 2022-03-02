@@ -16,13 +16,16 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mc.nbt.Tag
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -31,7 +34,7 @@ import com.valaphee.netcode.mcbe.network.Restriction
 class StructureTemplateDataExportResponsePacket(
     val name: String,
     val save: Boolean,
-    val tag: Tag?,
+    val data: Any?,
     val type: Type
 ) : Packet() {
     enum class Type {
@@ -43,13 +46,13 @@ class StructureTemplateDataExportResponsePacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(name)
         buffer.writeBoolean(save)
-        if (save) buffer.toNbtOutputStream().use { it.writeTag(tag) }
+        if (save) buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
         buffer.writeByte(type.ordinal)
     }
 
     override fun handle(handler: PacketHandler) = handler.structureTemplateDataExportResponse(this)
 
-    override fun toString() = "StructureTemplateDataExportResponsePacket(name='$name', save=$save, tag=$tag, type=$type)"
+    override fun toString() = "StructureTemplateDataExportResponsePacket(name='$name', save=$save, data=$data, type=$type)"
 }
 
 /**
@@ -59,8 +62,8 @@ object StructureTemplateDataExportResponsePacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): StructureTemplateDataExportResponsePacket {
         val name = buffer.readString()
         val save = buffer.readBoolean()
-        val tag = if (save) buffer.toNbtInputStream().use { it.readTag() } else null
+        val data = if (save) buffer.nbtObjectMapper.readValue<Any?>(ByteBufInputStream(buffer)) else null
         val type = StructureTemplateDataExportResponsePacket.Type.values()[buffer.readUnsignedByte().toInt()]
-        return StructureTemplateDataExportResponsePacket(name, save, tag, type)
+        return StructureTemplateDataExportResponsePacket(name, save, data, type)
     }
 }

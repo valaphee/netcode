@@ -17,7 +17,6 @@
 package com.valaphee.netcode.mcbe.form
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.google.gson.JsonElement
 
 /**
  * @author Kevin Ludwig
@@ -27,7 +26,7 @@ class ButtonList(
     @get:JsonProperty("content") val content: String,
     @get:JsonProperty("buttons") val buttons: List<Button>
 ) : Form<String>(title) {
-    override fun getResponse(json: JsonElement) = if (json.asInt >= buttons.size) null else buttons[json.asInt].text
+    override fun getResponse(response: Any?) = if (response as Int >= buttons.size) null else buttons[response].text
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

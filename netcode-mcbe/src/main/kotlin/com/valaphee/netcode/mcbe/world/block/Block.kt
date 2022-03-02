@@ -31,6 +31,7 @@ class Block : Data {
     @get:JsonProperty("events") val events: Map<String, Map<String, Any>>?
     @get:JsonProperty("components") val components: Map<String, Any>?
     @get:JsonProperty("permutations") val permutations: List<Permutation>?
+    @get:JsonIgnore val data: Data
 
     class Description(
         @get:JsonProperty("identifier") val key: String,
@@ -42,21 +43,7 @@ class Block : Data {
         @get:JsonProperty("components") val components: Map<String, Any>
     )
 
-    constructor(description: Description, events: Map<String, Map<String, Any>>? = null, components: Map<String, Any>? = null, permutations: List<Permutation>? = null) {
-        this.description = description
-        this.events = events
-        this.components = components
-        this.permutations = permutations
-        this.tag = Tag(0, description.properties?.map { Tag.Property(it.key, it.value) })
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // Network Representation
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @get:JsonIgnore val tag: Tag
-
-    class Tag(
+    class Data(
         @get:JsonProperty("molangVersion") val molangVersion: Int,
         @get:JsonProperty("properties") val properties: List<Property>? = null,
         @get:JsonProperty("components") val components: Map<String, Map<String, Any>>? = null,
@@ -68,10 +55,18 @@ class Block : Data {
         )
     }
 
-    constructor(key: String, tag: Tag) {
-        this.description = Description(key, tag.properties?.associate { it.name to it.enum })
+    constructor(description: Description, events: Map<String, Map<String, Any>>? = null, components: Map<String, Any>? = null, permutations: List<Permutation>? = null) {
+        this.description = description
+        this.events = events
+        this.components = components
+        this.permutations = permutations
+        this.data = Data(0, description.properties?.map { Data.Property(it.key, it.value) })
+    }
+
+    constructor(key: String, data: Data) {
+        this.description = Description(key, data.properties?.associate { it.name to it.enum })
         events = null
-        components = tag.components?.mapNotNull {
+        components = data.components?.mapNotNull {
             when (it.key) {
                 "minecraft:block_light_absorption", "minecraft:block_light_emission", "minecraft:destroy_time", "minecraft:explosion_resistance", "minecraft:friction" -> it.key to it.value["value"] as Float
                 "minecraft:creative_category" -> it.key to it.value
@@ -84,6 +79,6 @@ class Block : Data {
             }
         }?.toMap()
         permutations = null
-        this.tag = tag
+        this.data = data
     }
 }

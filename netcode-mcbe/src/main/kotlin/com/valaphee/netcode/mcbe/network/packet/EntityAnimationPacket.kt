@@ -34,7 +34,7 @@ class EntityAnimationPacket(
         NoAction, SwingArm, WakeUp, CriticalHit, MagicCriticalHit, RowRight, RowLeft;
 
         companion object {
-            internal val registry = Registry<Animation>().apply {
+            val registry = Registry<Animation>().apply {
                 this[0x00] = NoAction
                 this[0x01] = SwingArm
                 this[0x03] = WakeUp

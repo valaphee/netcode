@@ -16,37 +16,38 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mc.nbt.CompoundTag
-import com.valaphee.netcode.mc.nbt.NbtOutputStream
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.mcbe.util.LittleEndianVarIntByteBufOutputStream
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
 class EntityIdentifiersPacket(
-    val tag: CompoundTag?
+    val data: Any?
 ) : Packet() {
     override val id get() = 0x77
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        NbtOutputStream(LittleEndianVarIntByteBufOutputStream(buffer)).use { it.writeTag(tag) }
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.entityIdentifiers(this)
 
-    override fun toString() = "EntityIdentifiersPacket(tag=$tag)"
+    override fun toString() = "EntityIdentifiersPacket(data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object EntityIdentifiersPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityIdentifiersPacket(buffer.toNbtInputStream().use { it.readTag()?.asCompoundTag() })
+    override fun read(buffer: PacketBuffer, version: Int) = EntityIdentifiersPacket(buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

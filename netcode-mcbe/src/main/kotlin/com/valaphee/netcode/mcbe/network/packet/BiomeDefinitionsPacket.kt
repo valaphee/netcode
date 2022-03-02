@@ -16,35 +16,38 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mc.nbt.CompoundTag
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
 class BiomeDefinitionsPacket(
-    val tag: CompoundTag?
+    val data: Any?
 ) : Packet() {
     override val id get() = 0x7A
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.toNbtOutputStream().use { it.writeTag(tag) }
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.biomeDefinitions(this)
 
-    override fun toString() = "BiomeDefinitionsPacket(tag=$tag)"
+    override fun toString() = "BiomeDefinitionsPacket(data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object BiomeDefinitionsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BiomeDefinitionsPacket(buffer.toNbtInputStream().use { it.readTag()?.asCompoundTag() })
+    override fun read(buffer: PacketBuffer, version: Int) = BiomeDefinitionsPacket(buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

@@ -49,7 +49,7 @@ class ServerMapPacket(
             buffer.writeByte(positionY)
             label?.let {
                 buffer.writeBoolean(true)
-                buffer.writeString(buffer.objectMapper.writeValueAsString(it))
+                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(it))
             } ?: buffer.writeBoolean(false)
         }
         buffer.writeByte(width)

@@ -16,32 +16,35 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mc.nbt.Tag
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
  */
 class EntityPropertiesPacket(
-    val tag: Tag?
+    val data: Any?
 ) : Packet() {
     override val id get() = 0xA5
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.toNbtOutputStream().use { it.writeTag(tag) }
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.entityProperties(this)
 
-    override fun toString() = "EntityPropertiesPacket(tag=$tag)"
+    override fun toString() = "EntityPropertiesPacket(data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object EntityPropertiesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityPropertiesPacket(buffer.toNbtInputStream().use { it.readTag() })
+    override fun read(buffer: PacketBuffer, version: Int) = EntityPropertiesPacket(buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

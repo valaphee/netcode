@@ -22,7 +22,6 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.util.ByteBufStringReader
 
 /**
  * @author Kevin Ludwig
@@ -41,7 +40,7 @@ class ServerTitlePacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(action.ordinal)
         when (action) {
-            Action.SetTitle, Action.SetSubTitle, Action.SetActionBarMessage -> buffer.writeString(buffer.objectMapper.writeValueAsString(text))
+            Action.SetTitle, Action.SetSubTitle, Action.SetActionBarMessage -> buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(text))
             Action.SetTimings -> {
                 buffer.writeInt(fadeInTime)
                 buffer.writeInt(stayTime)
@@ -67,7 +66,7 @@ object ServerTitlePacketReader : PacketReader {
         val fadeOutTime: Int
         when (action) {
             ServerTitlePacket.Action.SetTitle, ServerTitlePacket.Action.SetSubTitle, ServerTitlePacket.Action.SetActionBarMessage -> {
-                text = buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt()))
+                text = buffer.jsonObjectMapper.readValue(buffer.readString())
                 fadeInTime = 0
                 stayTime = 0
                 fadeOutTime = 0

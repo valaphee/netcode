@@ -16,13 +16,6 @@
 
 package com.valaphee.netcode.mcbe.world.chunk
 
-import com.valaphee.netcode.mc.nbt.TagType
-import com.valaphee.netcode.mc.nbt.compoundTag
-import com.valaphee.netcode.mc.nbt.ofBool
-import com.valaphee.netcode.mc.nbt.ofInt
-import com.valaphee.netcode.mc.nbt.ofString
-import com.valaphee.netcode.mc.util.getCompoundTag
-import com.valaphee.netcode.mc.util.getString
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
@@ -61,64 +54,15 @@ class Layer(
         buffer.writeByte((bitArray.version.bitsPerEntry shl 1) or if (runtime) 1 else 0)
         bitArray.data.forEach { buffer.writeIntLE(it) }
         buffer.writeVarInt(palette.size)
-        if (runtime) palette.forEach { buffer.writeVarInt(it) } else buffer.toNbtOutputStream().use { stream ->
-            palette.forEach {
-                stream.writeTag(compoundTag().apply {
-                    val keyWithProperties = buffer.registrySet.blockStates[it] ?: "minecraft:unknown"
-                    val propertiesBegin = keyWithProperties.indexOf('[')
-                    val propertiesEnd = keyWithProperties.indexOf(']')
-                    if (propertiesBegin == -1 && propertiesEnd == -1) {
-                        setString("name", keyWithProperties)
-                        set("states", compoundTag())
-                    } else if (propertiesEnd == keyWithProperties.length - 1) {
-                        val propertiesTag = compoundTag()
-                        keyWithProperties.substring(propertiesBegin + 1, propertiesEnd).split(',').forEach {
-                            val property = it.split('=', limit = 2)
-                            propertiesTag[property[0]] = when (val propertyValue = property[1]) {
-                                "false" -> ofBool(false)
-                                "true" -> ofBool(true)
-                                else -> propertyValue.toIntOrNull()?.let { ofInt(it) } ?: ofString(propertyValue)
-                            }
-                        }
-                        setString("name", keyWithProperties.substring(0, propertiesBegin))
-                        set("states", propertiesTag)
-                    }
-                })
-            }
-        }
+        if (runtime) palette.forEach { buffer.writeVarInt(it) } else TODO()
     }
 }
 
-fun PacketBuffer.readLayer(default: Int): Layer {
+fun PacketBuffer.readLayer(): Layer {
     val header = readByte().toInt()
     val version = BitArray.Version.byBitsPerEntry(header shr 1)
     val runtime = header and 1 == 1
     val blocks = version.bitArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize, IntArray(version.bitArrayDataSize(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize)) { readIntLE() })
     val paletteSize = readVarInt()
-    return Layer(IntArrayList().apply {
-        if (runtime) repeat(paletteSize) { add(readVarInt()) } else {
-            toNbtInputStream().use { stream ->
-                repeat(paletteSize) {
-                    add(stream.readTag()?.asCompoundTag()?.let {
-                        registrySet.blockStates.getId(StringBuilder().apply {
-                            append(it.getString("name"))
-                            val properties = it.getCompoundTag("states").toMap().mapValues {
-                                when (it.value.type) {
-                                    TagType.Byte -> it.value.asNumberTag()!!.toByte() != 0.toByte()
-                                    TagType.Int -> it.value.asNumberTag()!!.toInt()
-                                    TagType.String -> it.value.asArrayTag()!!.valueToString()
-                                    else -> TODO()
-                                }
-                            }
-                            if (properties.isNotEmpty()) {
-                                append('[')
-                                properties.forEach { (name, value) -> append(name).append('=').append(value).append(',') }
-                                setCharAt(length - 1, ']')
-                            }
-                        }.toString())
-                    } ?: default)
-                }
-            }
-        }
-    }, blocks)
+    return Layer(IntArrayList().apply { if (runtime) repeat(paletteSize) { add(readVarInt()) } else TODO() }, blocks)
 }

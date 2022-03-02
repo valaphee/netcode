@@ -34,7 +34,7 @@ data class ItemStack(
     @get:JsonProperty("item") val itemKey: String,
     @get:JsonProperty("sub_id") var subId: Int = 0,
     @get:JsonProperty("count") var count: Int = 1,
-    @get:JsonProperty("tag") var tag: Map<String, Any>? = null,
+    @get:JsonProperty("tag") var data: Map<String, Any>? = null,
     @get:JsonIgnore var canPlaceOn: List<String>? = null,
     @get:JsonIgnore var canDestroy: List<String>? = null,
     @get:JsonIgnore var blockingTicks: Long = 0,
@@ -50,7 +50,7 @@ data class ItemStack(
         if (itemKey != other.itemKey) return false
         if (subId != other.subId) return false
         if (count != other.count) return false
-        if (tag != other.tag) return false
+        if (data != other.data) return false
         /*if (blockStateKey != other.blockStateKey) return false*/
 
         return true
@@ -64,7 +64,7 @@ data class ItemStack(
 
         if (itemKey != other.itemKey) return false
         if (subId != other.subId) return false
-        if (tag != other.tag) return false
+        if (data != other.data) return false
         /*if (blockStateKey != other.blockStateKey) return false*/
 
         return true
@@ -74,7 +74,7 @@ data class ItemStack(
         var result = itemKey.hashCode()
         result = 31 * result + subId
         result = 31 * result + count
-        result = 31 * result + (tag?.hashCode() ?: 0)
+        result = 31 * result + (data?.hashCode() ?: 0)
         return result
     }
 }
@@ -173,7 +173,7 @@ fun PacketBuffer.writeStackPre431(value: ItemStack?) {
     value?.let {
         writeVarInt(registrySet.items.getId(it.itemKey))
         writeVarInt(((if (it.subId == -1) Short.MAX_VALUE.toInt() else it.subId) shl 8) or (it.count and 0xFF))
-        it.tag?.let {
+        it.data?.let {
             writeShortLE(-1)
             writeVarUInt(1)
             littleEndianVarIntNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
@@ -207,7 +207,7 @@ fun PacketBuffer.writeStack(value: ItemStack?) {
         writeVarInt(it.blockStateKey?.let { registrySet.blockStates.getId(it) } ?: 0)
         val dataIndex = buffer.writerIndex()
         writeZero(PacketBuffer.MaximumVarUIntLength)
-        it.tag?.let {
+        it.data?.let {
             writeShortLE(-1)
             writeByte(1)
             littleEndianNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
@@ -233,7 +233,7 @@ fun PacketBuffer.writeStackInstance(value: ItemStack?) {
         writeVarInt(it.blockStateKey?.let { registrySet.blockStates.getId(it) } ?: 0)
         val dataIndex = buffer.writerIndex()
         writeZero(PacketBuffer.MaximumVarUIntLength)
-        it.tag?.let {
+        it.data?.let {
             writeShortLE(-1)
             writeVarUInt(1)
             littleEndianNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)

@@ -22,7 +22,6 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.util.ByteBufStringReader
 
 /**
  * @author Kevin Ludwig
@@ -47,7 +46,7 @@ class ServerPlayerCombatEventPacket(
             Event.Death -> {
                 buffer.writeVarInt(durationOrPlayerEntityId)
                 buffer.writeInt(entityId)
-                buffer.writeString(buffer.objectMapper.writeValueAsString(message))
+                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(message))
             }
         }
     }
@@ -75,7 +74,7 @@ object ServerPlayerCombatEventPacketReader : PacketReader {
             ServerPlayerCombatEventPacket.Event.Death -> {
                 durationOrPlayerEntityId = buffer.readVarInt()
                 entityId = buffer.readInt()
-                message = buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt()))
+                message = buffer.jsonObjectMapper.readValue(buffer.readString())
             }
             else -> {
                 durationOrPlayerEntityId = 0

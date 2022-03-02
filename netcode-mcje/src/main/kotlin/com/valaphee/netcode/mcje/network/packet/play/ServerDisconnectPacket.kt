@@ -22,7 +22,6 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.util.ByteBufStringReader
 
 /**
  * @author Kevin Ludwig
@@ -31,7 +30,7 @@ class ServerDisconnectPacket(
     val message: Component
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(buffer.objectMapper.writeValueAsString(message))
+        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(message))
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.disconnect(this)
@@ -43,5 +42,5 @@ class ServerDisconnectPacket(
  * @author Kevin Ludwig
  */
 object ServerDisconnectPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerDisconnectPacket(buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt())))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerDisconnectPacket(buffer.jsonObjectMapper.readValue(buffer.readString()))
 }

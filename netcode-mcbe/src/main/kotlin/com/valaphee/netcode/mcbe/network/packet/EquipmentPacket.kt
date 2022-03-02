@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mc.nbt.Tag
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
@@ -24,6 +24,9 @@ import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.inventory.WindowType
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -34,7 +37,7 @@ class EquipmentPacket(
     val type: WindowType,
     val slotCount: Int,
     val uniqueEntityId: Long,
-    val tag: Tag?
+    val data: Any?
 ) : Packet() {
     override val id get() = 0x51
 
@@ -43,17 +46,17 @@ class EquipmentPacket(
         buffer.writeByte(type.id)
         buffer.writeVarInt(slotCount)
         buffer.writeVarLong(uniqueEntityId)
-        buffer.toNbtOutputStream().use { it.writeTag(tag) }
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.equipment(this)
 
-    override fun toString() = "EquipmentPacket(windowId=$windowId, type=$type, slotCount=$slotCount, uniqueEntityId=$uniqueEntityId, tag=$tag)"
+    override fun toString() = "EquipmentPacket(windowId=$windowId, type=$type, slotCount=$slotCount, uniqueEntityId=$uniqueEntityId, data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object EquipmentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EquipmentPacket(buffer.readByte().toInt(), WindowType.byId(buffer.readByte().toInt()), buffer.readVarInt(), buffer.readVarLong(), buffer.toNbtInputStream().use { it.readTag() })
+    override fun read(buffer: PacketBuffer, version: Int) = EquipmentPacket(buffer.readByte().toInt(), WindowType.byId(buffer.readByte().toInt()), buffer.readVarInt(), buffer.readVarLong(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

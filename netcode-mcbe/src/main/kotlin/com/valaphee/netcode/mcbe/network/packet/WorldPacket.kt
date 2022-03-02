@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mc.nbt.ListTag
 import com.valaphee.netcode.mc.world.Difficulty
 import com.valaphee.netcode.mcbe.network.GamePublishMode
 import com.valaphee.netcode.mcbe.network.Packet
@@ -93,7 +92,7 @@ class WorldPacket(
     val behaviorPackLocked: Boolean,
     val resourcePackLocked: Boolean,
     val fromLockedWorldTemplate: Boolean,
-    val usingMsaGamerTagsOnly: Boolean,
+    val usingMsaGamertagsOnly: Boolean,
     val fromWorldTemplate: Boolean,
     val worldTemplateOptionLocked: Boolean,
     val onlySpawningV1Villagers: Boolean,
@@ -111,7 +110,7 @@ class WorldPacket(
     val blockBreakingServerAuthoritative: Boolean,
     val tick: Long,
     val enchantmentSeed: Int,
-    val blocksTag: ListTag?,
+    val blocksData: Any?,
     val blocks: List<Block>?,
     val items: Int2ObjectMap<Item>,
     val multiplayerCorrelationId: String,
@@ -193,7 +192,7 @@ class WorldPacket(
         buffer.writeBoolean(behaviorPackLocked)
         buffer.writeBoolean(resourcePackLocked)
         buffer.writeBoolean(fromLockedWorldTemplate)
-        buffer.writeBoolean(usingMsaGamerTagsOnly)
+        buffer.writeBoolean(usingMsaGamertagsOnly)
         buffer.writeBoolean(fromWorldTemplate)
         buffer.writeBoolean(worldTemplateOptionLocked)
         buffer.writeBoolean(onlySpawningV1Villagers)
@@ -224,9 +223,9 @@ class WorldPacket(
             buffer.writeVarUInt(blocks!!.size)
             blocks.forEach {
                 buffer.writeString(it.description.key)
-                buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.tag)
+                buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
             }
-        } else buffer.toNbtOutputStream().use { it.writeTag(blocksTag) }
+        } else buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, blocksData)
         buffer.writeVarUInt(items.size)
         items.forEach { (id, item) ->
             buffer.writeString(item.key)
@@ -241,8 +240,7 @@ class WorldPacket(
 
     override fun handle(handler: PacketHandler) = handler.world(this)
 
-    override fun toString() =
-        "WorldPacket(uniqueEntityId=$uniqueEntityId, runtimeEntityId=$runtimeEntityId, gameMode=$gameMode, position=$position, rotation=$rotation, seed=$seed, biomeType=$biomeType, biomeName='$biomeName', dimension=$dimension, generatorId=$generatorId, defaultGameMode=$defaultGameMode, difficulty=$difficulty, defaultSpawn=$defaultSpawn, achievementsDisabled=$achievementsDisabled, time=$time, educationEditionOffer=$educationEditionOffer, educationModeId=$educationModeId, educationFeaturesEnabled=$educationFeaturesEnabled, educationProductId='$educationProductId', rainLevel=$rainLevel, thunderLevel=$thunderLevel, platformLockedContentConfirmed=$platformLockedContentConfirmed, multiplayerGame=$multiplayerGame, broadcastingToLan=$broadcastingToLan, xboxLiveBroadcastMode=$xboxLiveBroadcastMode, platformBroadcastMode=$platformBroadcastMode, commandsEnabled=$commandsEnabled, resourcePacksRequired=$resourcePacksRequired, gameRules=$gameRules, experiments=$experiments, experimentsPreviouslyToggled=$experimentsPreviouslyToggled, bonusChestEnabled=$bonusChestEnabled, startingWithMap=$startingWithMap, defaultRank=$defaultRank, serverChunkTickRange=$serverChunkTickRange, behaviorPackLocked=$behaviorPackLocked, resourcePackLocked=$resourcePackLocked, fromLockedWorldTemplate=$fromLockedWorldTemplate, usingMsaGamerTagsOnly=$usingMsaGamerTagsOnly, fromWorldTemplate=$fromWorldTemplate, worldTemplateOptionLocked=$worldTemplateOptionLocked, onlySpawningV1Villagers=$onlySpawningV1Villagers, version='$version', limitedWorldRadius=$limitedWorldRadius, limitedWorldHeight=$limitedWorldHeight, v2Nether=$v2Nether, experimentalGameplay=$experimentalGameplay, worldId='$worldId', worldName='$worldName', premiumWorldTemplateId='$premiumWorldTemplateId', trial=$trial, movementAuthoritative=$movementAuthoritative, movementRewindHistory=$movementRewindHistory, blockBreakingServerAuthoritative=$blockBreakingServerAuthoritative, tick=$tick, enchantmentSeed=$enchantmentSeed, blocksTag=$blocksTag, blocks=$blocks, items=$items, multiplayerCorrelationId='$multiplayerCorrelationId', inventoriesServerAuthoritative=$inventoriesServerAuthoritative, engineVersion='$engineVersion', blocksChecksum=$blocksChecksum)"
+    override fun toString() = "WorldPacket(uniqueEntityId=$uniqueEntityId, runtimeEntityId=$runtimeEntityId, gameMode=$gameMode, position=$position, rotation=$rotation, seed=$seed, biomeType=$biomeType, biomeName='$biomeName', dimension=$dimension, generatorId=$generatorId, defaultGameMode=$defaultGameMode, difficulty=$difficulty, defaultSpawn=$defaultSpawn, achievementsDisabled=$achievementsDisabled, time=$time, educationEditionOffer=$educationEditionOffer, educationModeId=$educationModeId, educationFeaturesEnabled=$educationFeaturesEnabled, educationProductId='$educationProductId', rainLevel=$rainLevel, thunderLevel=$thunderLevel, platformLockedContentConfirmed=$platformLockedContentConfirmed, multiplayerGame=$multiplayerGame, broadcastingToLan=$broadcastingToLan, xboxLiveBroadcastMode=$xboxLiveBroadcastMode, platformBroadcastMode=$platformBroadcastMode, commandsEnabled=$commandsEnabled, resourcePacksRequired=$resourcePacksRequired, gameRules=$gameRules, experiments=$experiments, experimentsPreviouslyToggled=$experimentsPreviouslyToggled, bonusChestEnabled=$bonusChestEnabled, startingWithMap=$startingWithMap, defaultRank=$defaultRank, serverChunkTickRange=$serverChunkTickRange, behaviorPackLocked=$behaviorPackLocked, resourcePackLocked=$resourcePackLocked, fromLockedWorldTemplate=$fromLockedWorldTemplate, usingMsaGamertagsOnly=$usingMsaGamertagsOnly, fromWorldTemplate=$fromWorldTemplate, worldTemplateOptionLocked=$worldTemplateOptionLocked, onlySpawningV1Villagers=$onlySpawningV1Villagers, version='$version', limitedWorldRadius=$limitedWorldRadius, limitedWorldHeight=$limitedWorldHeight, v2Nether=$v2Nether, experimentalGameplay=$experimentalGameplay, worldId='$worldId', worldName='$worldName', premiumWorldTemplateId='$premiumWorldTemplateId', trial=$trial, movementAuthoritative=$movementAuthoritative, movementRewindHistory=$movementRewindHistory, blockBreakingServerAuthoritative=$blockBreakingServerAuthoritative, tick=$tick, enchantmentSeed=$enchantmentSeed, blocksData=$blocksData, blocks=$blocks, items=$items, multiplayerCorrelationId='$multiplayerCorrelationId', inventoriesServerAuthoritative=$inventoriesServerAuthoritative, engineVersion='$engineVersion', blocksChecksum=$blocksChecksum)"
 }
 
 /**
@@ -313,7 +311,7 @@ object WorldPacketReader : PacketReader {
         val behaviorPackLocked = buffer.readBoolean()
         val resourcePackLocked = buffer.readBoolean()
         val fromLockedWorldTemplate = buffer.readBoolean()
-        val usingMsaGamerTagsOnly = buffer.readBoolean()
+        val usingMsaGamertagsOnly = buffer.readBoolean()
         val fromWorldTemplate = buffer.readBoolean()
         val worldTemplateOptionLocked = buffer.readBoolean()
         val onlySpawningV1Villagers = buffer.readBoolean()
@@ -359,13 +357,13 @@ object WorldPacketReader : PacketReader {
         }
         val tick = buffer.readLongLE()
         val enchantmentSeed = buffer.readVarInt()
-        val blocksTag: ListTag?
+        val blocksData: Any?
         val blocks: List<Block>?
         if (version >= 419) {
-            blocksTag = null
+            blocksData = null
             blocks = safeList(buffer.readVarUInt()) { Block(buffer.readString(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))) }
         } else {
-            blocksTag = buffer.toNbtInputStream().use { it.readTag()!!.asListTag()!! }
+            blocksData = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
             blocks = null
         }
         val itemCount = buffer.readVarUInt()
@@ -419,7 +417,7 @@ object WorldPacketReader : PacketReader {
             behaviorPackLocked,
             resourcePackLocked,
             fromLockedWorldTemplate,
-            usingMsaGamerTagsOnly,
+            usingMsaGamertagsOnly,
             fromWorldTemplate,
             worldTemplateOptionLocked,
             onlySpawningV1Villagers,
@@ -437,7 +435,7 @@ object WorldPacketReader : PacketReader {
             blockBreakingServerAuthoritative,
             tick,
             enchantmentSeed,
-            blocksTag,
+            blocksData,
             blocks,
             items,
             multiplayerCorrelationId,

@@ -22,7 +22,6 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.util.ByteBufStringReader
 
 /**
  * @author Kevin Ludwig
@@ -32,8 +31,8 @@ class ServerPlayerListHeaderFooterPacket(
     val footer: Component
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(buffer.objectMapper.writeValueAsString(header))
-        buffer.writeString(buffer.objectMapper.writeValueAsString(footer))
+        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(header))
+        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(footer))
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.playerListHeaderFooter(this)
@@ -45,5 +44,5 @@ class ServerPlayerListHeaderFooterPacket(
  * @author Kevin Ludwig
  */
 object ServerPlayerListHeaderFooterPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerListHeaderFooterPacket(buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt())), buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt())))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerListHeaderFooterPacket(buffer.jsonObjectMapper.readValue(buffer.readString()), buffer.jsonObjectMapper.readValue(buffer.readString()))
 }

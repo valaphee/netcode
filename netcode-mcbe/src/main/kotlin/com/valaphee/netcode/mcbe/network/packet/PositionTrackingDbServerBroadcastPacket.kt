@@ -16,13 +16,16 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mc.nbt.CompoundTag
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -31,7 +34,7 @@ import com.valaphee.netcode.mcbe.network.Restriction
 class PositionTrackingDbServerBroadcastPacket(
     val action: Action,
     val trackingId: Int,
-    val tag: CompoundTag? = null
+    val data: Any? = null
 ) : Packet() {
     enum class Action {
         Update, Destroy, NotFound
@@ -42,17 +45,17 @@ class PositionTrackingDbServerBroadcastPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(action.ordinal)
         buffer.writeVarUInt(trackingId)
-        buffer.toNbtOutputStream().use { it.writeTag(tag) }
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.positionTrackingDbServerBroadcast(this)
 
-    override fun toString() = "PositionTrackingDbServerBroadcastPacket(action=$action, trackingId=$trackingId, tag=$tag)"
+    override fun toString() = "PositionTrackingDbServerBroadcastPacket(action=$action, trackingId=$trackingId, data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object PositionTrackingDbServerBroadcastPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = PositionTrackingDbServerBroadcastPacket(PositionTrackingDbServerBroadcastPacket.Action.values()[buffer.readByte().toInt()], buffer.readVarUInt(), buffer.toNbtInputStream().use { it.readTag()?.asCompoundTag() })
+    override fun read(buffer: PacketBuffer, version: Int) = PositionTrackingDbServerBroadcastPacket(PositionTrackingDbServerBroadcastPacket.Action.values()[buffer.readByte().toInt()], buffer.readVarUInt(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

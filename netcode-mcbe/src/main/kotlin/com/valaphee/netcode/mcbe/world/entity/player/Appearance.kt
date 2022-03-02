@@ -21,11 +21,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.util.safeList
-import java.util.Base64
 
 /**
  * @author Kevin Ludwig
@@ -226,7 +223,7 @@ fun PacketBuffer.writeAppearancePre419(value: Appearance) {
 
 fun PacketBuffer.writeAppearancePre428(value: Appearance) {
     writeString(value.skinId)
-    writeString(JsonObject().apply { value.skinResourcePatch.forEach { add(it.key, gson.toJsonTree(it.value)) } }.toString())
+    writeString(jsonObjectMapper.writeValueAsString(value.skinResourcePatch))
     writeAppearanceImage(value.skinImage)
     writeIntLE(value.animations.size)
     value.animations.forEach {
@@ -265,7 +262,7 @@ fun PacketBuffer.writeAppearancePre428(value: Appearance) {
 fun PacketBuffer.writeAppearancePre465(value: Appearance) {
     writeString(value.skinId)
     writeString(value.playFabId)
-    writeString(JsonObject().apply { value.skinResourcePatch.forEach { add(it.key, gson.toJsonTree(it.value)) } }.toString())
+    writeString(jsonObjectMapper.writeValueAsString(value.skinResourcePatch))
     writeAppearanceImage(value.skinImage)
     writeIntLE(value.animations.size)
     value.animations.forEach {
@@ -304,7 +301,7 @@ fun PacketBuffer.writeAppearancePre465(value: Appearance) {
 fun PacketBuffer.writeAppearance(value: Appearance) {
     writeString(value.skinId)
     writeString(value.playFabId)
-    writeString(JsonObject().apply { value.skinResourcePatch.forEach { add(it.key, gson.toJsonTree(it.value)) } }.toString())
+    writeString(jsonObjectMapper.writeValueAsString(value.skinResourcePatch))
     writeAppearanceImage(value.skinImage)
     writeIntLE(value.animations.size)
     value.animations.forEach {
@@ -341,7 +338,3 @@ fun PacketBuffer.writeAppearance(value: Appearance) {
     writeBoolean(value.capeOnClassicSkin)
     writeBoolean(value.primaryUser)
 }
-
-private val gson = Gson()
-private val base64Decoder = Base64.getDecoder()
-private val base64Encoder = Base64.getEncoder()

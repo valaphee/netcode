@@ -15,7 +15,7 @@
  */
 
 dependencies {
-    api("io.netty:netty-all:4.1.70.Final")
+    api("io.netty:netty-all:4.1.72.Final")
     api("org.apache.logging.log4j:log4j-api:2.17.0")
 }
 

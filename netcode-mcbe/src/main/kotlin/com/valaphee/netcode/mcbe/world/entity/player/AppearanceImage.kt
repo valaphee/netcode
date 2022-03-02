@@ -16,27 +16,25 @@
 
 package com.valaphee.netcode.mcbe.world.entity.player
 
-import com.google.gson.JsonObject
-import com.valaphee.netcode.mc.util.getString
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import java.awt.Transparency
 import java.awt.color.ColorSpace
 import java.awt.image.BufferedImage
-import java.awt.image.ColorModel
 import java.awt.image.ComponentColorModel
 import java.awt.image.DataBuffer
 import java.awt.image.DataBufferByte
 import java.io.InputStream
-import java.util.Base64
 import javax.imageio.ImageIO
 
 /**
  * @author Kevin Ludwig
  */
 data class AppearanceImage(
-    var width: Int,
-    var height: Int,
-    val data: ByteArray
+    @get:JsonProperty("ImageWidth") val width: Int,
+    @get:JsonProperty("ImageHeight") val height: Int,
+    @get:JsonProperty("Data") val data: ByteArray
 ) {
     constructor(image: BufferedImage) : this(
         image.width, image.height, (BufferedImage(colorModel, colorModel.createCompatibleWritableRaster(image.width, image.height), false, null).apply {
@@ -46,12 +44,6 @@ data class AppearanceImage(
             }
         }.raster.dataBuffer as DataBufferByte).data
     )
-
-    fun toJson(json: JsonObject, name: String? = null) {
-        json.addProperty("${name ?: ""}ImageWidth", width)
-        json.addProperty("${name ?: ""}ImageHeight", height)
-        json.addProperty(if (null != name) "${name}Data" else "Image", base64Encoder.encodeToString(data))
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -77,34 +69,32 @@ data class AppearanceImage(
 
     companion object {
         val Empty = AppearanceImage(0, 0, ByteArray(0))
-    }
-}
 
-fun JsonObject.getAsAppearanceImage(name: String?): AppearanceImage {
-    val data = base64Decoder.decode(getString(if (null != name) "${name}Data" else "Image"))
-    val width: Int
-    val height: Int
-    if (has("${name ?: ""}ImageWidth") && has("${name ?: ""}ImageHeight")) {
-        width = this["${name ?: ""}ImageWidth"].asInt
-        height = this["${name ?: ""}ImageHeight"].asInt
-    } else if (data.size.countOneBits() > 1) error("Image size is not power of two") else {
-        val sizePow = (data.size shr 2).countTrailingZeroBits()
-        if (sizePow % 2 == 0) {
-            width = 1 shl sizePow / 2
-            height = width
-        } else {
-            val sizePow2 = (sizePow - 1) / 2
-            width = 1 shl sizePow2 + 1
-            height = 1 shl sizePow2
+        @JvmStatic
+        @JsonCreator
+        fun create(data: ByteArray): AppearanceImage {
+            val width: Int
+            val height: Int
+            if (data.size.countOneBits() > 1) error("Image size is not power of two") else {
+                val sizePow = (data.size shr 2).countTrailingZeroBits()
+                if (sizePow % 2 == 0) {
+                    width = 1 shl sizePow / 2
+                    height = width
+                } else {
+                    val sizePow2 = (sizePow - 1) / 2
+                    width = 1 shl sizePow2 + 1
+                    height = 1 shl sizePow2
+                }
+            }
+            return AppearanceImage(width, height, data)
         }
     }
-    return AppearanceImage(width, height, data)
 }
 
 fun PacketBuffer.readAppearanceImage(): AppearanceImage {
     val width = readIntLE()
     val height = readIntLE()
-    return AppearanceImage(width, height, readByteArrayOfExpectedLength(width * height * bytesPerPixel))
+    return AppearanceImage(width, height, readByteArrayOfExpectedLength(width * height * 4))
 }
 
 fun PacketBuffer.writeAppearanceImage(value: AppearanceImage) {
@@ -124,7 +114,4 @@ fun InputStream.readAppearanceImage(): AppearanceImage {
     return AppearanceImage(width, height, (convertedImage.raster.dataBuffer as DataBufferByte).data)
 }
 
-private val base64Decoder = Base64.getDecoder()
-private val base64Encoder = Base64.getEncoder()
-private const val bytesPerPixel = 4
-private val colorModel: ColorModel = ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), intArrayOf(8, 8, 8, 8), true, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE)
+private val colorModel = ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), intArrayOf(8, 8, 8, 8), true, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE)

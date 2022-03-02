@@ -23,7 +23,6 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
-import com.valaphee.netcode.util.ByteBufStringReader
 
 /**
  * @author Kevin Ludwig
@@ -36,7 +35,7 @@ class ServerWindowOpenPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(windowId)
         buffer.writeVarInt(buffer.registrySet.windowTypes.getId(windowTypeKey))
-        buffer.writeString(buffer.objectMapper.writeValueAsString(title))
+        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(title))
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.windowOpen(this)
@@ -48,5 +47,5 @@ class ServerWindowOpenPacket(
  * @author Kevin Ludwig
  */
 object ServerWindowOpenPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowOpenPacket(buffer.readVarInt(), checkNotNull(buffer.registrySet.windowTypes[buffer.readVarInt()]), buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt())))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowOpenPacket(buffer.readVarInt(), checkNotNull(buffer.registrySet.windowTypes[buffer.readVarInt()]), buffer.jsonObjectMapper.readValue(buffer.readString()))
 }

@@ -17,7 +17,6 @@
 package com.valaphee.netcode.mcbe.form
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.google.gson.JsonElement
 
 /**
  * @author Kevin Ludwig
@@ -28,7 +27,7 @@ class Modal(
     @get:JsonProperty("button1") val yesButtonText: String,
     @get:JsonProperty("button2") val noButtonText: String
 ) : Form<Boolean>(title) {
-    override fun getResponse(json: JsonElement) = json.asBoolean
+    override fun getResponse(response: Any?) = response as Boolean
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

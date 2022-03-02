@@ -17,7 +17,6 @@
 package com.valaphee.netcode.mcbe.world.chunk
 
 import com.valaphee.netcode.mc.util.NibbleArray
-import com.valaphee.netcode.mc.util.nibbleArray
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 
 /**
@@ -48,7 +47,7 @@ interface SubChunk {
  */
 class LegacySubChunk(
     var blockIds: ByteArray = ByteArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize),
-    var blockSubIds: NibbleArray = nibbleArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize)
+    var blockSubIds: NibbleArray = NibbleArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize)
 ) : SubChunk {
     override fun get(x: Int, y: Int, z: Int): Int {
         val index = (x shl SubChunk.XShift) or (z shl SubChunk.ZShift) or y
@@ -123,14 +122,14 @@ class CompactSubChunk(
     }
 }
 
-fun PacketBuffer.readSubChunk(default: Int) = when (val version = readUnsignedByte().toInt()) {
-    0, 2, 3, 4, 5, 6 -> LegacySubChunk(ByteArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize).apply { readBytes(this) }, nibbleArray(ByteArray((BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize) / 2).apply { readBytes(this) })).also { if (isReadable(4096)) skipBytes(4096) }
-    1 -> CompactSubChunk(arrayOf(readLayer(default)))
-    8 -> CompactSubChunk(Array(readUnsignedByte().toInt()) { readLayer(default) })
+fun PacketBuffer.readSubChunk() = when (val version = readUnsignedByte().toInt()) {
+    0, 2, 3, 4, 5, 6 -> LegacySubChunk(ByteArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize).apply { readBytes(this) }, NibbleArray(ByteArray((BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize) / 2).apply { readBytes(this) })).also { if (isReadable(4096)) skipBytes(4096) }
+    1 -> CompactSubChunk(arrayOf(readLayer()))
+    8 -> CompactSubChunk(Array(readUnsignedByte().toInt()) { readLayer() })
     9 -> {
         val layerCount = readUnsignedByte().toInt()
         readByte() // absolute index for data-driven dimension heights
-        CompactSubChunk(Array(layerCount) { readLayer(default) })
+        CompactSubChunk(Array(layerCount) { readLayer() })
     }
     else -> TODO(version.toString())
 }

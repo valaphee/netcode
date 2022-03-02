@@ -32,12 +32,12 @@ import com.valaphee.netcode.util.safeList
 class EnchantOptionsPacket(
     val options: List<Option>
 ) : Packet() {
-    class Slot(
+    data class Slot(
         val enchantment: Enchantment,
         val level: Short
     )
 
-    class Option(
+    data class Option(
         val cost: Int,
         val primarySlotId: Int,
         val slots1: List<Slot>,

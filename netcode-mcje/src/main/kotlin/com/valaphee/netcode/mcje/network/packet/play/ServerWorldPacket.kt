@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.valaphee.netcode.mc.nbt.Tag
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
@@ -24,6 +24,9 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.world.GameMode
 import com.valaphee.netcode.util.safeList
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -34,8 +37,8 @@ class ServerWorldPacket(
     val gameMode: GameMode,
     val previousGameMode: GameMode,
     val worldNames: List<NamespacedKey>,
-    val dimensionCodec: Tag?,
-    val dimension: Tag?,
+    val dimensionCodec: Any?,
+    val dimension: Any?,
     val worldName: NamespacedKey,
     val hashedSeed: Long,
     val maximumPlayers: Int,
@@ -52,8 +55,8 @@ class ServerWorldPacket(
         buffer.writeByte(previousGameMode.ordinal)
         buffer.writeVarInt(worldNames.size)
         worldNames.forEach { buffer.writeNamespacedKey(it) }
-        buffer.toNbtOutputStream().use { it.writeTag(dimensionCodec) }
-        buffer.toNbtOutputStream().use { it.writeTag(dimension) }
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimensionCodec)
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension)
         buffer.writeNamespacedKey(worldName)
         buffer.writeLong(hashedSeed)
         buffer.writeVarInt(maximumPlayers)
@@ -73,5 +76,5 @@ class ServerWorldPacket(
  * @author Kevin Ludwig
  */
 object ServerWorldPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldPacket(buffer.readInt(), buffer.readBoolean(), GameMode.byIdOrNull(buffer.readByte().toInt())!!, GameMode.byIdOrNull(buffer.readByte().toInt())!!, safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }, buffer.toNbtInputStream().use { it.readTag() }, buffer.toNbtInputStream().use { it.readTag() }, buffer.readNamespacedKey(), buffer.readLong(), buffer.readVarInt(), buffer.readVarInt(), !buffer.readBoolean(), !buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldPacket(buffer.readInt(), buffer.readBoolean(), GameMode.byIdOrNull(buffer.readByte().toInt())!!, GameMode.byIdOrNull(buffer.readByte().toInt())!!, safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }, buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.readNamespacedKey(), buffer.readLong(), buffer.readVarInt(), buffer.readVarInt(), !buffer.readBoolean(), !buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
 }

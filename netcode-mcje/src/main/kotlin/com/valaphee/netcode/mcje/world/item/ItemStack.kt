@@ -16,13 +16,12 @@
 
 package com.valaphee.netcode.mcje.world.item
 
-import com.valaphee.netcode.mc.nbt.CompoundTag
-import com.valaphee.netcode.mc.nbt.NbtInputStream
-import com.valaphee.netcode.mc.nbt.NbtOutputStream
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -30,7 +29,7 @@ import io.netty.buffer.ByteBufOutputStream
 data class ItemStack(
     val itemKey: NamespacedKey,
     var count: Int = 1,
-    var tag: CompoundTag? = null,
+    var data: Any? = null,
 ) {
     fun equalsIgnoreCount(other: Any?): Boolean {
         if (this === other) return true
@@ -39,19 +38,19 @@ data class ItemStack(
         other as ItemStack
 
         if (itemKey != other.itemKey) return false
-        if (tag != other.tag) return false
+        if (data != other.data) return false
 
         return true
     }
 }
 
-fun PacketBuffer.readStack() = if (readBoolean()) ItemStack(registrySet.items[readVarInt()]!!, readByte().toInt(), NbtInputStream(ByteBufInputStream(buffer)).use { it.readTag() }?.asCompoundTag()) else null
+fun PacketBuffer.readStack() = if (readBoolean()) ItemStack(registrySet.items[readVarInt()]!!, readByte().toInt(), nbtObjectMapper.readValue(ByteBufInputStream(buffer))) else null
 
 fun PacketBuffer.writeStack(value: ItemStack?) {
     value?.let {
         writeBoolean(true)
         writeVarInt(registrySet.items.getId(it.itemKey))
         writeByte(it.count)
-        NbtOutputStream(ByteBufOutputStream(buffer)).use { it.writeTag(value.tag) }
+        nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
     } ?: writeBoolean(false)
 }

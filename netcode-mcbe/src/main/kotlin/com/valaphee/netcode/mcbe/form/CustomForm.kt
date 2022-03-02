@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.form
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.google.gson.JsonElement
 
 /**
  * @author Kevin Ludwig
@@ -28,7 +27,7 @@ class CustomForm(
     title: String,
     @get:JsonProperty("content") val elements: List<Element>
 ) : Form<Map<String, Any?>>(title) {
-    override fun getResponse(json: JsonElement): Map<String, Any?> = json.asJsonArray.mapIndexed { i, jsonAnswer -> Pair(elements[i].text, elements[i].answer(jsonAnswer)) }.toMap()
+    override fun getResponse(response: Any?): Map<String, Any?> =  (response as Map<String, Any?>).values.mapIndexed { i, answer -> Pair(elements[i].text, elements[i].answer(answer)) }.toMap()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -67,7 +66,7 @@ class CustomForm(
 abstract class Element(
     @get:JsonProperty("text") val text: String
 ) {
-    abstract fun answer(jsonAnswer: JsonElement): Any?
+    abstract fun answer(answer: Any?): Any?
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -86,7 +85,7 @@ abstract class Element(
 class Label(
     text: String
 ) : Element(text) {
-    override fun answer(jsonAnswer: JsonElement): Any? = null
+    override fun answer(answer: Any?): Any? = null
 
     override fun toString() = "Label(text=$text)"
 }
@@ -96,8 +95,8 @@ class Dropdown(
     @get:JsonProperty("options") val values: List<String>,
     @get:JsonProperty("default") var valueIndex: Int = 0
 ) : Element(text) {
-    override fun answer(jsonAnswer: JsonElement): Any {
-        valueIndex = jsonAnswer.asInt
+    override fun answer(answer: Any?): Any {
+        valueIndex = answer as Int
         return values[valueIndex]
     }
 
@@ -109,8 +108,8 @@ class Input(
     @get:JsonProperty("placeholder") val placeholder: String,
     @get:JsonProperty("default") var value: String = ""
 ) : Element(text) {
-    override fun answer(jsonAnswer: JsonElement): Any {
-        value = jsonAnswer.asString
+    override fun answer(answer: Any?): Any {
+        value = answer as String
         return value
     }
 
@@ -124,8 +123,8 @@ class Slider(
     @get:JsonProperty("step") val step: Number,
     @get:JsonProperty("default") var value: Number
 ) : Element(text) {
-    override fun answer(jsonAnswer: JsonElement): Any {
-        value = jsonAnswer.asDouble
+    override fun answer(answer: Any?): Any {
+        value = answer as Double
         return value
     }
 
@@ -137,8 +136,8 @@ class StepSlider(
     @get:JsonProperty("steps") val values: List<String>,
     @get:JsonProperty("default") var valueIndex: Int = 0
 ) : Element(text) {
-    override fun answer(jsonAnswer: JsonElement): Any {
-        valueIndex = jsonAnswer.asInt
+    override fun answer(answer: Any?): Any {
+        valueIndex = answer as Int
         return values[valueIndex]
     }
 
@@ -149,8 +148,8 @@ class Toggle(
     text: String,
     @get:JsonProperty("default") var value: Boolean = false
 ) : Element(text) {
-    override fun answer(jsonAnswer: JsonElement): Any {
-        value = jsonAnswer.asBoolean
+    override fun answer(answer: Any?): Any {
+        value = answer as Boolean
         return value
     }
 

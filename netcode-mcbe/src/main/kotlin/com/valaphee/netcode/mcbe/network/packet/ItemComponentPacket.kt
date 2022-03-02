@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mc.nbt.CompoundTag
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
@@ -24,6 +24,9 @@ import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.util.safeList
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -32,9 +35,9 @@ import com.valaphee.netcode.util.safeList
 class ItemComponentPacket(
     val entries: List<Entry>
 ) : Packet() {
-    class Entry(
+    data class Entry(
         val name: String,
-        val tag: CompoundTag?
+        val data: Any?
     )
 
     override val id get() = 0xA2
@@ -43,7 +46,7 @@ class ItemComponentPacket(
         buffer.writeVarUInt(entries.size)
         entries.forEach {
             buffer.writeString(it.name)
-            buffer.toNbtOutputStream().use { stream -> stream.writeTag(it.tag) }
+            buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
         }
     }
 
@@ -56,5 +59,5 @@ class ItemComponentPacket(
  * @author Kevin Ludwig
  */
 object ItemComponentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ItemComponentPacket(safeList(buffer.readVarUInt()) { ItemComponentPacket.Entry(buffer.readString(), buffer.toNbtInputStream().use { it.readTag()?.asCompoundTag() }) })
+    override fun read(buffer: PacketBuffer, version: Int) = ItemComponentPacket(safeList(buffer.readVarUInt()) { ItemComponentPacket.Entry(buffer.readString(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))) })
 }

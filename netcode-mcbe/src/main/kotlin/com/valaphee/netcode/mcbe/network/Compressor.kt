@@ -16,19 +16,15 @@
 
 package com.valaphee.netcode.mcbe.network
 
-import com.valaphee.netcode.util.Compressor
-import com.valaphee.netcode.util.ZlibCompressor
-import com.valaphee.netcode.util.compressor
 import io.netty.buffer.ByteBuf
-import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.CompositeByteBuf
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelOutboundHandlerAdapter
 import io.netty.channel.ChannelPromise
-import io.netty.channel.unix.Buffer
 import io.netty.util.ReferenceCountUtil
 import network.ycc.raknet.pipeline.FlushTickHandler
+import java.util.zip.Deflater
 
 /**
  * @author Kevin Ludwig
@@ -36,21 +32,17 @@ import network.ycc.raknet.pipeline.FlushTickHandler
 class Compressor(
     val level: Int = 7
 ) : ChannelOutboundHandlerAdapter() {
-    private lateinit var compressor: Compressor
-    private lateinit var temporaryHeader: ByteBuf
-    private lateinit var temporaryIn: ByteBuf
-    private lateinit var temporaryOut: ByteBuf
+    private val buffer = ByteArray(8192)
+
+    private lateinit var deflater: Deflater
     private lateinit var `in`: CompositeByteBuf
     private lateinit var out: CompositeByteBuf
     private var dirty = false
 
     override fun handlerAdded(context: ChannelHandlerContext) {
         super.handlerAdded(context)
-        compressor = compressor(true, true, level)
+        deflater = Deflater(level, true)
         val allocator = context.alloc()
-        temporaryHeader = allocator.directBuffer(8, 8)
-        temporaryIn = allocator.directBuffer(chunkSize, chunkSize)
-        temporaryOut = allocator.directBuffer(chunkSize, chunkSize)
         `in` = allocator.compositeDirectBuffer(componentMaximum)
         out = allocator.compositeDirectBuffer(componentMaximum)
     }
@@ -58,10 +50,7 @@ class Compressor(
     override fun handlerRemoved(context: ChannelHandlerContext) {
         ReferenceCountUtil.safeRelease(out)
         ReferenceCountUtil.safeRelease(`in`)
-        ReferenceCountUtil.safeRelease(temporaryIn)
-        ReferenceCountUtil.safeRelease(temporaryOut)
-        ReferenceCountUtil.safeRelease(temporaryHeader)
-        compressor.close()
+        deflater.end()
         super.handlerRemoved(context)
     }
 
@@ -71,22 +60,10 @@ class Compressor(
                 promise.trySuccess()
                 if (!message.isReadable) return
                 if (poolByteMaximum < `in`.readableBytes()) _flush(context)
-                if (compressor is ZlibCompressor) {
-                    if (message.readableBytes() >= temporaryIn.writableBytes() - 5) {
-                        flushTemporaryIn(context.alloc())
-                        writeVarInt(message.readableBytes(), temporaryHeader.clear())
-                        zlibDeflate(temporaryHeader, context.alloc())
-                        zlibDeflate(message, context.alloc())
-                    } else {
-                        writeVarInt(message.readableBytes(), temporaryIn)
-                        temporaryIn.writeBytes(message)
-                    }
-                } else {
-                    val headerBuffer = context.alloc().directBuffer(8, 8)
-                    writeVarInt(message.readableBytes(), headerBuffer)
-                    `in`.addComponent(true, headerBuffer)
-                    `in`.addComponent(true, message.retain())
-                }
+                val headerBuffer = context.alloc().directBuffer(8, 8)
+                writeVarInt(message.readableBytes(), headerBuffer)
+                `in`.addComponent(true, headerBuffer)
+                `in`.addComponent(true, message.retain())
                 dirty = true
                 if (poolByteMaximum < out.readableBytes()) _flush(context)
                 FlushTickHandler.checkFlushTick(context.channel())
@@ -101,67 +78,17 @@ class Compressor(
         super.flush(context)
     }
 
-    private fun flushTemporaryIn(allocator: ByteBufAllocator) {
-        zlibDeflate(temporaryIn, allocator)
-        temporaryIn.clear()
-    }
-
-    private fun zlibDeflate(`in`: ByteBuf, allocator: ByteBufAllocator) {
-        if (`in`.isReadable) {
-            val zlibCompressor: ZlibCompressor = compressor as ZlibCompressor
-            if (`in`.hasMemoryAddress()) {
-                while (`in`.isReadable) {
-                    checkOutFloor(allocator)
-                    temporaryOut.writerIndex(temporaryOut.writerIndex() + zlibCompressor.process(`in`.memoryAddress() + `in`.readerIndex(), `in`.readableBytes(), temporaryOut.memoryAddress() + temporaryOut.writerIndex(), temporaryOut.writableBytes()))
-                    `in`.readerIndex(`in`.readerIndex() + zlibCompressor.consumed)
-                }
-            } else {
-                val buffers = `in`.nioBuffers()
-                var bufferIndex = 0
-                while (bufferIndex != buffers.size) {
-                    checkOutFloor(allocator)
-                    val buffer = buffers[bufferIndex]
-                    temporaryOut.writerIndex(temporaryOut.writerIndex() + zlibCompressor.process(Buffer.memoryAddress(buffer) + buffer.position(), buffer.remaining(), temporaryOut.memoryAddress() + temporaryOut.writerIndex(), temporaryOut.writableBytes()))
-                    buffer.position(buffer.position() + zlibCompressor.consumed)
-                    if (!buffer.hasRemaining()) bufferIndex++
-                }
-                `in`.readerIndex(`in`.readerIndex() + `in`.readableBytes())
-            }
-        }
-    }
-
-    private fun checkOutFloor(allocator: ByteBufAllocator) {
-        if (chunkFloor > temporaryOut.writableBytes()) {
-            out.addComponent(true, temporaryOut)
-            temporaryOut = allocator.directBuffer(chunkSize, chunkSize)
-        }
-    }
-
     private fun _flush(context: ChannelHandlerContext) {
         dirty = false
         val allocator = context.alloc()
-        if (compressor is ZlibCompressor) {
-            flushTemporaryIn(allocator)
-            val zlibCompressor: ZlibCompressor = compressor as ZlibCompressor
-            while (!zlibCompressor.isFinished) {
-                checkOutFloor(allocator)
-                temporaryOut.writerIndex(temporaryOut.writerIndex() + zlibCompressor.process(0, 0, temporaryOut.memoryAddress() + temporaryOut.writerIndex(), temporaryOut.writableBytes()))
-            }
-            if (temporaryOut.isReadable) {
-                out.addComponent(true, temporaryOut)
-                temporaryOut = allocator.directBuffer(chunkSize, chunkSize)
-            }
-            zlibCompressor.reset()
-            val out = out
-            this.out = allocator.compositeDirectBuffer(componentMaximum)
-            context.write(out).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
-        } else {
-            val out = allocator.directBuffer(`in`.readableBytes() / 4 + 16)
-            compressor.process(`in`, out)
-            `in`.release()
-            `in` = allocator.compositeDirectBuffer(componentMaximum)
-            context.write(out).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
-        }
+        val out = allocator.directBuffer(`in`.readableBytes() / 4 + 16)
+        deflater.setInput(`in`.nioBuffer())
+        deflater.finish()
+        while (!deflater.finished()) out.writeBytes(buffer, 0, deflater.deflate(buffer))
+        deflater.reset()
+        `in`.release()
+        `in` = allocator.compositeDirectBuffer(componentMaximum)
+        context.write(out).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
     }
 
     private fun writeVarInt(value: Int, buffer: ByteBuf) {
@@ -181,7 +108,5 @@ class Compressor(
         const val NAME = "mcbe-compressor"
         private const val componentMaximum = 512
         private const val poolByteMaximum = 128 * 1024
-        private const val chunkSize = 8192
-        private const val chunkFloor = 512
     }
 }

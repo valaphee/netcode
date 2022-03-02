@@ -16,7 +16,6 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mc.nbt.Tag
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
@@ -30,18 +29,17 @@ import com.valaphee.netcode.mcbe.network.Restriction
 @Restrict(Restriction.ToClient)
 class WorldGenericEventPacket(
     val eventId: Int,
-    val tag: Tag?
+    val data: Any?
 ) : Packet() {
     override val id get() = 0x7C
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(eventId)
-        // TODO
     }
 
     override fun handle(handler: PacketHandler) = handler.worldGenericEvent(this)
 
-    override fun toString() = "WorldGenericEventPacket(eventId=$eventId, tag=$tag)"
+    override fun toString() = "WorldGenericEventPacket(eventId=$eventId, data=$data)"
 }
 
 /**

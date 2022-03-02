@@ -23,7 +23,6 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.util.ByteBufStringReader
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -34,7 +33,7 @@ class ServerTeamPacket(
     val action: Action,
     val displayName: Component?,
     val friendlyFlags: Byte,
-    val nameTagVisibility: Rule?,
+    val nametagVisibility: Rule?,
     val collisionRule: Rule?,
     val styleCode: StyleCode?,
     val prefix: Component?,
@@ -54,9 +53,9 @@ class ServerTeamPacket(
         buffer.writeByte(action.ordinal)
         @Suppress("NON_EXHAUSTIVE_WHEN") when (action) {
             Action.Create -> {
-                buffer.writeString(buffer.objectMapper.writeValueAsString(displayName))
+                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(displayName))
                 buffer.writeByte(friendlyFlags.toInt())
-                when (nameTagVisibility) {
+                when (nametagVisibility) {
                     Rule.Never -> buffer.writeString("never")
                     Rule.OtherTeams -> buffer.writeString("hideForOtherTeams")
                     Rule.OwnTeam -> buffer.writeString("hideForOwnTeam")
@@ -69,8 +68,8 @@ class ServerTeamPacket(
                     else -> buffer.writeString("always")
                 }
                 buffer.writeVarInt(styleCode!!.ordinal())
-                buffer.writeString(buffer.objectMapper.writeValueAsString(prefix!!))
-                buffer.writeString(buffer.objectMapper.writeValueAsString(suffix!!))
+                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(prefix!!))
+                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(suffix!!))
                 userNames?.let {
                     buffer.writeVarInt(it.size)
                     it.forEach { buffer.writeString(it) }
@@ -81,9 +80,9 @@ class ServerTeamPacket(
                 it.forEach { buffer.writeString(it) }
             }
             Action.Update -> {
-                buffer.writeString(buffer.objectMapper.writeValueAsString(displayName!!))
+                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(displayName!!))
                 buffer.writeByte(friendlyFlags.toInt())
-                when (nameTagVisibility) {
+                when (nametagVisibility) {
                     Rule.Never -> buffer.writeString("never")
                     Rule.OtherTeams -> buffer.writeString("hideForOtherTeams")
                     Rule.OwnTeam -> buffer.writeString("hideForOwnTeam")
@@ -96,15 +95,15 @@ class ServerTeamPacket(
                     else -> buffer.writeString("always")
                 }
                 buffer.writeVarInt(styleCode!!.ordinal())
-                buffer.writeString(buffer.objectMapper.writeValueAsString(prefix!!))
-                buffer.writeString(buffer.objectMapper.writeValueAsString(suffix!!))
+                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(prefix!!))
+                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(suffix!!))
             }
         }
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.team(this)
 
-    override fun toString() = "ServerTeamPacket(name='$name', action=$action, displayName=$displayName, friendlyFlags=$friendlyFlags, nameTagVisibility=$nameTagVisibility, collisionRule=$collisionRule, styleCode=$styleCode, prefix=$prefix, suffix=$suffix, userNames=$userNames)"
+    override fun toString() = "ServerTeamPacket(name='$name', action=$action, displayName=$displayName, friendlyFlags=$friendlyFlags, nametagVisibility=$nametagVisibility, collisionRule=$collisionRule, styleCode=$styleCode, prefix=$prefix, suffix=$suffix, userNames=$userNames)"
 }
 
 /**
@@ -116,7 +115,7 @@ object ServerTeamPacketReader : PacketReader {
         val action = ServerTeamPacket.Action.values()[buffer.readUnsignedByte().toInt()]
         val displayName: Component?
         val friendlyFlags: Byte
-        val nameTagVisibility: ServerTeamPacket.Rule?
+        val nametagVisibility: ServerTeamPacket.Rule?
         val collisionRule: ServerTeamPacket.Rule?
         val styleCode: StyleCode?
         val prefix: Component?
@@ -124,9 +123,9 @@ object ServerTeamPacketReader : PacketReader {
         val userNames: List<String>?
         @Suppress("NON_EXHAUSTIVE_WHEN") when (action) {
             ServerTeamPacket.Action.Create -> {
-                displayName = buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt()))
+                displayName = buffer.jsonObjectMapper.readValue(buffer.readString())
                 friendlyFlags = buffer.readByte()
-                nameTagVisibility = when (buffer.readString(32)) {
+                nametagVisibility = when (buffer.readString(32)) {
                     "never" -> ServerTeamPacket.Rule.Never
                     "hideForOtherTeams" -> ServerTeamPacket.Rule.OtherTeams
                     "hideForOwnTeam" -> ServerTeamPacket.Rule.OwnTeam
@@ -139,14 +138,14 @@ object ServerTeamPacketReader : PacketReader {
                     else -> ServerTeamPacket.Rule.Always
                 }
                 styleCode = StyleCode.values[buffer.readVarInt()]
-                prefix = buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt()))
-                suffix = buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt()))
+                prefix = buffer.jsonObjectMapper.readValue(buffer.readString())
+                suffix = buffer.jsonObjectMapper.readValue(buffer.readString())
                 userNames = safeList(buffer.readVarInt()) { buffer.readString(40) }
             }
             ServerTeamPacket.Action.AddUserNames, ServerTeamPacket.Action.RemoveUserNames -> {
                 displayName = null
                 friendlyFlags = 0
-                nameTagVisibility = null
+                nametagVisibility = null
                 collisionRule = null
                 styleCode = null
                 prefix = null
@@ -154,9 +153,9 @@ object ServerTeamPacketReader : PacketReader {
                 userNames = safeList(buffer.readVarInt()) { buffer.readString(40) }
             }
             ServerTeamPacket.Action.Update -> {
-                displayName = buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt()))
+                displayName = buffer.jsonObjectMapper.readValue(buffer.readString())
                 friendlyFlags = buffer.readByte()
-                nameTagVisibility = when (buffer.readString(32)) {
+                nametagVisibility = when (buffer.readString(32)) {
                     "never" -> ServerTeamPacket.Rule.Never
                     "hideForOtherTeams" -> ServerTeamPacket.Rule.OtherTeams
                     "hideForOwnTeam" -> ServerTeamPacket.Rule.OwnTeam
@@ -169,14 +168,14 @@ object ServerTeamPacketReader : PacketReader {
                     else -> ServerTeamPacket.Rule.Always
                 }
                 styleCode = StyleCode.values[buffer.readVarInt()]
-                prefix = buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt()))
-                suffix = buffer.objectMapper.readValue(ByteBufStringReader(buffer, buffer.readVarInt()))
+                prefix = buffer.jsonObjectMapper.readValue(buffer.readString())
+                suffix = buffer.jsonObjectMapper.readValue(buffer.readString())
                 userNames = null
             }
             else -> {
                 displayName = null
                 friendlyFlags = 0
-                nameTagVisibility = null
+                nametagVisibility = null
                 collisionRule = null
                 styleCode = null
                 prefix = null
@@ -184,6 +183,6 @@ object ServerTeamPacketReader : PacketReader {
                 userNames = null
             }
         }
-        return ServerTeamPacket(name, action, displayName, friendlyFlags, nameTagVisibility, collisionRule, styleCode, prefix, suffix, userNames)
+        return ServerTeamPacket(name, action, displayName, friendlyFlags, nametagVisibility, collisionRule, styleCode, prefix, suffix, userNames)
     }
 }
