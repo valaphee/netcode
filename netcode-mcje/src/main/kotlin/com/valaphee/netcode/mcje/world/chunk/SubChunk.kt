@@ -55,12 +55,12 @@ class SubChunk(
 }
 
 fun PacketBuffer.readSubChunk(): SubChunk {
-    val blockCount = buffer.readUnsignedShort()
-    val bitsPerBlock = buffer.readByte().toInt()
+    val blockCount = readUnsignedShort()
+    val bitsPerBlock = readByte().toInt()
     var blockPalette: IntArrayList? = null
     if (bitsPerBlock <= 8) {
         val blockPaletteSize = readVarInt()
         blockPalette = IntArrayList(blockPaletteSize).apply { repeat(blockPaletteSize) { add(readVarInt()) } }
     }
-    return SubChunk(blockPalette, BitArray(bitsPerBlock, LongArray(readVarInt()) { buffer.readLong() }), blockCount)
+    return SubChunk(blockPalette, BitArray(bitsPerBlock, LongArray(readVarInt()) { readLong() }), blockCount)
 }

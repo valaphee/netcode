@@ -41,7 +41,7 @@ class ServerRespawnPacket(
     val keepMetadata: Boolean
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension)
+        buffer.objectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension)
         buffer.writeNamespacedKey(worldName!!)
         buffer.writeLong(hashedSeed)
         buffer.writeByte(gameMode.ordinal)
@@ -60,5 +60,5 @@ class ServerRespawnPacket(
  * @author Kevin Ludwig
  */
 object ServerRespawnPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerRespawnPacket(buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.readNamespacedKey(), buffer.readLong(), checkNotNull(GameMode.byIdOrNull(buffer.readUnsignedByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readUnsignedByte().toInt())), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerRespawnPacket(buffer.objectMapper.readValue(ByteBufInputStream(buffer)), buffer.readNamespacedKey(), buffer.readLong(), checkNotNull(GameMode.byIdOrNull(buffer.readUnsignedByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readUnsignedByte().toInt())), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
 }

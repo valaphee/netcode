@@ -42,14 +42,14 @@ class ServerChunkPacket(
         buffer.writeInt2(position)
         buffer.writeBoolean(biomes != null)
         buffer.writeVarInt(withSubChunks)
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, heightMap)
+        buffer.objectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, heightMap)
         biomes?.let {
             buffer.writeVarInt(it.size)
             it.forEach(buffer::writeVarInt)
         }
         buffer.writeByteArray(data)
         buffer.writeVarInt(blockEntities.size)
-        blockEntities.forEach { buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it) }
+        blockEntities.forEach { buffer.objectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it) }
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.chunk(this)
@@ -65,10 +65,10 @@ object ServerChunkPacketReader : PacketReader {
         val position = buffer.readInt2()
         val withBiomes = buffer.readBoolean()
         val withSubChunks = buffer.readVarInt()
-        val heightMap = buffer.nbtObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
+        val heightMap = buffer.objectMapper.readValue<Any?>(ByteBufInputStream(buffer))
         val biomes = if (withBiomes) IntArray(buffer.readVarInt()) { buffer.readVarInt() } else null
         val data = buffer.readByteArray()
-        val blockEntities = safeList(buffer.readVarInt()) { buffer.nbtObjectMapper.readValue<Any?>(ByteBufInputStream(buffer)) }
+        val blockEntities = safeList(buffer.readVarInt()) { buffer.objectMapper.readValue<Any?>(ByteBufInputStream(buffer)) }
         return ServerChunkPacket(position, withSubChunks, heightMap, biomes, data, blockEntities)
     }
 }

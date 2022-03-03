@@ -37,8 +37,8 @@ class SubChunkPacket(
 ) : Packet() {
     data class Response(
         val position: Int3,
-        val data: ByteArray?,
         val result: Result,
+        val data: ByteArray?,
         val heightMapStatus: HeightMapStatus,
         val heightMap: ByteArray?,
         val blobId: Long
@@ -58,8 +58,8 @@ class SubChunkPacket(
             other as Response
 
             if (position != other.position) return false
-            if (!data.contentEquals(other.data)) return false
             if (result != other.result) return false
+            if (!data.contentEquals(other.data)) return false
             if (heightMapStatus != other.heightMapStatus) return false
             if (heightMap != null) {
                 if (other.heightMap == null) return false
@@ -72,8 +72,8 @@ class SubChunkPacket(
 
         override fun hashCode(): Int {
             var result1 = position.hashCode()
-            result1 = 31 * result1 + data.contentHashCode()
             result1 = 31 * result1 + result.hashCode()
+            result1 = 31 * result1 + data.contentHashCode()
             result1 = 31 * result1 + heightMapStatus.hashCode()
             result1 = 31 * result1 + (heightMap?.contentHashCode() ?: 0)
             result1 = 31 * result1 + blobId.hashCode()
@@ -134,7 +134,7 @@ object SubChunkPacketReader : PacketReader {
             val heightMapStatus = SubChunkPacket.Response.HeightMapStatus.values()[buffer.readByte().toInt()]
             val heightMap = if (heightMapStatus == SubChunkPacket.Response.HeightMapStatus.Available) ByteArray(256).also { buffer.readBytes(it) } else null
             val blobId = if (cache) buffer.readLongLE() else 0L
-            SubChunkPacket.Response(position, data, result, heightMapStatus, heightMap, blobId)
+            SubChunkPacket.Response(position, result, data, heightMapStatus, heightMap, blobId)
         }
         SubChunkPacket(cache, dimension, position, responses)
     } else {
@@ -153,6 +153,6 @@ object SubChunkPacketReader : PacketReader {
             cache = false
             blobId = 0L
         }
-        SubChunkPacket(cache, dimension, position, listOf(SubChunkPacket.Response(position, data, result, heightMapStatus, heightMap, blobId)))
+        SubChunkPacket(cache, dimension, position, listOf(SubChunkPacket.Response(position, result, data, heightMapStatus, heightMap, blobId)))
     }
 }

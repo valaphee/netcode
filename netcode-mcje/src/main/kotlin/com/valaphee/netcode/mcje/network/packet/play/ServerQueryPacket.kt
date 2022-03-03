@@ -34,7 +34,7 @@ class ServerQueryPacket(
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(id)
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
+        buffer.objectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.query(this)
@@ -46,5 +46,5 @@ class ServerQueryPacket(
  * @author Kevin Ludwig
  */
 object ServerQueryPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerQueryPacket(buffer.readVarInt(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerQueryPacket(buffer.readVarInt(), buffer.objectMapper.readValue(ByteBufInputStream(buffer)))
 }

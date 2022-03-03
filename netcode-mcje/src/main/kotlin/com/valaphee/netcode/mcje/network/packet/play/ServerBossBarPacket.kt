@@ -16,12 +16,12 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.valaphee.netcode.mcje.chat.Component
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import java.util.UUID
 
 /**
@@ -55,14 +55,14 @@ class ServerBossBarPacket(
         buffer.writeVarInt(action.ordinal)
         @Suppress("NON_EXHAUSTIVE_WHEN") when (action) {
             Action.Show -> {
-                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(title))
+                buffer.writeString(GsonComponentSerializer.gson().serialize(title!!))
                 buffer.writeFloat(percentage)
                 buffer.writeVarInt(color!!.ordinal)
                 buffer.writeVarInt(overlay!!.ordinal)
                 buffer.writeByte(if (darkenSky) flagDarkenSky else 0 or if (playEndMusic) flagPlayEndMusic else 0 or if (showFog) flagShowFog else 0)
             }
             Action.SetPercentage -> buffer.writeFloat(percentage)
-            Action.SetTitle -> buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(title))
+            Action.SetTitle -> buffer.writeString(GsonComponentSerializer.gson().serialize(title!!))
             Action.SetStyle -> {
                 buffer.writeVarInt(color!!.ordinal)
                 buffer.writeVarInt(overlay!!.ordinal)
@@ -98,7 +98,7 @@ object ServerBossBarPacketReader : PacketReader {
         val showFog: Boolean
         when (action) {
             ServerBossBarPacket.Action.Show -> {
-                title = buffer.jsonObjectMapper.readValue(buffer.readString())
+                title = GsonComponentSerializer.gson().deserialize(buffer.readString())
                 percentage = buffer.readFloat()
                 color = ServerBossBarPacket.Color.values()[buffer.readVarInt()]
                 overlay = ServerBossBarPacket.Overlay.values()[buffer.readVarInt()]
@@ -117,7 +117,7 @@ object ServerBossBarPacketReader : PacketReader {
                 showFog = false
             }
             ServerBossBarPacket.Action.SetTitle -> {
-                title = buffer.jsonObjectMapper.readValue(buffer.readString())
+                title = GsonComponentSerializer.gson().deserialize(buffer.readString())
                 percentage = 0.0f
                 color = null
                 overlay = null

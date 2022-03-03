@@ -55,7 +55,7 @@ class ServerBlockEntityPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
         buffer.writeByte(type.ordinal)
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
+        buffer.objectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.blockEntity(this)
@@ -67,5 +67,5 @@ class ServerBlockEntityPacket(
  * @author Kevin Ludwig
  */
 object ServerBlockEntityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEntityPacket(buffer.readInt3UnsignedY(), ServerBlockEntityPacket.Type.values()[buffer.readByte().toInt()], buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEntityPacket(buffer.readInt3UnsignedY(), ServerBlockEntityPacket.Type.values()[buffer.readByte().toInt()], buffer.objectMapper.readValue(ByteBufInputStream(buffer)))
 }

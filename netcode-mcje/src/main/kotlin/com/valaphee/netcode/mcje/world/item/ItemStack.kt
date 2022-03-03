@@ -44,13 +44,13 @@ data class ItemStack(
     }
 }
 
-fun PacketBuffer.readStack() = if (readBoolean()) ItemStack(registrySet.items[readVarInt()]!!, readByte().toInt(), nbtObjectMapper.readValue(ByteBufInputStream(buffer))) else null
+fun PacketBuffer.readStack() = if (readBoolean()) ItemStack(registrySet.items[readVarInt()]!!, readByte().toInt(), objectMapper.readValue(ByteBufInputStream(buffer))) else null
 
 fun PacketBuffer.writeStack(value: ItemStack?) {
     value?.let {
         writeBoolean(true)
         writeVarInt(registrySet.items.getId(it.itemKey))
         writeByte(it.count)
-        nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
+        objectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
     } ?: writeBoolean(false)
 }

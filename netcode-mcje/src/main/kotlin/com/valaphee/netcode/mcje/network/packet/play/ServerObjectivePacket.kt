@@ -16,12 +16,12 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.valaphee.netcode.mcje.chat.Component
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
@@ -44,7 +44,7 @@ class ServerObjectivePacket(
         buffer.writeString(name)
         buffer.writeByte(action.ordinal)
         if (action == Action.Create || action == Action.Update) {
-            buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(displayName!!))
+            buffer.writeString(GsonComponentSerializer.gson().serialize(displayName!!))
             buffer.writeVarInt(type!!.ordinal)
         }
     }
@@ -64,7 +64,7 @@ object ServerObjectivePacketReader : PacketReader {
         val displayName: Component?
         val type: ServerObjectivePacket.Type?
         if (action == ServerObjectivePacket.Action.Create || action == ServerObjectivePacket.Action.Update) {
-            displayName = buffer.jsonObjectMapper.readValue(buffer.readString())
+            displayName = GsonComponentSerializer.gson().deserialize(buffer.readString())
             type = ServerObjectivePacket.Type.values()[buffer.readVarInt()]
         } else {
             displayName = null

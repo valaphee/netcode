@@ -16,12 +16,12 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.valaphee.netcode.mcje.chat.Component
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
@@ -46,7 +46,7 @@ class ServerPlayerCombatEventPacket(
             Event.Death -> {
                 buffer.writeVarInt(durationOrPlayerEntityId)
                 buffer.writeInt(entityId)
-                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(message))
+                buffer.writeString(GsonComponentSerializer.gson().serialize(message!!))
             }
         }
     }
@@ -74,7 +74,7 @@ object ServerPlayerCombatEventPacketReader : PacketReader {
             ServerPlayerCombatEventPacket.Event.Death -> {
                 durationOrPlayerEntityId = buffer.readVarInt()
                 entityId = buffer.readInt()
-                message = buffer.jsonObjectMapper.readValue(buffer.readString())
+                message = GsonComponentSerializer.gson().deserialize(buffer.readString())
             }
             else -> {
                 durationOrPlayerEntityId = 0

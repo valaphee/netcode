@@ -50,6 +50,7 @@ class ScoresPacket(
                 buffer.writeByte(it.type.ordinal)
                 @Suppress("NON_EXHAUSTIVE_WHEN")
                 when (it.type) {
+                    Score.ScorerType.None -> Unit
                     Score.ScorerType.Entity, Score.ScorerType.Player -> buffer.writeVarLong(it.entityId)
                     Score.ScorerType.Fake -> buffer.writeString(it.name!!)
                 }
@@ -72,13 +73,11 @@ object ScoresPacketReader : PacketReader {
             val scoreboardId = buffer.readVarLong()
             val objectiveId = buffer.readString()
             val score = buffer.readIntLE()
-            if (action == ScoresPacket.Action.Set) {
-                when (val scorerType = Score.ScorerType.values()[buffer.readUnsignedByte().toInt()]) {
-                    Score.ScorerType.Entity, Score.ScorerType.Player -> return@safeList Score(scoreboardId, objectiveId, score, scorerType, buffer.readVarLong())
-                    Score.ScorerType.Fake -> return@safeList Score(scoreboardId, objectiveId, score, buffer.readString())
-                }
-            }
-            Score(scoreboardId, objectiveId, score)
+            if (action == ScoresPacket.Action.Set) when (val scorerType = Score.ScorerType.values()[buffer.readUnsignedByte().toInt()]) {
+                Score.ScorerType.None -> Score(scoreboardId, objectiveId, score)
+                Score.ScorerType.Entity, Score.ScorerType.Player -> Score(scoreboardId, objectiveId, score, scorerType, buffer.readVarLong())
+                Score.ScorerType.Fake -> Score(scoreboardId, objectiveId, score, buffer.readString())
+            } else Score(scoreboardId, objectiveId, score)
         }
         return ScoresPacket(action, entries)
     }

@@ -16,12 +16,12 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.valaphee.netcode.mcje.chat.Component
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import java.util.UUID
 
 /**
@@ -37,7 +37,7 @@ class ServerTextPacket(
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(message))
+        buffer.writeString(GsonComponentSerializer.gson().serialize(message))
         buffer.writeByte(type.ordinal)
         if (version >= 754) buffer.writeUuid(userId)
     }
@@ -55,5 +55,5 @@ class ServerTextPacket(
  * @author Kevin Ludwig
  */
 object ServerTextPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTextPacket(buffer.jsonObjectMapper.readValue(buffer.readString()), ServerTextPacket.Type.values()[buffer.readByte().toInt()], if (version >= 754) buffer.readUuid() else ServerTextPacket.UserIdNone)
+    override fun read(buffer: PacketBuffer, version: Int) = ServerTextPacket(GsonComponentSerializer.gson().deserialize(buffer.readString()), ServerTextPacket.Type.values()[buffer.readByte().toInt()], if (version >= 754) buffer.readUuid() else ServerTextPacket.UserIdNone)
 }

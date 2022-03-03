@@ -16,14 +16,14 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mc.chat.StyleCode
-import com.valaphee.netcode.mcje.chat.Component
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.util.safeList
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
@@ -53,7 +53,7 @@ class ServerTeamPacket(
         buffer.writeByte(action.ordinal)
         @Suppress("NON_EXHAUSTIVE_WHEN") when (action) {
             Action.Create -> {
-                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(displayName))
+                buffer.writeString(GsonComponentSerializer.gson().serialize(displayName!!))
                 buffer.writeByte(friendlyFlags.toInt())
                 when (nametagVisibility) {
                     Rule.Never -> buffer.writeString("never")
@@ -68,8 +68,8 @@ class ServerTeamPacket(
                     else -> buffer.writeString("always")
                 }
                 buffer.writeVarInt(styleCode!!.ordinal())
-                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(prefix!!))
-                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(suffix!!))
+                buffer.writeString(GsonComponentSerializer.gson().serialize(prefix!!))
+                buffer.writeString(GsonComponentSerializer.gson().serialize(suffix!!))
                 userNames?.let {
                     buffer.writeVarInt(it.size)
                     it.forEach { buffer.writeString(it) }
@@ -80,7 +80,7 @@ class ServerTeamPacket(
                 it.forEach { buffer.writeString(it) }
             }
             Action.Update -> {
-                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(displayName!!))
+                buffer.writeString(GsonComponentSerializer.gson().serialize(displayName!!))
                 buffer.writeByte(friendlyFlags.toInt())
                 when (nametagVisibility) {
                     Rule.Never -> buffer.writeString("never")
@@ -95,8 +95,8 @@ class ServerTeamPacket(
                     else -> buffer.writeString("always")
                 }
                 buffer.writeVarInt(styleCode!!.ordinal())
-                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(prefix!!))
-                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(suffix!!))
+                buffer.writeString(GsonComponentSerializer.gson().serialize(prefix!!))
+                buffer.writeString(GsonComponentSerializer.gson().serialize(suffix!!))
             }
         }
     }
@@ -123,7 +123,7 @@ object ServerTeamPacketReader : PacketReader {
         val userNames: List<String>?
         @Suppress("NON_EXHAUSTIVE_WHEN") when (action) {
             ServerTeamPacket.Action.Create -> {
-                displayName = buffer.jsonObjectMapper.readValue(buffer.readString())
+                displayName = GsonComponentSerializer.gson().deserialize(buffer.readString())
                 friendlyFlags = buffer.readByte()
                 nametagVisibility = when (buffer.readString(32)) {
                     "never" -> ServerTeamPacket.Rule.Never
@@ -138,8 +138,8 @@ object ServerTeamPacketReader : PacketReader {
                     else -> ServerTeamPacket.Rule.Always
                 }
                 styleCode = StyleCode.values[buffer.readVarInt()]
-                prefix = buffer.jsonObjectMapper.readValue(buffer.readString())
-                suffix = buffer.jsonObjectMapper.readValue(buffer.readString())
+                prefix = GsonComponentSerializer.gson().deserialize(buffer.readString())
+                suffix = GsonComponentSerializer.gson().deserialize(buffer.readString())
                 userNames = safeList(buffer.readVarInt()) { buffer.readString(40) }
             }
             ServerTeamPacket.Action.AddUserNames, ServerTeamPacket.Action.RemoveUserNames -> {
@@ -153,7 +153,7 @@ object ServerTeamPacketReader : PacketReader {
                 userNames = safeList(buffer.readVarInt()) { buffer.readString(40) }
             }
             ServerTeamPacket.Action.Update -> {
-                displayName = buffer.jsonObjectMapper.readValue(buffer.readString())
+                displayName = GsonComponentSerializer.gson().deserialize(buffer.readString())
                 friendlyFlags = buffer.readByte()
                 nametagVisibility = when (buffer.readString(32)) {
                     "never" -> ServerTeamPacket.Rule.Never
@@ -168,8 +168,8 @@ object ServerTeamPacketReader : PacketReader {
                     else -> ServerTeamPacket.Rule.Always
                 }
                 styleCode = StyleCode.values[buffer.readVarInt()]
-                prefix = buffer.jsonObjectMapper.readValue(buffer.readString())
-                suffix = buffer.jsonObjectMapper.readValue(buffer.readString())
+                prefix = GsonComponentSerializer.gson().deserialize(buffer.readString())
+                suffix = GsonComponentSerializer.gson().deserialize(buffer.readString())
                 userNames = null
             }
             else -> {

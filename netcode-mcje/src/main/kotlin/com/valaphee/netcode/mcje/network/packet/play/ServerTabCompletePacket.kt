@@ -16,13 +16,13 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.valaphee.netcode.mcje.chat.Component
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.util.safeList
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
@@ -47,7 +47,7 @@ class ServerTabCompletePacket(
             buffer.writeString(it.match)
             it.tooltip?.let {
                 buffer.writeBoolean(true)
-                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(it))
+                buffer.writeString(GsonComponentSerializer.gson().serialize(it))
             } ?: buffer.writeBoolean(false)
         }
     }
@@ -61,5 +61,5 @@ class ServerTabCompletePacket(
  * @author Kevin Ludwig
  */
 object ServerTabCompletePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTabCompletePacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(), safeList(buffer.readVarInt()) { ServerTabCompletePacket.Match(buffer.readString(), if (buffer.readBoolean()) buffer.jsonObjectMapper.readValue(buffer.readString()) else null) })
+    override fun read(buffer: PacketBuffer, version: Int) = ServerTabCompletePacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(), safeList(buffer.readVarInt()) { ServerTabCompletePacket.Match(buffer.readString(), if (buffer.readBoolean()) GsonComponentSerializer.gson().deserialize(buffer.readString()) else null) })
 }

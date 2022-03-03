@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.status
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcje.chat.Component
+import net.kyori.adventure.text.Component
 import java.util.UUID
 
 /**

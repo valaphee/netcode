@@ -16,13 +16,13 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.valaphee.netcode.mcje.chat.Component
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
@@ -35,7 +35,7 @@ class ServerWindowOpenPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(windowId)
         buffer.writeVarInt(buffer.registrySet.windowTypes.getId(windowTypeKey))
-        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(title))
+        buffer.writeString(GsonComponentSerializer.gson().serialize(title))
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.windowOpen(this)
@@ -47,5 +47,5 @@ class ServerWindowOpenPacket(
  * @author Kevin Ludwig
  */
 object ServerWindowOpenPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowOpenPacket(buffer.readVarInt(), checkNotNull(buffer.registrySet.windowTypes[buffer.readVarInt()]), buffer.jsonObjectMapper.readValue(buffer.readString()))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowOpenPacket(buffer.readVarInt(), checkNotNull(buffer.registrySet.windowTypes[buffer.readVarInt()]), GsonComponentSerializer.gson().deserialize(buffer.readString()))
 }

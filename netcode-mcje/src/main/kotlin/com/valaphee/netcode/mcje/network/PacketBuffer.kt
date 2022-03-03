@@ -19,7 +19,6 @@
 package com.valaphee.netcode.mcje.network
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.valaphee.foundry.math.Double3
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
@@ -41,8 +40,7 @@ import java.util.UUID
  */
 class PacketBuffer(
     buffer: ByteBuf,
-    val jsonObjectMapper: ObjectMapper = jacksonObjectMapper(),
-    val nbtObjectMapper: ObjectMapper = ObjectMapper(NbtFactory()),
+    val objectMapper: ObjectMapper = ObjectMapper(NbtFactory()),
     val registrySet: RegistrySet
 ) : ByteBufWrapper(buffer) {
     inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
