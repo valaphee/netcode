@@ -17,13 +17,13 @@
 package com.valaphee.netcode.mcbe.network.packet
 
 import com.valaphee.foundry.math.Float3
-import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.util.Registry
 
 /**
  * @author Kevin Ludwig
@@ -240,7 +240,8 @@ class WorldEventPacket(
             private const val worldOffset = 3000
             private const val blockOffset = 3500
             private const val particleLegacyOffset = 0x4000
-            private val registryPre407 = Registry(Undefined).apply {
+            private val registryPre407 = Registry<Event>().apply {
+                default = Undefined
                 this[soundOffset + 0] = SoundClick
                 this[soundOffset + 1] = SoundClickFail
                 this[soundOffset + 2] = SoundLaunch
@@ -554,7 +555,7 @@ class WorldEventPacket(
                 this[particleLegacyOffset + 83] = ParticleSculkSoul
             }
 
-            internal fun registryByVersion(version: Int) =
+            fun registryByVersion(version: Int) =
                 if (version >= 471) events
                 else if (version >= 465) registryPre471
                 else if (version >= 448) registryPre465

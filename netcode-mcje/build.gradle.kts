@@ -16,8 +16,7 @@
 
 dependencies {
     api(project(":netcode-mc"))
-    implementation("net.kyori:adventure-api:4.9.3")
-    implementation("net.kyori:adventure-text-serializer-gson:4.9.3")
+    api("net.kyori:adventure-text-serializer-gson:4.9.3")
 }
 
 publishing {

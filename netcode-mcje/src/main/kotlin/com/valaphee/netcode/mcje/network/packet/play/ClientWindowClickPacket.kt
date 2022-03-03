@@ -31,9 +31,9 @@ class ClientWindowClickPacket(
     val windowId: Int,
     val slotId: Int,
     val buttonSpecifier: Int,
-    var confirmId: Int,
+    var confirmId: Int, // needed for je-be protocol translation
     val button: Button,
-    val itemStackInSlot: ItemStack?
+    val itemStackInSlot: ItemStack? = null
 ) : Packet<ClientPlayPacketHandler> {
     enum class Button {
         Normal, Shift, Number, MiddleClick, QOrNoOp, Paint, DoubleClick

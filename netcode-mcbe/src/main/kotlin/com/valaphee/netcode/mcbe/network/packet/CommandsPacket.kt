@@ -16,7 +16,6 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.mcbe.command.Command
 import com.valaphee.netcode.mcbe.command.Enumeration
 import com.valaphee.netcode.mcbe.command.EnumerationConstraint
@@ -93,7 +92,7 @@ class CommandsPacket(
                 buffer.writeVarUInt(overload.size)
                 overload.forEach { parameter ->
                     buffer.writeString(parameter.name)
-                    buffer.writeIntLE(parameter.postfix?.let { postfixes.indexOf(it) or parameterFlagPostfix } ?: parameter.enumeration?.let { (if (it.soft) softEnumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagSoftEnumeration else enumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagEnumeration) or parameterFlagValid } ?: parameter.type?.let { /*(if (version >= 419) parameterTypes else parameterTypesPre419).getKey(*/it/*)*/ or parameterFlagValid } ?: error("Unknown type in ${parameter.name}"))
+                    buffer.writeIntLE(parameter.postfix?.let { postfixes.indexOf(it) or parameterFlagPostfix } ?: parameter.enumeration?.let { (if (it.soft) softEnumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagSoftEnumeration else enumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagEnumeration) or parameterFlagValid } ?: parameter.type?.let { /*(if (version >= 419) Parameter.Type.registry else Parameter.Type.registryPre419).getId(*/it/*)*/ or parameterFlagValid } ?: error("Unknown type in ${parameter.name}"))
                     buffer.writeBoolean(parameter.optional)
                     buffer.writeByteFlags(parameter.options)
                 }
@@ -110,42 +109,6 @@ class CommandsPacket(
     override fun toString() = "CommandsPacket(commands=$commands, constraints=$constraints)"
 
     companion object {
-        internal val parameterTypesPre419 = Registry<Parameter.Type>().apply {
-            this[0x01] = Parameter.Type.Integer
-            this[0x02] = Parameter.Type.Float
-            this[0x03] = Parameter.Type.Value
-            this[0x04] = Parameter.Type.WildcardInteger
-            this[0x05] = Parameter.Type.Operator
-            this[0x06] = Parameter.Type.Target
-            this[0x07] = Parameter.Type.WildcardTarget
-            this[0x0E] = Parameter.Type.FilePath
-            this[0x1D] = Parameter.Type.String
-            this[0x25] = Parameter.Type.Int3
-            this[0x26] = Parameter.Type.Float3
-            this[0x29] = Parameter.Type.Message
-            this[0x2B] = Parameter.Type.Text
-            this[0x2F] = Parameter.Type.Json
-            this[0x36] = Parameter.Type.Command
-        }
-        internal val parameterTypes = Registry<Parameter.Type>().apply {
-            this[0x01] = Parameter.Type.Integer
-            this[0x02] = Parameter.Type.Float
-            /*this[0x03] = Parameter.Type.Float*/
-            this[0x04] = Parameter.Type.Value
-            this[0x05] = Parameter.Type.WildcardInteger
-            this[0x06] = Parameter.Type.Operator
-            this[0x07] = Parameter.Type.Target
-            this[0x09] = /*Parameter.Type.Target*/Parameter.Type.WildcardTarget
-            this[0x10] = Parameter.Type.FilePath
-            this[0x20] = Parameter.Type.String
-            this[0x28] = Parameter.Type.Int3
-            this[0x29] = Parameter.Type.Float3
-            this[0x2C] = Parameter.Type.Message
-            this[0x2E] = Parameter.Type.Text
-            this[0x32] = Parameter.Type.Json
-            this[0x3C] = Parameter.Type.BlockState
-            this[0x3F] = Parameter.Type.Command
-        }
         internal const val parameterFlagValid = 1 shl 20
         internal const val parameterFlagEnumeration = 1 shl 21
         internal const val parameterFlagPostfix = 1 shl 24
@@ -210,7 +173,7 @@ object CommandsPacketReader : PacketReader {
                         it.postfix -> postfix = postfixes[it.index]
                         it.enumeration -> enumeration = enumerations[it.index]
                         it.softEnumeration -> enumeration = softEnumerations[it.index]
-                        else -> type = it.index/*if (version >= 419) CommandsPacket.parameterTypes[overloadStructure.index] else CommandsPacket.parameterTypesPre419[overloadStructure.index]*/
+                        else -> type = it.index/*if (version >= 419) Parameter.Type.registry[it.index] else Parameter.Type.registryPre419[it.index]*/
                     }
                     Parameter(it.name, it.optional, it.options, enumeration, postfix, type)
                 }

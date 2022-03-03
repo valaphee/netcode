@@ -153,7 +153,7 @@ class InventoryTransactionPacket(
                 if (version >= 431) buffer.writeStack(itemStackInHand) else buffer.writeStackPre431(itemStackInHand)
                 buffer.writeFloat3(fromPosition!!)
                 buffer.writeFloat3(clickPosition!!)
-                buffer.writeVarUInt(buffer.registrySet.blockStates.getId(blockStateKey!!))
+                buffer.writeVarUInt(buffer.registries.blockStates.getId(blockStateKey!!))
             }
             Type.ItemUseOnEntity -> {
                 buffer.writeVarULong(runtimeEntityId)
@@ -215,7 +215,7 @@ object InventoryTransactionPacketReader : PacketReader {
                 fromPosition = buffer.readFloat3()
                 clickPosition = buffer.readFloat3()
                 headPosition = null
-                blockStateKey = checkNotNull(buffer.registrySet.blockStates[buffer.readVarUInt()])
+                blockStateKey = checkNotNull(buffer.registries.blockStates[buffer.readVarUInt()])
             }
             InventoryTransactionPacket.Type.ItemUseOnEntity -> {
                 runtimeEntityId = buffer.readVarULong()

@@ -26,7 +26,7 @@ import com.valaphee.foundry.math.Int2
 import com.valaphee.foundry.math.Int3
 import com.valaphee.jackson.dataformat.nbt.NbtFactory
 import com.valaphee.netcode.mc.util.Direction
-import com.valaphee.netcode.mcje.RegistrySet
+import com.valaphee.netcode.mcje.util.Registries
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.util.minecraftKey
 import com.valaphee.netcode.util.ByteBufWrapper
@@ -41,7 +41,7 @@ import java.util.UUID
 class PacketBuffer(
     buffer: ByteBuf,
     val objectMapper: ObjectMapper = ObjectMapper(NbtFactory()),
-    val registrySet: RegistrySet
+    val registrySet: Registries
 ) : ByteBufWrapper(buffer) {
     inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
         val flagsValue = readByte().toInt()

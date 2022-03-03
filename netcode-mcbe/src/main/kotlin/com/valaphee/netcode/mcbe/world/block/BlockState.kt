@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe
+package com.valaphee.netcode.mcbe.world.block
 
-import com.valaphee.netcode.mc.util.Registry
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * @author Kevin Ludwig
  */
-class RegistrySet(
-    val blockStates: Registry<String>,
-    val items: Registry<String>
+class BlockState(
+    @get:JsonProperty("name") val blockKey: String,
+    @get:JsonProperty("states") val states: Map<String, Any>
 )

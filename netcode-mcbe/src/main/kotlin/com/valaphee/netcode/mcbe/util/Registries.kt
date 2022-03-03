@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcje
-
-import com.valaphee.netcode.mc.util.Registry
-import com.valaphee.netcode.mcje.util.NamespacedKey
+package com.valaphee.netcode.mcbe.util
 
 /**
  * @author Kevin Ludwig
  */
-class RegistrySet(
-    val sounds: Registry<NamespacedKey>,
-    val effects: Registry<NamespacedKey>,
-    val blocks: Registry<NamespacedKey>,
-    val enchantments: Registry<NamespacedKey>,
-    val entityTypes: Registry<NamespacedKey>,
-    val items: Registry<NamespacedKey>,
-    val particleTypes: Registry<NamespacedKey>,
-    val windowTypes: Registry<NamespacedKey>,
-    val recipeTypes: Registry<NamespacedKey>,
-    val blockStates: Registry<NamespacedKey>,
+class Registries(
+    val blockStates: Registry<String>,
+    val items: Registry<String>
 )

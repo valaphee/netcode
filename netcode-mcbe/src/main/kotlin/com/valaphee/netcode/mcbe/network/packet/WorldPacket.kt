@@ -361,7 +361,7 @@ object WorldPacketReader : PacketReader {
         val blocks: List<Block>?
         if (version >= 419) {
             blocksData = null
-            blocks = safeList(buffer.readVarUInt()) { Block(buffer.readString(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))) }
+            blocks = safeList(buffer.readVarUInt()) { Block(buffer.readString(), buffer.nbtObjectMapper.readValue<Block.Data>(ByteBufInputStream(buffer))) }
         } else {
             blocksData = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
             blocks = null

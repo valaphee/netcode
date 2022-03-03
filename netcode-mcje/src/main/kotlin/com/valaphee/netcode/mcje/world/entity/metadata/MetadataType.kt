@@ -20,7 +20,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mc.util.Direction
-import com.valaphee.netcode.mc.util.Registry
+import com.valaphee.netcode.mcje.util.Registry
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.world.item.ItemStack

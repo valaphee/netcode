@@ -17,7 +17,7 @@
 package com.valaphee.netcode.mcbe.network
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.valaphee.netcode.mcbe.RegistrySet
+import com.valaphee.netcode.mcbe.util.Registries
 import com.valaphee.netcode.mcbe.latestProtocolVersion
 import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsPacketReader
 import com.valaphee.netcode.mcbe.network.packet.AnvilDamagePacketReader
@@ -196,17 +196,17 @@ class PacketCodec(
 ) : ByteToMessageCodec<Packet>() {
     var jsonObjectMapper: ObjectMapper? = null
     var nbtObjectMapper: ObjectMapper? = null
-    var registrySet: RegistrySet? = null
+    var registries: Registries? = null
 
     public override fun encode(context: ChannelHandlerContext?, message: Packet, out: ByteBuf) {
-        PacketBuffer(out, false, jsonObjectMapper!!, nbtObjectMapper!!, registrySet!!).apply {
+        PacketBuffer(out, false, jsonObjectMapper!!, nbtObjectMapper!!, registries!!).apply {
             writeVarUInt(message.id and Packet.idMask or ((message.senderId and Packet.senderIdMask) shl Packet.senderIdShift) or ((message.clientId and Packet.clientIdMask) shl Packet.clientIdShift))
             message.write(this, version)
         }
     }
 
     public override fun decode(context: ChannelHandlerContext?, `in`: ByteBuf, out: MutableList<Any>) {
-        val buffer = PacketBuffer(`in`, false, jsonObjectMapper!!, nbtObjectMapper!!, registrySet!!)
+        val buffer = PacketBuffer(`in`, false, jsonObjectMapper!!, nbtObjectMapper!!, registries!!)
         val header = buffer.readVarUInt()
         val id = header and Packet.idMask
         (if (client) clientReaders else serverReaders)[id]?.let {
@@ -217,10 +217,10 @@ class PacketCodec(
                     clientId = (header shr Packet.clientIdShift) and Packet.clientIdMask
                 })
             } catch (ex: Exception) {
-                throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} problematic at 0x${buffer.readerIndex().toString(16).uppercase()}", ex, buffer).also { out.add(UnknownPacket(id, PacketBuffer(buffer.readerIndex(index).retainedSlice(), false, jsonObjectMapper!!, nbtObjectMapper!!, registrySet!!))) }
+                throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} problematic at 0x${buffer.readerIndex().toString(16).uppercase()}", ex, buffer).also { out.add(UnknownPacket(id, PacketBuffer(buffer.readerIndex(index).retainedSlice(), false, jsonObjectMapper!!, nbtObjectMapper!!, registries!!))) }
             }
             if (buffer.readableBytes() > 0) throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} not fully read", buffer) else Unit
-        } ?: out.add(UnknownPacket(id, PacketBuffer(buffer.retainedSlice(), false, jsonObjectMapper!!, nbtObjectMapper!!, registrySet!!)))
+        } ?: out.add(UnknownPacket(id, PacketBuffer(buffer.retainedSlice(), false, jsonObjectMapper!!, nbtObjectMapper!!, registries!!)))
     }
 
     companion object {

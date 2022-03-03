@@ -23,7 +23,7 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.jackson.dataformat.nbt.NbtFactory
-import com.valaphee.netcode.mcbe.RegistrySet
+import com.valaphee.netcode.mcbe.util.Registries
 import com.valaphee.netcode.util.ByteBufWrapper
 import io.netty.buffer.ByteBuf
 import io.netty.util.AsciiString
@@ -42,7 +42,7 @@ class PacketBuffer(
         enable(NbtFactory.Feature.LittleEndian)
         configure(NbtFactory.Feature.VarInt, !local)
     }).apply { registerKotlinModule() },
-    val registrySet: RegistrySet
+    val registries: Registries
 ) : ByteBufWrapper(buffer) {
     inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
         val flagsValue = readByte().toInt()

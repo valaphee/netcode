@@ -21,12 +21,12 @@ import java.io.IOException
 
 @Throws(IOException::class)
 fun JsonGenerator.writeArray(array: FloatArray, offset: Int, length: Int) {
-    this.writeStartArray(array, length)
+    writeStartArray(array, length)
     var i = offset
     val end = offset + length
     while (i < end) {
-        this.writeNumber(array[i])
+        writeNumber(array[i])
         ++i
     }
-    this.writeEndArray()
+    writeEndArray()
 }

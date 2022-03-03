@@ -17,7 +17,6 @@
 package com.valaphee.netcode.mcbe.world.item.crafting
 
 import com.valaphee.netcode.mcbe.pack.Data
-import com.valaphee.netcode.mcbe.world.item.crafting.Recipe
 
 /**
  * @author Kevin Ludwig

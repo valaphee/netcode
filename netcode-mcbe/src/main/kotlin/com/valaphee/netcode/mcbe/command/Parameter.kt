@@ -16,6 +16,8 @@
 
 package com.valaphee.netcode.mcbe.command
 
+import com.valaphee.netcode.mcbe.util.Registry
+
 /**
  * @author Kevin Ludwig
  */
@@ -47,7 +49,46 @@ data class Parameter(
         Text,
         Json,
         BlockState,
-        Command
+        Command;
+
+        companion object {
+            val registryPre419 = Registry<Type>().apply {
+                this[0x01] = Integer
+                this[0x02] = Float
+                this[0x03] = Value
+                this[0x04] = WildcardInteger
+                this[0x05] = Operator
+                this[0x06] = Target
+                this[0x07] = WildcardTarget
+                this[0x0E] = FilePath
+                this[0x1D] = String
+                this[0x25] = Int3
+                this[0x26] = Float3
+                this[0x29] = Message
+                this[0x2B] = Text
+                this[0x2F] = Json
+                this[0x36] = Command
+            }
+            val registry = Registry<Type>().apply {
+                this[0x01] = Integer
+                this[0x02] = Float
+                /*this[0x03] = Float*/
+                this[0x04] = Value
+                this[0x05] = WildcardInteger
+                this[0x06] = Operator
+                this[0x07] = Target
+                this[0x09] = /*Target*/WildcardTarget
+                this[0x10] = FilePath
+                this[0x20] = String
+                this[0x28] = Int3
+                this[0x29] = Float3
+                this[0x2C] = Message
+                this[0x2E] = Text
+                this[0x32] = Json
+                this[0x3C] = BlockState
+                this[0x3F] = Command
+            }
+        }
     }
 
     class Builder(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mc.util
+package com.valaphee.netcode.mcje.util
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
@@ -24,10 +24,11 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 /**
  * @author Kevin Ludwig
  */
-class Registry<T> : Cloneable {
-    var idToValue: Int2ObjectMap<T>
+
+open class Registry<T> : Cloneable {
+    var idToValue: Int2ObjectMap<T> = Int2ObjectOpenHashMap()
         private set
-    var valueToId: Object2IntMap<T>
+    var valueToId: Object2IntMap<T> = Object2IntOpenHashMap()
         private set
 
     var default: T
@@ -35,26 +36,6 @@ class Registry<T> : Cloneable {
         set(value) {
             idToValue.defaultReturnValue(value)
         }
-
-    constructor() {
-        idToValue = Int2ObjectOpenHashMap()
-        valueToId = Object2IntOpenHashMap()
-    }
-
-    constructor(initialCapacity: Int) {
-        idToValue = Int2ObjectOpenHashMap(initialCapacity)
-        valueToId = Object2IntOpenHashMap(initialCapacity)
-    }
-
-    constructor(noEntryValue: T) {
-        idToValue = Int2ObjectOpenHashMap<T>().apply { defaultReturnValue(noEntryValue) }
-        valueToId = Object2IntOpenHashMap()
-    }
-
-    constructor(initialCapacity: Int, noEntryValue: T) {
-        idToValue = Int2ObjectOpenHashMap<T>(initialCapacity).apply { defaultReturnValue(noEntryValue) }
-        valueToId = Object2IntOpenHashMap(initialCapacity)
-    }
 
     operator fun set(id: Int, value: T) {
         idToValue[id] = value

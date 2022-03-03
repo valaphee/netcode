@@ -17,11 +17,11 @@
 package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mc.util.Registry
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.util.Registry
 
 /**
  * @author Kevin Ludwig
