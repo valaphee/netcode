@@ -36,7 +36,7 @@ class ServerRecipeBookPacket(
     val blastingRecipeBookFilterActive: Boolean,
     val smokingRecipeBookOpen: Boolean,
     val smokingRecipeBookFilterActive: Boolean,
-    val recipeIds: List<NamespacedKey>?,
+    val recipeIds: List<NamespacedKey>,
     val availableRecipeIds: List<NamespacedKey>?
 ) : Packet<ServerPlayPacketHandler> {
     enum class Action {
@@ -53,13 +53,11 @@ class ServerRecipeBookPacket(
         buffer.writeBoolean(blastingRecipeBookFilterActive)
         buffer.writeBoolean(smokingRecipeBookOpen)
         buffer.writeBoolean(smokingRecipeBookFilterActive)
-        if (version >= 754) {
-            buffer.writeVarInt(recipeIds!!.size)
-            recipeIds.forEach { buffer.writeNamespacedKey(it) }
-            if (action == Action.Initialize) {
-                buffer.writeVarInt(availableRecipeIds!!.size)
-                availableRecipeIds.forEach { buffer.writeNamespacedKey(it) }
-            }
+        buffer.writeVarInt(recipeIds.size)
+        recipeIds.forEach { buffer.writeNamespacedKey(it) }
+        if (action == Action.Initialize) {
+            buffer.writeVarInt(availableRecipeIds!!.size)
+            availableRecipeIds.forEach { buffer.writeNamespacedKey(it) }
         }
     }
 
@@ -82,15 +80,8 @@ object ServerRecipeBookPacketReader : PacketReader {
         val blastingRecipeBookFilterActive = buffer.readBoolean()
         val smokingRecipeBookOpen = buffer.readBoolean()
         val smokingRecipeBookFilterActive = buffer.readBoolean()
-        val recipeIds: List<NamespacedKey>?
-        val availableRecipeIds: List<NamespacedKey>?
-        if (version >= 754) {
-            recipeIds = safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }
-            availableRecipeIds = if (action == ServerRecipeBookPacket.Action.Initialize) safeList(buffer.readVarInt()) { buffer.readNamespacedKey() } else null
-        } else {
-            recipeIds = null
-            availableRecipeIds = null
-        }
+        val recipeIds = safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }
+        val availableRecipeIds = if (action == ServerRecipeBookPacket.Action.Initialize) safeList(buffer.readVarInt()) { buffer.readNamespacedKey() } else null
         return ServerRecipeBookPacket(action, craftingRecipeBookOpen, craftingRecipeBookFilterActive, smeltingRecipeBookOpen, smeltingRecipeBookFilterActive, blastingRecipeBookOpen, blastingRecipeBookFilterActive, smokingRecipeBookOpen, smokingRecipeBookFilterActive, recipeIds, availableRecipeIds)
     }
 }

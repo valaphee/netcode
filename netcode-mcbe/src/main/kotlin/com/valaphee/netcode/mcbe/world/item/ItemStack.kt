@@ -31,15 +31,15 @@ import java.io.OutputStream
  * @author Kevin Ludwig
  */
 data class ItemStack(
-    @get:JsonProperty("item") val itemKey: String,
-    @get:JsonProperty("sub_id") var subId: Int = 0,
-    @get:JsonProperty("count") var count: Int = 1,
-    @get:JsonProperty("tag") var data: Map<String, Any>? = null,
-    @get:JsonIgnore var canPlaceOn: List<String>? = null,
-    @get:JsonIgnore var canDestroy: List<String>? = null,
-    @get:JsonIgnore var blockingTicks: Long = 0,
-    @get:JsonIgnore var netId: Int = 0,
-    @get:JsonProperty("block_state") var blockStateKey: String? = null
+    @JsonProperty("item") val itemKey: String,
+    @JsonProperty("data") var subId: Int = 0,
+    @JsonProperty("count") var count: Int = 1,
+    @JsonIgnore var _data: Map<String, Any>? = null,
+    @JsonIgnore var canPlaceOn: List<String>? = null,
+    @JsonIgnore var canDestroy: List<String>? = null,
+    @JsonIgnore var blockingTicks: Long = 0,
+    @JsonIgnore var netId: Int = 0,
+    @JsonIgnore var blockStateKey: String? = null
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -50,7 +50,7 @@ data class ItemStack(
         if (itemKey != other.itemKey) return false
         if (subId != other.subId) return false
         if (count != other.count) return false
-        if (data != other.data) return false
+        if (_data != other._data) return false
         /*if (blockStateKey != other.blockStateKey) return false*/
 
         return true
@@ -64,7 +64,7 @@ data class ItemStack(
 
         if (itemKey != other.itemKey) return false
         if (subId != other.subId) return false
-        if (data != other.data) return false
+        if (_data != other._data) return false
         /*if (blockStateKey != other.blockStateKey) return false*/
 
         return true
@@ -74,7 +74,7 @@ data class ItemStack(
         var result = itemKey.hashCode()
         result = 31 * result + subId
         result = 31 * result + count
-        result = 31 * result + (data?.hashCode() ?: 0)
+        result = 31 * result + (_data?.hashCode() ?: 0)
         return result
     }
 }
@@ -173,7 +173,7 @@ fun PacketBuffer.writeStackPre431(value: ItemStack?) {
     value?.let {
         writeVarInt(registries.items.getId(it.itemKey))
         writeVarInt(((if (it.subId == -1) Short.MAX_VALUE.toInt() else it.subId) shl 8) or (it.count and 0xFF))
-        it.data?.let {
+        it._data?.let {
             writeShortLE(-1)
             writeVarUInt(1)
             littleEndianVarIntNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
@@ -207,7 +207,7 @@ fun PacketBuffer.writeStack(value: ItemStack?) {
         writeVarInt(it.blockStateKey?.let { registries.blockStates.getId(it) } ?: 0)
         val dataIndex = buffer.writerIndex()
         writeZero(PacketBuffer.MaximumVarUIntLength)
-        it.data?.let {
+        it._data?.let {
             writeShortLE(-1)
             writeByte(1)
             littleEndianNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
@@ -233,7 +233,7 @@ fun PacketBuffer.writeStackInstance(value: ItemStack?) {
         writeVarInt(it.blockStateKey?.let { registries.blockStates.getId(it) } ?: 0)
         val dataIndex = buffer.writerIndex()
         writeZero(PacketBuffer.MaximumVarUIntLength)
-        it.data?.let {
+        it._data?.let {
             writeShortLE(-1)
             writeVarUInt(1)
             littleEndianNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)

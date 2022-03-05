@@ -36,7 +36,7 @@ class ServerBlockEventPacket(
         buffer.writeInt3UnsignedY(position)
         buffer.writeByte(data1)
         buffer.writeByte(data2)
-        buffer.writeVarInt(buffer.registrySet.blocks.getId(blockKey))
+        buffer.writeVarInt(buffer.registries.blocks.getId(blockKey))
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.blockEvent(this)
@@ -48,5 +48,5 @@ class ServerBlockEventPacket(
  * @author Kevin Ludwig
  */
 object ServerBlockEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEventPacket(buffer.readInt3UnsignedY(), buffer.readByte().toInt(), buffer.readByte().toInt(), checkNotNull(buffer.registrySet.blocks[buffer.readVarInt()]))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEventPacket(buffer.readInt3UnsignedY(), buffer.readByte().toInt(), buffer.readByte().toInt(), checkNotNull(buffer.registries.blocks[buffer.readVarInt()]))
 }

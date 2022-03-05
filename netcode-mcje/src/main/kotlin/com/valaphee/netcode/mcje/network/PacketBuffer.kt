@@ -24,10 +24,9 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int2
 import com.valaphee.foundry.math.Int3
-import com.valaphee.jackson.dataformat.nbt.NbtFactory
 import com.valaphee.netcode.mc.util.Direction
-import com.valaphee.netcode.mcje.util.Registries
 import com.valaphee.netcode.mcje.util.NamespacedKey
+import com.valaphee.netcode.mcje.util.Registries
 import com.valaphee.netcode.mcje.util.minecraftKey
 import com.valaphee.netcode.util.ByteBufWrapper
 import io.netty.buffer.ByteBuf
@@ -40,9 +39,15 @@ import java.util.UUID
  */
 class PacketBuffer(
     buffer: ByteBuf,
-    val objectMapper: ObjectMapper = ObjectMapper(NbtFactory()),
-    val registrySet: Registries
+    val nbtObjectMapper: ObjectMapper,
+    registries: Registries?
 ) : ByteBufWrapper(buffer) {
+    lateinit var registries: Registries
+
+    init {
+        registries?.let { this.registries = it }
+    }
+
     inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
         val flagsValue = readByte().toInt()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1 shl it.ordinal)) != 0 }.forEach { add(it) } }

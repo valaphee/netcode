@@ -17,12 +17,9 @@
 package com.valaphee.netcode.mcbe.network
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
-import com.valaphee.jackson.dataformat.nbt.NbtFactory
 import com.valaphee.netcode.mcbe.util.Registries
 import com.valaphee.netcode.util.ByteBufWrapper
 import io.netty.buffer.ByteBuf
@@ -36,14 +33,16 @@ import java.util.UUID
  */
 class PacketBuffer(
     buffer: ByteBuf,
-    val local: Boolean = false,
-    val jsonObjectMapper: ObjectMapper = jacksonObjectMapper(),
-    val nbtObjectMapper: ObjectMapper = ObjectMapper(NbtFactory().apply {
-        enable(NbtFactory.Feature.LittleEndian)
-        configure(NbtFactory.Feature.VarInt, !local)
-    }).apply { registerKotlinModule() },
-    val registries: Registries
+    val jsonObjectMapper: ObjectMapper,
+    val nbtObjectMapper: ObjectMapper,
+    registries: Registries? = null
 ) : ByteBufWrapper(buffer) {
+    lateinit var registries: Registries
+
+    init {
+        registries?.let { this.registries = it }
+    }
+
     inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
         val flagsValue = readByte().toInt()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1 shl it.ordinal)) != 0 }.forEach { add(it) } }
@@ -136,13 +135,13 @@ class PacketBuffer(
 
     fun <T : Enum<T>> writeVarUIntFlags(flags: Set<T>) = writeVarUInt(flags.map { 1 shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
 
-    fun readVarInt() = if (local) readIntLE() else {
+    fun readVarInt(): Int {
         val value = readVarUInt()
-        (value ushr 1) xor -(value and 1)
+        return (value ushr 1) xor -(value and 1)
     }
 
     fun writeVarInt(value: Int) {
-        if (local) writeIntLE(value) else writeVarUInt((value shl 1) xor (value shr 31))
+        writeVarUInt((value shl 1) xor (value shr 31))
     }
 
     fun readVarULong(): Long {

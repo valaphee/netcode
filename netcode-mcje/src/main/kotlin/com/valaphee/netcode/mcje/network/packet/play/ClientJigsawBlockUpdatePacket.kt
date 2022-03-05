@@ -29,28 +29,28 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
 class ClientJigsawBlockUpdatePacket(
     val position: Int3,
     val name: NamespacedKey,
-    val target: NamespacedKey?,
+    val target: NamespacedKey,
     val pool: NamespacedKey,
     val finalState: String,
-    val jointType: String?
+    val jointType: String
 ) : Packet<ClientPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
         buffer.writeNamespacedKey(name)
-        if (version >= 754) buffer.writeNamespacedKey(target!!)
+        buffer.writeNamespacedKey(target)
         buffer.writeNamespacedKey(pool)
         buffer.writeString(finalState)
-        if (version >= 754) buffer.writeString(jointType!!)
+        buffer.writeString(jointType)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.jigsawBlockUpdate(this)
 
-    override fun toString() = "ClientJigsawBlockUpdatePacket(position=$position, name=$name, target=$target, pool=$pool, finalState='$finalState', jointType=$jointType)"
+    override fun toString() = "ClientJigsawBlockUpdatePacket(position=$position, name=$name, target=$target, pool=$pool, finalState='$finalState', jointType='$jointType')"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientJigsawBlockUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientJigsawBlockUpdatePacket(buffer.readInt3UnsignedY(), buffer.readNamespacedKey(), if (version >= 754) buffer.readNamespacedKey() else null, buffer.readNamespacedKey(), buffer.readString(), if (version >= 754) buffer.readString() else null)
+    override fun read(buffer: PacketBuffer, version: Int) = ClientJigsawBlockUpdatePacket(buffer.readInt3UnsignedY(), buffer.readNamespacedKey(), buffer.readNamespacedKey(), buffer.readNamespacedKey(), buffer.readString(), buffer.readString())
 }

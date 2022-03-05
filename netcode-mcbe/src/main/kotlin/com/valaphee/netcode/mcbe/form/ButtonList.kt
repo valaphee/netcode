@@ -23,8 +23,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
  */
 class ButtonList(
     title: String,
-    @get:JsonProperty("content") val content: String,
-    @get:JsonProperty("buttons") val buttons: List<Button>
+    @JsonProperty("content") val content: String,
+    @JsonProperty("buttons") val buttons: List<Button>
 ) : Form<String>(title) {
     override fun getResponse(response: Any?) = if (response as Int >= buttons.size) null else buttons[response].text
 
@@ -52,5 +52,5 @@ class ButtonList(
 }
 
 data class Button(
-    @get:JsonProperty("text") val text: String
+    @JsonProperty("text") val text: String
 )

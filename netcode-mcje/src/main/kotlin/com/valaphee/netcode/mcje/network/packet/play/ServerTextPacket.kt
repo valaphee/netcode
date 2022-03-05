@@ -30,7 +30,7 @@ import java.util.UUID
 class ServerTextPacket(
     val message: Component,
     val type: Type,
-    val userId: UUID = UserIdNone
+    val userId: UUID = UUID(0, 0)
 ) : Packet<ServerPlayPacketHandler> {
     enum class Type {
         Chat, System, Tip
@@ -39,21 +39,17 @@ class ServerTextPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(GsonComponentSerializer.gson().serialize(message))
         buffer.writeByte(type.ordinal)
-        if (version >= 754) buffer.writeUuid(userId)
+        buffer.writeUuid(userId)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.text(this)
 
     override fun toString() = "ServerTextPacket(message=$message, type=$type, userId=$userId)"
-
-    companion object {
-        val UserIdNone = UUID(0, 0)
-    }
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerTextPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTextPacket(GsonComponentSerializer.gson().deserialize(buffer.readString()), ServerTextPacket.Type.values()[buffer.readByte().toInt()], if (version >= 754) buffer.readUuid() else ServerTextPacket.UserIdNone)
+    override fun read(buffer: PacketBuffer, version: Int) = ServerTextPacket(GsonComponentSerializer.gson().deserialize(buffer.readString()), ServerTextPacket.Type.values()[buffer.readByte().toInt()], buffer.readUuid())
 }

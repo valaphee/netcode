@@ -30,7 +30,7 @@ class ServerItemCooldownPacket(
     val cooldown: Int
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(buffer.registrySet.items.getId(itemKey))
+        buffer.writeVarInt(buffer.registries.items.getId(itemKey))
         buffer.writeVarInt(cooldown)
     }
 
@@ -43,5 +43,5 @@ class ServerItemCooldownPacket(
  * @author Kevin Ludwig
  */
 object ServerItemCooldownPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerItemCooldownPacket(checkNotNull(buffer.registrySet.items[buffer.readVarInt()]), buffer.readVarInt())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerItemCooldownPacket(checkNotNull(buffer.registries.items[buffer.readVarInt()]), buffer.readVarInt())
 }

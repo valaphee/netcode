@@ -38,7 +38,7 @@ class ServerEntityEffectApplyPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        buffer.writeByte(buffer.registrySet.effects.getId(effect))
+        buffer.writeByte(buffer.registries.effects.getId(effect))
         buffer.writeByte(amplifier)
         buffer.writeVarInt(duration)
         buffer.writeByteFlags(flags)
@@ -53,5 +53,5 @@ class ServerEntityEffectApplyPacket(
  * @author Kevin Ludwig
  */
 object ServerEntityEffectApplyPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectApplyPacket(buffer.readVarInt(), buffer.registrySet.effects[buffer.readUnsignedByte().toInt()]!!, buffer.readUnsignedByte().toInt(), buffer.readVarInt(), buffer.readByteFlags())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectApplyPacket(buffer.readVarInt(), buffer.registries.effects[buffer.readUnsignedByte().toInt()]!!, buffer.readUnsignedByte().toInt(), buffer.readVarInt(), buffer.readByteFlags())
 }

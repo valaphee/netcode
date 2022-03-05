@@ -16,9 +16,8 @@
 
 package com.valaphee.netcode.mcbe.network
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.valaphee.netcode.mcbe.util.Registries
 import com.valaphee.netcode.mcbe.latestProtocolVersion
+import com.valaphee.netcode.mcbe.util.Registries
 import com.valaphee.netcode.util.lazyToString
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
@@ -94,14 +93,9 @@ class Connection(
             context.pipeline()[PacketCodec::class.java].version = value
             field = value
         }
-    var objectMapper: ObjectMapper? = null
-        set(value) {
-            context.pipeline()[PacketCodec::class.java].jsonObjectMapper = value
-            field = value
-        }
     var registries: Registries? = null
         set(value) {
-            context.pipeline()[PacketCodec::class.java].registries = value
+            context.pipeline()[PacketCodec::class.java].registries = value!!
             field = value
         }
 

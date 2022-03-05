@@ -27,34 +27,34 @@ import com.valaphee.netcode.mcbe.pack.Data
  */
 @JsonTypeName("minecraft:block")
 class Block : Data {
-    @get:JsonProperty("description") val description: Description
-    @get:JsonProperty("events") val events: Map<String, Map<String, Any>>?
-    @get:JsonProperty("components") val components: Map<String, Any>?
-    @get:JsonProperty("permutations") val permutations: List<Permutation>?
-    @get:JsonIgnore val states: List<BlockState>
-    @get:JsonIgnore val data: Data
-
     class Description(
-        @get:JsonProperty("identifier") val key: String,
-        @get:JsonProperty("properties") val properties: Map<String, List<Any>>? = null
+        @JsonProperty("identifier") val key: String,
+        @JsonProperty("properties") val properties: Map<String, List<Any>>? = null
     )
 
     class Permutation(
-        @get:JsonProperty("condition") val condition: String,
-        @get:JsonProperty("components") val components: Map<String, Any>
+        @JsonProperty("condition") val condition: String,
+        @JsonProperty("components") val components: Map<String, Any>
     )
 
     class Data(
-        @get:JsonProperty("molangVersion") val molangVersion: Int,
-        @get:JsonProperty("properties") val properties: List<Property>? = null,
-        @get:JsonProperty("components") val components: Map<String, Map<String, Any>>? = null,
-        @get:JsonProperty("permutations") val permutations: List<Permutation>? = null
+        @JsonProperty("molangVersion") val molangVersion: Int,
+        @JsonProperty("properties") val properties: List<Property>? = null,
+        @JsonProperty("components") val components: Map<String, Map<String, Any>>? = null,
+        @JsonProperty("permutations") val permutations: List<Permutation>? = null
     ) {
         class Property(
-            @get:JsonProperty("name") val name: String,
-            @get:JsonProperty("enum") val enum: List<Any>
+            @JsonProperty("name") val name: String,
+            @JsonProperty("enum") val enum: List<Any>
         )
     }
+
+    @JsonProperty("description") val description: Description
+    @JsonProperty("events") val events: Map<String, Map<String, Any>>?
+    @JsonProperty("components") val components: Map<String, Any>?
+    @JsonProperty("permutations") val permutations: List<Permutation>?
+    @JsonIgnore val states: List<BlockState>
+    @JsonIgnore val data: Data
 
     constructor(description: Description, events: Map<String, Map<String, Any>>? = null, components: Map<String, Any>? = null, permutations: List<Permutation>? = null) {
         this.description = description

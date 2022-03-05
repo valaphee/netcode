@@ -29,7 +29,7 @@ class ClientItemUsePacket(
     val hand: Hand
 ) : Packet<ClientPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        if (version >= 498) buffer.writeVarInt(hand.ordinal)
+        buffer.writeVarInt(hand.ordinal)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.itemUse(this)
@@ -41,5 +41,5 @@ class ClientItemUsePacket(
  * @author Kevin Ludwig
  */
 object ClientItemUsePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientItemUsePacket(if (version >= 498) Hand.values()[buffer.readVarInt()] else Hand.Main)
+    override fun read(buffer: PacketBuffer, version: Int) = ClientItemUsePacket(Hand.values()[buffer.readVarInt()])
 }

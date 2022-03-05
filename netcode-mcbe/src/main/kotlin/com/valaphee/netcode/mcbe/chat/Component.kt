@@ -39,40 +39,22 @@ sealed class Component
  * @author Kevin Ludwig
  */
 data class TextComponent(
-    @get:JsonProperty("text") var text: String
+    @JsonProperty("text") var text: String
 ) : Component()
 
 /**
  * @author Kevin Ludwig
  */
 data class TranslatableComponent(
-    @get:JsonProperty("translate") var name: String,
-    @get:JsonProperty("with") var arguments: Array<Component> = emptyArray()
-) : Component() {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as TranslatableComponent
-
-        if (name != other.name) return false
-        if (!arguments.contentEquals(other.arguments)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + arguments.contentHashCode()
-        return result
-    }
-}
+    @JsonProperty("translate") var name: String,
+    @JsonProperty("with") var arguments: List<Component> = emptyList()
+) : Component()
 
 /**
  * @author Kevin Ludwig
  */
 data class ScoreComponent(
-    @get:JsonProperty("name") var name: String,
-    @get:JsonProperty("objective") var objective: String,
-    @get:JsonProperty("value") var value: String
+    @JsonProperty("name") var name: String,
+    @JsonProperty("objective") var objective: String,
+    @JsonProperty("value") var value: String
 ) : Component()

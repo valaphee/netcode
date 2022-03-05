@@ -55,8 +55,8 @@ class ServerWorldPacket(
         buffer.writeByte(previousGameMode.ordinal)
         buffer.writeVarInt(worldNames.size)
         worldNames.forEach { buffer.writeNamespacedKey(it) }
-        buffer.objectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimensionCodec)
-        buffer.objectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension)
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimensionCodec)
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension)
         buffer.writeNamespacedKey(worldName)
         buffer.writeLong(hashedSeed)
         buffer.writeVarInt(maximumPlayers)
@@ -76,5 +76,5 @@ class ServerWorldPacket(
  * @author Kevin Ludwig
  */
 object ServerWorldPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldPacket(buffer.readInt(), buffer.readBoolean(), GameMode.byIdOrNull(buffer.readByte().toInt())!!, GameMode.byIdOrNull(buffer.readByte().toInt())!!, safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }, buffer.objectMapper.readValue(ByteBufInputStream(buffer)), buffer.objectMapper.readValue(ByteBufInputStream(buffer)), buffer.readNamespacedKey(), buffer.readLong(), buffer.readVarInt(), buffer.readVarInt(), !buffer.readBoolean(), !buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldPacket(buffer.readInt(), buffer.readBoolean(), GameMode.byIdOrNull(buffer.readByte().toInt())!!, GameMode.byIdOrNull(buffer.readByte().toInt())!!, safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }, buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.readNamespacedKey(), buffer.readLong(), buffer.readVarInt(), buffer.readVarInt(), !buffer.readBoolean(), !buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
 }

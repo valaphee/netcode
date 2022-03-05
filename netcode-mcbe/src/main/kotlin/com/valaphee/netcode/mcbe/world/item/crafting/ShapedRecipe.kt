@@ -16,35 +16,41 @@
 
 package com.valaphee.netcode.mcbe.world.item.crafting
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.valaphee.netcode.mcbe.world.item.ItemStack
+import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
 @JsonTypeName("minecraft:recipe_shaped")
-class ShapedRecipeData(
-    @get:JsonProperty("description") val description: Description,
-    @get:JsonProperty("tags") val tags: List<String>,
-    @get:JsonProperty("key") val key: Map<Char, ItemStack>,
-    @get:JsonProperty("pattern") val pattern: List<String>,
-    @get:JsonProperty("priority") val priority: Int = 0,
-    @get:JsonProperty("result") val result: ItemStack
-) : RecipeData {
+data class ShapedRecipe(
+    @JsonProperty("description") val description: Description,
+    @JsonProperty("tags") val tags: List<String>,
+    @JsonProperty("key") val key: Map<Char, ItemStack>,
+    @JsonProperty("pattern") val pattern: List<String>,
+    @JsonProperty("priority") val priority: Int = 0,
+    @JsonProperty("result") val result: ItemStack,
+    @JsonIgnore val id: UUID = UUID.randomUUID(),
+    @JsonIgnore var netId: Int = 0
+) : Recipe {
     class Description(
-        @get:JsonProperty("identifier") val key: String
+        @JsonProperty("identifier") val key: String
     )
 
-    override fun toRecipe(netId: Int): Recipe {
-        val height = pattern.size
+    val width: Int
+    val height = pattern.size
+    val input: Array<ItemStack?>
+
+    init {
         var width = 0
         pattern.forEach {
             val patternRowWidth = it.length
             if (patternRowWidth > width) width = patternRowWidth
         }
-        val inputs = arrayOfNulls<ItemStack?>(width * height)
-        pattern.forEachIndexed { i, patternRow -> patternRow.forEachIndexed { j, patternColumn -> inputs[i * width + j] = key[patternColumn] } }
-        return shapedRecipe(Recipe.Type.Shaped, description.key, width, height, inputs.toList(), listOf(result), tags.first(), priority, netId)
+        this.width = width
+        input = arrayOfNulls<ItemStack?>(width * height).apply { pattern.forEachIndexed { i, patternRow -> patternRow.forEachIndexed { j, patternColumn -> this[i * width + j] = key[patternColumn] } } }
     }
 }

@@ -31,7 +31,7 @@ class ServerEntityEffectRevokePacket(
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        buffer.writeByte(buffer.registrySet.effects.getId(effect))
+        buffer.writeByte(buffer.registries.effects.getId(effect))
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityEffectRevoke(this)
@@ -43,5 +43,5 @@ class ServerEntityEffectRevokePacket(
  * @author Kevin Ludwig
  */
 object ServerEntityEffectRevokePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectRevokePacket(buffer.readVarInt(), buffer.registrySet.effects[buffer.readByte().toInt()]!!)
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectRevokePacket(buffer.readVarInt(), buffer.registries.effects[buffer.readByte().toInt()]!!)
 }

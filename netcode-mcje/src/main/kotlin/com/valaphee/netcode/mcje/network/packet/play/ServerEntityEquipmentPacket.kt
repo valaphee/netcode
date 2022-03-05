@@ -42,14 +42,8 @@ class ServerEntityEquipmentPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        if (version >= 754) {
-            equipments.forEachIndexed { i, equipment ->
-                buffer.writeByte(equipment.slot.ordinal or (if (i == equipments.size - 1) 0 else 0b1000_0000))
-                buffer.writeStack(equipment.itemStack)
-            }
-        } else {
-            val equipment = equipments.first()
-            if (version >= 498) buffer.writeVarInt(equipment.slot.ordinal) else buffer.writeShort(equipment.slot.ordinal)
+        equipments.forEachIndexed { i, equipment ->
+            buffer.writeByte(equipment.slot.ordinal or (if (i == equipments.size - 1) 0 else 0b1000_0000))
             buffer.writeStack(equipment.itemStack)
         }
     }
@@ -63,11 +57,11 @@ class ServerEntityEquipmentPacket(
  * @author Kevin Ludwig
  */
 object ServerEntityEquipmentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEquipmentPacket(buffer.readVarInt(), if (version >= 754) ArrayList<ServerEntityEquipmentPacket.Equipment>().apply {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEquipmentPacket(buffer.readVarInt(), ArrayList<ServerEntityEquipmentPacket.Equipment>().apply {
         var slot: Int
         do {
             slot = buffer.readByte().toInt()
             add(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[slot and 0b0111_1111], buffer.readStack()))
         } while (slot and 0b1000_0000 != 0)
-    } else listOf(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[if (version >= 498) buffer.readVarInt() else buffer.readUnsignedShort()], buffer.readStack())))
+    })
 }

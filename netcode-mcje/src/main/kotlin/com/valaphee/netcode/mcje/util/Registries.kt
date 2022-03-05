@@ -26,15 +26,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
  * @author Kevin Ludwig
  */
 class Registries(
-    @get:JsonProperty("minecraft:sound_event") val sounds: Registry,
-    @get:JsonProperty("minecraft:mob_effect") val effects: Registry,
-    @get:JsonProperty("minecraft:block") val blocks: Registry,
-    @get:JsonProperty("minecraft:enchantment") val enchantments: Registry,
-    @get:JsonProperty("minecraft:entity_type") val entityTypes: Registry,
-    @get:JsonProperty("minecraft:item") val items: Registry,
-    @get:JsonProperty("minecraft:particle_type") val particleTypes: Registry,
-    @get:JsonProperty("minecraft:menu") val windowTypes: Registry,
-    @get:JsonProperty("minecraft:recipe_serializer") val recipeTypes: Registry,
+    @JsonProperty("minecraft:sound_event") val sounds: Registry,
+    @JsonProperty("minecraft:mob_effect") val effects: Registry,
+    @JsonProperty("minecraft:block") val blocks: Registry,
+    @JsonProperty("minecraft:enchantment") val enchantments: Registry,
+    @JsonProperty("minecraft:entity_type") val entityTypes: Registry,
+    @JsonProperty("minecraft:item") val items: Registry,
+    @JsonProperty("minecraft:particle_type") val particleTypes: Registry,
+    @JsonProperty("minecraft:menu") val windowTypes: Registry,
+    @JsonProperty("minecraft:recipe_serializer") val recipeTypes: Registry,
 ) {
     lateinit var blockStates: Registry
 

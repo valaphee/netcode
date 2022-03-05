@@ -24,6 +24,9 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.world.block.Block
+import com.valaphee.netcode.mcbe.world.item.crafting.FurnaceRecipe
+import com.valaphee.netcode.mcbe.world.item.crafting.ShapedRecipe
+import com.valaphee.netcode.mcbe.world.item.crafting.ShapelessRecipe
 import java.io.File
 
 /**
@@ -34,7 +37,10 @@ import java.io.File
     include = JsonTypeInfo.As.WRAPPER_OBJECT
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(Block::class)
+    JsonSubTypes.Type(Block::class),
+    JsonSubTypes.Type(ShapedRecipe::class),
+    JsonSubTypes.Type(ShapelessRecipe::class),
+    JsonSubTypes.Type(FurnaceRecipe::class)
 )
 interface Data
 

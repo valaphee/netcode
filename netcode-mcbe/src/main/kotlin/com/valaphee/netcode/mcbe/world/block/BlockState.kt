@@ -22,6 +22,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @author Kevin Ludwig
  */
 class BlockState(
-    @get:JsonProperty("name") val blockKey: String,
-    @get:JsonProperty("states") val states: Map<String, Any>
+    @JsonProperty("name") val blockKey: String,
+    @JsonProperty("states") val states: Map<String, Any>
 )

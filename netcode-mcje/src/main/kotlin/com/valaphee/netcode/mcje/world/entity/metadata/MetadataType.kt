@@ -158,19 +158,19 @@ interface MetadataType<T> {
         val OptionalBlockState = object : MetadataType<NamespacedKey?> {
             override fun read(buffer: PacketBuffer): NamespacedKey? {
                 val blockStateId = buffer.readVarInt()
-                return if (blockStateId == 0) null else buffer.registrySet.blockStates[blockStateId]
+                return if (blockStateId == 0) null else buffer.registries.blockStates[blockStateId]
             }
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                value?.let { buffer.writeVarInt(buffer.registrySet.blockStates.getId(it as NamespacedKey)) } ?: buffer.writeVarInt(0)
+                value?.let { buffer.writeVarInt(buffer.registries.blockStates.getId(it as NamespacedKey)) } ?: buffer.writeVarInt(0)
             }
         }
 
         val Nbt = object : MetadataType<Any?> {
-            override fun read(buffer: PacketBuffer) = buffer.objectMapper.readValue<Any?>(ByteBufInputStream(buffer))
+            override fun read(buffer: PacketBuffer) = buffer.nbtObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.objectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, value)
+                buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, value)
             }
         }
 

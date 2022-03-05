@@ -34,7 +34,7 @@ class ServerEntitySoundPacket(
     val pitch: Float
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(buffer.registrySet.sounds.getId(soundKey))
+        buffer.writeVarInt(buffer.registries.sounds.getId(soundKey))
         buffer.writeVarInt(category.ordinal)
         buffer.writeVarInt(entityId)
         buffer.writeFloat(volume)
@@ -50,5 +50,5 @@ class ServerEntitySoundPacket(
  * @author Kevin Ludwig
  */
 object ServerEntitySoundPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntitySoundPacket(checkNotNull(buffer.registrySet.sounds[buffer.readVarInt()]), SoundCategory.values()[buffer.readVarInt()], buffer.readVarInt(), buffer.readFloat(), buffer.readFloat())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntitySoundPacket(checkNotNull(buffer.registries.sounds[buffer.readVarInt()]), SoundCategory.values()[buffer.readVarInt()], buffer.readVarInt(), buffer.readFloat(), buffer.readFloat())
 }

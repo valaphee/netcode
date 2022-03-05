@@ -16,11 +16,9 @@
 
 package com.valaphee.netcode.mcbe.world.entity.player
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonUnwrapped
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.util.safeList
 
@@ -28,32 +26,32 @@ import com.valaphee.netcode.util.safeList
  * @author Kevin Ludwig
  */
 data class Appearance constructor(
-    @get:JsonProperty("SkinId") val skinId: String,
-    @get:JsonProperty("PlayFabId") val playFabId: String,
-    @get:JsonProperty("SkinResourcePatch") val skinResourcePatch: Map<String, Any>,
-    @get:JsonUnwrapped(prefix = "Skin") val skinImage: AppearanceImage,
-    @get:JsonProperty("AnimatedImageData") val animations: List<Animation>,
-    @get:JsonUnwrapped(prefix = "Cape") val capeImage: AppearanceImage,
-    @get:JsonProperty("SkinGeometryData") val geometryData: String,
-    @get:JsonProperty("SkinGeometryDataEngineVersion") val geometryDataEngineVersion: String,
-    @get:JsonProperty("SkinAnimationData") val animationData: String,
-    @get:JsonProperty("CapeId") val capeId: String,
-    @get:JsonIgnore var id: String,
-    @get:JsonProperty("ArmSize") val armSize: String,
-    @get:JsonProperty("SkinColor") val skinColor: String,
-    @get:JsonProperty("PersonaPieces") val personaPieces: List<PersonaPiece>,
-    @get:JsonProperty("PieceTintColors") val personaPieceTints: List<PersonaPieceTint>,
-    @get:JsonProperty("PremiumSkin") val premiumSkin: Boolean,
-    @get:JsonProperty("PersonaSkin") val personaSkin: Boolean,
-    @get:JsonProperty("CapeOnClassicSkin") val capeOnClassicSkin: Boolean,
-    @get:JsonIgnore val primaryUser: Boolean,
-    @get:JsonIgnore var trusted: Boolean,
+    val skinId: String,
+    val playFabId: String,
+    val skinResourcePatch: String,
+    val skinImage: AppearanceImage,
+    val animations: List<Animation>,
+    val capeImage: AppearanceImage,
+    val geometryData: String,
+    val geometryDataEngineVersion: String,
+    val animationData: String,
+    val capeId: String,
+    var id: String?,
+    val armSize: String,
+    val skinColor: String,
+    val personaPieces: List<PersonaPiece>,
+    val personaPieceTints: List<PersonaPieceTint>,
+    val premiumSkin: Boolean,
+    val personaSkin: Boolean,
+    val capeOnClassicSkin: Boolean,
+    val primaryUser: Boolean,
+    var trusted: Boolean
 ) {
     data class Animation constructor(
-        @get:JsonUnwrapped val image: AppearanceImage,
-        @get:JsonProperty("Type") val type: Type,
-        @get:JsonProperty("Frames") val frames: Float,
-        @get:JsonProperty("AnimationExpression") val expression: Expression = Expression.Linear
+        val image: AppearanceImage,
+        val type: Type,
+        val frames: Float,
+        val expression: Expression = Expression.Linear
     ) {
         @JsonFormat(shape = JsonFormat.Shape.NUMBER)
         enum class Type {
@@ -64,25 +62,66 @@ data class Appearance constructor(
         enum class Expression {
             Linear, Blinking
         }
+
+        companion object {
+            @JvmStatic
+            @JsonCreator
+            fun jsonCreator(
+                @JsonProperty("ImageWidth") imageWidth: Int?,
+                @JsonProperty("ImageHeight") imageHeight: Int?,
+                @JsonProperty("Image") imageData: ByteArray,
+                @JsonProperty("Type") type: Type,
+                @JsonProperty("Frames") frames: Float,
+                @JsonProperty("AnimationExpression") expression: Expression = Expression.Linear
+            ) = Animation(AppearanceImage(imageWidth, imageHeight, imageData), type, frames, expression)
+        }
     }
 
     data class PersonaPiece(
-        @get:JsonProperty("PieceId") val id: String,
-        @get:JsonProperty("PieceType") val type: String,
-        @get:JsonProperty("PackId") val packId: String,
-        @get:JsonProperty("IsDefault") val default: Boolean,
-        @get:JsonProperty("ProductId") val productId: String
+        @JsonProperty("PieceId") val id: String,
+        @JsonProperty("PieceType") val type: String,
+        @JsonProperty("PackId") val packId: String,
+        @JsonProperty("IsDefault") val default: Boolean,
+        @JsonProperty("ProductId") val productId: String
     )
 
     data class PersonaPieceTint(
-        @get:JsonProperty("PieceType") val type: String,
-        @get:JsonProperty("Colors") val colors: List<String>
+        @JsonProperty("PieceType") val type: String,
+        @JsonProperty("Colors") val colors: List<String>
     )
+
+    companion object {
+        @JvmStatic
+        @JsonCreator
+        fun jsonCreator(
+            @JsonProperty("SkinId") skinId: String,
+            @JsonProperty("PlayFabId") playFabId: String,
+            @JsonProperty("SkinResourcePatch") @JsonFormat(shape = JsonFormat.Shape.BINARY) skinResourcePatch: String,
+            @JsonProperty("SkinImageWidth") skinWidth: Int?,
+            @JsonProperty("SkinImageHeight") skinHeight: Int?,
+            @JsonProperty("SkinData") skinData: ByteArray,
+            @JsonProperty("AnimatedImageData") animations: List<Animation>,
+            @JsonProperty("CapeImageWidth") capeWidth: Int?,
+            @JsonProperty("CapeImageHeight") capeHeight: Int?,
+            @JsonProperty("CapeData") capeData: ByteArray,
+            @JsonProperty("SkinGeometryData") geometryData: String,
+            @JsonProperty("SkinGeometryDataEngineVersion") geometryDataEngineVersion: String,
+            @JsonProperty("SkinAnimationData") animationData: String,
+            @JsonProperty("CapeId") capeId: String,
+            @JsonProperty("ArmSize") armSize: String,
+            @JsonProperty("SkinColor") skinColor: String,
+            @JsonProperty("PersonaPieces") personaPieces: List<PersonaPiece>,
+            @JsonProperty("PieceTintColors") personaPieceTints: List<PersonaPieceTint>,
+            @JsonProperty("PremiumSkin") premiumSkin: Boolean,
+            @JsonProperty("PersonaSkin") personaSkin: Boolean,
+            @JsonProperty("CapeOnClassicSkin") capeOnClassicSkin: Boolean
+        ) = Appearance(skinId, playFabId, skinResourcePatch, AppearanceImage(skinWidth, skinHeight, skinData), animations, AppearanceImage(capeWidth, capeHeight, capeData), geometryData, geometryDataEngineVersion, animationData, capeId, null, armSize, skinColor, personaPieces, personaPieceTints, premiumSkin, personaSkin, capeOnClassicSkin, false, false)
+    }
 }
 
 fun PacketBuffer.readAppearancePre390(): Appearance {
     val skinId = readString()
-    val skinResourcePatch = jsonObjectMapper.readValue<Map<String, Any>>(readString())
+    val skinResourcePatch = readString()
     val skinImage = readAppearanceImage()
     val animations = mutableListOf<Appearance.Animation>().apply { repeat(readIntLE()) { add(Appearance.Animation(readAppearanceImage(), Appearance.Animation.Type.values()[readIntLE()], buffer.readFloatLE())) } }
     val capeImage = readAppearanceImage()
@@ -98,7 +137,7 @@ fun PacketBuffer.readAppearancePre390(): Appearance {
 
 fun PacketBuffer.readAppearancePre419(): Appearance {
     val skinId = readString()
-    val skinResourcePatch = jsonObjectMapper.readValue<Map<String, Any>>(readString())
+    val skinResourcePatch = readString()
     val skinImage = readAppearanceImage()
     val animations = mutableListOf<Appearance.Animation>().apply { repeat(readIntLE()) { add(Appearance.Animation(readAppearanceImage(), Appearance.Animation.Type.values()[buffer.readIntLE()], buffer.readFloatLE())) } }
     val capeImage = readAppearanceImage()
@@ -118,7 +157,7 @@ fun PacketBuffer.readAppearancePre419(): Appearance {
 
 fun PacketBuffer.readAppearancePre428(): Appearance {
     val skinId = readString()
-    val skinResourcePatch = jsonObjectMapper.readValue<Map<String, Any>>(readString())
+    val skinResourcePatch = readString()
     val skinImage = readAppearanceImage()
     val animations = mutableListOf<Appearance.Animation>().apply { repeat(readIntLE()) { add(Appearance.Animation(readAppearanceImage(), Appearance.Animation.Type.values()[buffer.readIntLE()], buffer.readFloatLE(), Appearance.Animation.Expression.values()[buffer.readIntLE()])) } }
     val capeImage = readAppearanceImage()
@@ -139,7 +178,7 @@ fun PacketBuffer.readAppearancePre428(): Appearance {
 fun PacketBuffer.readAppearancePre465(): Appearance {
     val skinId = readString()
     val playFabId = readString()
-    val skinResourcePatch = jsonObjectMapper.readValue<Map<String, Any>>(readString())
+    val skinResourcePatch = readString()
     val skinImage = readAppearanceImage()
     val animations = mutableListOf<Appearance.Animation>().apply { repeat(readIntLE()) { add(Appearance.Animation(readAppearanceImage(), Appearance.Animation.Type.values()[buffer.readIntLE()], buffer.readFloatLE(), Appearance.Animation.Expression.values()[buffer.readIntLE()])) } }
     val capeImage = readAppearanceImage()
@@ -160,7 +199,7 @@ fun PacketBuffer.readAppearancePre465(): Appearance {
 fun PacketBuffer.readAppearance() = Appearance(
     readString(),
     readString(),
-    jsonObjectMapper.readValue(readString()),
+    readString(),
     readAppearanceImage(),
     mutableListOf<Appearance.Animation>().apply { repeat(readIntLE()) { add(Appearance.Animation(readAppearanceImage(), Appearance.Animation.Type.values()[buffer.readIntLE()], buffer.readFloatLE(), Appearance.Animation.Expression.values()[buffer.readIntLE()])) } },
     readAppearanceImage(),
@@ -182,7 +221,7 @@ fun PacketBuffer.readAppearance() = Appearance(
 
 fun PacketBuffer.writeAppearancePre390(value: Appearance) {
     writeString(value.skinId)
-    writeString(jsonObjectMapper.writeValueAsString(value.skinResourcePatch))
+    writeString(value.skinResourcePatch)
     writeAppearanceImage(value.skinImage)
     writeIntLE(value.animations.size)
     value.animations.forEach {
@@ -197,7 +236,7 @@ fun PacketBuffer.writeAppearancePre390(value: Appearance) {
     writeBoolean(value.personaSkin)
     writeBoolean(value.capeOnClassicSkin)
     writeString(value.capeId)
-    writeString(value.id)
+    writeString(value.id!!)
 }
 
 fun PacketBuffer.writeAppearancePre419(value: Appearance) {
@@ -223,7 +262,7 @@ fun PacketBuffer.writeAppearancePre419(value: Appearance) {
 
 fun PacketBuffer.writeAppearancePre428(value: Appearance) {
     writeString(value.skinId)
-    writeString(jsonObjectMapper.writeValueAsString(value.skinResourcePatch))
+    writeString(value.skinResourcePatch)
     writeAppearanceImage(value.skinImage)
     writeIntLE(value.animations.size)
     value.animations.forEach {
@@ -239,7 +278,7 @@ fun PacketBuffer.writeAppearancePre428(value: Appearance) {
     writeBoolean(value.personaSkin)
     writeBoolean(value.capeOnClassicSkin)
     writeString(value.capeId)
-    writeString(value.id)
+    writeString(value.id!!)
     writeString(value.armSize)
     writeString(value.skinColor)
     writeIntLE(value.personaPieces.size)
@@ -262,7 +301,7 @@ fun PacketBuffer.writeAppearancePre428(value: Appearance) {
 fun PacketBuffer.writeAppearancePre465(value: Appearance) {
     writeString(value.skinId)
     writeString(value.playFabId)
-    writeString(jsonObjectMapper.writeValueAsString(value.skinResourcePatch))
+    writeString(value.skinResourcePatch)
     writeAppearanceImage(value.skinImage)
     writeIntLE(value.animations.size)
     value.animations.forEach {
@@ -278,7 +317,7 @@ fun PacketBuffer.writeAppearancePre465(value: Appearance) {
     writeBoolean(value.personaSkin)
     writeBoolean(value.capeOnClassicSkin)
     writeString(value.capeId)
-    writeString(value.id)
+    writeString(value.id!!)
     writeString(value.armSize)
     writeString(value.skinColor)
     writeIntLE(value.personaPieces.size)
@@ -301,7 +340,7 @@ fun PacketBuffer.writeAppearancePre465(value: Appearance) {
 fun PacketBuffer.writeAppearance(value: Appearance) {
     writeString(value.skinId)
     writeString(value.playFabId)
-    writeString(jsonObjectMapper.writeValueAsString(value.skinResourcePatch))
+    writeString(value.skinResourcePatch)
     writeAppearanceImage(value.skinImage)
     writeIntLE(value.animations.size)
     value.animations.forEach {
@@ -315,7 +354,7 @@ fun PacketBuffer.writeAppearance(value: Appearance) {
     writeString(value.geometryDataEngineVersion)
     writeString(value.animationData)
     writeString(value.capeId)
-    writeString(value.id)
+    writeString(value.id!!)
     writeString(value.armSize)
     writeString(value.skinColor)
     writeIntLE(value.personaPieces.size)

@@ -22,6 +22,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @author Kevin Ludwig
  */
 class Signature(
-    @get:JsonProperty("path") val path: String,
-    @get:JsonProperty("hash") val hash: String
+    @JsonProperty("path") val path: String,
+    @JsonProperty("hash") val hash: String
 )

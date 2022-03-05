@@ -16,8 +16,6 @@
 
 package com.valaphee.netcode.mcbe.world.entity.player
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import java.awt.Transparency
 import java.awt.color.ColorSpace
@@ -31,63 +29,35 @@ import javax.imageio.ImageIO
 /**
  * @author Kevin Ludwig
  */
-data class AppearanceImage(
-    @get:JsonProperty("ImageWidth") val width: Int,
-    @get:JsonProperty("ImageHeight") val height: Int,
-    @get:JsonProperty("Data") val data: ByteArray
+class AppearanceImage(
+    width: Int?,
+    height: Int?,
+    val data: ByteArray
 ) {
-    constructor(image: BufferedImage) : this(
-        image.width, image.height, (BufferedImage(colorModel, colorModel.createCompatibleWritableRaster(image.width, image.height), false, null).apply {
-            createGraphics().apply {
-                drawImage(image, 0, 0, null)
-                dispose()
+    val width: Int
+    val height: Int
+
+    init {
+        if (width != null && height != null) {
+            this.width = width
+            this.height = height
+        }
+        else if (data.size.countOneBits() > 1) error("")
+        else {
+            val sizePow = (data.size shr 2).countTrailingZeroBits()
+            if (sizePow % 2 == 0) {
+                this.width = 1 shl sizePow / 2
+                this.height = this.width
+            } else {
+                val sizePow2 = (sizePow - 1) / 2
+                this.width = 1 shl sizePow2 + 1
+                this.height = 1 shl sizePow2
             }
-        }.raster.dataBuffer as DataBufferByte).data
-    )
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as AppearanceImage
-
-        if (width != other.width) return false
-        if (height != other.height) return false
-        if (!data.contentEquals(other.data)) return false
-
-        return true
+        }
     }
-
-    override fun hashCode(): Int {
-        var result = width
-        result = 31 * result + height
-        result = 31 * result + data.contentHashCode()
-        return result
-    }
-
-    override fun toString() = "AppearanceImage(width=$width, height=$height)"
 
     companion object {
         val Empty = AppearanceImage(0, 0, ByteArray(0))
-
-        @JvmStatic
-        @JsonCreator
-        fun create(data: ByteArray): AppearanceImage {
-            val width: Int
-            val height: Int
-            if (data.size.countOneBits() > 1) error("Image size is not power of two") else {
-                val sizePow = (data.size shr 2).countTrailingZeroBits()
-                if (sizePow % 2 == 0) {
-                    width = 1 shl sizePow / 2
-                    height = width
-                } else {
-                    val sizePow2 = (sizePow - 1) / 2
-                    width = 1 shl sizePow2 + 1
-                    height = 1 shl sizePow2
-                }
-            }
-            return AppearanceImage(width, height, data)
-        }
     }
 }
 

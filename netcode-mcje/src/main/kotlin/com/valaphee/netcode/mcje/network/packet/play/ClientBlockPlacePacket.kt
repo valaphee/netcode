@@ -46,10 +46,6 @@ class ClientBlockPlacePacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.blockPlace(this)
 
     override fun toString() = "ClientBlockPlacePacket(hand=$hand, blockPosition=$blockPosition, blockFace=$blockFace, clickPosition=$clickPosition, insideBlock=$insideBlock)"
-
-    companion object {
-        internal const val blockFaceNone = 0xFF
-    }
 }
 
 /**

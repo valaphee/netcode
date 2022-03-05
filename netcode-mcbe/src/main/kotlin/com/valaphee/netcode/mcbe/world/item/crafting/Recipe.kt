@@ -16,43 +16,9 @@
 
 package com.valaphee.netcode.mcbe.world.item.crafting
 
-import com.valaphee.netcode.mcbe.world.item.ItemStack
-import java.util.UUID
-
-fun recipeId(type: Recipe.Type, inputs: List<ItemStack?>, outputs: List<ItemStack?>): UUID = UUID.nameUUIDFromBytes("${type.ordinal}${if (type == Recipe.Type.Shapeless || type == Recipe.Type.ShapelessChemistry) inputs.filterNotNull().sortedBy { it.itemKey + it.subId + it.count }.joinToString { it.itemKey + it.subId + it.count } else inputs.joinToString { it?.let { it.itemKey + it.subId + it.count } ?: "" }}${outputs.joinToString { it?.let { it.itemKey + it.subId + it.count } ?: "" }}}".toByteArray())
-
-fun shapelessRecipe(type: Recipe.Type, name: String, inputs: List<ItemStack?>, outputs: List<ItemStack?>, tag: String, priority: Int, netId: Int) = Recipe(recipeId(type, inputs, outputs), name, type, 0, 0, inputs, outputs, tag, priority, netId)
-
-fun shapedRecipe(type: Recipe.Type, name: String, width: Int, height: Int, inputs: List<ItemStack?>, outputs: List<ItemStack?>, tag: String, priority: Int, netId: Int) = Recipe(recipeId(type, inputs, outputs), name, type, width, height, inputs, outputs, tag, priority, netId)
-
-fun furnaceRecipe(input: ItemStack, output: ItemStack?, tag: String) = Recipe(null, null, if (input.subId != -1) Recipe.Type.FurnaceData else Recipe.Type.Furnace, 0, 0, listOf(input), listOf(output), tag, 0, 0)
-
-fun multiRecipe(id: UUID, netId: Int) = Recipe(id, null, Recipe.Type.Multi, 0, 0, null, null, null, 0, netId)
+import com.valaphee.netcode.mcbe.pack.Data
 
 /**
  * @author Kevin Ludwig
  */
-data class Recipe(
-    val id: UUID?,
-    val name: String?,
-    val type: Type,
-    val width: Int,
-    val height: Int,
-    val inputs: List<ItemStack?>?,
-    val outputs: List<ItemStack?>?,
-    val tag: String?,
-    val priority: Int,
-    val netId: Int
-) {
-
-    enum class Type {
-        Shapeless,
-        Shaped,
-        Furnace,
-        FurnaceData,
-        Multi,
-        ShulkerBox,
-        ShapelessChemistry,
-        ShapedChemistry
-    }
-}
+interface Recipe : Data

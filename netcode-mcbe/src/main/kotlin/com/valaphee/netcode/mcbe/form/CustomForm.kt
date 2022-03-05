@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
  */
 class CustomForm(
     title: String,
-    @get:JsonProperty("content") val elements: List<Element>
+    @JsonProperty("content") val elements: List<Element>
 ) : Form<Map<String, Any?>>(title) {
     override fun getResponse(response: Any?): Map<String, Any?> = (response as Map<String, Any?>).values.mapIndexed { i, answer -> Pair(elements[i].text, elements[i].answer(answer)) }.toMap()
 
@@ -64,7 +64,7 @@ class CustomForm(
     JsonSubTypes.Type(Toggle::class, name = "toggle"),
 )
 abstract class Element(
-    @get:JsonProperty("text") val text: String
+    @JsonProperty("text") val text: String
 ) {
     abstract fun answer(answer: Any?): Any?
 
@@ -92,8 +92,8 @@ class Label(
 
 class Dropdown(
     text: String,
-    @get:JsonProperty("options") val values: List<String>,
-    @get:JsonProperty("default") var valueIndex: Int = 0
+    @JsonProperty("options") val values: List<String>,
+    @JsonProperty("default") var valueIndex: Int = 0
 ) : Element(text) {
     override fun answer(answer: Any?): Any {
         valueIndex = answer as Int
@@ -105,8 +105,8 @@ class Dropdown(
 
 class Input(
     text: String,
-    @get:JsonProperty("placeholder") val placeholder: String,
-    @get:JsonProperty("default") var value: String = ""
+    @JsonProperty("placeholder") val placeholder: String,
+    @JsonProperty("default") var value: String = ""
 ) : Element(text) {
     override fun answer(answer: Any?): Any {
         value = answer as String
@@ -118,10 +118,10 @@ class Input(
 
 class Slider(
     text: String,
-    @get:JsonProperty("min") val minimum: Number,
-    @get:JsonProperty("max") val maximum: Number,
-    @get:JsonProperty("step") val step: Number,
-    @get:JsonProperty("default") var value: Number
+    @JsonProperty("min") val minimum: Number,
+    @JsonProperty("max") val maximum: Number,
+    @JsonProperty("step") val step: Number,
+    @JsonProperty("default") var value: Number
 ) : Element(text) {
     override fun answer(answer: Any?): Any {
         value = answer as Double
@@ -133,8 +133,8 @@ class Slider(
 
 class StepSlider(
     text: String,
-    @get:JsonProperty("steps") val values: List<String>,
-    @get:JsonProperty("default") var valueIndex: Int = 0
+    @JsonProperty("steps") val values: List<String>,
+    @JsonProperty("default") var valueIndex: Int = 0
 ) : Element(text) {
     override fun answer(answer: Any?): Any {
         valueIndex = answer as Int
@@ -146,7 +146,7 @@ class StepSlider(
 
 class Toggle(
     text: String,
-    @get:JsonProperty("default") var value: Boolean = false
+    @JsonProperty("default") var value: Boolean = false
 ) : Element(text) {
     override fun answer(answer: Any?): Any {
         value = answer as Boolean

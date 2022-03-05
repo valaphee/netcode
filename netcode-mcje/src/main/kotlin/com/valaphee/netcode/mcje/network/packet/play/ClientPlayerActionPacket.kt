@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
 class ClientPlayerActionPacket(
     val entityId: Int,
     val action: Action,
-    val jumpStrength: Float
+    val jumpStrength: Float = 0.0f
 ) : Packet<ClientPlayPacketHandler> {
     enum class Action {
         StartSneak,

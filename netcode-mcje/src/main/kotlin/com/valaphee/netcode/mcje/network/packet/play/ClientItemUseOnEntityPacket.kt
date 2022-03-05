@@ -43,11 +43,11 @@ class ClientItemUseOnEntityPacket(
         @Suppress("NON_EXHAUSTIVE_WHEN") when (type) {
             Type.InteractAt -> {
                 buffer.writeFloat3(position!!)
-                if (version >= 498) buffer.writeVarInt(hand!!.ordinal)
+                buffer.writeVarInt(hand!!.ordinal)
             }
-            Type.Interact -> if (version >= 498) buffer.writeVarInt(hand!!.ordinal)
+            Type.Interact -> buffer.writeVarInt(hand!!.ordinal)
         }
-        if (version >= 754) buffer.writeBoolean(sneaking)
+        buffer.writeBoolean(sneaking)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.itemUseOnEntity(this)
@@ -67,18 +67,18 @@ object ClientItemUseOnEntityPacketReader : PacketReader {
         when (type) {
             ClientItemUseOnEntityPacket.Type.InteractAt -> {
                 position = buffer.readFloat3()
-                hand = if (version >= 498) Hand.values()[buffer.readVarInt()] else Hand.Main
+                hand = Hand.values()[buffer.readVarInt()]
             }
             ClientItemUseOnEntityPacket.Type.Interact -> {
                 position = null
-                hand = if (version >= 498) Hand.values()[buffer.readVarInt()] else Hand.Main
+                hand = Hand.values()[buffer.readVarInt()]
             }
             else -> {
                 position = null
                 hand = null
             }
         }
-        val sneaking = if (version >= 754) buffer.readBoolean() else false
+        val sneaking = buffer.readBoolean()
         return ClientItemUseOnEntityPacket(entityId, type, position, hand, sneaking)
     }
 }

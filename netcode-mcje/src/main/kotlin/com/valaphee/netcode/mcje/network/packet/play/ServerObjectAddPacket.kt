@@ -41,7 +41,7 @@ class ServerObjectAddPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeUuid(entityUid!!)
-        buffer.writeVarInt(buffer.registrySet.entityTypes.getId(typeKey))
+        buffer.writeVarInt(buffer.registries.entityTypes.getId(typeKey))
         buffer.writeDouble3(position)
         buffer.writeAngle2(rotation)
         buffer.writeInt(data)
@@ -60,5 +60,5 @@ class ServerObjectAddPacket(
  * @author Kevin Ludwig
  */
 object ServerObjectAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerObjectAddPacket(buffer.readVarInt(), buffer.readUuid(), checkNotNull(buffer.registrySet.entityTypes[buffer.readVarInt()]), buffer.readDouble3(), buffer.readAngle2(), buffer.readInt(), MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerObjectAddPacket(buffer.readVarInt(), buffer.readUuid(), checkNotNull(buffer.registries.entityTypes[buffer.readVarInt()]), buffer.readDouble3(), buffer.readAngle2(), buffer.readInt(), MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
 }

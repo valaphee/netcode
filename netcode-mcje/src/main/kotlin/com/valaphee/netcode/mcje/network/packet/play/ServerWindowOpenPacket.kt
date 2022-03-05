@@ -34,7 +34,7 @@ class ServerWindowOpenPacket(
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(windowId)
-        buffer.writeVarInt(buffer.registrySet.windowTypes.getId(windowTypeKey))
+        buffer.writeVarInt(buffer.registries.windowTypes.getId(windowTypeKey))
         buffer.writeString(GsonComponentSerializer.gson().serialize(title))
     }
 
@@ -47,5 +47,5 @@ class ServerWindowOpenPacket(
  * @author Kevin Ludwig
  */
 object ServerWindowOpenPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowOpenPacket(buffer.readVarInt(), checkNotNull(buffer.registrySet.windowTypes[buffer.readVarInt()]), GsonComponentSerializer.gson().deserialize(buffer.readString()))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowOpenPacket(buffer.readVarInt(), checkNotNull(buffer.registries.windowTypes[buffer.readVarInt()]), GsonComponentSerializer.gson().deserialize(buffer.readString()))
 }

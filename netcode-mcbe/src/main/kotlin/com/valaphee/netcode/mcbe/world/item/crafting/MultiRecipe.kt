@@ -16,23 +16,12 @@
 
 package com.valaphee.netcode.mcbe.world.item.crafting
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonTypeName
-import com.valaphee.netcode.mcbe.world.item.ItemStack
+import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
-@JsonTypeName("minecraft:recipe_furnace")
-class FurnaceRecipeData(
-    @get:JsonProperty("description") val description: Description,
-    @get:JsonProperty("tags") val tags: Array<String>,
-    @get:JsonProperty("input") val input: ItemStack,
-    @get:JsonProperty("output") val output: ItemStack
-) : RecipeData {
-    class Description(
-        @get:JsonProperty("identifier") val key: String
-    )
-
-    override fun toRecipe(netId: Int) = furnaceRecipe(input, output, tags.first())
-}
+data class MultiRecipe(
+    val id: UUID,
+    var netId: Int = 0
+) : Recipe

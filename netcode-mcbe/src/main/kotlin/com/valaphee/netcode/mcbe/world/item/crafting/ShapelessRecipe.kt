@@ -16,24 +16,26 @@
 
 package com.valaphee.netcode.mcbe.world.item.crafting
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.valaphee.netcode.mcbe.world.item.ItemStack
+import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
 @JsonTypeName("minecraft:recipe_shapeless")
-class ShapelessRecipeData(
-    @get:JsonProperty("description") val description: Description,
-    @get:JsonProperty("tags") val tags: List<String>,
-    @get:JsonProperty("ingredients") val ingredients: List<ItemStack>,
-    @get:JsonProperty("priority") val priority: Int = 0,
-    @get:JsonProperty("result") val result: ItemStack
-) : RecipeData {
+data class ShapelessRecipe(
+    @JsonProperty("description") val description: Description,
+    @JsonProperty("tags") val tags: List<String>,
+    @JsonProperty("ingredients") val ingredients: List<ItemStack>,
+    @JsonProperty("priority") val priority: Int = 0,
+    @JsonProperty("result") val result: ItemStack,
+    @JsonIgnore val id: UUID = UUID.randomUUID(),
+    @JsonIgnore var netId: Int = 0
+) : Recipe {
     class Description(
-        @get:JsonProperty("identifier") val key: String
+        @JsonProperty("identifier") val key: String
     )
-
-    override fun toRecipe(netId: Int) = shapelessRecipe(Recipe.Type.Shapeless, description.key, ingredients, listOf(result), tags.first(), priority, netId)
 }

@@ -23,34 +23,34 @@ import java.util.UUID
  * @author Kevin Ludwig
  */
 class Manifest(
-    @get:JsonProperty("format_version") val version: String,
-    @get:JsonProperty("header") val header: Header,
-    @get:JsonProperty("modules") val modules: List<Module>?,
-    @get:JsonProperty("metadata") val metadata: Metadata?,
-    @get:JsonProperty("dependencies") val dependencies: List<Dependency>?,
-    @get:JsonProperty("capabilities") val capabilities: List<String>?,
-    @get:JsonProperty("subpacks") val subPacks: List<SubPack>?
+    @JsonProperty("format_version") val version: String,
+    @JsonProperty("header") val header: Header,
+    @JsonProperty("modules") val modules: List<Module>?,
+    @JsonProperty("metadata") val metadata: Metadata?,
+    @JsonProperty("dependencies") val dependencies: List<Dependency>?,
+    @JsonProperty("capabilities") val capabilities: List<String>?,
+    @JsonProperty("subpacks") val subPacks: List<SubPack>?
 ) {
     class Header(
-        @get:JsonProperty("uuid") val id: UUID,
-        @get:JsonProperty("name") val name: String,
-        @get:JsonProperty("version") val version: Version,
-        @get:JsonProperty("description") val description: String?,
-        @get:JsonProperty("platform_locked") val platformLocked: Boolean?,
-        @get:JsonProperty("min_engine_version") val minimumEngineVersion: Version?,
-        @get:JsonProperty("max_engine_version") val maximumEngineVersion: Version?,
-        @get:JsonProperty("pack_scope") val scope: String?,
-        @get:JsonProperty("directory_load") val directoryLoad: Boolean?,
-        @get:JsonProperty("load_before_game") val loadBeforeGame: Boolean?,
-        @get:JsonProperty("lock_template_options") val lockTemplateOptions: Boolean?,
-        @get:JsonProperty("population_control") val populationControl: Boolean?
+        @JsonProperty("uuid") val id: UUID,
+        @JsonProperty("name") val name: String,
+        @JsonProperty("version") val version: Version,
+        @JsonProperty("description") val description: String?,
+        @JsonProperty("platform_locked") val platformLocked: Boolean?,
+        @JsonProperty("min_engine_version") val minimumEngineVersion: Version?,
+        @JsonProperty("max_engine_version") val maximumEngineVersion: Version?,
+        @JsonProperty("pack_scope") val scope: String?,
+        @JsonProperty("directory_load") val directoryLoad: Boolean?,
+        @JsonProperty("load_before_game") val loadBeforeGame: Boolean?,
+        @JsonProperty("lock_template_options") val lockTemplateOptions: Boolean?,
+        @JsonProperty("population_control") val populationControl: Boolean?
     )
 
     class Module(
-        @get:JsonProperty("uuid") val id: UUID,
-        @get:JsonProperty("version") val version: Version,
-        @get:JsonProperty("description") val description: String?,
-        @get:JsonProperty("type") val type: Type?,
+        @JsonProperty("uuid") val id: UUID,
+        @JsonProperty("version") val version: Version,
+        @JsonProperty("description") val description: String?,
+        @JsonProperty("type") val type: Type?,
     ) {
         enum class Type {
             @JsonProperty("invalid") Invalid,
@@ -66,18 +66,18 @@ class Manifest(
 
     class Metadata(
         val authors: List<String>?,
-        @get:JsonProperty("license") val license: String?,
-        @get:JsonProperty("url") val website: String?
+        @JsonProperty("license") val license: String?,
+        @JsonProperty("url") val website: String?
     )
 
     class Dependency(
-        @get:JsonProperty("uuid") val id: UUID,
-        @get:JsonProperty("version") val version: Version
+        @JsonProperty("uuid") val id: UUID,
+        @JsonProperty("version") val version: Version
     )
 
     class SubPack(
-        @get:JsonProperty("folder_name") val path: String? = null,
-        @get:JsonProperty("name") val name: String? = null,
-        @get:JsonProperty("memory_tier") val memoryTier: Int = 0
+        @JsonProperty("folder_name") val path: String? = null,
+        @JsonProperty("name") val name: String? = null,
+        @JsonProperty("memory_tier") val memoryTier: Int = 0
     )
 }

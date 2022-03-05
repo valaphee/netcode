@@ -30,8 +30,8 @@ class ClientBeaconUpdatePacket(
     val secondaryEffect: NamespacedKey?
 ) : Packet<ClientPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(primaryEffect?.let { buffer.registrySet.effects.getId(it) } ?: 0)
-        buffer.writeVarInt(secondaryEffect?.let { buffer.registrySet.effects.getId(it) } ?: 0)
+        buffer.writeVarInt(primaryEffect?.let { buffer.registries.effects.getId(it) } ?: 0)
+        buffer.writeVarInt(secondaryEffect?.let { buffer.registries.effects.getId(it) } ?: 0)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.beaconUpdate(this)
@@ -46,6 +46,6 @@ object ClientBeaconUpdatePacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): ClientBeaconUpdatePacket {
         val primaryEffect = buffer.readVarInt()
         val secondaryEffect = buffer.readVarInt()
-        return ClientBeaconUpdatePacket(if (primaryEffect == 0) null else checkNotNull(buffer.registrySet.effects[primaryEffect]), if (secondaryEffect == 0) null else checkNotNull(buffer.registrySet.effects[secondaryEffect]))
+        return ClientBeaconUpdatePacket(if (primaryEffect == 0) null else checkNotNull(buffer.registries.effects[primaryEffect]), if (secondaryEffect == 0) null else checkNotNull(buffer.registries.effects[secondaryEffect]))
     }
 }

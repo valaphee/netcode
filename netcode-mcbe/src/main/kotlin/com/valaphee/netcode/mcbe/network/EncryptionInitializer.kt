@@ -17,6 +17,7 @@
 package com.valaphee.netcode.mcbe.network
 
 import com.valaphee.netcode.mcbe.network.packet.ServerToClientHandshakePacket
+import com.valaphee.netcode.mcbe.util.serverToClientHandshakeJws
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.PooledByteBufAllocator
 import io.netty.channel.Channel
@@ -64,7 +65,7 @@ class EncryptionInitializer(
         } finally {
             sha256Data.release()
         }
-        serverToClientHandshakePacket = ServerToClientHandshakePacket("serverToClientHandshakeJws(keyPair, salt)")
+        serverToClientHandshakePacket = ServerToClientHandshakePacket(serverToClientHandshakeJws(keyPair, salt))
         key = sha256.digest()
         if (gcm) {
             iv = ByteArray(16)
@@ -84,7 +85,7 @@ class EncryptionInitializer(
     }
 
     private inner class Encryptor : ChannelOutboundHandlerAdapter() {
-        private val aes = Cipher.getInstance(if (gcm) "AES/CTR/NoPadding" else "AES/CFB8/NoPadding").apply { init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(iv)) }
+        private val aes = Cipher.getInstance(if (gcm) "AES/CTR/NoPadding" else "AES/CFB8/NoPadding").apply { init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(this@EncryptionInitializer.iv)) }
         private var counter = 0L
 
         override fun write(context: ChannelHandlerContext, message: Any, promise: ChannelPromise) {
@@ -124,7 +125,7 @@ class EncryptionInitializer(
     }
 
     private inner class Decryptor : ChannelInboundHandlerAdapter() {
-        private val aes = Cipher.getInstance(if (gcm) "AES/CTR/NoPadding" else "AES/CFB8/NoPadding").apply { init(Cipher.DECRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(iv)) }
+        private val aes = Cipher.getInstance(if (gcm) "AES/CTR/NoPadding" else "AES/CFB8/NoPadding").apply { init(Cipher.DECRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(this@EncryptionInitializer.iv)) }
         private var count = 0L
 
         override fun channelRead(context: ChannelHandlerContext, message: Any) {
