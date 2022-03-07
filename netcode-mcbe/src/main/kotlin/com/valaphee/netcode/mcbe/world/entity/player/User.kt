@@ -18,6 +18,7 @@ package com.valaphee.netcode.mcbe.world.entity.player
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.Locale
 import java.util.UUID
@@ -30,7 +31,7 @@ data class User constructor(
     val clientId: Long,
     val thirdPartyName: String,
     val thirdPartyNameOnly: Boolean,
-    val appearance: Appearance,
+    /*@JsonUnwrapped*/@JsonIgnore val appearance: Appearance,
     val platformOfflineId: String,
     val platformOnlineId: String,
     val deviceId: String,
@@ -73,47 +74,51 @@ data class User constructor(
         Classic, Pocket, Unknown2, Unknown3
     }
 
-    companion object {
-        @JvmStatic
-        @JsonCreator
-        fun jsonCreator(
-            @JsonProperty("SelfSignedId") selfSignedId: UUID,
-            @JsonProperty("ClientRandomId") clientId: Long,
-            @JsonProperty("ThirdPartyName") thirdPartyName: String,
-            @JsonProperty("ThirdPartyNameOnly") thirdPartyNameOnly: Boolean = false,
-            @JsonProperty("SkinId") skinId: String,
-            @JsonProperty("PlayFabId") playFabId: String,
-            @JsonProperty("SkinResourcePatch") @JsonFormat(shape = JsonFormat.Shape.BINARY) skinResourcePatch: String,
-            @JsonProperty("SkinImageWidth") skinWidth: Int?,
-            @JsonProperty("SkinImageHeight") skinHeight: Int?,
-            @JsonProperty("SkinData") skinData: ByteArray,
-            @JsonProperty("AnimatedImageData") animations: List<Appearance.Animation>,
-            @JsonProperty("CapeImageWidth") capeWidth: Int?,
-            @JsonProperty("CapeImageHeight") capeHeight: Int?,
-            @JsonProperty("CapeData") capeData: ByteArray,
-            @JsonProperty("SkinGeometryData") geometryData: String,
-            @JsonProperty("SkinGeometryDataEngineVersion") geometryDataEngineVersion: String,
-            @JsonProperty("SkinAnimationData") animationData: String,
-            @JsonProperty("CapeId") capeId: String,
-            @JsonProperty("ArmSize") armSize: String,
-            @JsonProperty("SkinColor") skinColor: String,
-            @JsonProperty("PersonaPieces") personaPieces: List<Appearance.PersonaPiece>,
-            @JsonProperty("PieceTintColors") personaPieceTints: List<Appearance.PersonaPieceTint>,
-            @JsonProperty("PremiumSkin") premiumSkin: Boolean,
-            @JsonProperty("PersonaSkin") personaSkin: Boolean,
-            @JsonProperty("CapeOnClassicSkin") capeOnClassicSkin: Boolean,
-            @JsonProperty("PlatformOfflineId") platformOfflineId: String,
-            @JsonProperty("PlatformOnlineId") platformOnlineId: String,
-            @JsonProperty("DeviceId") deviceId: String,
-            @JsonProperty("DeviceModel") deviceModel: String,
-            @JsonProperty("DeviceOS") operatingSystem: OperatingSystem = OperatingSystem.Unknown,
-            @JsonProperty("GameVersion") version: String,
-            @JsonProperty("LanguageCode") locale: Locale,
-            @JsonProperty("DefaultInputMode") defaultInputMode: InputMode = InputMode.Unknown,
-            @JsonProperty("CurrentInputMode") currentInputMode: InputMode = InputMode.Unknown,
-            @JsonProperty("GuiScale") guiScale: Int = 0,
-            @JsonProperty("UIProfile") uiProfile: UiProfile = UiProfile.Classic,
-            @JsonProperty("ServerAddress") serverAddress: String
-        ) = User(selfSignedId, clientId, thirdPartyName, thirdPartyNameOnly,  Appearance(skinId, playFabId, skinResourcePatch, AppearanceImage(skinWidth, skinHeight, skinData), animations, AppearanceImage(capeWidth, capeHeight, capeData), geometryData, geometryDataEngineVersion, animationData, capeId, null, armSize, skinColor, personaPieces, personaPieceTints, premiumSkin, personaSkin, capeOnClassicSkin, false, false), platformOfflineId, platformOnlineId, deviceId, deviceModel, operatingSystem, version, locale, defaultInputMode, currentInputMode, guiScale, uiProfile, serverAddress)
-    }
+    val skinWidth get() = appearance.skinImage.width
+    val skinHeight get() = appearance.skinImage.height
+    val skinData get() = appearance.skinImage.data
+    val capeWidth get() = appearance.capeImage.width
+    val capeHeight get() = appearance.capeImage.height
+    val capeData get() = appearance.capeImage.data
+
+    @JsonCreator
+    constructor(
+        @JsonProperty("SelfSignedId") selfSignedId: UUID,
+        @JsonProperty("ClientRandomId") clientId: Long,
+        @JsonProperty("ThirdPartyName") thirdPartyName: String,
+        @JsonProperty("ThirdPartyNameOnly") thirdPartyNameOnly: Boolean = false,
+        @JsonProperty("SkinId") skinId: String,
+        @JsonProperty("PlayFabId") playFabId: String,
+        @JsonProperty("SkinResourcePatch") skinResourcePatch: ByteArray,
+        @JsonProperty("SkinImageWidth") skinWidth: Int?,
+        @JsonProperty("SkinImageHeight") skinHeight: Int?,
+        @JsonProperty("SkinData") skinData: ByteArray,
+        @JsonProperty("AnimatedImageData") animations: List<Appearance.Animation>,
+        @JsonProperty("CapeImageWidth") capeWidth: Int?,
+        @JsonProperty("CapeImageHeight") capeHeight: Int?,
+        @JsonProperty("CapeData") capeData: ByteArray,
+        @JsonProperty("SkinGeometryData") geometryData: ByteArray,
+        @JsonProperty("SkinGeometryDataEngineVersion") geometryDataEngineVersion: String,
+        @JsonProperty("SkinAnimationData") animationData: ByteArray,
+        @JsonProperty("CapeId") capeId: String,
+        @JsonProperty("ArmSize") armSize: String,
+        @JsonProperty("SkinColor") skinColor: String,
+        @JsonProperty("PersonaPieces") personaPieces: List<Appearance.PersonaPiece>,
+        @JsonProperty("PieceTintColors") personaPieceTints: List<Appearance.PersonaPieceTint>,
+        @JsonProperty("PremiumSkin") premiumSkin: Boolean,
+        @JsonProperty("PersonaSkin") personaSkin: Boolean,
+        @JsonProperty("CapeOnClassicSkin") capeOnClassicSkin: Boolean,
+        @JsonProperty("PlatformOfflineId") platformOfflineId: String,
+        @JsonProperty("PlatformOnlineId") platformOnlineId: String,
+        @JsonProperty("DeviceId") deviceId: String,
+        @JsonProperty("DeviceModel") deviceModel: String,
+        @JsonProperty("DeviceOS") operatingSystem: OperatingSystem = OperatingSystem.Unknown,
+        @JsonProperty("GameVersion") version: String,
+        @JsonProperty("LanguageCode") locale: Locale,
+        @JsonProperty("DefaultInputMode") defaultInputMode: InputMode = InputMode.Unknown,
+        @JsonProperty("CurrentInputMode") currentInputMode: InputMode = InputMode.Unknown,
+        @JsonProperty("GuiScale") guiScale: Int = 0,
+        @JsonProperty("UIProfile") uiProfile: UiProfile = UiProfile.Classic,
+        @JsonProperty("ServerAddress") serverAddress: String
+    ) : this(selfSignedId, clientId, thirdPartyName, thirdPartyNameOnly, Appearance(skinId, playFabId, skinResourcePatch, AppearanceImage(skinWidth, skinHeight, skinData), animations, AppearanceImage(capeWidth, capeHeight, capeData), geometryData, geometryDataEngineVersion, animationData, capeId, null, armSize, skinColor, personaPieces, personaPieceTints, premiumSkin, personaSkin, capeOnClassicSkin, false, false), platformOfflineId, platformOnlineId, deviceId, deviceModel, operatingSystem, version, locale, defaultInputMode, currentInputMode, guiScale, uiProfile, serverAddress)
 }

@@ -16,9 +16,14 @@
 
 package com.valaphee.netcode.mcbe.world.chunk
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.PacketBuffer
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
 import it.unimi.dsi.fastutil.ints.IntArrayList
 import it.unimi.dsi.fastutil.ints.IntList
+import java.io.InputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -54,7 +59,11 @@ class Layer(
         buffer.writeByte((bitArray.version.bitsPerEntry shl 1) or if (runtime) 1 else 0)
         bitArray.data.forEach { buffer.writeIntLE(it) }
         buffer.writeVarInt(palette.size)
-        if (runtime) palette.forEach { buffer.writeVarInt(it) } else TODO()
+        if (runtime) palette.forEach { buffer.writeVarInt(it) }
+        else ByteBufOutputStream(buffer).use {
+            val stream = it as OutputStream
+            palette.forEach { buffer.nbtObjectMapper.writeValue(stream, buffer.registries.blockStates[it]!!) }
+        }
     }
 }
 
@@ -64,5 +73,11 @@ fun PacketBuffer.readLayer(): Layer {
     val runtime = header and 1 == 1
     val blocks = version.bitArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize, IntArray(version.bitArrayDataSize(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize)) { readIntLE() })
     val paletteSize = readVarInt()
-    return Layer(IntArrayList().apply { if (runtime) repeat(paletteSize) { add(readVarInt()) } else TODO() }, blocks)
+    return Layer(IntArrayList().apply {
+        if (runtime) repeat(paletteSize) { add(readVarInt()) }
+        else ByteBufInputStream(buffer).use {
+            val stream = it as InputStream
+            repeat(paletteSize) { add(registries.blockStates.getId(nbtObjectMapper.readValue(stream))) }
+        }
+    }, blocks)
 }

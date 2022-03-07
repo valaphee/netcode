@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcje.network
+package com.valaphee.netcode.mcbe.world.item.crafting
+
+import it.unimi.dsi.fastutil.ints.Int2IntMap
 
 /**
  * @author Kevin Ludwig
  */
-class UnknownPacket(
-    val id: Int,
-    val buffer: PacketBuffer
-) : Packet<PacketHandler> {
-    override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeBytes(this.buffer)
-    }
-
-    override fun handle(handler: PacketHandler) = handler.unknown(this)
-
-    override fun toString() = "UnknownPacket(id=$id)"
-}
+data class MaterialReductionRecipe(
+    val inputId: Int,
+    val itemCounts: Int2IntMap
+)

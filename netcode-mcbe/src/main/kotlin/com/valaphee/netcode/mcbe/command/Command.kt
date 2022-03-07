@@ -24,7 +24,7 @@ data class Command(
     val description: String,
     val flags: Set<Flag>,
     val permission: Permission,
-    val aliases: Enumeration?,
+    var aliases: Enumeration?, // needed for je-be protocol translation
     val overloads: List<List<Parameter>>
 ) {
     enum class Flag {

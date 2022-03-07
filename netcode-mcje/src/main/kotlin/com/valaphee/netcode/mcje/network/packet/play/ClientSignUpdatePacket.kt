@@ -49,5 +49,5 @@ class ClientSignUpdatePacket(
  * @author Kevin Ludwig
  */
 object ClientSignUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientSignUpdatePacket(buffer.readInt3UnsignedY(), buffer.readString(), buffer.readString(), buffer.readString(), buffer.readString())
+    override fun read(buffer: PacketBuffer, version: Int) = ClientSignUpdatePacket(buffer.readInt3UnsignedY(), buffer.readString(384), buffer.readString(384), buffer.readString(384), buffer.readString(384))
 }

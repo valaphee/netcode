@@ -16,8 +16,8 @@
 
 package com.valaphee.netcode.mcbe.world.chunk
 
-import com.valaphee.netcode.mc.util.NibbleArray
 import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.util.NibbleArray
 
 /**
  * @author Kevin Ludwig
@@ -131,5 +131,5 @@ fun PacketBuffer.readSubChunk() = when (val version = readUnsignedByte().toInt()
         readByte() // absolute index for data-driven dimension heights
         CompactSubChunk(Array(layerCount) { readLayer() })
     }
-    else -> TODO(version.toString())
+    else -> TODO("$version")
 }

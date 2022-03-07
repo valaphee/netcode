@@ -16,6 +16,7 @@
 
 package com.valaphee.netcode.mcbe.world.entity.player
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import java.awt.Transparency
 import java.awt.color.ColorSpace
@@ -23,35 +24,32 @@ import java.awt.image.BufferedImage
 import java.awt.image.ComponentColorModel
 import java.awt.image.DataBuffer
 import java.awt.image.DataBufferByte
-import java.io.InputStream
-import javax.imageio.ImageIO
 
 /**
  * @author Kevin Ludwig
  */
 class AppearanceImage(
-    width: Int?,
-    height: Int?,
-    val data: ByteArray
+    @JsonProperty("ImageWidth") val width: Int?,
+    @JsonProperty("ImageHeight") val height: Int?,
+    @JsonProperty("Data") val data: ByteArray
 ) {
-    val width: Int
-    val height: Int
+    val _width: Int
+    val _height: Int
 
     init {
         if (width != null && height != null) {
-            this.width = width
-            this.height = height
-        }
-        else if (data.size.countOneBits() > 1) error("")
+            _width = width
+            _height = height
+        } else if (data.size.countOneBits() > 1) error("")
         else {
             val sizePow = (data.size shr 2).countTrailingZeroBits()
             if (sizePow % 2 == 0) {
-                this.width = 1 shl sizePow / 2
-                this.height = this.width
+                _width = 1 shl sizePow / 2
+                _height = _width
             } else {
                 val sizePow2 = (sizePow - 1) / 2
-                this.width = 1 shl sizePow2 + 1
-                this.height = 1 shl sizePow2
+                _width = 1 shl sizePow2 + 1
+                _height = 1 shl sizePow2
             }
         }
     }
@@ -61,6 +59,13 @@ class AppearanceImage(
     }
 }
 
+fun BufferedImage.toAppearanceImage() = AppearanceImage(width, height, (BufferedImage(com.valaphee.netcode.mcbe.world.entity.player.colorModel, com.valaphee.netcode.mcbe.world.entity.player.colorModel.createCompatibleWritableRaster(width, height), false, null).apply {
+    createGraphics().apply {
+        drawImage(this@toAppearanceImage, 0, 0, null)
+        dispose()
+    }
+}.raster.dataBuffer as DataBufferByte).data)
+
 fun PacketBuffer.readAppearanceImage(): AppearanceImage {
     val width = readIntLE()
     val height = readIntLE()
@@ -68,20 +73,9 @@ fun PacketBuffer.readAppearanceImage(): AppearanceImage {
 }
 
 fun PacketBuffer.writeAppearanceImage(value: AppearanceImage) {
-    writeIntLE(value.width)
-    writeIntLE(value.height)
+    writeIntLE(value._width)
+    writeIntLE(value._height)
     writeByteArray(value.data)
-}
-
-fun InputStream.readAppearanceImage(): AppearanceImage {
-    val image = ImageIO.read(this)
-    val width = image.width
-    val height = image.height
-    val convertedImage = BufferedImage(colorModel, colorModel.createCompatibleWritableRaster(width, height), false, null)
-    val convertedImageGraphics = convertedImage.createGraphics()
-    convertedImageGraphics.drawImage(image, 0, 0, null)
-    convertedImageGraphics.dispose()
-    return AppearanceImage(width, height, (convertedImage.raster.dataBuffer as DataBufferByte).data)
 }
 
 private val colorModel = ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), intArrayOf(8, 8, 8, 8), true, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE)

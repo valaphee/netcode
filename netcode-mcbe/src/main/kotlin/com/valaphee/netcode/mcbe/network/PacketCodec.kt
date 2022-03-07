@@ -16,10 +16,6 @@
 
 package com.valaphee.netcode.mcbe.network
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.valaphee.jackson.dataformat.nbt.NbtFactory
 import com.valaphee.netcode.mcbe.latestProtocolVersion
 import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsPacketReader
 import com.valaphee.netcode.mcbe.network.packet.AnvilDamagePacketReader
@@ -183,7 +179,6 @@ import com.valaphee.netcode.mcbe.network.packet.WindowOpenPacketReader
 import com.valaphee.netcode.mcbe.network.packet.WindowPropertyPacketReader
 import com.valaphee.netcode.mcbe.network.packet.WorldEventPacketReader
 import com.valaphee.netcode.mcbe.network.packet.WorldPacketReader
-import com.valaphee.netcode.mcbe.util.Registries
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageCodec
@@ -194,45 +189,36 @@ import kotlin.reflect.full.findAnnotation
  * @author Kevin Ludwig
  */
 class PacketCodec(
-    var jsonObjectMapper: ObjectMapper,
-    var nbtObjectMapper: ObjectMapper,
+    var wrapBuffer: (ByteBuf) -> PacketBuffer,
     private val client: Boolean,
-    var version: Int = latestProtocolVersion,
+    var version: Int = latestProtocolVersion
 ) : ByteToMessageCodec<Packet>() {
-    var registries: Registries? = null
-
     public override fun encode(context: ChannelHandlerContext?, message: Packet, out: ByteBuf) {
-        PacketBuffer(out, jsonObjectMapper, nbtObjectMapper, registries).apply {
+        wrapBuffer(out).apply {
             writeVarUInt(message.id and Packet.idMask or ((message.senderId and Packet.senderIdMask) shl Packet.senderIdShift) or ((message.clientId and Packet.clientIdMask) shl Packet.clientIdShift))
             message.write(this, version)
         }
     }
 
     public override fun decode(context: ChannelHandlerContext?, `in`: ByteBuf, out: MutableList<Any>) {
-        val buffer = PacketBuffer(`in`, jsonObjectMapper, nbtObjectMapper, registries)
+        val buffer = wrapBuffer(`in`)
         val header = buffer.readVarUInt()
         val id = header and Packet.idMask
         (if (client) clientReaders else serverReaders)[id]?.let {
-            val index = buffer.readerIndex()
             try {
                 out.add(it.read(buffer, version).apply {
                     senderId = (header shr Packet.senderIdShift) and Packet.senderIdMask
                     clientId = (header shr Packet.clientIdShift) and Packet.clientIdMask
                 })
             } catch (ex: Exception) {
-                throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} problematic at 0x${buffer.readerIndex().toString(16).uppercase()}", ex, buffer).also { out.add(UnknownPacket(id, PacketBuffer(buffer.readerIndex(index).retainedSlice(), jsonObjectMapper, nbtObjectMapper, registries))) }
+                throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} problematic at 0x${buffer.readerIndex().toString(16).uppercase()}", ex, buffer)
             }
-            if (buffer.readableBytes() > 0) throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} not fully read", buffer) else Unit
-        } ?: out.add(UnknownPacket(id, PacketBuffer(buffer.retainedSlice(), jsonObjectMapper, nbtObjectMapper, registries)))
+            if (buffer.isReadable) throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} not fully read", buffer)
+        }
     }
 
     companion object {
         const val NAME = "mcbe-packet-codec"
-        private val jsonObjectMapper = jacksonObjectMapper()
-        private val nbtObjectMapper = ObjectMapper(NbtFactory().apply {
-            enable(NbtFactory.Feature.LittleEndian)
-            enable(NbtFactory.Feature.VarInt)
-        }).apply { registerKotlinModule() }
         private val readers = Int2ObjectOpenHashMap<PacketReader>().apply {
             this[0x01] = LoginPacketReader
             this[0x02] = StatusPacketReader

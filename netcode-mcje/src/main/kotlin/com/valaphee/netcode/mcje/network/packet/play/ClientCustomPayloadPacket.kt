@@ -22,24 +22,26 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import io.netty.buffer.ByteBuf
+import io.netty.util.ReferenceCountUtil
 
 /**
  * @author Kevin Ludwig
  */
 class ClientCustomPayloadPacket(
     val channel: NamespacedKey,
-    val payload: ByteBuf
+    val data: ByteBuf
 ) : Packet<ClientPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeNamespacedKey(channel)
-        buffer.writeBytes(payload)
+        buffer.writeBytes(data)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) {
         handler.customPayload(this)
+        ReferenceCountUtil.safeRelease(data)
     }
 
-    override fun toString() = "ClientCustomPayloadPacket(channel=$channel, payload=$payload)"
+    override fun toString() = "ClientCustomPayloadPacket(channel=$channel, data=$data)"
 }
 
 /**

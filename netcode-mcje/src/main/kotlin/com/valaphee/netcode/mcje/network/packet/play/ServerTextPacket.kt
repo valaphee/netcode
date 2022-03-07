@@ -21,7 +21,6 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import java.util.UUID
 
 /**
@@ -37,7 +36,7 @@ class ServerTextPacket(
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(GsonComponentSerializer.gson().serialize(message))
+        buffer.writeComponent(message)
         buffer.writeByte(type.ordinal)
         buffer.writeUuid(userId)
     }
@@ -51,5 +50,5 @@ class ServerTextPacket(
  * @author Kevin Ludwig
  */
 object ServerTextPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTextPacket(GsonComponentSerializer.gson().deserialize(buffer.readString()), ServerTextPacket.Type.values()[buffer.readByte().toInt()], buffer.readUuid())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerTextPacket(buffer.readComponent(), ServerTextPacket.Type.values()[buffer.readByte().toInt()], buffer.readUuid())
 }

@@ -29,13 +29,13 @@ import java.util.UUID
 data class ShapelessRecipe(
     @JsonProperty("description") val description: Description,
     @JsonProperty("tags") val tags: List<String>,
-    @JsonProperty("ingredients") val ingredients: List<ItemStack>,
+    @JsonProperty("ingredients") val input: List<ItemStack?>,
     @JsonProperty("priority") val priority: Int = 0,
-    @JsonProperty("result") val result: ItemStack,
+    @JsonProperty("result") val output: ItemStack?,
     @JsonIgnore val id: UUID = UUID.randomUUID(),
     @JsonIgnore var netId: Int = 0
 ) : Recipe {
-    class Description(
+    data class Description(
         @JsonProperty("identifier") val key: String
     )
 }

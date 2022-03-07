@@ -21,7 +21,6 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
@@ -38,7 +37,8 @@ class ServerPlayerCombatEventPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(event.ordinal)
-        @Suppress("NON_EXHAUSTIVE_WHEN") when (event) {
+        when (event) {
+            Event.Enter -> Unit
             Event.End -> {
                 buffer.writeVarInt(durationOrPlayerEntityId)
                 buffer.writeInt(entityId)
@@ -46,7 +46,7 @@ class ServerPlayerCombatEventPacket(
             Event.Death -> {
                 buffer.writeVarInt(durationOrPlayerEntityId)
                 buffer.writeInt(entityId)
-                buffer.writeString(GsonComponentSerializer.gson().serialize(message!!))
+                buffer.writeComponent(message!!)
             }
         }
     }
@@ -65,7 +65,12 @@ object ServerPlayerCombatEventPacketReader : PacketReader {
         val durationOrPlayerEntityId: Int
         val entityId: Int
         val message: Component?
-        @Suppress("NON_EXHAUSTIVE_WHEN") when (event) {
+        when (event) {
+            ServerPlayerCombatEventPacket.Event.Enter -> {
+                durationOrPlayerEntityId = 0
+                entityId = 0
+                message = null
+            }
             ServerPlayerCombatEventPacket.Event.End -> {
                 durationOrPlayerEntityId = buffer.readVarInt()
                 entityId = buffer.readInt()
@@ -74,12 +79,7 @@ object ServerPlayerCombatEventPacketReader : PacketReader {
             ServerPlayerCombatEventPacket.Event.Death -> {
                 durationOrPlayerEntityId = buffer.readVarInt()
                 entityId = buffer.readInt()
-                message = GsonComponentSerializer.gson().deserialize(buffer.readString())
-            }
-            else -> {
-                durationOrPlayerEntityId = 0
-                entityId = 0
-                message = null
+                message = buffer.readComponent()
             }
         }
         return ServerPlayerCombatEventPacket(event, durationOrPlayerEntityId, entityId, message)

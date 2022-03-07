@@ -19,8 +19,8 @@ package com.valaphee.netcode.mcbe.world.entity.metadata
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mcbe.util.Registry
 import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.util.Registry
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -34,35 +34,35 @@ interface MetadataType<T> {
     fun write(buffer: PacketBuffer, value: T)
 
     companion object {
-        val Byte = object : MetadataType<Number> {
+        val Byte = object : MetadataType<Byte> {
             override fun read(buffer: PacketBuffer) = buffer.readByte()
 
-            override fun write(buffer: PacketBuffer, value: Number) {
+            override fun write(buffer: PacketBuffer, value: Byte) {
                 buffer.writeByte(value.toInt())
             }
         }
 
-        val Short = object : MetadataType<Number> {
+        val Short = object : MetadataType<Short> {
             override fun read(buffer: PacketBuffer) = buffer.readShortLE()
 
-            override fun write(buffer: PacketBuffer, value: Number) {
+            override fun write(buffer: PacketBuffer, value: Short) {
                 buffer.writeShortLE(value.toInt())
             }
         }
 
-        val Int = object : MetadataType<Number> {
+        val Int = object : MetadataType<Int> {
             override fun read(buffer: PacketBuffer) = buffer.readVarInt()
 
-            override fun write(buffer: PacketBuffer, value: Number) {
-                buffer.writeVarInt(value.toInt())
+            override fun write(buffer: PacketBuffer, value: Int) {
+                buffer.writeVarInt(value)
             }
         }
 
-        val Float = object : MetadataType<Number> {
+        val Float = object : MetadataType<Float> {
             override fun read(buffer: PacketBuffer) = buffer.readFloatLE()
 
-            override fun write(buffer: PacketBuffer, value: Number) {
-                buffer.writeFloatLE(value.toFloat())
+            override fun write(buffer: PacketBuffer, value: Float) {
+                buffer.writeFloatLE(value)
             }
         }
 
@@ -90,11 +90,11 @@ interface MetadataType<T> {
             }
         }
 
-        val Long = object : MetadataType<Number> {
+        val Long = object : MetadataType<Long> {
             override fun read(buffer: PacketBuffer) = buffer.readVarLong()
 
-            override fun write(buffer: PacketBuffer, value: Number) {
-                buffer.writeVarLong(value.toLong())
+            override fun write(buffer: PacketBuffer, value: Long) {
+                buffer.writeVarLong(value)
             }
         }
 

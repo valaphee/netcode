@@ -21,7 +21,6 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
@@ -31,8 +30,8 @@ class ServerPlayerListHeaderFooterPacket(
     val footer: Component
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(GsonComponentSerializer.gson().serialize(header))
-        buffer.writeString(GsonComponentSerializer.gson().serialize(footer))
+        buffer.writeComponent(header)
+        buffer.writeComponent(footer)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.playerListHeaderFooter(this)
@@ -44,5 +43,5 @@ class ServerPlayerListHeaderFooterPacket(
  * @author Kevin Ludwig
  */
 object ServerPlayerListHeaderFooterPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerListHeaderFooterPacket(GsonComponentSerializer.gson().deserialize(buffer.readString()), GsonComponentSerializer.gson().deserialize(buffer.readString()))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerListHeaderFooterPacket(buffer.readComponent(), buffer.readComponent())
 }

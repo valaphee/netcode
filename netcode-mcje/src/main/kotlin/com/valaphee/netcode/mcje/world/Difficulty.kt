@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mc.chat;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.valaphee.netcode.mcje.world
 
 /**
  * @author Kevin Ludwig
  */
-public interface StyleCode {
-    char Prefix = '\u00A7';
-    char AlternativePrefix = '&';
-    List<StyleCode> values = new ArrayList<>();
-
-    char getCode();
-
-    String getKey();
-
-    int ordinal();
+enum class Difficulty {
+    Peaceful, Easy, Normal, Hard
 }

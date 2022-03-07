@@ -53,11 +53,11 @@ class Decompressor : MessageToMessageDecoder<ByteBuf>() {
         }
     }
 
-    private fun readVarInt(buffer: ByteBuf?): Int {
+    private fun readVarInt(buffer: ByteBuf): Int {
         var value = 0
         var shift = 0
         while (35 >= shift) {
-            val head = buffer!!.readByte().toInt()
+            val head = buffer.readByte().toInt()
             value = value or ((head and 0x7F) shl shift)
             if (0 == head and 0x80) return value
             shift += 7

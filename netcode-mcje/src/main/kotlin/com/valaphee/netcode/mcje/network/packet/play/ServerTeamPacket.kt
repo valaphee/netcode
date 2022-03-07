@@ -16,14 +16,12 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.valaphee.netcode.mc.chat.StyleCode
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.util.safeList
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
@@ -35,7 +33,7 @@ class ServerTeamPacket(
     val friendlyFlags: Byte,
     val nametagVisibility: Rule?,
     val collisionRule: Rule?,
-    val styleCode: StyleCode?,
+    val styleCode: Int,
     val prefix: Component?,
     val suffix: Component?,
     val userNames: List<String>?
@@ -51,9 +49,9 @@ class ServerTeamPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(name)
         buffer.writeByte(action.ordinal)
-        @Suppress("NON_EXHAUSTIVE_WHEN") when (action) {
+        when (action) {
             Action.Create -> {
-                buffer.writeString(GsonComponentSerializer.gson().serialize(displayName!!))
+                buffer.writeComponent(displayName!!)
                 buffer.writeByte(friendlyFlags.toInt())
                 when (nametagVisibility) {
                     Rule.Never -> buffer.writeString("never")
@@ -67,20 +65,17 @@ class ServerTeamPacket(
                     Rule.OwnTeam -> buffer.writeString("pushOwnTeam")
                     else -> buffer.writeString("always")
                 }
-                buffer.writeVarInt(styleCode!!.ordinal())
-                buffer.writeString(GsonComponentSerializer.gson().serialize(prefix!!))
-                buffer.writeString(GsonComponentSerializer.gson().serialize(suffix!!))
+                buffer.writeVarInt(styleCode)
+                buffer.writeComponent(prefix!!)
+                buffer.writeComponent(suffix!!)
                 userNames?.let {
                     buffer.writeVarInt(it.size)
                     it.forEach { buffer.writeString(it) }
                 }
             }
-            Action.AddUserNames, Action.RemoveUserNames -> userNames?.let {
-                buffer.writeVarInt(it.size)
-                it.forEach { buffer.writeString(it) }
-            }
+            Action.Remove -> Unit
             Action.Update -> {
-                buffer.writeString(GsonComponentSerializer.gson().serialize(displayName!!))
+                buffer.writeComponent(displayName!!)
                 buffer.writeByte(friendlyFlags.toInt())
                 when (nametagVisibility) {
                     Rule.Never -> buffer.writeString("never")
@@ -94,9 +89,13 @@ class ServerTeamPacket(
                     Rule.OwnTeam -> buffer.writeString("pushOwnTeam")
                     else -> buffer.writeString("always")
                 }
-                buffer.writeVarInt(styleCode!!.ordinal())
-                buffer.writeString(GsonComponentSerializer.gson().serialize(prefix!!))
-                buffer.writeString(GsonComponentSerializer.gson().serialize(suffix!!))
+                buffer.writeVarInt(styleCode)
+                buffer.writeComponent(prefix!!)
+                buffer.writeComponent(suffix!!)
+            }
+            Action.AddUserNames, Action.RemoveUserNames -> userNames?.let {
+                buffer.writeVarInt(it.size)
+                it.forEach { buffer.writeString(it) }
             }
         }
     }
@@ -117,13 +116,13 @@ object ServerTeamPacketReader : PacketReader {
         val friendlyFlags: Byte
         val nametagVisibility: ServerTeamPacket.Rule?
         val collisionRule: ServerTeamPacket.Rule?
-        val styleCode: StyleCode?
+        val styleCode: Int
         val prefix: Component?
         val suffix: Component?
         val userNames: List<String>?
-        @Suppress("NON_EXHAUSTIVE_WHEN") when (action) {
+        when (action) {
             ServerTeamPacket.Action.Create -> {
-                displayName = GsonComponentSerializer.gson().deserialize(buffer.readString())
+                displayName = buffer.readComponent()
                 friendlyFlags = buffer.readByte()
                 nametagVisibility = when (buffer.readString(32)) {
                     "never" -> ServerTeamPacket.Rule.Never
@@ -137,50 +136,50 @@ object ServerTeamPacketReader : PacketReader {
                     "pushOwnTeam" -> ServerTeamPacket.Rule.OwnTeam
                     else -> ServerTeamPacket.Rule.Always
                 }
-                styleCode = StyleCode.values[buffer.readVarInt()]
-                prefix = GsonComponentSerializer.gson().deserialize(buffer.readString())
-                suffix = GsonComponentSerializer.gson().deserialize(buffer.readString())
+                styleCode = buffer.readVarInt()
+                prefix = buffer.readComponent()
+                suffix = buffer.readComponent()
                 userNames = safeList(buffer.readVarInt()) { buffer.readString(40) }
+            }
+            ServerTeamPacket.Action.Remove -> {
+                displayName = null
+                friendlyFlags = 0
+                nametagVisibility = null
+                collisionRule = null
+                styleCode = 0
+                prefix = null
+                suffix = null
+                userNames = null
+            }
+            ServerTeamPacket.Action.Update -> {
+                displayName = buffer.readComponent()
+                friendlyFlags = buffer.readByte()
+                nametagVisibility = when (buffer.readString(32)) {
+                    "never" -> ServerTeamPacket.Rule.Never
+                    "hideForOtherTeams" -> ServerTeamPacket.Rule.OtherTeams
+                    "hideForOwnTeam" -> ServerTeamPacket.Rule.OwnTeam
+                    else -> ServerTeamPacket.Rule.Always
+                }
+                collisionRule = when (buffer.readString(32)) {
+                    "never" -> ServerTeamPacket.Rule.Never
+                    "pushOtherTeams" -> ServerTeamPacket.Rule.OtherTeams
+                    "pushOwnTeam" -> ServerTeamPacket.Rule.OwnTeam
+                    else -> ServerTeamPacket.Rule.Always
+                }
+                styleCode = buffer.readVarInt()
+                prefix = buffer.readComponent()
+                suffix = buffer.readComponent()
+                userNames = null
             }
             ServerTeamPacket.Action.AddUserNames, ServerTeamPacket.Action.RemoveUserNames -> {
                 displayName = null
                 friendlyFlags = 0
                 nametagVisibility = null
                 collisionRule = null
-                styleCode = null
+                styleCode = 0
                 prefix = null
                 suffix = null
                 userNames = safeList(buffer.readVarInt()) { buffer.readString(40) }
-            }
-            ServerTeamPacket.Action.Update -> {
-                displayName = GsonComponentSerializer.gson().deserialize(buffer.readString())
-                friendlyFlags = buffer.readByte()
-                nametagVisibility = when (buffer.readString(32)) {
-                    "never" -> ServerTeamPacket.Rule.Never
-                    "hideForOtherTeams" -> ServerTeamPacket.Rule.OtherTeams
-                    "hideForOwnTeam" -> ServerTeamPacket.Rule.OwnTeam
-                    else -> ServerTeamPacket.Rule.Always
-                }
-                collisionRule = when (buffer.readString(32)) {
-                    "never" -> ServerTeamPacket.Rule.Never
-                    "pushOtherTeams" -> ServerTeamPacket.Rule.OtherTeams
-                    "pushOwnTeam" -> ServerTeamPacket.Rule.OwnTeam
-                    else -> ServerTeamPacket.Rule.Always
-                }
-                styleCode = StyleCode.values[buffer.readVarInt()]
-                prefix = GsonComponentSerializer.gson().deserialize(buffer.readString())
-                suffix = GsonComponentSerializer.gson().deserialize(buffer.readString())
-                userNames = null
-            }
-            else -> {
-                displayName = null
-                friendlyFlags = 0
-                nametagVisibility = null
-                collisionRule = null
-                styleCode = null
-                prefix = null
-                suffix = null
-                userNames = null
             }
         }
         return ServerTeamPacket(name, action, displayName, friendlyFlags, nametagVisibility, collisionRule, styleCode, prefix, suffix, userNames)

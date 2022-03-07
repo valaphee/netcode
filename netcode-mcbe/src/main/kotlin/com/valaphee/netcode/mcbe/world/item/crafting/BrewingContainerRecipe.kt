@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.network
+package com.valaphee.netcode.mcbe.world.item.crafting
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonTypeName
 
 /**
  * @author Kevin Ludwig
  */
-class UnknownPacket(
-    override val id: Int,
-    val buffer: PacketBuffer
-) : Packet() {
-    override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeBytes(this.buffer)
-    }
-
-    override fun handle(handler: PacketHandler) = handler.unknown(this)
-
-    override fun toString() = "UnknownPacket(id=$id)"
+@JsonTypeName("minecraft:recipe_brewing_container")
+data class BrewingContainerRecipe(
+    @JsonProperty("description") val description: Description,
+    @JsonProperty("tags") val tags: List<String>,
+    @JsonProperty("input") val inputKey: String,
+    @JsonProperty("reagent") val reagentKey: String,
+    @JsonProperty("output") val outputKey: String
+) {
+    data class Description(
+        @JsonProperty("identifier") val key: String
+    )
 }

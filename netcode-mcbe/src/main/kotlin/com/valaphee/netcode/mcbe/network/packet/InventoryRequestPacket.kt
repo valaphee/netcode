@@ -75,7 +75,7 @@ class InventoryRequestPacket(
             buffer.writeVarInt(it.requestId)
             buffer.writeVarUInt(it.actions.size)
             it.actions.forEach {
-                @Suppress("NON_EXHAUSTIVE_WHEN") when (it.type) {
+                when (it.type) {
                     ActionType.Move, ActionType.Place -> {
                         buffer.writeByte(it.count)
                         buffer.writeByte(it.sourceSlotType!!.ordinal)
@@ -107,10 +107,12 @@ class InventoryRequestPacket(
                         buffer.writeVarInt(it.sourceNetId)
                     }
                     ActionType.Create -> buffer.writeByte(it.sourceSlotId)
+                    ActionType.LabTableCombine -> TODO()
                     ActionType.BeaconPayment -> {
                         buffer.writeVarInt(it.auxInt)
                         buffer.writeVarInt(it.auxInt2)
                     }
+                    ActionType.MineBlock -> TODO()
                     ActionType.CraftRecipe, ActionType.CraftCreative -> buffer.writeVarUInt(it.auxInt)
                     ActionType.CraftRecipeAuto -> {
                         buffer.writeVarUInt(it.auxInt)
@@ -153,12 +155,14 @@ object InventoryRequestPacketReader : PacketReader {
                 InventoryRequestPacket.ActionType.Drop -> InventoryRequestPacket.Action(null, actionType, buffer.readByte().toInt(), WindowSlotType.values()[buffer.readByte().toInt()], buffer.readByte().toInt(), buffer.readVarInt(), buffer.readBoolean(), null, 0, 0, 0, 0, 0)
                 InventoryRequestPacket.ActionType.Destroy, InventoryRequestPacket.ActionType.Consume -> InventoryRequestPacket.Action(null, actionType, buffer.readByte().toInt(), WindowSlotType.values()[buffer.readByte().toInt()], buffer.readByte().toInt(), buffer.readVarInt(), false, null, 0, 0, 0, 0, 0)
                 InventoryRequestPacket.ActionType.Create -> InventoryRequestPacket.Action(null, actionType, 0, null, buffer.readByte().toInt(), 0, false, null, 0, 0, 0, 0, 0)
+                InventoryRequestPacket.ActionType.LabTableCombine -> TODO()
                 InventoryRequestPacket.ActionType.BeaconPayment -> InventoryRequestPacket.Action(null, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readVarInt(), buffer.readVarInt())
+                InventoryRequestPacket.ActionType.MineBlock -> TODO()
                 InventoryRequestPacket.ActionType.CraftRecipe, InventoryRequestPacket.ActionType.CraftCreative -> InventoryRequestPacket.Action(null, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readVarInt(), 0)
                 InventoryRequestPacket.ActionType.CraftRecipeAuto -> InventoryRequestPacket.Action(null, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readVarInt(), if (version >= 448) buffer.readByte().toInt() else 0)
                 InventoryRequestPacket.ActionType.CraftRecipeOptional -> InventoryRequestPacket.Action(null, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readVarUInt(), buffer.readIntLE())
                 InventoryRequestPacket.ActionType.CraftResultsDeprecated -> InventoryRequestPacket.Action(safeList(buffer.readVarUInt()) { if (version >= 431) buffer.readStackInstance() else buffer.readStackPre431() }, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readByte().toInt(), 0)
-                else -> TODO()
+                InventoryRequestPacket.ActionType.CraftNonImplementedDeprecated -> TODO()
             }
         }, if (version >= 422) safeList(buffer.readVarUInt()) { buffer.readString() } else emptyList())
     })

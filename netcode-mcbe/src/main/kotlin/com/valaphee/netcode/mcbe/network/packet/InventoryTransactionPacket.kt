@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.world.block.BlockState
 import com.valaphee.netcode.mcbe.world.inventory.WindowId
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readStack
@@ -49,7 +50,7 @@ class InventoryTransactionPacket(
     val fromPosition: Float3?,
     val clickPosition: Float3?,
     val headPosition: Float3?,
-    val blockStateKey: String?
+    val blockState: BlockState?
 ) : Packet() {
     data class LegacySlot(
         val windowId: Int,
@@ -143,8 +144,8 @@ class InventoryTransactionPacket(
         if (version in 407 until 431) buffer.writeBoolean(usingNetIds)
         buffer.writeVarUInt(actions.size)
         actions.forEach { if (version >= 431) buffer.writeAction(it) else if (usingNetIds && version >= 407) buffer.writeActionPre431(it) else buffer.writeActionPre407(it) }
-        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (type) {
+            Type.Normal, Type.Mismatch -> Unit
             Type.ItemUse -> {
                 buffer.writeVarUInt(actionId)
                 buffer.writeInt3UnsignedY(blockPosition!!)
@@ -153,7 +154,7 @@ class InventoryTransactionPacket(
                 if (version >= 431) buffer.writeStack(itemStackInHand) else buffer.writeStackPre431(itemStackInHand)
                 buffer.writeFloat3(fromPosition!!)
                 buffer.writeFloat3(clickPosition!!)
-                buffer.writeVarUInt(buffer.registries.blockStates.getId(blockStateKey!!))
+                buffer.writeVarUInt(buffer.registries.blockStates.getId(blockState!!))
             }
             Type.ItemUseOnEntity -> {
                 buffer.writeVarULong(runtimeEntityId)
@@ -174,7 +175,7 @@ class InventoryTransactionPacket(
 
     override fun handle(handler: PacketHandler) = handler.inventoryTransaction(this)
 
-    override fun toString() = "InventoryTransactionPacket(legacyRequestId=$legacyRequestId, legacySlots=$legacySlots, type=$type, usingNetIds=$usingNetIds, actions=$actions, actionId=$actionId, runtimeEntityId=$runtimeEntityId, blockPosition=$blockPosition, blockFace=$blockFace, hotbarSlot=$hotbarSlot, stackInHand=$itemStackInHand, fromPosition=$fromPosition, clickPosition=$clickPosition, headPosition=$headPosition, blockStateKey='$blockStateKey')"
+    override fun toString() = "InventoryTransactionPacket(legacyRequestId=$legacyRequestId, legacySlots=$legacySlots, type=$type, usingNetIds=$usingNetIds, actions=$actions, actionId=$actionId, runtimeEntityId=$runtimeEntityId, blockPosition=$blockPosition, blockFace=$blockFace, hotbarSlot=$hotbarSlot, stackInHand=$itemStackInHand, fromPosition=$fromPosition, clickPosition=$clickPosition, headPosition=$headPosition, blockState=$blockState)"
 }
 
 /**
@@ -203,7 +204,7 @@ object InventoryTransactionPacketReader : PacketReader {
         val fromPosition: Float3?
         val clickPosition: Float3?
         val headPosition: Float3?
-        val blockStateKey: String?
+        val blockState: BlockState?
         when (type) {
             InventoryTransactionPacket.Type.ItemUse -> {
                 actionId = buffer.readVarUInt()
@@ -215,7 +216,7 @@ object InventoryTransactionPacketReader : PacketReader {
                 fromPosition = buffer.readFloat3()
                 clickPosition = buffer.readFloat3()
                 headPosition = null
-                blockStateKey = checkNotNull(buffer.registries.blockStates[buffer.readVarUInt()])
+                blockState = buffer.registries.blockStates[buffer.readVarUInt()]!!
             }
             InventoryTransactionPacket.Type.ItemUseOnEntity -> {
                 runtimeEntityId = buffer.readVarULong()
@@ -227,7 +228,7 @@ object InventoryTransactionPacketReader : PacketReader {
                 fromPosition = buffer.readFloat3()
                 clickPosition = buffer.readFloat3()
                 headPosition = null
-                blockStateKey = null
+                blockState = null
             }
             InventoryTransactionPacket.Type.ItemRelease -> {
                 actionId = buffer.readVarUInt()
@@ -239,7 +240,7 @@ object InventoryTransactionPacketReader : PacketReader {
                 fromPosition = null
                 clickPosition = null
                 headPosition = buffer.readFloat3()
-                blockStateKey = null
+                blockState = null
             }
             else -> {
                 actionId = 0
@@ -251,10 +252,10 @@ object InventoryTransactionPacketReader : PacketReader {
                 fromPosition = null
                 clickPosition = null
                 headPosition = null
-                blockStateKey = null
+                blockState = null
             }
         }
-        return InventoryTransactionPacket(legacyRequestId, legacySlots, type, usingNetIds, actions, actionId, runtimeEntityId, position, blockFace, hotbarSlot, itemStackInHand, fromPosition, clickPosition, headPosition, blockStateKey)
+        return InventoryTransactionPacket(legacyRequestId, legacySlots, type, usingNetIds, actions, actionId, runtimeEntityId, position, blockFace, hotbarSlot, itemStackInHand, fromPosition, clickPosition, headPosition, blockState)
     }
 }
 
@@ -294,8 +295,8 @@ fun PacketBuffer.readSource() = when (val type = InventoryTransactionPacket.Sour
 
 fun PacketBuffer.writeSource(value: InventoryTransactionPacket.Source) {
     writeVarUInt(value.type.id)
-    @Suppress("NON_EXHAUSTIVE_WHEN")
     when (value.type) {
+        InventoryTransactionPacket.Source.Type.None, InventoryTransactionPacket.Source.Type.Global, InventoryTransactionPacket.Source.Type.Creative -> Unit
         InventoryTransactionPacket.Source.Type.Inventory, InventoryTransactionPacket.Source.Type.UntrackedInteractionUi, InventoryTransactionPacket.Source.Type.NonImplemented -> writeVarInt(value.windowId)
         InventoryTransactionPacket.Source.Type.World -> writeVarUInt(value.action.ordinal)
     }

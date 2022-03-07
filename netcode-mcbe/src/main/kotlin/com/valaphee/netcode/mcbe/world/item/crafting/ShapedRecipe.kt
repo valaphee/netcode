@@ -32,11 +32,11 @@ data class ShapedRecipe(
     @JsonProperty("key") val key: Map<Char, ItemStack>,
     @JsonProperty("pattern") val pattern: List<String>,
     @JsonProperty("priority") val priority: Int = 0,
-    @JsonProperty("result") val result: ItemStack,
+    @JsonProperty("result") val output: ItemStack?,
     @JsonIgnore val id: UUID = UUID.randomUUID(),
     @JsonIgnore var netId: Int = 0
 ) : Recipe {
-    class Description(
+    data class Description(
         @JsonProperty("identifier") val key: String
     )
 

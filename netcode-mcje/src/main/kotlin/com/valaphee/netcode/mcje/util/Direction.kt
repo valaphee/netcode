@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.world.item.crafting
-
-import it.unimi.dsi.fastutil.ints.Int2IntMap
+package com.valaphee.netcode.mcje.util
 
 /**
  * @author Kevin Ludwig
  */
-data class MaterialReducer(
-    val inputId: Int,
-    val itemCounts: Int2IntMap
-)
+enum class Direction {
+    Down, Up, North, South, West, East
+}

@@ -16,6 +16,7 @@
 
 package com.valaphee.netcode.mcbe.world.block
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
@@ -49,14 +50,20 @@ class Block : Data {
         )
     }
 
-    @JsonProperty("description") val description: Description
-    @JsonProperty("events") val events: Map<String, Map<String, Any>>?
-    @JsonProperty("components") val components: Map<String, Any>?
-    @JsonProperty("permutations") val permutations: List<Permutation>?
+    val description: Description
+    val events: Map<String, Map<String, Any>>?
+    val components: Map<String, Any>?
+    val permutations: List<Permutation>?
     @JsonIgnore val states: List<BlockState>
     @JsonIgnore val data: Data
 
-    constructor(description: Description, events: Map<String, Map<String, Any>>? = null, components: Map<String, Any>? = null, permutations: List<Permutation>? = null) {
+    @JsonCreator
+    constructor(
+        @JsonProperty("description") description: Description,
+        @JsonProperty("events") events: Map<String, Map<String, Any>>? = null,
+        @JsonProperty("components") components: Map<String, Any>? = null,
+        @JsonProperty("permutations") permutations: List<Permutation>? = null
+    ) {
         this.description = description
         this.events = events
         this.components = components
@@ -90,7 +97,7 @@ class Block : Data {
             }
         }?.toMap()
         permutations = null
-        this.states = description.properties?.values?.reversed()?.fold(listOf(listOf<Any>())) { acc, set -> acc.flatMap { list -> set.map { list + it } } }?.map { BlockState(description.key, description.properties!!.keys.zip(it.reversed()).toMap()) } ?: listOf(BlockState(description.key, emptyMap()))
+        this.states = description.properties?.values?.reversed()?.fold(listOf(listOf<Any>())) { acc, set -> acc.flatMap { list -> set.map { list + it } } }?.map { BlockState(description.key, description.properties.keys.zip(it.reversed()).toMap()) } ?: listOf(BlockState(description.key, emptyMap()))
         this.data = data
     }
 }

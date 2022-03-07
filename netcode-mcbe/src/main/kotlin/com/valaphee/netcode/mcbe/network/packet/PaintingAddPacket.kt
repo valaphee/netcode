@@ -17,13 +17,13 @@
 package com.valaphee.netcode.mcbe.network.packet
 
 import com.valaphee.foundry.math.Float3
-import com.valaphee.netcode.mc.util.Direction
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.util.Direction
 
 /**
  * @author Kevin Ludwig
@@ -69,9 +69,9 @@ class PaintingAddPacket(
         FlamingSkull("Flaming Skull", 4, 4);
 
         companion object {
-            fun byTitle(title: String) = checkNotNull(byTitle[title])
+            private val byTitle = values().associateBy { it.title }
 
-            private val byTitle: Map<String, Painting> = HashMap<String, Painting>(values().size).apply { values().forEach { this[it.title] = it } }
+            fun byTitle(title: String) = checkNotNull(byTitle[title])
         }
     }
 
@@ -81,13 +81,7 @@ class PaintingAddPacket(
         buffer.writeVarLong(uniqueEntityId)
         buffer.writeVarULong(runtimeEntityId)
         buffer.writeFloat3(position)
-        when (direction) {
-            Direction.North -> buffer.writeVarInt(2)
-            Direction.South -> buffer.writeVarInt(0)
-            Direction.West -> buffer.writeVarInt(1)
-            Direction.East -> buffer.writeVarInt(3)
-            else -> throw IndexOutOfBoundsException()
-        }
+        buffer.writeVarInt(direction.horizontalIndex)
         buffer.writeString(painting.title)
     }
 
@@ -104,13 +98,7 @@ object PaintingAddPacketReader : PacketReader {
         buffer.readVarLong(),
         buffer.readVarULong(),
         buffer.readFloat3(),
-        when (buffer.readVarInt()) {
-            0 -> Direction.South
-            1 -> Direction.West
-            2 -> Direction.North
-            3 -> Direction.East
-            else -> throw IndexOutOfBoundsException()
-        },
+        Direction.horizontals[buffer.readVarInt()],
         PaintingAddPacket.Painting.byTitle(buffer.readString())
     )
 }

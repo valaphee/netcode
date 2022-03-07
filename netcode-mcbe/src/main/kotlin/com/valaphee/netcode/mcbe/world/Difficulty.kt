@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.world.item.crafting
+package com.valaphee.netcode.mcbe.world
 
 /**
  * @author Kevin Ludwig
  */
-data class ContainerMixRecipe(
-    val inputKey: String,
-    val reagentKey: String,
-    val outputKey: String
-)
+enum class Difficulty {
+    Peaceful, Easy, Normal, Hard
+}

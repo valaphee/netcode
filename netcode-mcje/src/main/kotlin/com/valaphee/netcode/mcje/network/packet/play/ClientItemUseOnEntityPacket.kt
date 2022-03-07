@@ -40,12 +40,13 @@ class ClientItemUseOnEntityPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeVarInt(type.ordinal)
-        @Suppress("NON_EXHAUSTIVE_WHEN") when (type) {
+        when (type) {
+            Type.Interact -> buffer.writeVarInt(hand!!.ordinal)
+            Type.Attack -> Unit
             Type.InteractAt -> {
                 buffer.writeFloat3(position!!)
                 buffer.writeVarInt(hand!!.ordinal)
             }
-            Type.Interact -> buffer.writeVarInt(hand!!.ordinal)
         }
         buffer.writeBoolean(sneaking)
     }

@@ -21,7 +21,6 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
@@ -40,12 +39,13 @@ class ServerTitlePacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(action.ordinal)
         when (action) {
-            Action.SetTitle, Action.SetSubTitle, Action.SetActionBarMessage -> buffer.writeString(GsonComponentSerializer.gson().serialize(text!!))
+            Action.SetTitle, Action.SetSubTitle, Action.SetActionBarMessage -> buffer.writeComponent(text!!)
             Action.SetTimings -> {
                 buffer.writeInt(fadeInTime)
                 buffer.writeInt(stayTime)
                 buffer.writeInt(fadeOutTime)
             }
+            Action.ClearTitle, Action.ResetTitle -> Unit
         }
     }
 
@@ -66,7 +66,7 @@ object ServerTitlePacketReader : PacketReader {
         val fadeOutTime: Int
         when (action) {
             ServerTitlePacket.Action.SetTitle, ServerTitlePacket.Action.SetSubTitle, ServerTitlePacket.Action.SetActionBarMessage -> {
-                text = GsonComponentSerializer.gson().deserialize(buffer.readString())
+                text = buffer.readComponent()
                 fadeInTime = 0
                 stayTime = 0
                 fadeOutTime = 0
@@ -77,7 +77,7 @@ object ServerTitlePacketReader : PacketReader {
                 stayTime = buffer.readInt()
                 fadeOutTime = buffer.readInt()
             }
-            else -> {
+            ServerTitlePacket.Action.ClearTitle, ServerTitlePacket.Action.ResetTitle -> {
                 text = null
                 fadeInTime = 0
                 stayTime = 0

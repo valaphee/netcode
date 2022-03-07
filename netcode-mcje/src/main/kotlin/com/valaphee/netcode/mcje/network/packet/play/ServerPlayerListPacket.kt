@@ -23,7 +23,6 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.GameMode
 import com.valaphee.netcode.util.safeList
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import java.util.UUID
 
 /**
@@ -37,7 +36,7 @@ class ServerPlayerListPacket(
         Add, UpdateGameMode, UpdateLatency, UpdateCustomName, Remove
     }
 
-    class Entry(
+    data class Entry(
         val userId: UUID,
         val userName: String?,
         val properties: Map<String, Property>?,
@@ -45,7 +44,7 @@ class ServerPlayerListPacket(
         val latency: Int,
         val customName: Component?
     ) {
-        class Property(
+        data class Property(
             val value: String,
             val signature: String?
         )
@@ -55,7 +54,7 @@ class ServerPlayerListPacket(
         buffer.writeVarInt(action.ordinal)
         buffer.writeVarInt(entries.size)
         entries.forEach {
-            @Suppress("NON_EXHAUSTIVE_WHEN") when (action) {
+            when (action) {
                 Action.Add -> {
                     buffer.writeString(it.userName!!)
                     buffer.writeVarInt(it.properties!!.size)
@@ -71,17 +70,18 @@ class ServerPlayerListPacket(
                     buffer.writeVarInt(it.latency)
                     it.customName?.let {
                         buffer.writeBoolean(true)
-                        buffer.writeString(GsonComponentSerializer.gson().serialize(it))
+                        buffer.writeComponent(it)
                     } ?: buffer.writeBoolean(false)
                 }
                 Action.UpdateCustomName -> {
                     it.customName?.let {
                         buffer.writeBoolean(true)
-                        buffer.writeString(GsonComponentSerializer.gson().serialize(it))
+                        buffer.writeComponent(it)
                     } ?: buffer.writeBoolean(false)
                 }
                 Action.UpdateGameMode -> buffer.writeVarInt(it.gameMode!!.ordinal)
                 Action.UpdateLatency -> buffer.writeVarInt(it.latency)
+                Action.Remove -> Unit
             }
         }
     }
@@ -99,10 +99,10 @@ object ServerPlayerListPacketReader : PacketReader {
         val action = ServerPlayerListPacket.Action.values()[buffer.readVarInt()]
         val entries = safeList(buffer.readVarInt()) {
             when (action) {
-                ServerPlayerListPacket.Action.Add -> ServerPlayerListPacket.Entry(buffer.readUuid(), buffer.readString(), mutableMapOf<String, ServerPlayerListPacket.Entry.Property>().apply { repeat(buffer.readVarInt()) { this[buffer.readString()] = ServerPlayerListPacket.Entry.Property(buffer.readString(), if (buffer.readBoolean()) buffer.readString() else null) } }, checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())), buffer.readVarInt(), if (buffer.readBoolean()) GsonComponentSerializer.gson().deserialize(buffer.readString()) else null)
+                ServerPlayerListPacket.Action.Add -> ServerPlayerListPacket.Entry(buffer.readUuid(), buffer.readString(16), mutableMapOf<String, ServerPlayerListPacket.Entry.Property>().apply { repeat(buffer.readVarInt()) { this[buffer.readString()] = ServerPlayerListPacket.Entry.Property(buffer.readString(), if (buffer.readBoolean()) buffer.readString() else null) } }, checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())), buffer.readVarInt(), if (buffer.readBoolean()) buffer.readComponent() else null)
                 ServerPlayerListPacket.Action.UpdateGameMode -> ServerPlayerListPacket.Entry(buffer.readUuid(), null, null, checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())), 0, null)
                 ServerPlayerListPacket.Action.UpdateLatency -> ServerPlayerListPacket.Entry(buffer.readUuid(), null, null, null, buffer.readVarInt(), null)
-                ServerPlayerListPacket.Action.UpdateCustomName -> ServerPlayerListPacket.Entry(buffer.readUuid(), null, null, null, 0, if (buffer.readBoolean()) GsonComponentSerializer.gson().deserialize(buffer.readString()) else null)
+                ServerPlayerListPacket.Action.UpdateCustomName -> ServerPlayerListPacket.Entry(buffer.readUuid(), null, null, null, 0, if (buffer.readBoolean()) buffer.readComponent() else null)
                 ServerPlayerListPacket.Action.Remove -> ServerPlayerListPacket.Entry(buffer.readUuid(), null, null, null, 0, null)
             }
         }

@@ -28,8 +28,8 @@ import java.io.OutputStream
  */
 data class ItemStack(
     val itemKey: NamespacedKey,
-    var count: Int = 1,
-    var data: Any? = null,
+    val count: Int = 1,
+    val data: Any? = null,
 ) {
     fun equalsIgnoreCount(other: Any?): Boolean {
         if (this === other) return true

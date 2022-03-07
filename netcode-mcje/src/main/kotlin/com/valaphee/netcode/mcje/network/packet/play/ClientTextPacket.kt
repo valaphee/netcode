@@ -40,5 +40,5 @@ class ClientTextPacket(
  * @author Kevin Ludwig
  */
 object ClientTextPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientTextPacket(buffer.readString())
+    override fun read(buffer: PacketBuffer, version: Int) = ClientTextPacket(buffer.readString(256))
 }

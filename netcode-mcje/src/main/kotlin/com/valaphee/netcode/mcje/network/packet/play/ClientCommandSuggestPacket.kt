@@ -42,5 +42,5 @@ class ClientCommandSuggestPacket(
  * @author Kevin Ludwig
  */
 object ClientCommandSuggestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientCommandSuggestPacket(buffer.readVarInt(), buffer.readString())
+    override fun read(buffer: PacketBuffer, version: Int) = ClientCommandSuggestPacket(buffer.readVarInt(), buffer.readString(32500))
 }

@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mc.world
+package com.valaphee.netcode.mcbe.world.item.crafting
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonTypeName
 
 /**
  * @author Kevin Ludwig
  */
-enum class Difficulty {
-    Peaceful, Easy, Normal, Hard
+@JsonTypeName("minecraft:recipe_brewing_container")
+data class BrewingMixRecipe(
+    @JsonProperty("description") val description: Description,
+    @JsonProperty("tags") val tags: List<String>,
+    @JsonProperty("input") val input: String,
+    @JsonProperty("reagent") val reagent: String,
+    @JsonProperty("output") val output: String
+) {
+    data class Description(
+        @JsonProperty("identifier") val key: String
+    )
 }

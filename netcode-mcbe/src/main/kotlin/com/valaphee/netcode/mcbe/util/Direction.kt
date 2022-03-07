@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mc.util
+package com.valaphee.netcode.mcbe.util
 
-fun floor(value: Double): Int {
-    val valueInt = value.toInt()
-    return if (value >= valueInt) valueInt else valueInt - 1
-}
+/**
+ * @author Kevin Ludwig
+ */
+enum class Direction(
+    val horizontalIndex: Int = -1
+) {
+    Down,
+    Up,
+    North(2),
+    South(0),
+    West(1),
+    East(3);
 
-fun ceil(value: Double): Int {
-    val valueInt = (value + 1).toInt()
-    return if (value >= valueInt) valueInt else valueInt - 1
-}
-
-fun floor(value: Float): Int {
-    val valueInt = value.toInt()
-    return if (value >= valueInt) valueInt else valueInt - 1
-}
-
-fun ceil(value: Float): Int {
-    val valueInt = (value + 1).toInt()
-    return if (value >= valueInt) valueInt else valueInt - 1
+    companion object {
+        val horizontals = values().filter { it.horizontalIndex != -1 }.sortedBy { it.horizontalIndex }
+    }
 }

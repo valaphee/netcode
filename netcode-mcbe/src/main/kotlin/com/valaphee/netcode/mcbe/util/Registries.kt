@@ -16,10 +16,12 @@
 
 package com.valaphee.netcode.mcbe.util
 
+import com.valaphee.netcode.mcbe.world.block.BlockState
+
 /**
  * @author Kevin Ludwig
  */
 class Registries(
-    val blockStates: Registry<String>,
+    val blockStates: Registry<BlockState>,
     val items: Registry<String>
 )

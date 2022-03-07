@@ -20,7 +20,6 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.map.Decoration
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
@@ -50,7 +49,7 @@ class ServerMapPacket(
             buffer.writeByte(positionY)
             label?.let {
                 buffer.writeBoolean(true)
-                buffer.writeString(GsonComponentSerializer.gson().serialize(it))
+                buffer.writeComponent(it)
             } ?: buffer.writeBoolean(false)
         }
         buffer.writeByte(width)

@@ -15,11 +15,16 @@
  */
 
 dependencies {
-    api(project(":netcode-mc"))
-    api("io.github.classgraph:classgraph:4.8.129")
+    api(project(":netcode-common"))
+    api("com.fasterxml.jackson.module:jackson-module-afterburner:2.13.1")
+    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
+    api("com.valaphee:foundry-math:1.4.0")
+    api("com.valaphee:jackson-dataformat-nbt:1.1.3")
+    api("io.github.classgraph:classgraph:4.8.140")
+    api("it.unimi.dsi:fastutil:8.5.8")
     api("network.ycc:netty-raknet-client:0.8-SNAPSHOT")
     api("network.ycc:netty-raknet-server:0.8-SNAPSHOT")
-    api("org.bitbucket.b_c:jose4j:0.7.9")
+    api("org.bitbucket.b_c:jose4j:0.7.10")
     api("org.lz4:lz4-java:1.8.0")
 }
 

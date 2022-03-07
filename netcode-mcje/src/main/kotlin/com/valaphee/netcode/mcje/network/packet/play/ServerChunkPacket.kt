@@ -39,7 +39,8 @@ class ServerChunkPacket(
     val blockEntities: List<Any?>
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt2(position)
+        buffer.writeInt(position.x)
+        buffer.writeInt(position.y)
         buffer.writeBoolean(biomes != null)
         buffer.writeVarInt(withSubChunks)
         buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, heightMap)
@@ -54,7 +55,7 @@ class ServerChunkPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.chunk(this)
 
-    override fun toString() = "ServerChunkPacket(position=$position, withSubChunks=$withSubChunks, biomes=${biomes?.contentToString()}, data=${data.contentToString()})"
+    override fun toString() = "ServerChunkPacket(position=$position, withSubChunks=$withSubChunks, heightMap=$heightMap, biomes=${biomes?.size}, data=${data.size}, blockEntities=$blockEntities)"
 }
 
 /**
@@ -62,7 +63,7 @@ class ServerChunkPacket(
  */
 object ServerChunkPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): ServerChunkPacket {
-        val position = buffer.readInt2()
+        val position = Int2(buffer.readInt(), buffer.readInt())
         val withBiomes = buffer.readBoolean()
         val withSubChunks = buffer.readVarInt()
         val heightMap = buffer.nbtObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))

@@ -30,6 +30,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerCameraPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkPublishPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkUnloadPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerCommandSuggestPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerCraftPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerCustomPayloadPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerDifficultyPacket
@@ -87,7 +88,6 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerSoundPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSoundStopPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSpawnPositionPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerStackTakePacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerTabCompletePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTeamPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTextPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTimePacket
@@ -140,7 +140,7 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun text(packet: ServerTextPacket) = other(packet)
 
-    fun tabComplete(packet: ServerTabCompletePacket) = other(packet)
+    fun commandSuggest(packet: ServerCommandSuggestPacket) = other(packet)
 
     fun windowConfirm(packet: ServerWindowConfirmPacket) = other(packet)
 

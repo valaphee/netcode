@@ -23,12 +23,12 @@ import com.valaphee.netcode.util.safeList
  * @author Kevin Ludwig
  */
 data class Enumeration constructor(
-    val name: String,
-    val values: List<String>,
+    var name: String, // needed for je-be protocol translation
+    val values: MutableSet<String>, // needed for je-be protocol translation
     val soft: Boolean = false
 )
 
-fun PacketBuffer.readEnumeration(soft: Boolean) = Enumeration(readString(), safeList(readVarUInt()) { readString() }, soft)
+fun PacketBuffer.readEnumeration(soft: Boolean) = Enumeration(readString(), safeList(readVarUInt()) { readString() }.toMutableSet(), soft)
 
 fun PacketBuffer.writeEnumeration(value: Enumeration) {
     writeString(value.name)

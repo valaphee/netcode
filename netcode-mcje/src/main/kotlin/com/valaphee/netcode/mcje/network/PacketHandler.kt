@@ -23,6 +23,4 @@ import com.valaphee.netcode.ProtocolHandler
  */
 interface PacketHandler : ProtocolHandler {
     fun other(packet: Packet<out PacketHandler>)
-
-    fun unknown(packet: UnknownPacket) = other(packet)
 }

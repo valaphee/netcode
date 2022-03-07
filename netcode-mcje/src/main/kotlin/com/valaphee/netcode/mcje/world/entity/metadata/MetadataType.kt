@@ -19,17 +19,16 @@ package com.valaphee.netcode.mcje.world.entity.metadata
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mc.util.Direction
-import com.valaphee.netcode.mcje.util.Registry
 import com.valaphee.netcode.mcje.network.PacketBuffer
+import com.valaphee.netcode.mcje.util.Direction
 import com.valaphee.netcode.mcje.util.NamespacedKey
+import com.valaphee.netcode.mcje.util.Registry
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readStack
 import com.valaphee.netcode.mcje.world.item.writeStack
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import java.io.OutputStream
 import java.util.UUID
 
@@ -42,27 +41,27 @@ interface MetadataType<T> {
     fun write(buffer: PacketBuffer, value: Any?)
 
     companion object {
-        val Byte = object : MetadataType<Number> {
+        val Byte = object : MetadataType<Byte> {
             override fun read(buffer: PacketBuffer) = buffer.readByte()
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.writeByte((value as Number).toInt())
+                buffer.writeByte((value as Byte).toInt())
             }
         }
 
-        val Int = object : MetadataType<Number> {
+        val Int = object : MetadataType<Int> {
             override fun read(buffer: PacketBuffer) = buffer.readVarInt()
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.writeVarInt((value as Number).toInt())
+                buffer.writeVarInt(value as Int)
             }
         }
 
-        val Float = object : MetadataType<Number> {
+        val Float = object : MetadataType<Float> {
             override fun read(buffer: PacketBuffer) = buffer.readFloatLE()
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.writeFloatLE((value as Number).toFloat())
+                buffer.writeFloatLE(value as Float)
             }
         }
 
@@ -75,20 +74,20 @@ interface MetadataType<T> {
         }
 
         val Component = object : MetadataType<Component> {
-            override fun read(buffer: PacketBuffer) = GsonComponentSerializer.gson().deserialize(buffer.readString())
+            override fun read(buffer: PacketBuffer) = buffer.readComponent()
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.writeString(GsonComponentSerializer.gson().serialize(value as Component))
+                buffer.writeComponent(value as Component)
             }
         }
 
         val OptionalComponent = object : MetadataType<Component?> {
-            override fun read(buffer: PacketBuffer): Component? = if (buffer.readBoolean()) GsonComponentSerializer.gson().deserialize(buffer.readString()) else null
+            override fun read(buffer: PacketBuffer): Component? = if (buffer.readBoolean()) buffer.readComponent() else null
 
             override fun write(buffer: PacketBuffer, value: Any?) {
                 value?.let {
                     buffer.writeBoolean(true)
-                    buffer.writeString(GsonComponentSerializer.gson().serialize(value as Component))
+                    buffer.writeComponent(value as Component)
                 } ?: buffer.writeBoolean(false)
             }
         }
@@ -191,14 +190,14 @@ interface MetadataType<T> {
             }
         }
 
-        val OptionalInt = object : MetadataType<Number?> {
-            override fun read(buffer: PacketBuffer): Number? {
+        val OptionalInt = object : MetadataType<Int?> {
+            override fun read(buffer: PacketBuffer): Int? {
                 val value = buffer.readVarInt()
                 return if (value == 0) null else value
             }
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.writeVarInt(value?.let { (it as Number).toInt() } ?: 0)
+                buffer.writeVarInt(value?.let { it as Int } ?: 0)
             }
         }
 

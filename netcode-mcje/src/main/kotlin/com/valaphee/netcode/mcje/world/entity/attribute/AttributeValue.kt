@@ -33,7 +33,8 @@ class AttributeValue(
         }
     var modified = true
         private set
-    private val _modifiers = HashMap<UUID, AttributeValueModifier>()
+    private val _modifiers = mutableMapOf<UUID, AttributeValueModifier>()
+    val modifiers: Collection<AttributeValueModifier> get() = _modifiers.values
     private var computeModifiedValue = false
     var modifiedValue = value
         get() {
@@ -58,8 +59,6 @@ class AttributeValue(
             }
             return field
         }
-
-    val modifiers get() = _modifiers.values
 
     fun getModifier(id: UUID) = _modifiers[id]
 

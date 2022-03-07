@@ -21,7 +21,6 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
@@ -44,7 +43,7 @@ class ServerObjectivePacket(
         buffer.writeString(name)
         buffer.writeByte(action.ordinal)
         if (action == Action.Create || action == Action.Update) {
-            buffer.writeString(GsonComponentSerializer.gson().serialize(displayName!!))
+            buffer.writeComponent(displayName!!)
             buffer.writeVarInt(type!!.ordinal)
         }
     }
@@ -64,7 +63,7 @@ object ServerObjectivePacketReader : PacketReader {
         val displayName: Component?
         val type: ServerObjectivePacket.Type?
         if (action == ServerObjectivePacket.Action.Create || action == ServerObjectivePacket.Action.Update) {
-            displayName = GsonComponentSerializer.gson().deserialize(buffer.readString())
+            displayName = buffer.readComponent()
             type = ServerObjectivePacket.Type.values()[buffer.readVarInt()]
         } else {
             displayName = null

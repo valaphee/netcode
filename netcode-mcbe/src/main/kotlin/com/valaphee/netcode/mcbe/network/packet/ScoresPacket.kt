@@ -48,7 +48,6 @@ class ScoresPacket(
             buffer.writeIntLE(it.value)
             if (action == Action.Set) {
                 buffer.writeByte(it.type.ordinal)
-                @Suppress("NON_EXHAUSTIVE_WHEN")
                 when (it.type) {
                     Score.ScorerType.None -> Unit
                     Score.ScorerType.Entity, Score.ScorerType.Player -> buffer.writeVarLong(it.entityId)

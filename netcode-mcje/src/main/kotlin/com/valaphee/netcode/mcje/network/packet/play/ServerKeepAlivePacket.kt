@@ -32,6 +32,8 @@ class ServerKeepAlivePacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.keepAlive(this)
+
+    override fun toString() = "ServerKeepAlivePacket(id=$id)"
 }
 
 /**

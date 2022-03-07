@@ -17,8 +17,8 @@
 package com.valaphee.netcode.mcbe.network
 
 import com.valaphee.netcode.mcbe.latestProtocolVersion
-import com.valaphee.netcode.mcbe.util.Registries
 import com.valaphee.netcode.util.lazyToString
+import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
@@ -93,9 +93,9 @@ class Connection(
             context.pipeline()[PacketCodec::class.java].version = value
             field = value
         }
-    var registries: Registries? = null
+    var wrapBuffer: ((ByteBuf) -> PacketBuffer)? = null
         set(value) {
-            context.pipeline()[PacketCodec::class.java].registries = value!!
+            context.pipeline()[PacketCodec::class.java].wrapBuffer = value!!
             field = value
         }
 

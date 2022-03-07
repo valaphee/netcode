@@ -22,12 +22,11 @@ import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.util.safeList
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 /**
  * @author Kevin Ludwig
  */
-class ServerTabCompletePacket(
+class ServerCommandSuggestPacket(
     val id: Int,
     val start: Int,
     val length: Int,
@@ -47,19 +46,19 @@ class ServerTabCompletePacket(
             buffer.writeString(it.match)
             it.tooltip?.let {
                 buffer.writeBoolean(true)
-                buffer.writeString(GsonComponentSerializer.gson().serialize(it))
+                buffer.writeComponent(it)
             } ?: buffer.writeBoolean(false)
         }
     }
 
-    override fun handle(handler: ServerPlayPacketHandler) = handler.tabComplete(this)
+    override fun handle(handler: ServerPlayPacketHandler) = handler.commandSuggest(this)
 
-    override fun toString() = "ServerTabCompletePacket(id=$id, start=$start, length=$length, matches=$matches)"
+    override fun toString() = "ServerCommandSuggestPacket(id=$id, start=$start, length=$length, matches=$matches)"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ServerTabCompletePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTabCompletePacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(), safeList(buffer.readVarInt()) { ServerTabCompletePacket.Match(buffer.readString(), if (buffer.readBoolean()) GsonComponentSerializer.gson().deserialize(buffer.readString()) else null) })
+object ServerCommandSuggestPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerCommandSuggestPacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(), safeList(buffer.readVarInt()) { ServerCommandSuggestPacket.Match(buffer.readString(), if (buffer.readBoolean()) buffer.readComponent() else null) })
 }

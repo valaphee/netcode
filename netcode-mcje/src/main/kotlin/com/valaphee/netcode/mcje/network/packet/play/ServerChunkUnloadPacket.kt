@@ -29,7 +29,8 @@ class ServerChunkUnloadPacket(
     val position: Int2
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt2(position)
+        buffer.writeInt(position.x)
+        buffer.writeInt(position.y)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.chunkUnload(this)
@@ -41,5 +42,5 @@ class ServerChunkUnloadPacket(
  * @author Kevin Ludwig
  */
 object ServerChunkUnloadPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerChunkUnloadPacket(buffer.readInt2())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerChunkUnloadPacket(Int2(buffer.readInt(), buffer.readInt()))
 }

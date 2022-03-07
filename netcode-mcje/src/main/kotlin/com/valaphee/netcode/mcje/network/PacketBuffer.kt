@@ -24,12 +24,14 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int2
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mc.util.Direction
+import com.valaphee.netcode.mcje.util.Direction
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.util.Registries
 import com.valaphee.netcode.mcje.util.minecraftKey
 import com.valaphee.netcode.util.ByteBufWrapper
 import io.netty.buffer.ByteBuf
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import java.nio.charset.StandardCharsets
 import java.util.EnumSet
 import java.util.UUID
@@ -112,7 +114,7 @@ class PacketBuffer(
         }
     }
 
-    fun readByteArray(maximumLength: Int = Short.MAX_VALUE.toInt()): ByteArray {
+    fun readByteArray(maximumLength: Int = Int.MAX_VALUE): ByteArray {
         val length = readVarInt()
         check(length <= readableBytes()) { "Length of $length exceeds ${readableBytes()}" }
         check(length <= maximumLength) { "Length of $length exceeds $maximumLength" }
@@ -136,6 +138,12 @@ class PacketBuffer(
 
     fun writeNamespacedKey(value: NamespacedKey) {
         writeString(value.toString())
+    }
+
+    fun readComponent() = GsonComponentSerializer.gson().deserialize(readString(Short.MAX_VALUE * 8))
+
+    fun writeComponent(component: Component) {
+        writeString(GsonComponentSerializer.gson().serialize(component))
     }
 
     fun readDirection() = Direction.values()[readVarInt() and 0x7]

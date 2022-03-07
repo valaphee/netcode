@@ -16,6 +16,7 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
@@ -24,6 +25,7 @@ import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.inventory.WindowType
+import com.valaphee.netcode.mcbe.world.item.ItemStack
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -42,8 +44,29 @@ class TradePacket(
     val title: String,
     val v2: Boolean,
     val restock: Boolean,
-    val data: Any?
+    val data: Data
 ) : Packet() {
+    data class Data(
+        @JsonProperty("Recipes") val offers: List<Offer>,
+        @JsonProperty("TierExpRequirements") val tierExperienceRequirements: Map<Int, Int>
+    ) {
+        data class Offer(
+            @JsonProperty("buyA") val buyA: ItemStack?,
+            @JsonProperty("buyCountA") val buyCountA: Int,
+            @JsonProperty("priceMultiplierA") val priceMultiplierA: Float,
+            @JsonProperty("sell") val sell: ItemStack?,
+            @JsonProperty("buyB") val buyB: ItemStack?,
+            @JsonProperty("buyCountB") val buyCountB: Int?,
+            @JsonProperty("priceMultiplierB") val priceMultiplierB: Float,
+            @JsonProperty("tier") val tier: Int,
+            @JsonProperty("uses") val sold: Int,
+            @JsonProperty("maxUses") val stock: Int,
+            @JsonProperty("traderExp") val experience: Int,
+            @JsonProperty("reward") val reward: Boolean,
+            @JsonProperty("demand") val demand: Int
+        )
+    }
+
     override val id get() = 0x50
 
     override fun write(buffer: PacketBuffer, version: Int) {

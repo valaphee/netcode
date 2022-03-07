@@ -29,7 +29,7 @@ data class FurnaceRecipe(
     @JsonProperty("input") val input: String,
     @JsonProperty("output") val output: String
 ) : Recipe {
-    class Description(
+    data class Description(
         @JsonProperty("identifier") val key: String
     )
 }

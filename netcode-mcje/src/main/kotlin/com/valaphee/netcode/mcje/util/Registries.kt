@@ -16,6 +16,7 @@
 
 package com.valaphee.netcode.mcje.util
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -36,7 +37,8 @@ class Registries(
     @JsonProperty("minecraft:menu") val windowTypes: Registry,
     @JsonProperty("minecraft:recipe_serializer") val recipeTypes: Registry,
 ) {
-    lateinit var blockStates: Registry
+    @JsonIgnore
+    lateinit var blockStates: com.valaphee.netcode.mcje.util.Registry<NamespacedKey>
 
     @JsonDeserialize(using = Registry.Deserializer::class)
     class Registry : com.valaphee.netcode.mcje.util.Registry<NamespacedKey>() {
@@ -47,5 +49,16 @@ class Registries(
                 (map["entries"] as Map<*, *>).forEach { this[(it.value as Map<*, *>)["protocol_id"] as Int] = minecraftKey(it.key as String) }
             }
         }
+    }
+
+    class Block(
+        @JsonProperty("properties") val properties: Map<String, List<String>> = emptyMap(),
+        @JsonProperty("states") val states: List<State>
+    ) {
+        class State(
+            @JsonProperty("id") val id: Int,
+            @JsonProperty("default") val default: Boolean = false,
+            @JsonProperty("properties") val properties: Map<String, String> = emptyMap()
+        )
     }
 }
