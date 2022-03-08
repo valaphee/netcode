@@ -31,19 +31,19 @@ class BossBarPacket(
     val playerUniqueEntityId: Long,
     val percentage: Float,
     val darkenSky: Int,
-    val color: Int,
-    val overlay: Int
+    val color: Color?,
+    val overlay: Overlay?
 ) : Packet() {
     enum class Action {
-        Show,
-        RegisterPlayer,
-        Hide,
-        UnregisterPlayer,
-        SetPercentage,
-        SetTitle,
-        SetDarkenSky,
-        SetStyle,
-        Query
+        Show, RegisterPlayer, Hide, UnregisterPlayer, SetPercentage, SetTitle, SetDarkenSky, SetStyle, Query
+    }
+
+    enum class Color {
+        Pink, Blue, Red, Green, Yellow, Purple, White
+    }
+
+    enum class Overlay {
+        None, Notches6, Notches10, Notches12, Notches20
     }
 
     override val id get() = 0x4A
@@ -56,23 +56,22 @@ class BossBarPacket(
                 buffer.writeString(title!!)
                 buffer.writeFloatLE(percentage)
                 buffer.writeShortLE(darkenSky)
-                buffer.writeVarUInt(color)
-                buffer.writeVarUInt(overlay)
+                buffer.writeVarUInt(color!!.ordinal)
+                buffer.writeVarUInt(overlay!!.ordinal)
             }
-            Action.RegisterPlayer, Action.UnregisterPlayer -> buffer.writeVarLong(playerUniqueEntityId)
+            Action.RegisterPlayer, Action.UnregisterPlayer, Action.Query -> buffer.writeVarLong(playerUniqueEntityId)
             Action.Hide -> Unit
             Action.SetPercentage -> buffer.writeFloatLE(percentage)
             Action.SetTitle -> buffer.writeString(title!!)
             Action.SetDarkenSky -> {
                 buffer.writeShortLE(darkenSky)
-                buffer.writeVarUInt(color)
-                buffer.writeVarUInt(overlay)
+                buffer.writeVarUInt(color!!.ordinal)
+                buffer.writeVarUInt(overlay!!.ordinal)
             }
             Action.SetStyle -> {
-                buffer.writeVarUInt(color)
-                buffer.writeVarUInt(overlay)
+                buffer.writeVarUInt(color!!.ordinal)
+                buffer.writeVarUInt(overlay!!.ordinal)
             }
-            Action.Query -> Unit
         }
     }
 
@@ -91,64 +90,64 @@ object BossBarPacketReader : PacketReader {
         val title: String?
         val percentage: Float
         val darkenSky: Int
-        val color: Int
-        val overlay: Int
+        val color: BossBarPacket.Color?
+        val overlay: BossBarPacket.Overlay?
         val playerUniqueEntityId: Long
         when (action) {
             BossBarPacket.Action.Show -> {
                 title = buffer.readString()
                 percentage = buffer.readFloatLE()
                 darkenSky = buffer.readUnsignedShortLE()
-                color = buffer.readVarUInt()
-                overlay = buffer.readVarUInt()
+                color = BossBarPacket.Color.values()[buffer.readVarUInt()]
+                overlay = BossBarPacket.Overlay.values()[buffer.readVarUInt()]
                 playerUniqueEntityId = 0
             }
-            BossBarPacket.Action.Hide, BossBarPacket.Action.Query -> {
+            BossBarPacket.Action.Hide -> {
                 title = null
                 percentage = 0.0f
                 darkenSky = 0
-                color = 0
-                overlay = 0
+                color = null
+                overlay = null
                 playerUniqueEntityId = 0
             }
-            BossBarPacket.Action.RegisterPlayer, BossBarPacket.Action.UnregisterPlayer -> {
+            BossBarPacket.Action.RegisterPlayer, BossBarPacket.Action.UnregisterPlayer, BossBarPacket.Action.Query -> {
                 title = null
                 percentage = 0.0f
                 darkenSky = 0
-                color = 0
-                overlay = 0
+                color = null
+                overlay = null
                 playerUniqueEntityId = buffer.readVarLong()
             }
             BossBarPacket.Action.SetPercentage -> {
                 title = null
                 percentage = buffer.readFloatLE()
                 darkenSky = 0
-                color = 0
-                overlay = 0
+                color = null
+                overlay = null
                 playerUniqueEntityId = buffer.readVarLong()
             }
             BossBarPacket.Action.SetTitle -> {
                 title = buffer.readString()
                 percentage = 0.0f
                 darkenSky = 0
-                color = 0
-                overlay = 0
+                color = null
+                overlay = null
                 playerUniqueEntityId = buffer.readVarLong()
             }
             BossBarPacket.Action.SetDarkenSky -> {
                 title = null
                 percentage = 0.0f
                 darkenSky = buffer.readUnsignedShortLE()
-                color = buffer.readVarUInt()
-                overlay = buffer.readVarUInt()
+                color = BossBarPacket.Color.values()[buffer.readVarUInt()]
+                overlay = BossBarPacket.Overlay.values()[buffer.readVarUInt()]
                 playerUniqueEntityId = 0
             }
             BossBarPacket.Action.SetStyle -> {
                 title = null
                 percentage = 0.0f
                 darkenSky = 0
-                color = buffer.readVarUInt()
-                overlay = buffer.readVarUInt()
+                color = BossBarPacket.Color.values()[buffer.readVarUInt()]
+                overlay = BossBarPacket.Overlay.values()[buffer.readVarUInt()]
                 playerUniqueEntityId = 0
             }
         }

@@ -25,10 +25,10 @@ import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.block.BlockState
 import com.valaphee.netcode.mcbe.world.inventory.WindowId
 import com.valaphee.netcode.mcbe.world.item.ItemStack
-import com.valaphee.netcode.mcbe.world.item.readStack
-import com.valaphee.netcode.mcbe.world.item.readStackPre431
-import com.valaphee.netcode.mcbe.world.item.writeStack
-import com.valaphee.netcode.mcbe.world.item.writeStackPre431
+import com.valaphee.netcode.mcbe.world.item.readItemStack
+import com.valaphee.netcode.mcbe.world.item.readItemStackPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStack
+import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
 import com.valaphee.netcode.util.safeList
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 
@@ -151,7 +151,7 @@ class InventoryTransactionPacket(
                 buffer.writeInt3UnsignedY(blockPosition!!)
                 buffer.writeVarInt(blockFace)
                 buffer.writeVarInt(hotbarSlot)
-                if (version >= 431) buffer.writeStack(itemStackInHand) else buffer.writeStackPre431(itemStackInHand)
+                if (version >= 431) buffer.writeItemStack(itemStackInHand) else buffer.writeItemStackPre431(itemStackInHand)
                 buffer.writeFloat3(fromPosition!!)
                 buffer.writeFloat3(clickPosition!!)
                 buffer.writeVarUInt(buffer.registries.blockStates.getId(blockState!!))
@@ -160,14 +160,14 @@ class InventoryTransactionPacket(
                 buffer.writeVarULong(runtimeEntityId)
                 buffer.writeVarUInt(actionId)
                 buffer.writeVarInt(hotbarSlot)
-                if (version >= 431) buffer.writeStack(itemStackInHand) else buffer.writeStackPre431(itemStackInHand)
+                if (version >= 431) buffer.writeItemStack(itemStackInHand) else buffer.writeItemStackPre431(itemStackInHand)
                 buffer.writeFloat3(fromPosition!!)
                 buffer.writeFloat3(clickPosition!!)
             }
             Type.ItemRelease -> {
                 buffer.writeVarUInt(actionId)
                 buffer.writeVarInt(hotbarSlot)
-                if (version >= 431) buffer.writeStack(itemStackInHand) else buffer.writeStackPre431(itemStackInHand)
+                if (version >= 431) buffer.writeItemStack(itemStackInHand) else buffer.writeItemStackPre431(itemStackInHand)
                 buffer.writeFloat3(headPosition!!)
             }
         }
@@ -212,7 +212,7 @@ object InventoryTransactionPacketReader : PacketReader {
                 position = buffer.readInt3UnsignedY()
                 blockFace = buffer.readVarInt()
                 hotbarSlot = buffer.readVarInt()
-                itemStackInHand = if (version >= 431) buffer.readStack() else buffer.readStackPre431()
+                itemStackInHand = if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431()
                 fromPosition = buffer.readFloat3()
                 clickPosition = buffer.readFloat3()
                 headPosition = null
@@ -224,7 +224,7 @@ object InventoryTransactionPacketReader : PacketReader {
                 position = null
                 blockFace = 0
                 hotbarSlot = buffer.readVarInt()
-                itemStackInHand = if (version >= 431) buffer.readStack() else buffer.readStackPre431()
+                itemStackInHand = if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431()
                 fromPosition = buffer.readFloat3()
                 clickPosition = buffer.readFloat3()
                 headPosition = null
@@ -236,7 +236,7 @@ object InventoryTransactionPacketReader : PacketReader {
                 position = null
                 blockFace = 0
                 hotbarSlot = buffer.readVarInt()
-                itemStackInHand = if (version >= 431) buffer.readStack() else buffer.readStackPre431()
+                itemStackInHand = if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431()
                 fromPosition = null
                 clickPosition = null
                 headPosition = buffer.readFloat3()
@@ -259,32 +259,32 @@ object InventoryTransactionPacketReader : PacketReader {
     }
 }
 
-fun PacketBuffer.readActionPre407() = InventoryTransactionPacket.Action(readSource(), readVarUInt(), readStackPre431(), readStackPre431(), null)
+fun PacketBuffer.readActionPre407() = InventoryTransactionPacket.Action(readSource(), readVarUInt(), readItemStackPre431(), readItemStackPre431(), null)
 
-fun PacketBuffer.readActionPre431() = InventoryTransactionPacket.Action(readSource(), readVarUInt(), readStackPre431(), readStackPre431(), readVarInt())
+fun PacketBuffer.readActionPre431() = InventoryTransactionPacket.Action(readSource(), readVarUInt(), readItemStackPre431(), readItemStackPre431(), readVarInt())
 
-fun PacketBuffer.readAction() = InventoryTransactionPacket.Action(readSource(), readVarUInt(), readStack(), readStack(), null)
+fun PacketBuffer.readAction() = InventoryTransactionPacket.Action(readSource(), readVarUInt(), readItemStack(), readItemStack(), null)
 
 fun PacketBuffer.writeActionPre407(value: InventoryTransactionPacket.Action) {
     writeSource(value.source)
     writeVarUInt(value.slotId)
-    writeStackPre431(value.fromItemStack)
-    writeStackPre431(value.toItemStack)
+    writeItemStackPre431(value.fromItemStack)
+    writeItemStackPre431(value.toItemStack)
 }
 
 fun PacketBuffer.writeActionPre431(value: InventoryTransactionPacket.Action) {
     writeSource(value.source)
     writeVarUInt(value.slotId)
-    writeStackPre431(value.fromItemStack)
-    writeStackPre431(value.toItemStack)
+    writeItemStackPre431(value.fromItemStack)
+    writeItemStackPre431(value.toItemStack)
     writeVarInt(value.netId!!)
 }
 
 fun PacketBuffer.writeAction(value: InventoryTransactionPacket.Action) {
     writeSource(value.source)
     writeVarUInt(value.slotId)
-    writeStack(value.fromItemStack)
-    writeStack(value.toItemStack)
+    writeItemStack(value.fromItemStack)
+    writeItemStack(value.toItemStack)
 }
 
 fun PacketBuffer.readSource() = when (val type = InventoryTransactionPacket.Source.Type.byId(readVarUInt())) {

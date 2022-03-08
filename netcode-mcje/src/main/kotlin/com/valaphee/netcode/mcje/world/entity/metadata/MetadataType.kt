@@ -23,9 +23,11 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.util.Direction
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.util.Registry
+import com.valaphee.netcode.mcje.world.ParticleData
 import com.valaphee.netcode.mcje.world.item.ItemStack
-import com.valaphee.netcode.mcje.world.item.readStack
-import com.valaphee.netcode.mcje.world.item.writeStack
+import com.valaphee.netcode.mcje.world.item.readItemStack
+import com.valaphee.netcode.mcje.world.item.writeItemStack
+import com.valaphee.netcode.mcje.world.readParticle
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import net.kyori.adventure.text.Component
@@ -93,10 +95,10 @@ interface MetadataType<T> {
         }
 
         val ItemStack = object : MetadataType<ItemStack?> {
-            override fun read(buffer: PacketBuffer) = buffer.readStack()
+            override fun read(buffer: PacketBuffer) = buffer.readItemStack()
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.writeStack(value as ItemStack?)
+                buffer.writeItemStack(value as ItemStack?)
             }
         }
 
@@ -157,7 +159,7 @@ interface MetadataType<T> {
         val OptionalBlockState = object : MetadataType<NamespacedKey?> {
             override fun read(buffer: PacketBuffer): NamespacedKey? {
                 val blockStateId = buffer.readVarInt()
-                return if (blockStateId == 0) null else buffer.registries.blockStates[blockStateId]
+                return if (blockStateId == 0) null else checkNotNull(buffer.registries.blockStates[blockStateId])
             }
 
             override fun write(buffer: PacketBuffer, value: Any?) {
@@ -173,14 +175,14 @@ interface MetadataType<T> {
             }
         }
 
-        /*val Particle = object : MetadataType<Particle> {
-            override fun read(buffer: PacketBuffer) = buffer.readParticle(ParticleType.byId(buffer.readVarInt())!!)
+        val Particle = object : MetadataType<ParticleData> {
+            override fun read(buffer: PacketBuffer) = buffer.readParticle(checkNotNull(buffer.registries.particleTypes[buffer.readVarInt()]))
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.writeVarInt((value as Particle).type.id)
-                buffer.writeParticle(value)
+                buffer.writeVarInt(buffer.registries.particleTypes.getId((value as ParticleData).type))
+                value.writeToBuffer(buffer)
             }
-        }*/
+        }
 
         val VillagerData = object : MetadataType<VillagerData> {
             override fun read(buffer: PacketBuffer) = buffer.readVillagerData()
@@ -235,7 +237,7 @@ interface MetadataType<T> {
             this[12] = OptionalUuid
             this[13] = OptionalBlockState
             this[14] = Nbt
-            /*this[15] = Particle*/
+            this[15] = Particle
             this[16] = VillagerData
             this[17] = OptionalInt
             this[18] = Pose

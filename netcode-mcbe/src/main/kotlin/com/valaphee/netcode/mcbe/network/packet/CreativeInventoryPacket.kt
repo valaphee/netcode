@@ -23,10 +23,10 @@ import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.item.ItemStack
-import com.valaphee.netcode.mcbe.world.item.readStackInstance
-import com.valaphee.netcode.mcbe.world.item.readStackWithNetIdPre431
-import com.valaphee.netcode.mcbe.world.item.writeStackInstance
-import com.valaphee.netcode.mcbe.world.item.writeStackWithNetIdPre431
+import com.valaphee.netcode.mcbe.world.item.readItemStackInstance
+import com.valaphee.netcode.mcbe.world.item.readItemStackWithNetIdPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStackInstance
+import com.valaphee.netcode.mcbe.world.item.writeItemStackWithNetIdPre431
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -43,8 +43,8 @@ class CreativeInventoryPacket(
         content.forEach {
             if (version >= 431) {
                 buffer.writeVarUInt(it?.netId ?: 0)
-                buffer.writeStackInstance(it)
-            } else buffer.writeStackWithNetIdPre431(it)
+                buffer.writeItemStackInstance(it)
+            } else buffer.writeItemStackWithNetIdPre431(it)
         }
     }
 
@@ -60,7 +60,7 @@ object CreativeInventoryPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int) = CreativeInventoryPacket(safeList(buffer.readVarUInt()) {
         if (version >= 431) {
             val netId = buffer.readVarUInt()
-            buffer.readStackInstance().also { it?.let { it.netId = netId } }
-        } else buffer.readStackWithNetIdPre431()
+            buffer.readItemStackInstance().also { it?.let { it.netId = netId } }
+        } else buffer.readItemStackWithNetIdPre431()
     })
 }

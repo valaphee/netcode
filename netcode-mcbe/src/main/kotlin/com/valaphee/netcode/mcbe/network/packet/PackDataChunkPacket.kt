@@ -48,7 +48,7 @@ class PackDataChunkPacket(
 
     override fun handle(handler: PacketHandler) = handler.packDataChunk(this)
 
-    override fun toString() = "PackDataChunkPacket(packId=$packId, packVersion=$packVersion, chunkIndex=$chunkIndex, progress=$progress, data=$data)"
+    override fun toString() = "PackDataChunkPacket(packId=$packId, packVersion=$packVersion, chunkIndex=$chunkIndex, progress=$progress, data=<omitted>)"
 }
 
 /**

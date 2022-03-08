@@ -55,7 +55,7 @@ class ServerChunkPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.chunk(this)
 
-    override fun toString() = "ServerChunkPacket(position=$position, withSubChunks=$withSubChunks, heightMap=$heightMap, biomes=${biomes?.size}, data=${data.size}, blockEntities=$blockEntities)"
+    override fun toString() = "ServerChunkPacket(position=$position, withSubChunks=$withSubChunks, heightMap=<omitted>, biomes=<omitted>, data=<omitted>, blockEntities=$blockEntities)"
 }
 
 /**

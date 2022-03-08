@@ -72,6 +72,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerMapPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerNamedSoundPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectivePacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerParticlePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerCombatEventPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerListHeaderFooterPacket
@@ -176,9 +177,9 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun worldEvent(packet: ServerWorldEventPacket) = other(packet)
 
-    /*fun particle(packet: ServerParticlePacket) = other(packet)
+    fun particle(packet: ServerParticlePacket) = other(packet)
 
-    fun chunkLight(packet: ServerChunkLightPacket) = other(packet)*/
+    /*fun chunkLight(packet: ServerChunkLightPacket) = other(packet)*/
 
     fun world(packet: ServerWorldPacket) = other(packet)
 

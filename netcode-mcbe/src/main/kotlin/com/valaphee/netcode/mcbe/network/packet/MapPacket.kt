@@ -94,7 +94,7 @@ class MapPacket(
 
     override fun handle(handler: PacketHandler) = handler.map(this)
 
-    override fun toString() = "MapPacket(mapId=$mapId, dimension=$dimension, locked=$locked, trackedUniqueEntityIds=${trackedUniqueEntityIds?.contentToString()}, scale=$scale, trackedObjects=$trackedObjects, decorations=$decorations, width=$width, height=$height, offsetX=$offsetX, offsetY=$offsetY, data=${data?.contentToString()})"
+    override fun toString() = "MapPacket(mapId=$mapId, dimension=$dimension, locked=$locked, trackedUniqueEntityIds=${trackedUniqueEntityIds?.contentToString()}, scale=$scale, trackedObjects=$trackedObjects, decorations=$decorations, width=$width, height=$height, offsetX=$offsetX, offsetY=$offsetY, data=<omitted>)"
 
     companion object {
         internal const val flagHasColor = 1 shl 1

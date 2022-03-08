@@ -21,10 +21,10 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.item.ItemStack
-import com.valaphee.netcode.mcbe.world.item.readStack
-import com.valaphee.netcode.mcbe.world.item.readStackPre431
-import com.valaphee.netcode.mcbe.world.item.writeStack
-import com.valaphee.netcode.mcbe.world.item.writeStackPre431
+import com.valaphee.netcode.mcbe.world.item.readItemStack
+import com.valaphee.netcode.mcbe.world.item.readItemStackPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStack
+import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
 
 /**
  * @author Kevin Ludwig
@@ -40,7 +40,7 @@ class EntityEquipmentPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarULong(runtimeEntityId)
-        if (version >= 431) buffer.writeStack(itemStack) else buffer.writeStackPre431(itemStack)
+        if (version >= 431) buffer.writeItemStack(itemStack) else buffer.writeItemStackPre431(itemStack)
         buffer.writeByte(slotId)
         buffer.writeByte(hotbarSlot)
         buffer.writeByte(windowId)
@@ -57,7 +57,7 @@ class EntityEquipmentPacket(
 object EntityEquipmentPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int) = EntityEquipmentPacket(
         buffer.readVarULong(),
-        if (version >= 431) buffer.readStack() else buffer.readStackPre431(),
+        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431(),
         buffer.readUnsignedByte().toInt(),
         buffer.readUnsignedByte().toInt(),
         buffer.readByte().toInt()

@@ -22,8 +22,8 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.world.entity.player.Hand
 import com.valaphee.netcode.mcje.world.item.ItemStack
-import com.valaphee.netcode.mcje.world.item.readStack
-import com.valaphee.netcode.mcje.world.item.writeStack
+import com.valaphee.netcode.mcje.world.item.readItemStack
+import com.valaphee.netcode.mcje.world.item.writeItemStack
 
 /**
  * @author Kevin Ludwig
@@ -34,7 +34,7 @@ class ClientBookEditPacket(
     val hand: Hand
 ) : Packet<ClientPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeStack(itemStack)
+        buffer.writeItemStack(itemStack)
         buffer.writeBoolean(sign)
         buffer.writeVarInt(hand.ordinal)
     }
@@ -48,5 +48,5 @@ class ClientBookEditPacket(
  * @author Kevin Ludwig
  */
 object ClientBookEditPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientBookEditPacket(buffer.readStack(), buffer.readBoolean(), Hand.values()[buffer.readVarInt()])
+    override fun read(buffer: PacketBuffer, version: Int) = ClientBookEditPacket(buffer.readItemStack(), buffer.readBoolean(), Hand.values()[buffer.readVarInt()])
 }

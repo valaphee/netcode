@@ -36,7 +36,7 @@ data class Parameter(
     enum class Type {
         Integer,
         Float,
-        Unknown4,
+        Float1,
         Unknown5,
         Unknown6,
         Target,
@@ -55,7 +55,7 @@ data class Parameter(
             val registryPre419 = Registry<Type>().apply {
                 this[0x01] = Integer
                 this[0x02] = Float
-                this[0x03] = Unknown4
+                this[0x03] = Float1
                 this[0x04] = Unknown5
                 this[0x05] = Unknown6
                 this[0x06] = Target
@@ -72,7 +72,7 @@ data class Parameter(
             val registry = Registry<Type>().apply {
                 this[0x01] = Integer
                 this[0x03] = Float
-                this[0x04] = Unknown4
+                this[0x04] = Float1
                 this[0x05] = Unknown5
                 this[0x06] = Unknown6
                 this[0x07] = Target

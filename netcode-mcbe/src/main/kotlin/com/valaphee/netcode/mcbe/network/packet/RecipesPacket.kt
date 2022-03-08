@@ -30,11 +30,11 @@ import com.valaphee.netcode.mcbe.world.item.crafting.Recipe
 import com.valaphee.netcode.mcbe.world.item.crafting.ShapedRecipe
 import com.valaphee.netcode.mcbe.world.item.crafting.ShapelessRecipe
 import com.valaphee.netcode.mcbe.world.item.readIngredient
-import com.valaphee.netcode.mcbe.world.item.readStackInstance
-import com.valaphee.netcode.mcbe.world.item.readStackPre431
+import com.valaphee.netcode.mcbe.world.item.readItemStackInstance
+import com.valaphee.netcode.mcbe.world.item.readItemStackPre431
 import com.valaphee.netcode.mcbe.world.item.writeIngredient
-import com.valaphee.netcode.mcbe.world.item.writeStackInstance
-import com.valaphee.netcode.mcbe.world.item.writeStackPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStackInstance
+import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
 import com.valaphee.netcode.util.safeList
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
 
@@ -61,7 +61,7 @@ class RecipesPacket(
                     buffer.writeVarUInt(it.input.size)
                     it.input.forEach(buffer::writeIngredient)
                     buffer.writeVarUInt(1)
-                    if (version >= 431) buffer.writeStackInstance(it.output) else buffer.writeStackPre431(it.output)
+                    if (version >= 431) buffer.writeItemStackInstance(it.output) else buffer.writeItemStackPre431(it.output)
                     buffer.writeUuid(it.id)
                     buffer.writeString(it.tags.first())
                     buffer.writeVarInt(it.priority)
@@ -74,7 +74,7 @@ class RecipesPacket(
                     buffer.writeVarInt(it.height)
                     it.input.forEach(buffer::writeIngredient)
                     buffer.writeVarUInt(1)
-                    if (version >= 431) buffer.writeStackInstance(it.output) else buffer.writeStackPre431(it.output)
+                    if (version >= 431) buffer.writeItemStackInstance(it.output) else buffer.writeItemStackPre431(it.output)
                     buffer.writeUuid(it.id)
                     buffer.writeString(it.tags.first())
                     buffer.writeVarInt(it.priority)
@@ -134,7 +134,7 @@ object RecipesPacketReader : PacketReader {
                     val name = buffer.readString()
                     println(name)
                     val ingredients = safeList(buffer.readVarUInt()) { buffer.readIngredient() }
-                    val result = safeList(buffer.readVarUInt()) { if (version >= 431) buffer.readStackInstance() else buffer.readStackPre431() }
+                    val result = safeList(buffer.readVarUInt()) { if (version >= 431) buffer.readItemStackInstance() else buffer.readItemStackPre431() }
                     val id = buffer.readUuid()
                     val tag = buffer.readString()
                     val priority = buffer.readVarInt()
@@ -147,7 +147,7 @@ object RecipesPacketReader : PacketReader {
                     val width = buffer.readVarInt()
                     val height = buffer.readVarInt()
                     val ingredients = safeList(width * height) { buffer.readIngredient() }
-                    val result = safeList(buffer.readVarUInt()) { if (version >= 431) buffer.readStackInstance() else buffer.readStackPre431() }
+                    val result = safeList(buffer.readVarUInt()) { if (version >= 431) buffer.readItemStackInstance() else buffer.readItemStackPre431() }
                     val id = buffer.readUuid()
                     val tag = buffer.readString()
                     val priority = buffer.readVarInt()

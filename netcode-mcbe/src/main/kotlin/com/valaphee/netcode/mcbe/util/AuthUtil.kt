@@ -16,6 +16,7 @@
 
 package com.valaphee.netcode.mcbe.util
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -41,15 +42,7 @@ fun authJws(keyPair: KeyPair, authExtra: AuthExtra) = objectMapper.writeValueAsS
                 setHeader("alg", "ES384")
                 setHeader("x5u", base64Encoder.encodeToString(keyPair.public.encoded))
                 val iat = System.currentTimeMillis()
-                payload = objectMapper.writeValueAsString(
-                    mapOf(
-                        "nbf" to iat - 60,
-                        "iat" to iat,
-                        "exp" to iat + 86_400,
-                        "identityPublicKey" to base64Encoder.encodeToString(keyPair.public.encoded),
-                        "extraData" to authExtra
-                    )
-                )
+                payload = objectMapper.writeValueAsString(mapOf("nbf" to iat - 60, "iat" to iat, "exp" to iat + 86_400, "identityPublicKey" to base64Encoder.encodeToString(keyPair.public.encoded), "extraData" to authExtra))
                 key = keyPair.private
             }.compactSerialization
         )
@@ -64,14 +57,7 @@ fun authJws(keyPair: KeyPair, authJws: String) {
             "chain" to authJwsChain.toMutableList().add(0, JsonWebSignature().apply {
                 setHeader("alg", "ES384")
                 setHeader("x5u", Base64.getEncoder().encodeToString(keyPair.public.encoded))
-                payload = objectMapper.writeValueAsString(
-                    mapOf(
-                        "nbf" to authJwtContext.joseObjects.first().headers.getStringHeaderValue("nbf"),
-                        "exp" to authJwtContext.joseObjects.first().headers.getStringHeaderValue("exp"),
-                        "certificateAuthority" to true,
-                        "identityPublicKey" to authJwtContext.joseObjects.first().headers.getStringHeaderValue("x5u")
-                    )
-                )
+                payload = objectMapper.writeValueAsString(mapOf("nbf" to authJwtContext.joseObjects.first().headers.getStringHeaderValue("nbf"), "exp" to authJwtContext.joseObjects.first().headers.getStringHeaderValue("exp"), "certificateAuthority" to true, "identityPublicKey" to authJwtContext.joseObjects.first().headers.getStringHeaderValue("x5u")))
                 key = keyPair.private
             }.compactSerialization)
         )
@@ -142,7 +128,7 @@ fun parseServerToClientHandshakeJws(serverToClientHandshakeJws: String): Pair<Pu
     return generatePublicKey(jwtContext.joseObjects.first().headers.getStringHeaderValue("x5u")) to base64Decoder.decode(objectMapper.readValue<Map<*, *>>(jwtContext.jwtClaims.rawJson)["salt"] as String)
 }
 
-private val objectMapper = jacksonObjectMapper()
+private val objectMapper = jacksonObjectMapper().apply { disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES) }
 private val base64Encoder = Base64.getEncoder()
 private val base64Decoder = Base64.getDecoder()
 private val keyFactory = KeyFactory.getInstance("EC")

@@ -55,7 +55,7 @@ class ChunkPacket(
 
     override fun handle(handler: PacketHandler) = handler.chunk(this)
 
-    override fun toString() = "ChunkPacket(position=$position, subChunkCount=$subChunkCount, blobIds=${blobIds?.contentToString()}, request=$request)"
+    override fun toString() = "ChunkPacket(position=$position, subChunkCount=$subChunkCount, data=<omitted>, blobIds=${blobIds?.contentToString()}, request=$request)"
 }
 
 /**

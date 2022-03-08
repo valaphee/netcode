@@ -27,7 +27,7 @@ class CustomForm(
     title: String,
     @JsonProperty("content") val elements: List<Element>
 ) : Form<Map<String, Any?>>(title) {
-    override fun getResponse(response: Any?): Map<String, Any?> = (response as Map<String, Any?>).values.mapIndexed { i, answer -> Pair(elements[i].text, elements[i].answer(answer)) }.toMap()
+    override fun getResponse(response: Any?) = (response as List<*>).mapIndexed { i, answer -> Pair(elements[i].text, elements[i].answer(answer)) }.toMap()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

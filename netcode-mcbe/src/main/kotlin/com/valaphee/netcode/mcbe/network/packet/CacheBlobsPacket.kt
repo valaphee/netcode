@@ -44,7 +44,7 @@ class CacheBlobsPacket(
 
     override fun handle(handler: PacketHandler) = handler.cacheBlobs(this)
 
-    override fun toString() = "CacheBlobsPacket(blobs=$blobs)"
+    override fun toString() = "CacheBlobsPacket(blobs=${blobs.values})"
 }
 
 /**

@@ -61,6 +61,8 @@ class PlayerListPacket(
         val host: Boolean
     ) {
         constructor(userId: UUID) : this(userId, 0, null, null, null, null, null, false, false)
+
+        override fun toString() = "Entry(userId=$userId, uniqueEntityId=$uniqueEntityId, userName=$userName, xboxUserId=$xboxUserId, platformChatId=$platformChatId, operatingSystem=$operatingSystem, appearance=<omitted>, teacher=$teacher, host=$host)"
     }
 
     override val id get() = 0x3F

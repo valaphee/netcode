@@ -21,8 +21,8 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.world.item.ItemStack
-import com.valaphee.netcode.mcje.world.item.readStack
-import com.valaphee.netcode.mcje.world.item.writeStack
+import com.valaphee.netcode.mcje.world.item.readItemStack
+import com.valaphee.netcode.mcje.world.item.writeItemStack
 
 /**
  * @author Kevin Ludwig
@@ -45,7 +45,7 @@ class ClientWindowClickPacket(
         buffer.writeByte(buttonSpecifier)
         buffer.writeShort(confirmId)
         buffer.writeVarInt(button.ordinal)
-        buffer.writeStack(itemStackInSlot)
+        buffer.writeItemStack(itemStackInSlot)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.windowClick(this)
@@ -61,5 +61,5 @@ class ClientWindowClickPacket(
  * @author Kevin Ludwig
  */
 object ClientWindowClickPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientWindowClickPacket(buffer.readByte().toInt(), buffer.readShort().toInt(), buffer.readByte().toInt(), buffer.readShort().toInt(), ClientWindowClickPacket.Button.values()[buffer.readVarInt()], buffer.readStack())
+    override fun read(buffer: PacketBuffer, version: Int) = ClientWindowClickPacket(buffer.readByte().toInt(), buffer.readShort().toInt(), buffer.readByte().toInt(), buffer.readShort().toInt(), ClientWindowClickPacket.Button.values()[buffer.readVarInt()], buffer.readItemStack())
 }

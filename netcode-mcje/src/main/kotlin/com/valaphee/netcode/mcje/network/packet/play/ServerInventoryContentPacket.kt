@@ -21,8 +21,8 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.item.ItemStack
-import com.valaphee.netcode.mcje.world.item.readStack
-import com.valaphee.netcode.mcje.world.item.writeStack
+import com.valaphee.netcode.mcje.world.item.readItemStack
+import com.valaphee.netcode.mcje.world.item.writeItemStack
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -35,7 +35,7 @@ class ServerInventoryContentPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
         buffer.writeShort(content.size)
-        content.forEach { buffer.writeStack(it) }
+        content.forEach { buffer.writeItemStack(it) }
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.inventoryContent(this)
@@ -47,5 +47,5 @@ class ServerInventoryContentPacket(
  * @author Kevin Ludwig
  */
 object ServerInventoryContentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerInventoryContentPacket(buffer.readUnsignedByte().toInt(), safeList(buffer.readShort().toInt()) { buffer.readStack() })
+    override fun read(buffer: PacketBuffer, version: Int) = ServerInventoryContentPacket(buffer.readUnsignedByte().toInt(), safeList(buffer.readShort().toInt()) { buffer.readItemStack() })
 }

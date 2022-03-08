@@ -24,10 +24,10 @@ import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.inventory.WindowSlotType
 import com.valaphee.netcode.mcbe.world.item.ItemStack
-import com.valaphee.netcode.mcbe.world.item.readStackInstance
-import com.valaphee.netcode.mcbe.world.item.readStackPre431
-import com.valaphee.netcode.mcbe.world.item.writeStackInstance
-import com.valaphee.netcode.mcbe.world.item.writeStackPre431
+import com.valaphee.netcode.mcbe.world.item.readItemStackInstance
+import com.valaphee.netcode.mcbe.world.item.readItemStackPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStackInstance
+import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -125,7 +125,7 @@ class InventoryRequestPacket(
                     ActionType.CraftNonImplementedDeprecated, ActionType.CraftResultsDeprecated -> {
                         it.result!!.let {
                             buffer.writeVarUInt(it.size)
-                            it.forEach { if (version >= 431) buffer.writeStackInstance(it) else buffer.writeStackPre431(it) }
+                            it.forEach { if (version >= 431) buffer.writeItemStackInstance(it) else buffer.writeItemStackPre431(it) }
                         }
                         buffer.writeByte(it.count)
                     }
@@ -161,7 +161,7 @@ object InventoryRequestPacketReader : PacketReader {
                 InventoryRequestPacket.ActionType.CraftRecipe, InventoryRequestPacket.ActionType.CraftCreative -> InventoryRequestPacket.Action(null, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readVarInt(), 0)
                 InventoryRequestPacket.ActionType.CraftRecipeAuto -> InventoryRequestPacket.Action(null, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readVarInt(), if (version >= 448) buffer.readByte().toInt() else 0)
                 InventoryRequestPacket.ActionType.CraftRecipeOptional -> InventoryRequestPacket.Action(null, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readVarUInt(), buffer.readIntLE())
-                InventoryRequestPacket.ActionType.CraftResultsDeprecated -> InventoryRequestPacket.Action(safeList(buffer.readVarUInt()) { if (version >= 431) buffer.readStackInstance() else buffer.readStackPre431() }, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readByte().toInt(), 0)
+                InventoryRequestPacket.ActionType.CraftResultsDeprecated -> InventoryRequestPacket.Action(safeList(buffer.readVarUInt()) { if (version >= 431) buffer.readItemStackInstance() else buffer.readItemStackPre431() }, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readByte().toInt(), 0)
                 InventoryRequestPacket.ActionType.CraftNonImplementedDeprecated -> TODO()
             }
         }, if (version >= 422) safeList(buffer.readVarUInt()) { buffer.readString() } else emptyList())

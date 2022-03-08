@@ -45,8 +45,8 @@ import java.util.Base64
 @JsonSerialize(using = ItemStack.Serializer::class)
 @JsonDeserialize(using = ItemStack.Deserializer::class)
 data class ItemStack(
-    val itemKey: String,
-    val subId: Int = 0,
+    val item: String,
+    var subId: Int = 0, // needed for je-be protocol translation
     val count: Int = 1,
     val data: Any? = null,
     val canPlaceOn: List<String>? = null,
@@ -61,7 +61,7 @@ data class ItemStack(
 
         other as ItemStack
 
-        if (itemKey != other.itemKey) return false
+        if (item != other.item) return false
         if (subId != other.subId) return false
         if (count != other.count) return false
         if (data != other.data) return false
@@ -75,7 +75,7 @@ data class ItemStack(
 
         other as ItemStack
 
-        if (itemKey != other.itemKey) return false
+        if (item != other.item) return false
         if (subId != other.subId) return false
         if (data != other.data) return false
 
@@ -83,7 +83,7 @@ data class ItemStack(
     }
 
     override fun hashCode(): Int {
-        var result = itemKey.hashCode()
+        var result = item.hashCode()
         result = 31 * result + subId
         result = 31 * result + count
         result = 31 * result + (data?.hashCode() ?: 0)
@@ -98,14 +98,14 @@ data class ItemStack(
             generator.writeStartObject()
             when (generator) {
                 is NbtGenerator -> {
-                    generator.writeStringField("Name", value.itemKey)
+                    generator.writeStringField("Name", value.item)
                     generator.writeNumberField("Damage", value.subId.toShort())
                     generator.writeFieldName("Count")
                     generator.writeNumber(value.count.toByte())
                     value.data?.let { generator.writeObjectField("tag", value.data) }
                 }
                 else -> {
-                    generator.writeStringField("item", value.itemKey)
+                    generator.writeStringField("item", value.item)
                     generator.writeNumberField("data", value.subId)
                     generator.writeNumberField("count", value.count)
                     value.data?.let { generator.writeStringField("netcode:data", base64Encoder.encodeToString(objectMapper.writeValueAsBytes(it))) }
@@ -130,7 +130,7 @@ data class ItemStack(
     }
 }
 
-fun PacketBuffer.readStackPre431(): ItemStack? {
+fun PacketBuffer.readItemStackPre431(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
     val itemKey = registries.items[id]!!
@@ -148,18 +148,18 @@ fun PacketBuffer.readStackPre431(): ItemStack? {
         },
         readVarInt().let { if (it == 0) null else safeList(it) { readString() } },
         readVarInt().let { if (it == 0) null else safeList(it) { readString() } },
-        if (itemKey == shieldKey) readVarLong() else 0
+        if (itemKey == shield) readVarLong() else 0
     )
 }
 
-fun PacketBuffer.readStackWithNetIdPre431(): ItemStack? {
+fun PacketBuffer.readItemStackWithNetIdPre431(): ItemStack? {
     val netId = readVarInt()
-    val stack = readStackPre431()
+    val stack = readItemStackPre431()
     stack?.let { it.netId = netId }
     return stack
 }
 
-fun PacketBuffer.readStack(): ItemStack? {
+fun PacketBuffer.readItemStack(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
     val itemKey = registries.items[id]!!
@@ -181,13 +181,13 @@ fun PacketBuffer.readStack(): ItemStack? {
         },
         readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
         readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
-        if (itemKey == shieldKey) readLongLE() else 0,
+        if (itemKey == shield) readLongLE() else 0,
         netId,
         if (blockStateId != 0) registries.blockStates[blockStateId]!! else null
     )
 }
 
-fun PacketBuffer.readStackInstance(): ItemStack? {
+fun PacketBuffer.readItemStackInstance(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
     val itemKey = registries.items[id]!!
@@ -208,7 +208,7 @@ fun PacketBuffer.readStackInstance(): ItemStack? {
         },
         readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
         readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
-        if (itemKey == shieldKey) readLongLE() else 0,
+        if (itemKey == shield) readLongLE() else 0,
         0,
         if (blockStateId != 0) registries.blockStates[blockStateId]!! else null
     )
@@ -220,9 +220,9 @@ fun PacketBuffer.readIngredient(): ItemStack? {
     return ItemStack(registries.items[id]!!, readVarInt().let { if (it == Short.MAX_VALUE.toInt()) -1 else it }, readVarInt())
 }
 
-fun PacketBuffer.writeStackPre431(value: ItemStack?) {
+fun PacketBuffer.writeItemStackPre431(value: ItemStack?) {
     value?.let {
-        val itemId = registries.items.getId(it.itemKey)
+        val itemId = registries.items.getId(it.item)
         writeVarInt(itemId)
         if (itemId != 0) {
             writeVarInt(((if (it.subId == -1) Short.MAX_VALUE.toInt() else it.subId) shl 8) or (it.count and 0xFF))
@@ -239,19 +239,19 @@ fun PacketBuffer.writeStackPre431(value: ItemStack?) {
                 writeVarInt(it.size)
                 it.forEach { writeString(it) }
             } ?: writeVarInt(0)
-            if (it.itemKey == shieldKey) writeVarLong(it.blockingTicks)
+            if (it.item == shield) writeVarLong(it.blockingTicks)
         }
     } ?: writeVarInt(0)
 }
 
-fun PacketBuffer.writeStackWithNetIdPre431(value: ItemStack?) {
+fun PacketBuffer.writeItemStackWithNetIdPre431(value: ItemStack?) {
     writeVarInt(value?.netId ?: 0)
-    writeStackPre431(value)
+    writeItemStackPre431(value)
 }
 
-fun PacketBuffer.writeStack(value: ItemStack?) {
+fun PacketBuffer.writeItemStack(value: ItemStack?) {
     value?.let {
-        val itemId = registries.items.getId(it.itemKey)
+        val itemId = registries.items.getId(it.item)
         writeVarInt(itemId)
         if (itemId != 0) {
             writeShortLE(it.count)
@@ -276,15 +276,15 @@ fun PacketBuffer.writeStack(value: ItemStack?) {
                 writeIntLE(it.size)
                 it.forEach { writeString16(it) }
             } ?: writeIntLE(0)
-            if (it.itemKey == shieldKey) writeLongLE(it.blockingTicks)
+            if (it.item == shield) writeLongLE(it.blockingTicks)
             setMaximumLengthVarUInt(dataIndex, writerIndex() - (dataIndex + PacketBuffer.MaximumVarUIntLength))
         }
     } ?: writeVarInt(0)
 }
 
-fun PacketBuffer.writeStackInstance(value: ItemStack?) {
+fun PacketBuffer.writeItemStackInstance(value: ItemStack?) {
     value?.let {
-        val itemId = registries.items.getId(it.itemKey)
+        val itemId = registries.items.getId(it.item)
         writeVarInt(itemId)
         if (itemId != 0) {
             writeShortLE(it.count)
@@ -305,7 +305,7 @@ fun PacketBuffer.writeStackInstance(value: ItemStack?) {
                 writeIntLE(it.size)
                 it.forEach { writeString16(it) }
             } ?: writeIntLE(0)
-            if (it.itemKey == shieldKey) writeLongLE(it.blockingTicks)
+            if (it.item == shield) writeLongLE(it.blockingTicks)
             setMaximumLengthVarUInt(dataIndex, writerIndex() - (dataIndex + PacketBuffer.MaximumVarUIntLength))
         }
     } ?: writeVarInt(0)
@@ -313,7 +313,7 @@ fun PacketBuffer.writeStackInstance(value: ItemStack?) {
 
 fun PacketBuffer.writeIngredient(value: ItemStack?) {
     value?.let {
-        val itemId = registries.items.getId(it.itemKey)
+        val itemId = registries.items.getId(it.item)
         writeVarInt(itemId)
         if (itemId != 0) {
             writeVarInt(if (value.subId == -1) Short.MAX_VALUE.toInt() else value.subId)
@@ -322,7 +322,7 @@ fun PacketBuffer.writeIngredient(value: ItemStack?) {
     } ?: writeVarInt(0)
 }
 
-private const val shieldKey = "minecraft:shield"
+private const val shield = "minecraft:shield"
 private val littleEndianNbtObjectMapper = ObjectMapper(NbtFactory().apply { enable(NbtFactory.Feature.LittleEndian) })
 private val littleEndianVarIntNbtObjectMapper = ObjectMapper(NbtFactory().apply {
     enable(NbtFactory.Feature.LittleEndian)

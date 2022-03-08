@@ -79,6 +79,8 @@ class SubChunkPacket(
             result1 = 31 * result1 + blobId.hashCode()
             return result1
         }
+
+        override fun toString() = "Response(position=$position, result=$result, data=<omitted>, heightMapStatus=$heightMapStatus, heightMap=<omitted>, blobId=$blobId)"
     }
 
     override val id get() = 0xAE

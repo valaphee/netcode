@@ -36,10 +36,10 @@ import com.valaphee.netcode.mcbe.world.entity.readLinkPre407
 import com.valaphee.netcode.mcbe.world.entity.writeLink
 import com.valaphee.netcode.mcbe.world.entity.writeLinkPre407
 import com.valaphee.netcode.mcbe.world.item.ItemStack
-import com.valaphee.netcode.mcbe.world.item.readStack
-import com.valaphee.netcode.mcbe.world.item.readStackPre431
-import com.valaphee.netcode.mcbe.world.item.writeStack
-import com.valaphee.netcode.mcbe.world.item.writeStackPre431
+import com.valaphee.netcode.mcbe.world.item.readItemStack
+import com.valaphee.netcode.mcbe.world.item.readItemStackPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStack
+import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
 import com.valaphee.netcode.util.safeList
 import java.util.UUID
 
@@ -80,7 +80,7 @@ class PlayerAddPacket(
         buffer.writeFloat3(velocity)
         buffer.writeFloat2(rotation)
         buffer.writeFloatLE(headRotationYaw)
-        if (version >= 431) buffer.writeStack(itemStackInHand) else buffer.writeStackPre431(itemStackInHand)
+        if (version >= 431) buffer.writeItemStack(itemStackInHand) else buffer.writeItemStackPre431(itemStackInHand)
         metadata.writeToBuffer(buffer)
         buffer.writeVarUIntFlags(playerFlags)
         buffer.writeVarUInt(permission.ordinal)
@@ -113,7 +113,7 @@ object PlayerAddPacketReader : PacketReader {
         buffer.readFloat3(),
         buffer.readFloat2(),
         buffer.readFloatLE(),
-        if (version >= 431) buffer.readStack() else buffer.readStackPre431(),
+        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431(),
         Metadata().apply { readFromBuffer(buffer) },
         buffer.readVarUIntFlags(),
         Permission.values()[buffer.readVarUInt()],

@@ -25,10 +25,10 @@ import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.entity.metadata.Metadata
 import com.valaphee.netcode.mcbe.world.item.ItemStack
-import com.valaphee.netcode.mcbe.world.item.readStack
-import com.valaphee.netcode.mcbe.world.item.readStackPre431
-import com.valaphee.netcode.mcbe.world.item.writeStack
-import com.valaphee.netcode.mcbe.world.item.writeStackPre431
+import com.valaphee.netcode.mcbe.world.item.readItemStack
+import com.valaphee.netcode.mcbe.world.item.readItemStackPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStack
+import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
 
 /**
  * @author Kevin Ludwig
@@ -48,7 +48,7 @@ class StackAddPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarLong(uniqueEntityId)
         buffer.writeVarULong(runtimeEntityId)
-        if (version >= 431) buffer.writeStack(itemStack) else buffer.writeStackPre431(itemStack)
+        if (version >= 431) buffer.writeItemStack(itemStack) else buffer.writeItemStackPre431(itemStack)
         buffer.writeFloat3(position)
         buffer.writeFloat3(velocity)
         metadata.writeToBuffer(buffer)
@@ -67,7 +67,7 @@ object StackAddPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int) = StackAddPacket(
         buffer.readVarLong(),
         buffer.readVarULong(),
-        if (version >= 431) buffer.readStack() else buffer.readStackPre431(),
+        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431(),
         buffer.readFloat3(),
         buffer.readFloat3(),
         Metadata().apply { readFromBuffer(buffer) },

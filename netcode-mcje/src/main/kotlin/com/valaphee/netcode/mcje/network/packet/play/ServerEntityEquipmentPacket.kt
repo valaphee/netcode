@@ -21,8 +21,8 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.item.ItemStack
-import com.valaphee.netcode.mcje.world.item.readStack
-import com.valaphee.netcode.mcje.world.item.writeStack
+import com.valaphee.netcode.mcje.world.item.readItemStack
+import com.valaphee.netcode.mcje.world.item.writeItemStack
 
 /**
  * @author Kevin Ludwig
@@ -44,7 +44,7 @@ class ServerEntityEquipmentPacket(
         buffer.writeVarInt(entityId)
         equipments.forEachIndexed { i, equipment ->
             buffer.writeByte(equipment.slot.ordinal or (if (i == equipments.size - 1) 0 else 0b1000_0000))
-            buffer.writeStack(equipment.itemStack)
+            buffer.writeItemStack(equipment.itemStack)
         }
     }
 
@@ -61,7 +61,7 @@ object ServerEntityEquipmentPacketReader : PacketReader {
         var slot: Int
         do {
             slot = buffer.readByte().toInt()
-            add(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[slot and 0b0111_1111], buffer.readStack()))
+            add(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[slot and 0b0111_1111], buffer.readItemStack()))
         } while (slot and 0b1000_0000 != 0)
     })
 }

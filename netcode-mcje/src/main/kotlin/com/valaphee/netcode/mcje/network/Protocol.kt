@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2021-2022, Valaphee.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.valaphee.netcode.mcje.network
 
 import com.valaphee.netcode.mcje.network.packet.play.ClientAbilitiesPacket
@@ -116,6 +132,8 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerChunkPublishPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkPublishPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkUnloadPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkUnloadPacketReader
+import com.valaphee.netcode.mcje.network.packet.play.ServerCommandSuggestPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerCommandSuggestPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerCraftPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerCraftPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerCustomPayloadPacket
@@ -188,12 +206,16 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerLocationPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerLookAtPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerLookAtPacketReader
+import com.valaphee.netcode.mcje.network.packet.play.ServerMapPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerMapPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerNamedSoundPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerNamedSoundPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectAddPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectivePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectivePacketReader
+import com.valaphee.netcode.mcje.network.packet.play.ServerParticlePacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerParticlePacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerAddPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerCombatEventPacket
@@ -224,8 +246,6 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerSpawnPositionPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSpawnPositionPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerStackTakePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerStackTakePacketReader
-import com.valaphee.netcode.mcje.network.packet.play.ServerCommandSuggestPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerCommandSuggestPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerTeamPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTeamPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerTextPacket
@@ -371,7 +391,9 @@ enum class Protocols(
             .register(ServerKeepAlivePacket::class, ServerKeepAlivePacketReader, 754 to 0x1F)
             .register(ServerChunkPacket::class, ServerChunkPacketReader, 754 to 0x20)
             .register(ServerWorldEventPacket::class, ServerWorldEventPacketReader, 754 to 0x21)
+            .register(ServerParticlePacket::class, ServerParticlePacketReader, 754 to 0x22)
             .register(ServerWorldPacket::class, ServerWorldPacketReader, 754 to 0x24)
+            .register(ServerMapPacket::class, ServerMapPacketReader, 754 to 0x25)
             .register(ServerTradePacket::class, ServerTradePacketReader, 754 to 0x26)
             .register(ServerEntityMovePacket::class, ServerEntityMovePacketReader, 754 to 0x27)
             .register(ServerEntityMoveRotatePacket::class, ServerEntityMoveRotatePacketReader, 754 to 0x28)

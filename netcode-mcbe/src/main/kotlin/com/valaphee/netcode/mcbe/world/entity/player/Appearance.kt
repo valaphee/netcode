@@ -28,13 +28,13 @@ import com.valaphee.netcode.util.safeList
  */
 data class Appearance constructor(
     val skinId: String,
-    val playFabId: String,
+    val playFabId: String?,
     val skinResourcePatch: ByteArray,
     /*@JsonUnwrapped(prefix = "Skin")*/@JsonIgnore val skinImage: AppearanceImage,
     val animations: List<Animation>,
     /*@JsonUnwrapped(prefix = "Cape")*/@JsonIgnore val capeImage: AppearanceImage,
     val geometryData: ByteArray,
-    val geometryDataEngineVersion: String,
+    val geometryDataEngineVersion: String?,
     val animationData: ByteArray,
     val capeId: String,
     @JsonIgnore var id: String?,
@@ -102,7 +102,7 @@ data class Appearance constructor(
     @JsonCreator
     constructor(
         @JsonProperty("SkinId") skinId: String,
-        @JsonProperty("PlayFabId") playFabId: String,
+        @JsonProperty("PlayFabId") playFabId: String?,
         @JsonProperty("SkinResourcePatch") skinResourcePatch: ByteArray,
         @JsonProperty("SkinImageWidth") skinWidth: Int?,
         @JsonProperty("SkinImageHeight") skinHeight: Int?,
@@ -112,7 +112,7 @@ data class Appearance constructor(
         @JsonProperty("CapeImageHeight") capeHeight: Int?,
         @JsonProperty("CapeData") capeData: ByteArray,
         @JsonProperty("SkinGeometryData") geometryData: ByteArray,
-        @JsonProperty("SkinGeometryDataEngineVersion") geometryDataEngineVersion: String,
+        @JsonProperty("SkinGeometryDataEngineVersion") geometryDataEngineVersion: String?,
         @JsonProperty("SkinAnimationData") animationData: ByteArray,
         @JsonProperty("CapeId") capeId: String,
         @JsonProperty("ArmSize") armSize: String,
@@ -306,7 +306,7 @@ fun PacketBuffer.writeAppearancePre428(value: Appearance) {
 
 fun PacketBuffer.writeAppearancePre465(value: Appearance) {
     writeString(value.skinId)
-    writeString(value.playFabId)
+    writeString(value.playFabId ?: "")
     writeByteArray(value.skinResourcePatch)
     writeAppearanceImage(value.skinImage)
     writeIntLE(value.animations.size)
@@ -345,7 +345,7 @@ fun PacketBuffer.writeAppearancePre465(value: Appearance) {
 
 fun PacketBuffer.writeAppearance(value: Appearance) {
     writeString(value.skinId)
-    writeString(value.playFabId)
+    writeString(value.playFabId ?: "")
     writeByteArray(value.skinResourcePatch)
     writeAppearanceImage(value.skinImage)
     writeIntLE(value.animations.size)
@@ -357,7 +357,7 @@ fun PacketBuffer.writeAppearance(value: Appearance) {
     }
     writeAppearanceImage(value.capeImage)
     writeByteArray(value.geometryData)
-    writeString(value.geometryDataEngineVersion)
+    writeString(value.geometryDataEngineVersion ?: "")
     writeByteArray(value.animationData)
     writeString(value.capeId)
     writeString(value.id!!)

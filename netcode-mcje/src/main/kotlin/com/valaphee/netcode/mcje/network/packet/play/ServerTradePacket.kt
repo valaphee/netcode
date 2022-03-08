@@ -21,8 +21,8 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.item.ItemStack
-import com.valaphee.netcode.mcje.world.item.readStack
-import com.valaphee.netcode.mcje.world.item.writeStack
+import com.valaphee.netcode.mcje.world.item.readItemStack
+import com.valaphee.netcode.mcje.world.item.writeItemStack
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -53,11 +53,11 @@ class ServerTradePacket(
         buffer.writeVarInt(windowId)
         buffer.writeByte(offers.size)
         offers.forEach {
-            buffer.writeStack(it.buyA)
-            buffer.writeStack(it.sell)
+            buffer.writeItemStack(it.buyA)
+            buffer.writeItemStack(it.sell)
             it.buyB?.let {
                 buffer.writeBoolean(true)
-                buffer.writeStack(it)
+                buffer.writeItemStack(it)
             } ?: buffer.writeBoolean(false)
             buffer.writeBoolean(it.disabled)
             buffer.writeInt(it.sold)
@@ -82,5 +82,5 @@ class ServerTradePacket(
  * @author Kevin Ludwig
  */
 object ServerTradePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTradePacket(buffer.readVarInt(), safeList(buffer.readUnsignedByte().toInt()) { ServerTradePacket.Offer(buffer.readStack(), buffer.readStack(), if (buffer.readBoolean()) buffer.readStack() else null, buffer.readBoolean(), buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readFloat(), buffer.readInt()) }, buffer.readVarInt(), buffer.readVarInt(), buffer.readBoolean(), buffer.readBoolean())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerTradePacket(buffer.readVarInt(), safeList(buffer.readUnsignedByte().toInt()) { ServerTradePacket.Offer(buffer.readItemStack(), buffer.readItemStack(), if (buffer.readBoolean()) buffer.readItemStack() else null, buffer.readBoolean(), buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readFloat(), buffer.readInt()) }, buffer.readVarInt(), buffer.readVarInt(), buffer.readBoolean(), buffer.readBoolean())
 }

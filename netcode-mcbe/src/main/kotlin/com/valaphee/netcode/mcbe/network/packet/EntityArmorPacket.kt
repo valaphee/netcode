@@ -21,10 +21,10 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.item.ItemStack
-import com.valaphee.netcode.mcbe.world.item.readStack
-import com.valaphee.netcode.mcbe.world.item.readStackPre431
-import com.valaphee.netcode.mcbe.world.item.writeStack
-import com.valaphee.netcode.mcbe.world.item.writeStackPre431
+import com.valaphee.netcode.mcbe.world.item.readItemStack
+import com.valaphee.netcode.mcbe.world.item.readItemStackPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStack
+import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
 
 /**
  * @author Kevin Ludwig
@@ -40,10 +40,10 @@ class EntityArmorPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarULong(runtimeEntityId)
-        if (version >= 431) buffer.writeStack(helmet) else buffer.writeStackPre431(helmet)
-        if (version >= 431) buffer.writeStack(chestplate) else buffer.writeStackPre431(chestplate)
-        if (version >= 431) buffer.writeStack(leggings) else buffer.writeStackPre431(leggings)
-        if (version >= 431) buffer.writeStack(boots) else buffer.writeStackPre431(boots)
+        if (version >= 431) buffer.writeItemStack(helmet) else buffer.writeItemStackPre431(helmet)
+        if (version >= 431) buffer.writeItemStack(chestplate) else buffer.writeItemStackPre431(chestplate)
+        if (version >= 431) buffer.writeItemStack(leggings) else buffer.writeItemStackPre431(leggings)
+        if (version >= 431) buffer.writeItemStack(boots) else buffer.writeItemStackPre431(boots)
     }
 
     override fun handle(handler: PacketHandler) = handler.entityArmor(this)
@@ -57,9 +57,9 @@ class EntityArmorPacket(
 object EntityArmorPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int) = EntityArmorPacket(
         buffer.readVarULong(),
-        if (version >= 431) buffer.readStack() else buffer.readStackPre431(),
-        if (version >= 431) buffer.readStack() else buffer.readStackPre431(),
-        if (version >= 431) buffer.readStack() else buffer.readStackPre431(),
-        if (version >= 431) buffer.readStack() else buffer.readStackPre431()
+        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431(),
+        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431(),
+        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431(),
+        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431()
     )
 }

@@ -16,6 +16,7 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.valaphee.foundry.math.Double2
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
@@ -26,8 +27,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
  */
 class ServerBorderPacket(
     val action: Action,
-    val x: Double,
-    val z: Double,
+    val center: Double2?,
     val oldDiameter: Double,
     val diameter: Double,
     val speed: Long,
@@ -49,12 +49,12 @@ class ServerBorderPacket(
                 buffer.writeVarLong(speed)
             }
             Action.SetCenter -> {
-                buffer.writeDouble(x)
-                buffer.writeDouble(z)
+                buffer.writeDouble(center!!.x)
+                buffer.writeDouble(center.y)
             }
             Action.Initialize -> {
-                buffer.writeDouble(x)
-                buffer.writeDouble(z)
+                buffer.writeDouble(center!!.x)
+                buffer.writeDouble(center.y)
                 buffer.writeDouble(oldDiameter)
                 buffer.writeDouble(diameter)
                 buffer.writeVarLong(speed)
@@ -69,7 +69,7 @@ class ServerBorderPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.border(this)
 
-    override fun toString() = "ServerBorderPacket(action=$action, x=$x, z=$z, oldDiameter=$oldDiameter, diameter=$diameter, speed=$speed, portalTeleportBoundary=$portalTeleportBoundary, warningTime=$warningTime, warningDistance=$warningDistance)"
+    override fun toString() = "ServerBorderPacket(action=$action, center=$center, oldDiameter=$oldDiameter, diameter=$diameter, speed=$speed, portalTeleportBoundary=$portalTeleportBoundary, warningTime=$warningTime, warningDistance=$warningDistance)"
 }
 
 /**
@@ -78,8 +78,7 @@ class ServerBorderPacket(
 object ServerBorderPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): ServerBorderPacket {
         val action = ServerBorderPacket.Action.values()[buffer.readVarInt()]
-        val x: Double
-        val z: Double
+        val center: Double2?
         val oldDiameter: Double
         val diameter: Double
         val speed: Long
@@ -88,8 +87,7 @@ object ServerBorderPacketReader : PacketReader {
         val warningDistance: Int
         when (action) {
             ServerBorderPacket.Action.SetSize -> {
-                x = 0.0
-                z = 0.0
+                center = null
                 oldDiameter = 0.0
                 diameter = buffer.readDouble()
                 speed = 0
@@ -98,8 +96,7 @@ object ServerBorderPacketReader : PacketReader {
                 warningDistance = 0
             }
             ServerBorderPacket.Action.LeapSize -> {
-                x = 0.0
-                z = 0.0
+                center = null
                 oldDiameter = buffer.readDouble()
                 diameter = buffer.readDouble()
                 speed = buffer.readVarLong()
@@ -108,8 +105,7 @@ object ServerBorderPacketReader : PacketReader {
                 warningDistance = 0
             }
             ServerBorderPacket.Action.SetCenter -> {
-                x = buffer.readDouble()
-                z = buffer.readDouble()
+                center = Double2(buffer.readDouble(), buffer.readDouble())
                 oldDiameter = 0.0
                 diameter = 0.0
                 speed = 0
@@ -118,8 +114,7 @@ object ServerBorderPacketReader : PacketReader {
                 warningDistance = 0
             }
             ServerBorderPacket.Action.Initialize -> {
-                x = buffer.readDouble()
-                z = buffer.readDouble()
+                center = Double2(buffer.readDouble(), buffer.readDouble())
                 oldDiameter = buffer.readDouble()
                 diameter = buffer.readDouble()
                 speed = buffer.readVarLong()
@@ -128,8 +123,7 @@ object ServerBorderPacketReader : PacketReader {
                 warningDistance = buffer.readVarInt()
             }
             ServerBorderPacket.Action.SetWarningTime -> {
-                x = 0.0
-                z = 0.0
+                center = null
                 oldDiameter = 0.0
                 diameter = 0.0
                 speed = 0
@@ -138,8 +132,7 @@ object ServerBorderPacketReader : PacketReader {
                 warningDistance = 0
             }
             ServerBorderPacket.Action.SetWarningDistance -> {
-                x = 0.0
-                z = 0.0
+                center = null
                 oldDiameter = 0.0
                 diameter = 0.0
                 speed = 0
@@ -148,6 +141,6 @@ object ServerBorderPacketReader : PacketReader {
                 warningDistance = buffer.readVarInt()
             }
         }
-        return ServerBorderPacket(action, x, z, oldDiameter, diameter, speed, portalTeleportBoundary, warningTime, warningDistance)
+        return ServerBorderPacket(action, center, oldDiameter, diameter, speed, portalTeleportBoundary, warningTime, warningDistance)
     }
 }

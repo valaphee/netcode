@@ -27,7 +27,7 @@ import java.io.OutputStream
  * @author Kevin Ludwig
  */
 data class ItemStack(
-    val itemKey: NamespacedKey,
+    val item: NamespacedKey,
     val count: Int = 1,
     val data: Any? = null,
 ) {
@@ -37,19 +37,19 @@ data class ItemStack(
 
         other as ItemStack
 
-        if (itemKey != other.itemKey) return false
+        if (item != other.item) return false
         if (data != other.data) return false
 
         return true
     }
 }
 
-fun PacketBuffer.readStack() = if (readBoolean()) ItemStack(registries.items[readVarInt()]!!, readByte().toInt(), nbtObjectMapper.readValue(ByteBufInputStream(buffer))) else null
+fun PacketBuffer.readItemStack() = if (readBoolean()) ItemStack(registries.items[readVarInt()]!!, readByte().toInt(), nbtObjectMapper.readValue(ByteBufInputStream(buffer))) else null
 
-fun PacketBuffer.writeStack(value: ItemStack?) {
+fun PacketBuffer.writeItemStack(value: ItemStack?) {
     value?.let {
         writeBoolean(true)
-        writeVarInt(registries.items.getId(it.itemKey))
+        writeVarInt(registries.items.getId(it.item))
         writeByte(it.count)
         nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
     } ?: writeBoolean(false)
