@@ -90,7 +90,7 @@ class SubChunkPacket(
             buffer.writeBoolean(cache)
             buffer.writeVarInt(dimension)
             buffer.writeInt3(position)
-            buffer.writeShortLE(responses.size)
+            buffer.writeIntLE(responses.size)
             responses.forEach {
                 buffer.writeByte(it.position.x)
                 buffer.writeByte(it.position.y)
@@ -129,7 +129,7 @@ object SubChunkPacketReader : PacketReader {
         val cache = buffer.readBoolean()
         val dimension = buffer.readVarInt()
         val position = buffer.readInt3()
-        val responses = safeList(buffer.readUnsignedShortLE()) {
+        val responses = safeList(buffer.readIntLE()) {
             val position = Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt())
             val result = SubChunkPacket.Response.Result.values()[buffer.readVarInt()]
             val data = if (result != SubChunkPacket.Response.Result.SuccessEmpty || !cache) buffer.readByteArray() else null

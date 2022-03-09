@@ -47,7 +47,7 @@ open class ParticleData(
 }
 
 fun PacketBuffer.readParticle(type: NamespacedKey) = when (type) {
-    ParticleData.blockType, ParticleData.blockMarkerType, ParticleData.fallingDustType-> BlockParticleData(type, checkNotNull(registries.blockStates[readVarInt()]))
+    ParticleData.blockType, ParticleData.blockMarkerType, ParticleData.fallingDustType -> BlockParticleData(type, checkNotNull(registries.blockStates[readVarInt()]))
     ParticleData.dustType -> DustParticleData(type, readFloat3(), readFloat())
     ParticleData.dustColorTransitionType -> DustColorTransitionParticleData(type, readFloat3(), readFloat(), readFloat3())
     ParticleData.itemType -> ItemParticleData(type, readItemStack())

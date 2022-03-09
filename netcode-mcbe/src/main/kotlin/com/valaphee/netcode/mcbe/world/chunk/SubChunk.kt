@@ -33,7 +33,7 @@ interface SubChunk {
 
     operator fun set(x: Int, y: Int, z: Int, value: Int, layer: Int) = set(x, y, z, value)
 
-    fun writeToBuffer(buffer: PacketBuffer)
+    fun writeToBuffer(buffer: PacketBuffer, runtime: Boolean)
 
     companion object {
         const val YSize = 16
@@ -62,7 +62,7 @@ class LegacySubChunk(
 
     override val empty get() = blockIds.all { it.toInt() == 0 }
 
-    override fun writeToBuffer(buffer: PacketBuffer) {
+    override fun writeToBuffer(buffer: PacketBuffer, runtime: Boolean) {
         buffer.writeByte(0)
         buffer.writeBytes(blockIds)
         buffer.writeBytes(blockSubIds.data)
@@ -103,17 +103,17 @@ class CompactSubChunk(
 
     override fun get(x: Int, y: Int, z: Int) = get(x, y, z, 0)
 
-    override fun get(x: Int, y: Int, z: Int, layer: Int) = layers[layer].get((x shl SubChunk.XShift) or (z shl SubChunk.ZShift) or y)
+    override fun get(x: Int, y: Int, z: Int, layer: Int) = layers[layer][(x shl SubChunk.XShift) or (z shl SubChunk.ZShift) or y]
 
     override fun set(x: Int, y: Int, z: Int, value: Int) = set(x, y, z, value, 0)
 
-    override fun set(x: Int, y: Int, z: Int, value: Int, layer: Int) = layers[layer].set((x shl SubChunk.XShift) or (z shl SubChunk.ZShift) or y, value)
+    override fun set(x: Int, y: Int, z: Int, value: Int, layer: Int) {
+        layers[layer][(x shl SubChunk.XShift) or (z shl SubChunk.ZShift) or y] = value
+    }
 
     override val empty get() = layers.all { it.empty }
 
-    override fun writeToBuffer(buffer: PacketBuffer) = writeToBuffer(buffer, true)
-
-    fun writeToBuffer(buffer: PacketBuffer, runtime: Boolean) {
+    override fun writeToBuffer(buffer: PacketBuffer, runtime: Boolean) {
         if (layers.size == 1) buffer.writeByte(1) else {
             buffer.writeByte(8)
             buffer.writeByte(layers.size)

@@ -124,7 +124,7 @@ data class ItemStack(
             val node = parser.readValueAsTree<JsonNode>()
             return when (parser) {
                 is NbtParser -> ItemStack(node["Name"].asText(), node["Damage"]?.asInt() ?: 0, node["Count"]?.asInt() ?: 1)
-                else -> ItemStack(node["item"].asText(), node["data"]?.asInt() ?: 0, node["count"]?.asInt() ?: 1, node["netcode:data"]?.let { objectMapper.readValue(base64Decoder.decode(it.asText())) }, blockState = node["netcode:block_state"]?.let  { BlockState(it.asText()) })
+                else -> ItemStack(node["item"].asText(), node["data"]?.asInt() ?: 0, node["count"]?.asInt() ?: 1, node["netcode:data"]?.let { objectMapper.readValue(base64Decoder.decode(it.asText())) }, blockState = node["netcode:block_state"]?.let { BlockState(it.asText()) })
             }
         }
     }
@@ -133,10 +133,10 @@ data class ItemStack(
 fun PacketBuffer.readItemStackPre431(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
-    val itemKey = registries.items[id]!!
+    val item = checkNotNull(registries.items[id])
     val countAndSubId = readVarInt()
     return ItemStack(
-        itemKey,
+        item,
         (countAndSubId shr 8).let { if (it == Short.MAX_VALUE.toInt()) -1 else it },
         countAndSubId and 0xFF,
         readShortLE().toInt().let {
@@ -148,7 +148,7 @@ fun PacketBuffer.readItemStackPre431(): ItemStack? {
         },
         readVarInt().let { if (it == 0) null else safeList(it) { readString() } },
         readVarInt().let { if (it == 0) null else safeList(it) { readString() } },
-        if (itemKey == shield) readVarLong() else 0
+        if (item == shieldItem) readVarLong() else 0
     )
 }
 
@@ -162,14 +162,14 @@ fun PacketBuffer.readItemStackWithNetIdPre431(): ItemStack? {
 fun PacketBuffer.readItemStack(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
-    val itemKey = registries.items[id]!!
+    val item = checkNotNull(registries.items[id])
     val count = readUnsignedShortLE()
     val subId = readVarUInt()
     val netId = if (readBoolean()) readVarInt() else 0
     val blockStateId = readVarInt()
     readVarUInt()
     return ItemStack(
-        itemKey,
+        item,
         subId,
         count,
         readShortLE().toInt().let {
@@ -181,22 +181,22 @@ fun PacketBuffer.readItemStack(): ItemStack? {
         },
         readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
         readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
-        if (itemKey == shield) readLongLE() else 0,
+        if (item == shieldItem) readLongLE() else 0,
         netId,
-        if (blockStateId != 0) registries.blockStates[blockStateId]!! else null
+        if (blockStateId != 0) checkNotNull(registries.blockStates[blockStateId]) else null
     )
 }
 
 fun PacketBuffer.readItemStackInstance(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
-    val itemKey = registries.items[id]!!
+    val item = checkNotNull(registries.items[id])
     val count = readUnsignedShortLE()
     val subId = readVarUInt()
     val blockStateId = readVarInt()
     readVarUInt()
     return ItemStack(
-        itemKey,
+        item,
         subId,
         count,
         readShortLE().toInt().let {
@@ -208,23 +208,23 @@ fun PacketBuffer.readItemStackInstance(): ItemStack? {
         },
         readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
         readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
-        if (itemKey == shield) readLongLE() else 0,
+        if (item == shieldItem) readLongLE() else 0,
         0,
-        if (blockStateId != 0) registries.blockStates[blockStateId]!! else null
+        if (blockStateId != 0) checkNotNull(registries.blockStates[blockStateId]) else null
     )
 }
 
 fun PacketBuffer.readIngredient(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
-    return ItemStack(registries.items[id]!!, readVarInt().let { if (it == Short.MAX_VALUE.toInt()) -1 else it }, readVarInt())
+    return ItemStack(checkNotNull(registries.items[id]), readVarInt().let { if (it == Short.MAX_VALUE.toInt()) -1 else it }, readVarInt())
 }
 
 fun PacketBuffer.writeItemStackPre431(value: ItemStack?) {
     value?.let {
-        val itemId = registries.items.getId(it.item)
-        writeVarInt(itemId)
-        if (itemId != 0) {
+        val item = registries.items.getId(it.item)
+        writeVarInt(item)
+        if (item != 0) {
             writeVarInt(((if (it.subId == -1) Short.MAX_VALUE.toInt() else it.subId) shl 8) or (it.count and 0xFF))
             it.data?.let {
                 writeShortLE(-1)
@@ -239,7 +239,7 @@ fun PacketBuffer.writeItemStackPre431(value: ItemStack?) {
                 writeVarInt(it.size)
                 it.forEach { writeString(it) }
             } ?: writeVarInt(0)
-            if (it.item == shield) writeVarLong(it.blockingTicks)
+            if (it.item == shieldItem) writeVarLong(it.blockingTicks)
         }
     } ?: writeVarInt(0)
 }
@@ -251,9 +251,9 @@ fun PacketBuffer.writeItemStackWithNetIdPre431(value: ItemStack?) {
 
 fun PacketBuffer.writeItemStack(value: ItemStack?) {
     value?.let {
-        val itemId = registries.items.getId(it.item)
-        writeVarInt(itemId)
-        if (itemId != 0) {
+        val item = registries.items.getId(it.item)
+        writeVarInt(item)
+        if (item != 0) {
             writeShortLE(it.count)
             writeVarUInt(it.subId)
             if (it.netId != 0) {
@@ -276,7 +276,7 @@ fun PacketBuffer.writeItemStack(value: ItemStack?) {
                 writeIntLE(it.size)
                 it.forEach { writeString16(it) }
             } ?: writeIntLE(0)
-            if (it.item == shield) writeLongLE(it.blockingTicks)
+            if (it.item == shieldItem) writeLongLE(it.blockingTicks)
             setMaximumLengthVarUInt(dataIndex, writerIndex() - (dataIndex + PacketBuffer.MaximumVarUIntLength))
         }
     } ?: writeVarInt(0)
@@ -284,9 +284,9 @@ fun PacketBuffer.writeItemStack(value: ItemStack?) {
 
 fun PacketBuffer.writeItemStackInstance(value: ItemStack?) {
     value?.let {
-        val itemId = registries.items.getId(it.item)
-        writeVarInt(itemId)
-        if (itemId != 0) {
+        val item = registries.items.getId(it.item)
+        writeVarInt(item)
+        if (item != 0) {
             writeShortLE(it.count)
             writeVarUInt(it.subId)
             writeVarInt(it.blockState?.let { registries.blockStates.getId(it) } ?: 0)
@@ -305,7 +305,7 @@ fun PacketBuffer.writeItemStackInstance(value: ItemStack?) {
                 writeIntLE(it.size)
                 it.forEach { writeString16(it) }
             } ?: writeIntLE(0)
-            if (it.item == shield) writeLongLE(it.blockingTicks)
+            if (it.item == shieldItem) writeLongLE(it.blockingTicks)
             setMaximumLengthVarUInt(dataIndex, writerIndex() - (dataIndex + PacketBuffer.MaximumVarUIntLength))
         }
     } ?: writeVarInt(0)
@@ -322,7 +322,7 @@ fun PacketBuffer.writeIngredient(value: ItemStack?) {
     } ?: writeVarInt(0)
 }
 
-private const val shield = "minecraft:shield"
+private const val shieldItem = "minecraft:shield"
 private val littleEndianNbtObjectMapper = ObjectMapper(NbtFactory().apply { enable(NbtFactory.Feature.LittleEndian) })
 private val littleEndianVarIntNbtObjectMapper = ObjectMapper(NbtFactory().apply {
     enable(NbtFactory.Feature.LittleEndian)

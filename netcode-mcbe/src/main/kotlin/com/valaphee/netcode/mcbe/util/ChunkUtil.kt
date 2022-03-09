@@ -30,7 +30,7 @@ fun PacketBuffer.writeChunkData(borderBlocks: List<Int2>, blockEntities: List<An
 }
 
 fun PacketBuffer.writeChunkDataPre486(blockStorage: BlockStorage, biomes: ByteArray, borderBlocks: List<Int2>, blockEntities: List<Any?>) {
-    repeat(blockStorage.subChunkCount) { i -> blockStorage.subChunks[i].writeToBuffer(this) }
+    repeat(blockStorage.subChunkCount) { i -> blockStorage.subChunks[i].writeToBuffer(this, true) }
     writeBytes(biomes)
     writeByte(borderBlocks.size)
     borderBlocks.forEach { writeByte((it.x and 0xF) or ((it.y and 0xF) shl 4)) }
@@ -38,7 +38,7 @@ fun PacketBuffer.writeChunkDataPre486(blockStorage: BlockStorage, biomes: ByteAr
 }
 
 fun PacketBuffer.writeChunkData(blockStorage: BlockStorage, biomes: Layer, borderBlocks: List<Int2>, blockEntities: List<Any?>) {
-    repeat(blockStorage.subChunkCount) { i -> blockStorage.subChunks[i].writeToBuffer(this) }
+    repeat(blockStorage.subChunkCount) { i -> blockStorage.subChunks[i].writeToBuffer(this, true) }
     biomes.writeToBuffer(this, true)
     writeByte(borderBlocks.size)
     borderBlocks.forEach { writeByte((it.x and 0xF) or ((it.y and 0xF) shl 4)) }

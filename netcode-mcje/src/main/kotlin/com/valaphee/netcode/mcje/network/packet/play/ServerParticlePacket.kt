@@ -54,7 +54,7 @@ class ServerParticlePacket(
  */
 object ServerParticlePacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): ServerParticlePacket {
-        val type = checkNotNull( buffer.registries.particleTypes[buffer.readInt()])
+        val type = checkNotNull(buffer.registries.particleTypes[buffer.readInt()])
         val longDistance = buffer.readBoolean()
         val position = buffer.readDouble3()
         val offset = buffer.readFloat3()

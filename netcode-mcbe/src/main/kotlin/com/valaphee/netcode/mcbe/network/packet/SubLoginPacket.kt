@@ -44,7 +44,7 @@ class SubLoginPacket(
 
     override fun handle(handler: PacketHandler) = handler.subLogin(this)
 
-    override fun toString() = "SubLoginPacket(authJws=$authJws, userJws=$userJws)"
+    override fun toString() = "SubLoginPacket(authJws=<omitted>, userJws=<omitted>)"
 }
 
 /**

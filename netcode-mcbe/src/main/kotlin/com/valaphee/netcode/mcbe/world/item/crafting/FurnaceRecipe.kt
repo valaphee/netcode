@@ -18,6 +18,9 @@ package com.valaphee.netcode.mcbe.world.item.crafting
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.valaphee.netcode.mcbe.world.item.ItemStack
 
 /**
  * @author Kevin Ludwig
@@ -25,9 +28,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 @JsonTypeName("minecraft:recipe_furnace")
 data class FurnaceRecipe(
     @JsonProperty("description") val description: Description,
-    @JsonProperty("tags") val tags: List<String>,
-    @JsonProperty("input") val input: String,
-    @JsonProperty("output") val output: String
+    @JsonProperty("input") @JsonSerialize(using = SingleIngredientSerializer::class) @JsonDeserialize(using = SingleIngredientDeserializer::class) val input: ItemStack,
+    @JsonProperty("output") @JsonSerialize(using = SingleItemSerializer::class) @JsonDeserialize(using = SingleItemDeserializer::class) val output: ItemStack,
+    @JsonProperty("tags") val tags: List<String>
 ) : Recipe {
     data class Description(
         @JsonProperty("identifier") val key: String

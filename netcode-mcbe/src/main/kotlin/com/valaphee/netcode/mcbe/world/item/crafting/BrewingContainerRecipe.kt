@@ -18,6 +18,7 @@ package com.valaphee.netcode.mcbe.world.item.crafting
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.valaphee.netcode.mcbe.pack.Data
 
 /**
  * @author Kevin Ludwig
@@ -26,10 +27,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 data class BrewingContainerRecipe(
     @JsonProperty("description") val description: Description,
     @JsonProperty("tags") val tags: List<String>,
-    @JsonProperty("input") val inputKey: String,
-    @JsonProperty("reagent") val reagentKey: String,
-    @JsonProperty("output") val outputKey: String
-) {
+    @JsonProperty("input") val input: String,
+    @JsonProperty("reagent") val reagent: String,
+    @JsonProperty("output") val output: String
+) : Data {
     data class Description(
         @JsonProperty("identifier") val key: String
     )

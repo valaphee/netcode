@@ -71,7 +71,7 @@ fun PacketBuffer.readLayer(): Layer {
     val header = readByte().toInt()
     val version = BitArray.Version.byBitsPerEntry(header shr 1)
     val runtime = header and 1 == 1
-    val blocks = version.bitArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize, IntArray(version.bitArrayDataSize(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize)) { readIntLE() })
+    val bitArray = version.bitArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize, IntArray(version.bitArrayDataSize(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize)) { readIntLE() })
     val paletteSize = readVarInt()
     return Layer(IntArrayList().apply {
         if (runtime) repeat(paletteSize) { add(readVarInt()) }
@@ -79,5 +79,5 @@ fun PacketBuffer.readLayer(): Layer {
             val stream = it as InputStream
             repeat(paletteSize) { add(registries.blockStates.getId(nbtObjectMapper.readValue(stream))) }
         }
-    }, blocks)
+    }, bitArray)
 }

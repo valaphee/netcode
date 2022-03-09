@@ -24,7 +24,10 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.world.block.Block
+import com.valaphee.netcode.mcbe.world.item.crafting.BrewingContainerRecipe
+import com.valaphee.netcode.mcbe.world.item.crafting.BrewingMixRecipe
 import com.valaphee.netcode.mcbe.world.item.crafting.FurnaceRecipe
+import com.valaphee.netcode.mcbe.world.item.crafting.MaterialReductionRecipe
 import com.valaphee.netcode.mcbe.world.item.crafting.ShapedRecipe
 import com.valaphee.netcode.mcbe.world.item.crafting.ShapelessRecipe
 import java.io.File
@@ -40,7 +43,10 @@ import java.io.File
     JsonSubTypes.Type(Block::class),
     JsonSubTypes.Type(ShapedRecipe::class),
     JsonSubTypes.Type(ShapelessRecipe::class),
-    JsonSubTypes.Type(FurnaceRecipe::class)
+    JsonSubTypes.Type(FurnaceRecipe::class),
+    JsonSubTypes.Type(BrewingMixRecipe::class),
+    JsonSubTypes.Type(BrewingContainerRecipe::class),
+    JsonSubTypes.Type(MaterialReductionRecipe::class)
 )
 interface Data
 

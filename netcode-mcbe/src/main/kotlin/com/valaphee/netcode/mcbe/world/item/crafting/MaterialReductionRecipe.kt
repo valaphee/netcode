@@ -16,12 +16,24 @@
 
 package com.valaphee.netcode.mcbe.world.item.crafting
 
-import it.unimi.dsi.fastutil.ints.Int2IntMap
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.valaphee.netcode.mcbe.pack.Data
+import com.valaphee.netcode.mcbe.world.item.ItemStack
 
 /**
  * @author Kevin Ludwig
  */
+@JsonTypeName("minecraft:recipe_material_reduction")
 data class MaterialReductionRecipe(
-    val inputId: Int,
-    val itemCounts: Int2IntMap
-)
+    @JsonProperty("description") val description: Description,
+    @JsonProperty("tags") val tags: List<String>,
+    @JsonProperty("input") @JsonSerialize(using = SingleItemSerializer::class) @JsonDeserialize(using = SingleItemDeserializer::class) val input: ItemStack,
+    @JsonProperty("output") val output: List<ItemStack>,
+) : Data {
+    data class Description(
+        @JsonProperty("identifier") val key: String
+    )
+}

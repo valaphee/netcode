@@ -19,6 +19,8 @@ package com.valaphee.netcode.mcbe.world.item.crafting
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import java.util.UUID
 
@@ -28,12 +30,12 @@ import java.util.UUID
 @JsonTypeName("minecraft:recipe_shaped")
 data class ShapedRecipe(
     @JsonProperty("description") val description: Description,
-    @JsonProperty("tags") val tags: List<String>,
-    @JsonProperty("key") val key: Map<Char, ItemStack>,
+    @JsonProperty("key") @JsonSerialize(contentUsing = IngredientSerializer::class) @JsonDeserialize(contentUsing = IngredientDeserializer::class) val key: Map<Char, ItemStack>,
     @JsonProperty("pattern") val pattern: List<String>,
-    @JsonProperty("priority") val priority: Int = 0,
-    @JsonProperty("result") val output: ItemStack?,
+    @JsonProperty("result") val output: List<ItemStack>,
     @JsonIgnore val id: UUID = UUID.randomUUID(),
+    @JsonProperty("tags") val tags: List<String>,
+    @JsonProperty("priority") val priority: Int = 0,
     @JsonIgnore var netId: Int = 0
 ) : Recipe {
     data class Description(

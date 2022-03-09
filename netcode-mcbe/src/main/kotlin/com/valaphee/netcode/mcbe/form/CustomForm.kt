@@ -124,7 +124,7 @@ class Slider(
     @JsonProperty("default") var value: Number
 ) : Element(text) {
     override fun answer(answer: Any?): Any {
-        value = answer as Double
+        value = answer as Number
         return value
     }
 

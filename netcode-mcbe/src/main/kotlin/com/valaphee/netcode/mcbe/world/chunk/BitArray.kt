@@ -16,8 +16,6 @@
 
 package com.valaphee.netcode.mcbe.world.chunk
 
-import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap
-
 /**
  * @author Kevin Ludwig
  */
@@ -44,7 +42,8 @@ sealed class BitArray(
         V4(4, 8, V5),
         V3(3, 10, V4),
         V2(2, 16, V3),
-        V1(1, 32, V2);
+        V1(1, 32, V2),
+        V0(0, 0, V1);
 
         val maximumEntryValue = (1 shl bitsPerEntry) - 1
 
@@ -54,17 +53,17 @@ sealed class BitArray(
             return if (indices > indicesRounded) indicesRounded + 1 else indicesRounded
         }
 
-        fun bitArray(size: Int, data: IntArray = IntArray(bitArrayDataSize(size))) = if (this == V3 || this == V5 || this == V6) PaddedBitArray(this, size, data) else PowerOfTwoBitArray(this, size, data)
+        fun bitArray(size: Int, data: IntArray? = null) = if (this == V3 || this == V5 || this == V6) PaddedBitArray(this, size, data ?: IntArray(bitArrayDataSize(size))) else if (this == V0) SingletonBitArray else PowerOfTwoBitArray(this, size, data ?: IntArray(bitArrayDataSize(size)))
 
         companion object {
             fun byBitsPerEntry(bitsPerEntry: Int): Version {
-                var bitsPerEntry0 = bitsPerEntry.toByte()
+                var bitsPerEntry = bitsPerEntry
                 var version: Version?
-                do version = bitArrayByBitsPerEntry[bitsPerEntry0++] while (version == null)
+                do version = bitArrayByBitsPerEntry[bitsPerEntry++] while (version == null)
                 return version
             }
 
-            private val bitArrayByBitsPerEntry = Byte2ObjectOpenHashMap<Version>(values().size).apply { values().forEach { this[it.bitsPerEntry.toByte()] = it } }
+            private val bitArrayByBitsPerEntry = values().associateBy { it.bitsPerEntry }
         }
     }
 }
@@ -88,6 +87,15 @@ internal class PaddedBitArray(
         val localBitIndexStart = index % version.entriesPerIndex * version.bitsPerEntry
         data[intIndexStart] = (data[intIndexStart] and (version.maximumEntryValue shl localBitIndexStart).inv()) or ((value and version.maximumEntryValue) shl localBitIndexStart)
     }
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+internal object SingletonBitArray : BitArray(Version.V0, 1, intArrayOf()) {
+    override fun get(index: Int) = 0
+
+    override fun set(index: Int, value: Int) = Unit
 }
 
 /**
