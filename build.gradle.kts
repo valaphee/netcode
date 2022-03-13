@@ -65,13 +65,4 @@ subprojects {
         useGpgCmd()
         sign(publishing.publications)
     }
-
-    publishing {
-        repositories {
-            maven {
-                name = "gg-repo"
-                setUrl("https://artifactory.griefergames.dev/artifactory/gg-repo")
-            }
-        }
-    }
 }

@@ -97,7 +97,8 @@ class LegacySubChunk(
  * @author Kevin Ludwig
  */
 class CompactSubChunk(
-    var layers: Array<Layer>
+    val layers: Array<Layer>,
+    val index: Int? = null
 ) : SubChunk {
     constructor(default: Int, version: BitArray.Version) : this(arrayOf(Layer(default, version), Layer(default, version)))
 
@@ -114,7 +115,11 @@ class CompactSubChunk(
     override val empty get() = layers.all { it.empty }
 
     override fun writeToBuffer(buffer: PacketBuffer, runtime: Boolean) {
-        if (layers.size == 1) buffer.writeByte(1) else {
+        if (index != null) {
+            buffer.writeByte(9)
+            buffer.writeByte(layers.size)
+            buffer.writeByte(index)
+        } else if (layers.size == 1) buffer.writeByte(1) else {
             buffer.writeByte(8)
             buffer.writeByte(layers.size)
         }
@@ -128,8 +133,8 @@ fun PacketBuffer.readSubChunk() = when (val version = readUnsignedByte().toInt()
     8 -> CompactSubChunk(Array(readUnsignedByte().toInt()) { readLayer() })
     9 -> {
         val layerCount = readUnsignedByte().toInt()
-        readByte() // absolute index for data-driven dimension heights
-        CompactSubChunk(Array(layerCount) { readLayer() })
+        val index = readByte().toInt()
+        CompactSubChunk(Array(layerCount) { readLayer() }, index)
     }
     else -> TODO("$version")
 }

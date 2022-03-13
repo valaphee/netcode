@@ -39,7 +39,7 @@ import com.valaphee.netcode.util.safeList
 @Restrict(Restriction.ToClient)
 class CommandsPacket(
     val commands: List<Command>,
-    val constraints: List<EnumerationConstraint>
+    val enumerationConstraints: List<EnumerationConstraint>
 ) : Packet() {
     override val id get() = 0x4C
 
@@ -100,13 +100,13 @@ class CommandsPacket(
         }
         buffer.writeVarUInt(softEnumerationsMap.values.size)
         softEnumerationsMap.values.forEach { buffer.writeEnumeration(it) }
-        buffer.writeVarUInt(constraints.size)
-        constraints.forEach { buffer.writeEnumerationConstraint(it, values, enumerationsMap.values) }
+        buffer.writeVarUInt(enumerationConstraints.size)
+        enumerationConstraints.forEach { buffer.writeEnumerationConstraint(it, values, enumerationsMap.values) }
     }
 
     override fun handle(handler: PacketHandler) = handler.commands(this)
 
-    override fun toString() = "CommandsPacket(commands=$commands, constraints=$constraints)"
+    override fun toString() = "CommandsPacket(commands=$commands, constraints=$enumerationConstraints)"
 
     companion object {
         internal const val parameterFlagValid = 1 shl 20

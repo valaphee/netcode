@@ -17,7 +17,6 @@
 package com.valaphee.netcode.mcbe.command
 
 import com.valaphee.netcode.mcbe.network.PacketBuffer
-import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig
@@ -25,14 +24,14 @@ import com.valaphee.netcode.util.safeList
 data class EnumerationConstraint(
     val value: String,
     val enumeration: Enumeration,
-    val constraints: List<Constraint>
+    val constraints: Set<Constraint>
 ) {
     enum class Constraint {
         CheatsEnabled, OperatorPermissions, HostPermissions, Unknown3
     }
 }
 
-fun PacketBuffer.readEnumerationConstraint(values: List<String>, enumerations: List<Enumeration>) = EnumerationConstraint(values[buffer.readIntLE()], enumerations[buffer.readIntLE()], safeList(readVarUInt()) { EnumerationConstraint.Constraint.values()[buffer.readByte().toInt()] })
+fun PacketBuffer.readEnumerationConstraint(values: List<String>, enumerations: List<Enumeration>) = EnumerationConstraint(values[buffer.readIntLE()], enumerations[buffer.readIntLE()], mutableSetOf<EnumerationConstraint.Constraint>().apply { repeat(readVarUInt()) { add(EnumerationConstraint.Constraint.values()[buffer.readByte().toInt()]) } })
 
 fun PacketBuffer.writeEnumerationConstraint(value: EnumerationConstraint, values: Collection<String>, enumerations: Collection<Enumeration>) {
     writeIntLE(values.indexOf(value.value))

@@ -30,7 +30,7 @@ import com.valaphee.netcode.mcbe.util.Registry
  */
 @Restrict(Restriction.ToClient)
 class WorldEventPacket(
-    val eventOrParticleType: Event,
+    val event: Event,
     val position: Float3,
     val data: Int = 0
 ) : Packet() {
@@ -570,14 +570,14 @@ class WorldEventPacket(
     override val id get() = 0x19
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(Event.registryByVersion(version).getId(eventOrParticleType))
+        buffer.writeVarInt(Event.registryByVersion(version).getId(event))
         buffer.writeFloat3(position)
         buffer.writeVarInt(data)
     }
 
     override fun handle(handler: PacketHandler) = handler.worldEvent(this)
 
-    override fun toString() = "WorldEventPacket(eventOrParticleType=$eventOrParticleType, position=$position, data=$data)"
+    override fun toString() = "WorldEventPacket(event=$event, position=$position, data=$data)"
 }
 
 /**

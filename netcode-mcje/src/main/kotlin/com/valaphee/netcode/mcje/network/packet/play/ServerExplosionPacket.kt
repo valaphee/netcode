@@ -29,25 +29,25 @@ import com.valaphee.netcode.util.safeList
  */
 class ServerExplosionPacket(
     val position: Float3,
-    val strength: Float,
+    val radius: Float,
     val affectedBlocks: List<Int3>,
-    val motion: Float3
+    val velocity: Float3
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeFloat3(position)
-        buffer.writeFloat(strength)
+        buffer.writeFloat(radius)
         buffer.writeInt(affectedBlocks.size)
         affectedBlocks.forEach { (x, y, z) ->
             buffer.writeByte(x)
             buffer.writeByte(y)
             buffer.writeByte(z)
         }
-        buffer.writeFloat3(motion)
+        buffer.writeFloat3(velocity)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.explosion(this)
 
-    override fun toString() = "ServerExplosionPacket(position=$position, strength=$strength, affectedBlocks=$affectedBlocks, motion=$motion)"
+    override fun toString() = "ServerExplosionPacket(position=$position, radius=$radius, affectedBlocks=$affectedBlocks, velocity=$velocity)"
 }
 
 /**

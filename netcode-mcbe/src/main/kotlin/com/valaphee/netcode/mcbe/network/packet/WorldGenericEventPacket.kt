@@ -16,35 +16,46 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.valaphee.jackson.dataformat.nbt.NbtFactory
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
 class WorldGenericEventPacket(
-    val eventId: Int,
+    val event: WorldEventPacket.Event,
     val data: Any?
 ) : Packet() {
     override val id get() = 0x7C
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(eventId)
+        buffer.writeVarInt(WorldEventPacket.Event.registryByVersion(version).getId(event))
+        noWrapNbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.worldGenericEvent(this)
 
-    override fun toString() = "WorldGenericEventPacket(eventId=$eventId, data=$data)"
+    override fun toString() = "WorldGenericEventPacket(event=$event, data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object WorldGenericEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = WorldGenericEventPacket(buffer.readVarInt(), null)
+    override fun read(buffer: PacketBuffer, version: Int) = WorldGenericEventPacket(checkNotNull(WorldEventPacket.Event.registryByVersion(version)[buffer.readVarInt()]), noWrapNbtObjectMapper.readValue(ByteBufInputStream(buffer) as InputStream))
 }
+
+private val noWrapNbtObjectMapper = ObjectMapper(NbtFactory().enable(NbtFactory.Feature.LittleEndian).enable(NbtFactory.Feature.VarInt).enable(NbtFactory.Feature.NoWrap)).registerKotlinModule()

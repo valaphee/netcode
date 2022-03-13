@@ -19,8 +19,6 @@ package com.valaphee.netcode.mcje.world.chunk
 /**
  * @author Kevin Ludwig
  */
-class BlockStorage {
-    companion object {
-        const val XZSize = 16
-    }
+object BlockStorage {
+    const val XZSize = 16
 }

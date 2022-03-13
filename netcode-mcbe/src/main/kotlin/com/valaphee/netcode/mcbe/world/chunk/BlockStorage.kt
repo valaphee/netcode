@@ -19,38 +19,8 @@ package com.valaphee.netcode.mcbe.world.chunk
 /**
  * @author Kevin Ludwig
  */
-class BlockStorage(
-    val default: Int,
-    val subChunks: List<SubChunk>
-) {
-    val subChunkCount: Int
-        get() {
-            var subChunkCount = subChunks.size - 1
-            while (subChunkCount >= 0 && subChunks[subChunkCount].empty) subChunkCount--
-            return ++subChunkCount
-        }
-
-    constructor(default: Int, subChunkCount: Int = 16) : this(default, List(subChunkCount) { CompactSubChunk(default, BitArray.Version.V1) })
-
-    operator fun get(x: Int, y: Int, z: Int) = if (x in 0 until XZSize && y in 0 until subChunks.size * SubChunk.YSize && z in 0 until XZSize) subChunks[y shr YShift][x, y and YMask, z] else default
-
-    operator fun get(x: Int, y: Int, z: Int, layer: Int) = if (x in 0 until XZSize && y in 0 until subChunks.size * SubChunk.YSize && z in 0 until XZSize) subChunks[y shr YShift][x, y and YMask, z, layer] else default
-
-    operator fun set(x: Int, y: Int, z: Int, value: Int) {
-        if (!(x in 0 until XZSize && y in 0 until subChunks.size * SubChunk.YSize && z in 0 until XZSize)) return
-
-        subChunks[y shr YShift][x, y and YMask, z] = value
-    }
-
-    operator fun set(x: Int, y: Int, z: Int, value: Int, layer: Int) {
-        if (!(x in 0 until XZSize && y in 0 until subChunks.size * SubChunk.YSize && z in 0 until XZSize)) return
-
-        subChunks[y shr YShift][x, y and YMask, z, value] = layer
-    }
-
-    companion object {
-        const val XZSize = 16
-        const val YShift = 4
-        const val YMask = 15
-    }
+object BlockStorage {
+    const val XZSize = 16
+    const val YShift = 4
+    const val YMask = 15
 }

@@ -71,6 +71,12 @@ class ServerWorldEventPacket(
         SoundBrew,
         SoundIronTrapdoorOpen,
         SoundIronTrapdoorClose,
+        SoundEndPortalSpawn,
+        SoundPhantomBite,
+        SoundZombieConvertedToDrowned,
+        SoundHuskConvertedToZombie,
+        SoundGrindstoneUse,
+        SoundBookPageTurn,
         ComposterComposts,
         LavaConvertsBlock,
         RedstoneTorchBurnout,
@@ -128,6 +134,12 @@ class ServerWorldEventPacket(
                 this[1035] = SoundBrew
                 this[1036] = SoundIronTrapdoorOpen
                 this[1037] = SoundIronTrapdoorClose
+                this[1038] = SoundEndPortalSpawn
+                this[1039] = SoundPhantomBite
+                this[1040] = SoundZombieConvertedToDrowned
+                this[1041] = SoundHuskConvertedToZombie
+                this[1042] = SoundGrindstoneUse
+                this[1043] = SoundBookPageTurn
                 this[1500] = ComposterComposts
                 this[1501] = LavaConvertsBlock
                 this[1502] = RedstoneTorchBurnout
@@ -164,5 +176,5 @@ class ServerWorldEventPacket(
  * @author Kevin Ludwig
  */
 object ServerWorldEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldEventPacket(ServerWorldEventPacket.Event.registry[buffer.readInt()]!!, buffer.readInt3UnsignedY(), buffer.readInt(), buffer.readBoolean())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldEventPacket(checkNotNull(ServerWorldEventPacket.Event.registry[buffer.readInt()]), buffer.readInt3UnsignedY(), buffer.readInt(), buffer.readBoolean())
 }
