@@ -35,6 +35,8 @@ class PacketBuffer(
     buffer: ByteBuf,
     val jsonObjectMapper: ObjectMapper,
     val nbtObjectMapper: ObjectMapper,
+    val nbtVarIntObjectMapper: ObjectMapper,
+    val nbtVarIntNoWrapObjectMapper: ObjectMapper,
     registries: Registries? = null
 ) : ByteBufWrapper(buffer) {
     lateinit var registries: Registries

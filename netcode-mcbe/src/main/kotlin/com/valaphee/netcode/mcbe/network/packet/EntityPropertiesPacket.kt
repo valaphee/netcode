@@ -34,7 +34,7 @@ class EntityPropertiesPacket(
     override val id get() = 0xA5
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
+        buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.entityProperties(this)
@@ -46,5 +46,5 @@ class EntityPropertiesPacket(
  * @author Kevin Ludwig
  */
 object EntityPropertiesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityPropertiesPacket(buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    override fun read(buffer: PacketBuffer, version: Int) = EntityPropertiesPacket(buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

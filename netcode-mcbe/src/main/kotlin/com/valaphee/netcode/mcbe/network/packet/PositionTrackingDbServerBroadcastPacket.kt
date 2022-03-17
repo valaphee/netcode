@@ -45,7 +45,7 @@ class PositionTrackingDbServerBroadcastPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(action.ordinal)
         buffer.writeVarUInt(trackingId)
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
+        buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.positionTrackingDbServerBroadcast(this)
@@ -57,5 +57,5 @@ class PositionTrackingDbServerBroadcastPacket(
  * @author Kevin Ludwig
  */
 object PositionTrackingDbServerBroadcastPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = PositionTrackingDbServerBroadcastPacket(PositionTrackingDbServerBroadcastPacket.Action.values()[buffer.readByte().toInt()], buffer.readVarUInt(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    override fun read(buffer: PacketBuffer, version: Int) = PositionTrackingDbServerBroadcastPacket(PositionTrackingDbServerBroadcastPacket.Action.values()[buffer.readByte().toInt()], buffer.readVarUInt(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

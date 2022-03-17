@@ -37,7 +37,7 @@ class EntityIdentifiersPacket(
     override val id get() = 0x77
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
+        buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.entityIdentifiers(this)
@@ -49,5 +49,5 @@ class EntityIdentifiersPacket(
  * @author Kevin Ludwig
  */
 object EntityIdentifiersPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityIdentifiersPacket(buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    override fun read(buffer: PacketBuffer, version: Int) = EntityIdentifiersPacket(buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

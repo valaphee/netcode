@@ -63,7 +63,7 @@ class Layer(
         if (runtime) palette.forEach { buffer.writeVarInt(it) }
         else ByteBufOutputStream(buffer).use {
             val stream = it as OutputStream
-            palette.forEach { buffer.nbtObjectMapper.writeValue(stream, buffer.registries.blockStates[it]!!) }
+            palette.forEach { buffer.nbtVarIntObjectMapper.writeValue(stream, buffer.registries.blockStates[it]!!) }
         }
     }
 }
@@ -79,7 +79,7 @@ fun PacketBuffer.readLayer(): Layer {
             if (runtime) repeat(paletteSize) { add(readVarInt()) }
             else ByteBufInputStream(buffer).use {
                 val stream = it as InputStream
-                repeat(paletteSize) { add(registries.blockStates.getId(nbtObjectMapper.readValue(stream))) }
+                repeat(paletteSize) { add(registries.blockStates.getId(nbtVarIntObjectMapper.readValue(stream))) }
             }
         }, bitArray)
     } else TODO()

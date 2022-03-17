@@ -75,10 +75,10 @@ interface MetadataType<T> {
         }
 
         val Nbt = object : MetadataType<Any?> {
-            override fun read(buffer: PacketBuffer) = buffer.nbtObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
+            override fun read(buffer: PacketBuffer) = buffer.nbtVarIntObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, value)
+                buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, value)
             }
         }
 

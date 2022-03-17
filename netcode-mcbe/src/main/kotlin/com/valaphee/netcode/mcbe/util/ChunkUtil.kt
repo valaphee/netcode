@@ -26,7 +26,7 @@ import java.io.OutputStream
 fun PacketBuffer.writeChunkData(borderBlocks: List<Int2>, blockEntities: List<Any?>) {
     writeByte(borderBlocks.size)
     borderBlocks.forEach { writeByte((it.x and 0xF) or ((it.y and 0xF) shl 4)) }
-    blockEntities.forEach { nbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it) }
+    blockEntities.forEach { nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it) }
 }
 
 fun PacketBuffer.writeChunkDataPre486(subChunks: List<SubChunk>, biomes: ByteArray, borderBlocks: List<Int2>, blockEntities: List<Any?>) {
@@ -34,7 +34,7 @@ fun PacketBuffer.writeChunkDataPre486(subChunks: List<SubChunk>, biomes: ByteArr
     writeBytes(biomes)
     writeByte(borderBlocks.size)
     borderBlocks.forEach { writeByte((it.x and 0xF) or ((it.y and 0xF) shl 4)) }
-    blockEntities.forEach { nbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it) }
+    blockEntities.forEach { nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it) }
 }
 
 fun PacketBuffer.writeChunkData(subChunks: List<SubChunk>, biomes: Layer, borderBlocks: List<Int2>, blockEntities: List<Any?>) {
@@ -42,5 +42,5 @@ fun PacketBuffer.writeChunkData(subChunks: List<SubChunk>, biomes: Layer, border
     biomes.writeToBuffer(this, true)
     writeByte(borderBlocks.size)
     borderBlocks.forEach { writeByte((it.x and 0xF) or ((it.y and 0xF) shl 4)) }
-    blockEntities.forEach { nbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it) }
+    blockEntities.forEach { nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it) }
 }

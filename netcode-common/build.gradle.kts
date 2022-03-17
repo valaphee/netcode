@@ -33,7 +33,7 @@ publishing {
                 }
                 licenses {
                     license {
-                        name.set("MIT License")
+                        name.set("Apache License 2.0")
                         url.set("https://raw.githubusercontent.com/valaphee/netcode/master/LICENSE.txt")
                     }
                 }

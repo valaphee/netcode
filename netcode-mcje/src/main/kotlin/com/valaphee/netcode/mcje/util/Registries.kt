@@ -34,6 +34,7 @@ class Registries(
     @JsonProperty("minecraft:entity_type") val entityTypes: Registry,
     @JsonProperty("minecraft:item") val items: Registry,
     @JsonProperty("minecraft:particle_type") val particleTypes: Registry,
+    @JsonProperty("minecraft:motive") val motive: Registry,
     @JsonProperty("minecraft:menu") val windowTypes: Registry,
     @JsonProperty("minecraft:recipe_serializer") val recipeTypes: Registry,
 ) {

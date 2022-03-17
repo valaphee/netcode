@@ -37,7 +37,7 @@ class BlockComponentPacket(
     override val id get() = 0x86
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
+        buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.blockComponent(this)
@@ -49,5 +49,5 @@ class BlockComponentPacket(
  * @author Kevin Ludwig
  */
 object BlockComponentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BlockComponentPacket(buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    override fun read(buffer: PacketBuffer, version: Int) = BlockComponentPacket(buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

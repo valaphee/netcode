@@ -30,12 +30,12 @@ class BossBarPacket(
     val title: String?,
     val playerUniqueEntityId: Long,
     val percentage: Float,
-    val darkenSky: Int,
+    val flags: Int,
     val color: Color?,
     val overlay: Overlay?
 ) : Packet() {
     enum class Action {
-        Show, RegisterPlayer, Hide, UnregisterPlayer, SetPercentage, SetTitle, SetDarkenSky, SetStyle, Query
+        Show, RegisterPlayer, Hide, UnregisterPlayer, SetPercentage, SetTitle, SetFlags, SetStyle, Query
     }
 
     enum class Color {
@@ -55,7 +55,7 @@ class BossBarPacket(
             Action.Show -> {
                 buffer.writeString(title!!)
                 buffer.writeFloatLE(percentage)
-                buffer.writeShortLE(darkenSky)
+                buffer.writeShortLE(flags)
                 buffer.writeVarUInt(color!!.ordinal)
                 buffer.writeVarUInt(overlay!!.ordinal)
             }
@@ -63,8 +63,8 @@ class BossBarPacket(
             Action.Hide -> Unit
             Action.SetPercentage -> buffer.writeFloatLE(percentage)
             Action.SetTitle -> buffer.writeString(title!!)
-            Action.SetDarkenSky -> {
-                buffer.writeShortLE(darkenSky)
+            Action.SetFlags -> {
+                buffer.writeShortLE(flags)
                 buffer.writeVarUInt(color!!.ordinal)
                 buffer.writeVarUInt(overlay!!.ordinal)
             }
@@ -77,7 +77,7 @@ class BossBarPacket(
 
     override fun handle(handler: PacketHandler) = handler.bossBar(this)
 
-    override fun toString() = "BossBarPacket(uniqueEntityId=$uniqueEntityId, action=$action, title=$title, playerUniqueEntityId=$playerUniqueEntityId, percentage=$percentage, darkenSky=$darkenSky, color=$color, overlay=$overlay)"
+    override fun toString() = "BossBarPacket(uniqueEntityId=$uniqueEntityId, action=$action, title=$title, playerUniqueEntityId=$playerUniqueEntityId, percentage=$percentage, flags=$flags, color=$color, overlay=$overlay)"
 }
 
 /**
@@ -89,7 +89,7 @@ object BossBarPacketReader : PacketReader {
         val action = BossBarPacket.Action.values()[buffer.readVarUInt()]
         val title: String?
         val percentage: Float
-        val darkenSky: Int
+        val flags: Int
         val color: BossBarPacket.Color?
         val overlay: BossBarPacket.Overlay?
         val playerUniqueEntityId: Long
@@ -97,7 +97,7 @@ object BossBarPacketReader : PacketReader {
             BossBarPacket.Action.Show -> {
                 title = buffer.readString()
                 percentage = buffer.readFloatLE()
-                darkenSky = buffer.readUnsignedShortLE()
+                flags = buffer.readUnsignedShortLE()
                 color = BossBarPacket.Color.values()[buffer.readVarUInt()]
                 overlay = BossBarPacket.Overlay.values()[buffer.readVarUInt()]
                 playerUniqueEntityId = 0
@@ -105,7 +105,7 @@ object BossBarPacketReader : PacketReader {
             BossBarPacket.Action.Hide -> {
                 title = null
                 percentage = 0.0f
-                darkenSky = 0
+                flags = 0
                 color = null
                 overlay = null
                 playerUniqueEntityId = 0
@@ -113,7 +113,7 @@ object BossBarPacketReader : PacketReader {
             BossBarPacket.Action.RegisterPlayer, BossBarPacket.Action.UnregisterPlayer, BossBarPacket.Action.Query -> {
                 title = null
                 percentage = 0.0f
-                darkenSky = 0
+                flags = 0
                 color = null
                 overlay = null
                 playerUniqueEntityId = buffer.readVarLong()
@@ -121,7 +121,7 @@ object BossBarPacketReader : PacketReader {
             BossBarPacket.Action.SetPercentage -> {
                 title = null
                 percentage = buffer.readFloatLE()
-                darkenSky = 0
+                flags = 0
                 color = null
                 overlay = null
                 playerUniqueEntityId = buffer.readVarLong()
@@ -129,15 +129,15 @@ object BossBarPacketReader : PacketReader {
             BossBarPacket.Action.SetTitle -> {
                 title = buffer.readString()
                 percentage = 0.0f
-                darkenSky = 0
+                flags = 0
                 color = null
                 overlay = null
                 playerUniqueEntityId = buffer.readVarLong()
             }
-            BossBarPacket.Action.SetDarkenSky -> {
+            BossBarPacket.Action.SetFlags -> {
                 title = null
                 percentage = 0.0f
-                darkenSky = buffer.readUnsignedShortLE()
+                flags = buffer.readUnsignedShortLE()
                 color = BossBarPacket.Color.values()[buffer.readVarUInt()]
                 overlay = BossBarPacket.Overlay.values()[buffer.readVarUInt()]
                 playerUniqueEntityId = 0
@@ -145,12 +145,12 @@ object BossBarPacketReader : PacketReader {
             BossBarPacket.Action.SetStyle -> {
                 title = null
                 percentage = 0.0f
-                darkenSky = 0
+                flags = 0
                 color = BossBarPacket.Color.values()[buffer.readVarUInt()]
                 overlay = BossBarPacket.Overlay.values()[buffer.readVarUInt()]
                 playerUniqueEntityId = 0
             }
         }
-        return BossBarPacket(uniqueEntityId, action, title, playerUniqueEntityId, percentage, darkenSky, color, overlay)
+        return BossBarPacket(uniqueEntityId, action, title, playerUniqueEntityId, percentage, flags, color, overlay)
     }
 }

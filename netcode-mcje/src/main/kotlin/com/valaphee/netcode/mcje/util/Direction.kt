@@ -19,6 +19,17 @@ package com.valaphee.netcode.mcje.util
 /**
  * @author Kevin Ludwig
  */
-enum class Direction {
-    Down, Up, North, South, West, East
+enum class Direction(
+    val horizontalIndex: Int = -1
+) {
+    Down,
+    Up,
+    North(2),
+    South(0),
+    West(1),
+    East(3);
+
+    companion object {
+        val horizontals = values().filter { it.horizontalIndex != -1 }.sortedBy { it.horizontalIndex }
+    }
 }

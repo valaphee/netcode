@@ -79,7 +79,7 @@ class TradePacket(
         buffer.writeString(title)
         buffer.writeBoolean(v2)
         buffer.writeBoolean(restock)
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
+        buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.trade(this)
@@ -101,6 +101,6 @@ object TradePacketReader : PacketReader {
         buffer.readString(),
         buffer.readBoolean(),
         buffer.readBoolean(),
-        buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
+        buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer))
     )
 }

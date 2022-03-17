@@ -37,7 +37,7 @@ class BlockEntityPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
+        buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.blockEntity(this)
@@ -49,5 +49,5 @@ class BlockEntityPacket(
  * @author Kevin Ludwig
  */
 object BlockEntityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BlockEntityPacket(buffer.readInt3UnsignedY(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    override fun read(buffer: PacketBuffer, version: Int) = BlockEntityPacket(buffer.readInt3UnsignedY(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
 }

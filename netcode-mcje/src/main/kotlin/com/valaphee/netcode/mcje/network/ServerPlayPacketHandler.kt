@@ -58,7 +58,6 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerExperienceOrbAddPacke
 import com.valaphee.netcode.mcje.network.packet.play.ServerExperiencePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerExplosionPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerGameStatePacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerGlobalEntityAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerHealthHungerSaturationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerHorseWindowOpenPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerHotbarPacket
@@ -72,6 +71,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerMapPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerNamedSoundPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectivePacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerPaintingAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerParticlePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerCombatEventPacket
@@ -111,11 +111,9 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun experienceOrbAdd(packet: ServerExperienceOrbAddPacket) = other(packet)
 
-    fun globalEntityAdd(packet: ServerGlobalEntityAddPacket) = other(packet)
-
     fun entityAdd(packet: ServerEntityAddPacket) = other(packet)
 
-    /*fun paintingAdd(packet: ServerPaintingAddPacket) = other(packet)*/
+    fun paintingAdd(packet: ServerPaintingAddPacket) = other(packet)
 
     fun playerAdd(packet: ServerPlayerAddPacket) = other(packet)
 

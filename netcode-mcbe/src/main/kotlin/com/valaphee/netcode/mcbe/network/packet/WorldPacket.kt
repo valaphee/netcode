@@ -222,12 +222,12 @@ class WorldPacket(
         buffer.writeVarInt(enchantmentSeed)
         if (version >= 419) {
             buffer.writeVarUInt(blocks!!.size)
-            val nbtObjectWriter = buffer.nbtObjectMapper.writerFor(Block::class.java).withAttribute("version", version)
+            val nbtObjectWriter = buffer.nbtVarIntObjectMapper.writerFor(Block::class.java).withAttribute("version", version)
             blocks.forEach {
                 buffer.writeString(it.description.key)
                 nbtObjectWriter.writeValue(ByteBufOutputStream(buffer) as OutputStream, it)
             }
-        } else buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, blocksData)
+        } else buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, blocksData)
         buffer.writeVarUInt(items.size)
         items.forEach { (id, item) ->
             buffer.writeString(item.key)
@@ -363,10 +363,10 @@ object WorldPacketReader : PacketReader {
         val blocks: List<Block>?
         if (version >= 419) {
             blocksData = null
-            val nbtObjectReader = buffer.nbtObjectMapper.readerFor(Block::class.java).withAttribute("version", version)
+            val nbtObjectReader = buffer.nbtVarIntObjectMapper.readerFor(Block::class.java).withAttribute("version", version)
             blocks = safeList(buffer.readVarUInt()) { nbtObjectReader.readValue(ByteBufInputStream(buffer) as InputStream) }
         } else {
-            blocksData = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
+            blocksData = buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer))
             blocks = null
         }
         val itemCount = buffer.readVarUInt()

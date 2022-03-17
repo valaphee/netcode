@@ -46,7 +46,7 @@ class ItemComponentPacket(
         buffer.writeVarUInt(entries.size)
         entries.forEach {
             buffer.writeString(it.name)
-            buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
+            buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
         }
     }
 
@@ -59,5 +59,5 @@ class ItemComponentPacket(
  * @author Kevin Ludwig
  */
 object ItemComponentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ItemComponentPacket(safeList(buffer.readVarUInt()) { ItemComponentPacket.Entry(buffer.readString(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))) })
+    override fun read(buffer: PacketBuffer, version: Int) = ItemComponentPacket(safeList(buffer.readVarUInt()) { ItemComponentPacket.Entry(buffer.readString(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer))) })
 }

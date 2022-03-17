@@ -16,38 +16,40 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.valaphee.foundry.math.Double3
+import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.util.Direction
+import com.valaphee.netcode.mcje.util.NamespacedKey
+import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
-class ServerGlobalEntityAddPacket(
+class ServerPaintingAddPacket(
     val entityId: Int,
-    val type: Type,
-    val position: Double3
+    val entityUid: UUID,
+    val painting: NamespacedKey,
+    val position: Int3,
+    val direction: Direction
 ) : Packet<ServerPlayPacketHandler> {
-    enum class Type {
-        None, LightningBolt
-    }
-
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        buffer.writeByte(type.ordinal)
-        buffer.writeDouble3(position)
+        buffer.writeUuid(entityUid)
+        buffer.writeVarInt(buffer.registries.motive.getId(painting))
+        buffer.writeInt3UnsignedY(position)
+        buffer.writeByte(direction.horizontalIndex)
     }
 
-    override fun handle(handler: ServerPlayPacketHandler) = handler.globalEntityAdd(this)
+    override fun handle(handler: ServerPlayPacketHandler) = handler.paintingAdd(this)
 
-    override fun toString() = "ServerGlobalEntityAddPacket(entityId=$entityId, type=$type, position=$position)"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ServerGlobalEntityAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerGlobalEntityAddPacket(buffer.readVarInt(), ServerGlobalEntityAddPacket.Type.values()[buffer.readUnsignedByte().toInt()], buffer.readDouble3())
+object ServerPaintingAddPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerPaintingAddPacket(buffer.readVarInt(), buffer.readUuid(), checkNotNull(buffer.registries.motive[buffer.readVarInt()]), buffer.readInt3UnsignedY(), Direction.horizontals[buffer.readByte().toInt()])
 }

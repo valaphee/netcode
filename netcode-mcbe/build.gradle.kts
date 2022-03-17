@@ -18,7 +18,7 @@ dependencies {
     api(project(":netcode-common"))
     api("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
     api("com.valaphee:foundry-math:1.4.0")
-    api("com.valaphee:jackson-dataformat-nbt:1.1.9")
+    api("com.valaphee:jackson-dataformat-nbt:1.2.1")
     api("io.github.classgraph:classgraph:4.8.140")
     api("it.unimi.dsi:fastutil:8.5.8")
     api("network.ycc:netty-raknet-client:0.8-SNAPSHOT")
@@ -41,7 +41,7 @@ publishing {
                 }
                 licenses {
                     license {
-                        name.set("MIT License")
+                        name.set("Apache License 2.0")
                         url.set("https://raw.githubusercontent.com/valaphee/netcode/master/LICENSE.txt")
                     }
                 }

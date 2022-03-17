@@ -16,10 +16,7 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import com.valaphee.jackson.dataformat.nbt.NbtFactory
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
@@ -43,7 +40,7 @@ class WorldGenericEventPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(WorldEventPacket.Event.registryByVersion(version).getId(event))
-        noWrapNbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
+        buffer.nbtVarIntNoWrapObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.worldGenericEvent(this)
@@ -55,7 +52,5 @@ class WorldGenericEventPacket(
  * @author Kevin Ludwig
  */
 object WorldGenericEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = WorldGenericEventPacket(checkNotNull(WorldEventPacket.Event.registryByVersion(version)[buffer.readVarInt()]), noWrapNbtObjectMapper.readValue(ByteBufInputStream(buffer) as InputStream))
+    override fun read(buffer: PacketBuffer, version: Int) = WorldGenericEventPacket(checkNotNull(WorldEventPacket.Event.registryByVersion(version)[buffer.readVarInt()]), buffer.nbtVarIntNoWrapObjectMapper.readValue(ByteBufInputStream(buffer) as InputStream))
 }
-
-private val noWrapNbtObjectMapper = ObjectMapper(NbtFactory().enable(NbtFactory.Feature.LittleEndian).enable(NbtFactory.Feature.VarInt).enable(NbtFactory.Feature.NoWrap)).registerKotlinModule()

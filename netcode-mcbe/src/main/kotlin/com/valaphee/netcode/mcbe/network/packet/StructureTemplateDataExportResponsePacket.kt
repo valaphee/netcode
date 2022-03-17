@@ -46,7 +46,7 @@ class StructureTemplateDataExportResponsePacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(name)
         buffer.writeBoolean(save)
-        if (save) buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
+        if (save) buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
         buffer.writeByte(type.ordinal)
     }
 
@@ -62,7 +62,7 @@ object StructureTemplateDataExportResponsePacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): StructureTemplateDataExportResponsePacket {
         val name = buffer.readString()
         val save = buffer.readBoolean()
-        val data = if (save) buffer.nbtObjectMapper.readValue<Any?>(ByteBufInputStream(buffer)) else null
+        val data = if (save) buffer.nbtVarIntObjectMapper.readValue<Any?>(ByteBufInputStream(buffer)) else null
         val type = StructureTemplateDataExportResponsePacket.Type.values()[buffer.readUnsignedByte().toInt()]
         return StructureTemplateDataExportResponsePacket(name, save, data, type)
     }

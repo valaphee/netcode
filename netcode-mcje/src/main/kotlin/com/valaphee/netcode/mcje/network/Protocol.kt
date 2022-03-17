@@ -214,6 +214,8 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerObjectAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectAddPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectivePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectivePacketReader
+import com.valaphee.netcode.mcje.network.packet.play.ServerPaintingAddPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerPaintingAddPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerParticlePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerParticlePacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerAddPacket
@@ -363,8 +365,10 @@ enum class Protocols(
             .register(ServerObjectAddPacket::class, ServerObjectAddPacketReader, 754 to 0x00)
             .register(ServerExperienceOrbAddPacket::class, ServerExperienceOrbAddPacketReader, 754 to 0x01)
             .register(ServerEntityAddPacket::class, ServerEntityAddPacketReader, 754 to 0x02)
+            .register(ServerPaintingAddPacket::class, ServerPaintingAddPacketReader, 754 to 0x03)
             .register(ServerPlayerAddPacket::class, ServerPlayerAddPacketReader, 754 to 0x04)
             .register(ServerEntityAnimationPacket::class, ServerEntityAnimationPacketReader, 754 to 0x05)
+
             .register(ServerActionResponsePacket::class, ServerActionResponsePacketReader, 754 to 0x07)
             .register(ServerBlockBreakAnimationPacket::class, ServerBlockBreakAnimationPacketReader, 754 to 0x08)
             .register(ServerBlockEntityPacket::class, ServerBlockEntityPacketReader, 754 to 0x09)
@@ -374,6 +378,7 @@ enum class Protocols(
             .register(ServerDifficultyPacket::class, ServerDifficultyPacketReader, 754 to 0x0D)
             .register(ServerTextPacket::class, ServerTextPacketReader, 754 to 0x0E)
             .register(ServerCommandSuggestPacket::class, ServerCommandSuggestPacketReader, 754 to 0x0F)
+
             .register(ServerWindowConfirmPacket::class, ServerWindowConfirmPacketReader, 754 to 0x11)
             .register(ServerWindowClosePacket::class, ServerWindowClosePacketReader, 754 to 0x12)
             .register(ServerInventoryContentPacket::class, ServerInventoryContentPacketReader, 754 to 0x13)
@@ -392,6 +397,7 @@ enum class Protocols(
             .register(ServerChunkPacket::class, ServerChunkPacketReader, 754 to 0x20)
             .register(ServerWorldEventPacket::class, ServerWorldEventPacketReader, 754 to 0x21)
             .register(ServerParticlePacket::class, ServerParticlePacketReader, 754 to 0x22)
+
             .register(ServerWorldPacket::class, ServerWorldPacketReader, 754 to 0x24)
             .register(ServerMapPacket::class, ServerMapPacketReader, 754 to 0x25)
             .register(ServerTradePacket::class, ServerTradePacketReader, 754 to 0x26)
@@ -416,6 +422,7 @@ enum class Protocols(
             .register(ServerRespawnPacket::class, ServerRespawnPacketReader, 754 to 0x39)
             .register(ServerEntityHeadRotationPacket::class, ServerEntityHeadRotationPacketReader, 754 to 0x3A)
             .register(ServerBlockUpdatesPacket::class, ServerBlockUpdatesPacketReader, 754 to 0x3B)
+
             .register(ServerBorderPacket::class, ServerBorderPacketReader, 754 to 0x3D)
             .register(ServerCameraPacket::class, ServerCameraPacketReader, 754 to 0x3E)
             .register(ServerHotbarPacket::class, ServerHotbarPacketReader, 754 to 0x3F)
@@ -442,6 +449,7 @@ enum class Protocols(
             .register(ServerQueryPacket::class, ServerQueryPacketReader, 754 to 0x54)
             .register(ServerStackTakePacket::class, ServerStackTakePacketReader, 754 to 0x55)
             .register(ServerEntityTeleportPacket::class, ServerEntityTeleportPacketReader, 754 to 0x56)
+
             .register(ServerEntityAttributesPacket::class, ServerEntityAttributesPacketReader, 754 to 0x58)
             .register(ServerEntityEffectApplyPacket::class, ServerEntityEffectApplyPacketReader, 754 to 0x59)
             .build()

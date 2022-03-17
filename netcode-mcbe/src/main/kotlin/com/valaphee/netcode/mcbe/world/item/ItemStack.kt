@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.valaphee.jackson.dataformat.nbt.NbtFactory
 import com.valaphee.jackson.dataformat.nbt.NbtGenerator
 import com.valaphee.jackson.dataformat.nbt.NbtParser
@@ -91,6 +92,7 @@ data class ItemStack(
 
     object Serializer : JsonSerializer<ItemStack>() {
         private val base64Encoder = Base64.getEncoder()
+        private val objectMapper = ObjectMapper(NbtFactory().enable(NbtFactory.Feature.LittleEndian)).registerKotlinModule()
 
         override fun serialize(value: ItemStack, generator: JsonGenerator, provider: SerializerProvider) {
             generator.writeStartObject()
@@ -106,7 +108,7 @@ data class ItemStack(
                     generator.writeStringField("item", value.item)
                     generator.writeNumberField("data", value.subId)
                     generator.writeNumberField("count", value.count)
-                    value.data?.let { generator.writeStringField("netcode:data", base64Encoder.encodeToString(noVarIntNbtObjectMapper.writeValueAsBytes(it))) }
+                    value.data?.let { generator.writeStringField("netcode:data", base64Encoder.encodeToString(objectMapper.writeValueAsBytes(it))) }
                     value.blockState?.let { generator.writeStringField("netcode:block_state", it.toString()) }
                 }
             }
@@ -116,15 +118,17 @@ data class ItemStack(
 
     object Deserializer : JsonDeserializer<ItemStack>() {
         private val base64Decoder = Base64.getDecoder()
+        private val objectMapper = ObjectMapper(NbtFactory().enable(NbtFactory.Feature.LittleEndian)).registerKotlinModule()
 
         override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
             val node = parser.readValueAsTree<JsonNode>()
             return when (parser) {
                 is NbtParser -> ItemStack(node["Name"].asText(), node["Damage"]?.asInt() ?: 0, node["Count"]?.asInt() ?: 1)
-                else -> ItemStack(node["item"].asText(), node["data"]?.asInt() ?: 0, node["count"]?.asInt() ?: 1, node["netcode:data"]?.let { noVarIntNbtObjectMapper.readValue(base64Decoder.decode(it.asText())) }, blockState = node["netcode:block_state"]?.let { BlockState(it.asText()) })
+                else -> ItemStack(node["item"].asText(), node["data"]?.asInt() ?: 0, node["count"]?.asInt() ?: 1, node["netcode:data"]?.let { objectMapper.readValue(base64Decoder.decode(it.asText())) }, blockState = node["netcode:block_state"]?.let { BlockState(it.asText()) })
             }
         }
     }
+
 }
 
 fun PacketBuffer.readItemStackPre431(): ItemStack? {
@@ -138,8 +142,8 @@ fun PacketBuffer.readItemStackPre431(): ItemStack? {
         countAndSubId and 0xFF,
         readShortLE().toInt().let {
             when {
-                it > 0 -> noVarIntNbtObjectMapper.readValue(ByteBufInputStream(readSlice(it)))
-                it == -1 -> if (readVarUInt() == 1) varIntNbtObjectMapper.readValue(ByteBufInputStream(this)) else null
+                it > 0 -> nbtObjectMapper.readValue(ByteBufInputStream(readSlice(it)))
+                it == -1 -> if (readVarUInt() == 1) nbtVarIntObjectMapper.readValue(ByteBufInputStream(this)) else null
                 else -> null
             }
         },
@@ -171,8 +175,8 @@ fun PacketBuffer.readItemStack(): ItemStack? {
         count,
         readShortLE().toInt().let {
             when {
-                it > 0 -> noVarIntNbtObjectMapper.readValue(ByteBufInputStream(readSlice(it)))
-                it == -1 -> if (readUnsignedByte().toInt() == 1) noVarIntNbtObjectMapper.readValue<Map<String, Any>>(ByteBufInputStream(this)) else null
+                it > 0 -> nbtObjectMapper.readValue(ByteBufInputStream(readSlice(it)))
+                it == -1 -> if (readUnsignedByte().toInt() == 1) nbtObjectMapper.readValue<Map<String, Any>>(ByteBufInputStream(this)) else null
                 else -> null
             }
         },
@@ -198,8 +202,8 @@ fun PacketBuffer.readItemStackInstance(): ItemStack? {
         count,
         readShortLE().toInt().let {
             when {
-                it > 0 -> noVarIntNbtObjectMapper.readValue(ByteBufInputStream(readSlice(it)))
-                it == -1 -> if (readUnsignedByte().toInt() == 1) noVarIntNbtObjectMapper.readValue(ByteBufInputStream(this)) else null
+                it > 0 -> nbtObjectMapper.readValue(ByteBufInputStream(readSlice(it)))
+                it == -1 -> if (readUnsignedByte().toInt() == 1) nbtObjectMapper.readValue(ByteBufInputStream(this)) else null
                 else -> null
             }
         },
@@ -226,7 +230,7 @@ fun PacketBuffer.writeItemStackPre431(value: ItemStack?) {
             it.data?.let {
                 writeShortLE(-1)
                 writeVarUInt(1)
-                varIntNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
+                nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
             } ?: writeShortLE(0)
             it.canPlaceOn?.let {
                 writeVarInt(it.size)
@@ -263,7 +267,7 @@ fun PacketBuffer.writeItemStack(value: ItemStack?) {
             it.data?.let {
                 writeShortLE(-1)
                 writeByte(1)
-                noVarIntNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
+                nbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
             } ?: writeShortLE(0)
             it.canPlaceOn?.let {
                 writeIntLE(it.size)
@@ -292,7 +296,7 @@ fun PacketBuffer.writeItemStackInstance(value: ItemStack?) {
             it.data?.let {
                 writeShortLE(-1)
                 writeVarUInt(1)
-                noVarIntNbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
+                nbtObjectMapper.writeValue(ByteBufOutputStream(this) as OutputStream, it)
             } ?: writeShortLE(0)
             it.canPlaceOn?.let {
                 writeIntLE(it.size)
@@ -320,5 +324,3 @@ fun PacketBuffer.writeIngredient(value: ItemStack?) {
 }
 
 private const val shieldItem = "minecraft:shield"
-private val noVarIntNbtObjectMapper = ObjectMapper(NbtFactory().enable(NbtFactory.Feature.LittleEndian))
-private val varIntNbtObjectMapper = ObjectMapper(NbtFactory().enable(NbtFactory.Feature.LittleEndian).enable(NbtFactory.Feature.VarInt))

@@ -216,7 +216,7 @@ object InventoryTransactionPacketReader : PacketReader {
                 fromPosition = buffer.readFloat3()
                 clickPosition = buffer.readFloat3()
                 headPosition = null
-                blockState = buffer.registries.blockStates[buffer.readVarUInt()]!!
+                blockState = checkNotNull(buffer.registries.blockStates[buffer.readVarUInt()])
             }
             InventoryTransactionPacket.Type.ItemUseOnEntity -> {
                 runtimeEntityId = buffer.readVarULong()

@@ -34,10 +34,10 @@ class PaintingAddPacket(
     val runtimeEntityId: Long,
     val position: Float3,
     val direction: Direction,
-    val painting: Painting
+    val motive: Motive
 ) : Packet() {
-    enum class Painting(
-        val title: String,
+    enum class Motive(
+        val key: String,
         val width: Int,
         val height: Int
     ) {
@@ -69,9 +69,9 @@ class PaintingAddPacket(
         FlamingSkull("Flaming Skull", 4, 4);
 
         companion object {
-            private val byTitle = values().associateBy { it.title }
+            private val byKey = values().associateBy { it.key }
 
-            fun byTitle(title: String) = checkNotNull(byTitle[title])
+            fun byKey(title: String) = checkNotNull(byKey[title])
         }
     }
 
@@ -82,12 +82,12 @@ class PaintingAddPacket(
         buffer.writeVarULong(runtimeEntityId)
         buffer.writeFloat3(position)
         buffer.writeVarInt(direction.horizontalIndex)
-        buffer.writeString(painting.title)
+        buffer.writeString(motive.key)
     }
 
     override fun handle(handler: PacketHandler) = handler.paintingAdd(this)
 
-    override fun toString() = "PaintingAddPacket(uniqueEntityId=$uniqueEntityId, runtimeEntityId=$runtimeEntityId, position=$position, direction=$direction, painting=$painting)"
+    override fun toString() = "PaintingAddPacket(uniqueEntityId=$uniqueEntityId, runtimeEntityId=$runtimeEntityId, position=$position, direction=$direction, painting=$motive)"
 }
 
 /**
@@ -99,6 +99,6 @@ object PaintingAddPacketReader : PacketReader {
         buffer.readVarULong(),
         buffer.readFloat3(),
         Direction.horizontals[buffer.readVarInt()],
-        PaintingAddPacket.Painting.byTitle(buffer.readString())
+        PaintingAddPacket.Motive.byKey(buffer.readString())
     )
 }
