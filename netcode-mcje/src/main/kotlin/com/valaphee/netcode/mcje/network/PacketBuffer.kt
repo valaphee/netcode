@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.util.Direction
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.util.Registries
 import com.valaphee.netcode.mcje.util.minecraftKey
-import com.valaphee.netcode.util.ByteBufWrapper
+import com.valaphee.netcode.network.ByteBufWrapper
 import io.netty.buffer.ByteBuf
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer

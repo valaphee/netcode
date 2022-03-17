@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcbe.network
 
-import com.valaphee.netcode.ProtocolHandler
+import com.valaphee.netcode.network.ProtocolHandler
 import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsPacket
 import com.valaphee.netcode.mcbe.network.packet.AnvilDamagePacket
 import com.valaphee.netcode.mcbe.network.packet.AppearancePacket

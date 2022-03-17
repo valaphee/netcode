@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.util
+package com.valaphee.netcode.network
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator

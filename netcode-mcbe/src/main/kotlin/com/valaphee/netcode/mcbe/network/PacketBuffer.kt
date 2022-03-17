@@ -21,7 +21,7 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.util.Registries
-import com.valaphee.netcode.util.ByteBufWrapper
+import com.valaphee.netcode.network.ByteBufWrapper
 import io.netty.buffer.ByteBuf
 import io.netty.util.AsciiString
 import java.nio.charset.StandardCharsets

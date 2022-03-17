@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode
+package com.valaphee.netcode.network
 
 /**
  * @author Kevin Ludwig

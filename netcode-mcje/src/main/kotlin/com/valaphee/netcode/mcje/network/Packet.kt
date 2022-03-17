@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcje.network
 
-import com.valaphee.netcode.ProtocolHandler
+import com.valaphee.netcode.network.ProtocolHandler
 
 /**
  * @author Kevin Ludwig
