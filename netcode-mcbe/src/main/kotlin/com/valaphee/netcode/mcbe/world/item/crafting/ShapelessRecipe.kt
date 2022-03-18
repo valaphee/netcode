@@ -35,7 +35,7 @@ data class ShapelessRecipe(
     @JsonIgnore val id: UUID = UUID.randomUUID(),
     @JsonProperty("tags") val tags: List<String>,
     @JsonProperty("priority") val priority: Int = 0,
-    @JsonIgnore var netId: Int = 0
+    @JsonIgnore val netId: Int = 0
 ) : Recipe {
     data class Description(
         @JsonProperty("identifier") val key: String

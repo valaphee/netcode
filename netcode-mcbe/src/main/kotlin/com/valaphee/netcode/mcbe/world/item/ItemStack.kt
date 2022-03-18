@@ -123,12 +123,11 @@ data class ItemStack(
         override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
             val node = parser.readValueAsTree<JsonNode>()
             return when (parser) {
-                is NbtParser -> ItemStack(node["Name"].asText(), node["Damage"]?.asInt() ?: 0, node["Count"]?.asInt() ?: 1)
+                is NbtParser -> ItemStack(node["Name"].asText(), node["Damage"]?.asInt() ?: 0, node["Count"]?.asInt() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
                 else -> ItemStack(node["item"].asText(), node["data"]?.asInt() ?: 0, node["count"]?.asInt() ?: 1, node["netcode:data"]?.let { objectMapper.readValue(base64Decoder.decode(it.asText())) }, blockState = node["netcode:block_state"]?.let { BlockState(it.asText()) })
             }
         }
     }
-
 }
 
 fun PacketBuffer.readItemStackPre431(): ItemStack? {

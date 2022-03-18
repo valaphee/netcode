@@ -20,7 +20,6 @@ plugins {
     id("com.palantir.git-version") version "0.12.3"
     kotlin("jvm") version "1.6.10"
     `maven-publish`
-    id("org.hibernate.build.maven-repo-auth") version "3.0.2"
     signing
 }
 
@@ -37,7 +36,6 @@ subprojects {
     apply(plugin = "com.palantir.git-version")
     apply(plugin = "kotlin")
     apply(plugin = "maven-publish")
-    apply(plugin = "org.hibernate.build.maven-repo-auth")
     apply(plugin = "signing")
 
     group = "com.valaphee"

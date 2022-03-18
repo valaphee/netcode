@@ -16,9 +16,19 @@
 
 package com.valaphee.netcode.mcje.world.item
 
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.util.NamespacedKey
+import com.valaphee.netcode.mcje.util.minecraftKey
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -26,6 +36,8 @@ import java.io.OutputStream
 /**
  * @author Kevin Ludwig
  */
+@JsonSerialize(using = ItemStack.Serializer::class)
+@JsonDeserialize(using = ItemStack.Deserializer::class)
 data class ItemStack(
     val item: NamespacedKey,
     val count: Int = 1,
@@ -41,6 +53,23 @@ data class ItemStack(
         if (data != other.data) return false
 
         return true
+    }
+
+    object Serializer : JsonSerializer<ItemStack>() {
+        override fun serialize(value: ItemStack, generator: JsonGenerator, provider: SerializerProvider) {
+            generator.writeStartObject()
+            generator.writeStringField("id", value.item.key)
+            generator.writeNumberField("Count", value.count)
+            value.data?.let { generator.writeObjectField("tag", value.data) }
+            generator.writeEndObject()
+        }
+    }
+
+    object Deserializer : JsonDeserializer<ItemStack>() {
+        override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
+            val node = parser.readValueAsTree<JsonNode>()
+            return ItemStack(minecraftKey(node["id"].asText()), node["Count"]?.asInt() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
+        }
     }
 }
 
