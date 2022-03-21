@@ -18,7 +18,7 @@ dependencies {
     api(project(":netcode-common"))
     api("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
     api("com.valaphee:foundry-math:1.4.0")
-    api("com.valaphee:jackson-dataformat-nbt:1.2.1")
+    api("com.valaphee:jackson-dataformat-nbt:1.2.4")
     api("it.unimi.dsi:fastutil:8.5.8")
     api("network.ycc:netty-raknet-client:0.8-SNAPSHOT")
     api("network.ycc:netty-raknet-server:0.8-SNAPSHOT")

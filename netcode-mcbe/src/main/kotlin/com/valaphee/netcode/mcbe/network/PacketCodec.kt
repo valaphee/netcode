@@ -211,9 +211,9 @@ class PacketCodec(
                     clientId = (header shr Packet.clientIdShift) and Packet.clientIdMask
                 })
             } catch (ex: Exception) {
-                throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} problematic at 0x${buffer.readerIndex().toString(16).uppercase()}", ex, buffer)
+                throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} problematic at 0x${buffer.readerIndex().toString(16).uppercase()}", ex, buffer).also { buffer.readerIndex(buffer.writerIndex()) }
             }
-            if (buffer.isReadable) throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} not fully read", buffer)
+            if (buffer.isReadable) throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} not fully read", buffer).also { buffer.readerIndex(buffer.writerIndex()) }
         }
     }
 

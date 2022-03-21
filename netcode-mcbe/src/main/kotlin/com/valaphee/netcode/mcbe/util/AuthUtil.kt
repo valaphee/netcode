@@ -49,10 +49,10 @@ fun authJws(keyPair: KeyPair, authExtra: AuthExtra) = objectMapper.writeValueAsS
     )
 )
 
-fun authJws(keyPair: KeyPair, authJws: String) {
+fun authJws(keyPair: KeyPair, authJws: String): String {
     val authJwsChain = objectMapper.readValue<Map<*, *>>(authJws)["chain"] as List<*>
     val authJwtContext = JwtConsumerBuilder().setJwsAlgorithmConstraints(AlgorithmConstraints.ConstraintType.PERMIT, "ES384").apply { setSkipSignatureVerification() }.build().process(authJwsChain.first() as String)
-    objectMapper.writeValueAsString(
+    return objectMapper.writeValueAsString(
         mapOf(
             "chain" to authJwsChain.toMutableList().add(0, JsonWebSignature().apply {
                 setHeader("alg", "ES384")
