@@ -64,13 +64,10 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientLocationPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerActionPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerActionPacketReader
-import com.valaphee.netcode.mcje.network.packet.play.ClientPositionPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientPositionPacketReader
-import com.valaphee.netcode.mcje.network.packet.play.ClientPositionRotationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientPositionRotationPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ClientResourcePackStatusPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientResourcePackStatusPacketReader
-import com.valaphee.netcode.mcje.network.packet.play.ClientRotationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientRotationPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ClientSettingsPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientSettingsPacketReader
@@ -162,17 +159,14 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerEntityEventPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityEventPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityHeadRotationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityHeadRotationPacketReader
-import com.valaphee.netcode.mcje.network.packet.play.ServerEntityLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityLocationPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityMetadataPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityMetadataPacketReader
-import com.valaphee.netcode.mcje.network.packet.play.ServerEntityMovePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityMovePacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityMoveRotatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityMoveRotatePacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityPassengersPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityPassengersPacketReader
-import com.valaphee.netcode.mcje.network.packet.play.ServerEntityRotatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityRotatePacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntitySoundPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntitySoundPacketReader
@@ -292,10 +286,10 @@ class Protocol(
     class Builder {
         private val packetsAndReadersByVersion = Int2ObjectOpenHashMap<Pair<Object2IntMap<KClass<out Packet<out PacketHandler>>>, Int2ObjectMap<PacketReader>>>()
 
-        fun register(`class`: KClass<out Packet<out PacketHandler>>, reader: PacketReader, vararg idByVersion: Pair<Int, Int>) = apply {
+        fun register(`class`: KClass<out Packet<out PacketHandler>>?, reader: PacketReader, vararg idByVersion: Pair<Int, Int>) = apply {
             idByVersion.forEach {
                 val packetsAndReaders = packetsAndReadersByVersion.getOrPut(it.first) { Pair(Object2IntOpenHashMap(), Int2ObjectOpenHashMap()) }
-                packetsAndReaders.first[`class`] = it.second
+                `class`?.let { `class` -> packetsAndReaders.first[`class`] = it.second }
                 packetsAndReaders.second[it.second] = reader
             }
         }
@@ -332,10 +326,10 @@ enum class Protocols(
             .register(ClientEntityQueryPacket::class, ClientEntityQueryPacketReader, 754 to 0x0D)
             .register(ClientItemUseOnEntityPacket::class, ClientItemUseOnEntityPacketReader, 754 to 0x0E)
             .register(ClientKeepAlivePacket::class, ClientKeepAlivePacketReader, 754 to 0x10)
-            .register(ClientPositionPacket::class, ClientPositionPacketReader, 754 to 0x12)
-            .register(ClientPositionRotationPacket::class, ClientPositionRotationPacketReader, 754 to 0x13)
-            .register(ClientRotationPacket::class, ClientRotationPacketReader, 754 to 0x14)
-            .register(ClientLocationPacket::class, ClientLocationPacketReader, 754 to 0x15)
+            .register(ClientLocationPacket::class, ClientPositionPacketReader, 754 to 0x12)
+            .register(null, ClientPositionRotationPacketReader, 754 to 0x13)
+            .register(null, ClientRotationPacketReader, 754 to 0x14)
+            .register(null, ClientLocationPacketReader, 754 to 0x15)
             .register(ClientVehicleLocationPacket::class, ClientVehicleLocationPacketReader, 754 to 0x16)
             .register(ClientSteerBoatPacket::class, ClientSteerBoatPacketReader, 754 to 0x17)
             .register(ClientItemPickPacket::class, ClientItemPickPacketReader, 754 to 0x18)
@@ -368,7 +362,6 @@ enum class Protocols(
             .register(ServerPaintingAddPacket::class, ServerPaintingAddPacketReader, 754 to 0x03)
             .register(ServerPlayerAddPacket::class, ServerPlayerAddPacketReader, 754 to 0x04)
             .register(ServerEntityAnimationPacket::class, ServerEntityAnimationPacketReader, 754 to 0x05)
-
             .register(ServerActionResponsePacket::class, ServerActionResponsePacketReader, 754 to 0x07)
             .register(ServerBlockBreakAnimationPacket::class, ServerBlockBreakAnimationPacketReader, 754 to 0x08)
             .register(ServerBlockEntityPacket::class, ServerBlockEntityPacketReader, 754 to 0x09)
@@ -378,7 +371,6 @@ enum class Protocols(
             .register(ServerDifficultyPacket::class, ServerDifficultyPacketReader, 754 to 0x0D)
             .register(ServerTextPacket::class, ServerTextPacketReader, 754 to 0x0E)
             .register(ServerCommandSuggestPacket::class, ServerCommandSuggestPacketReader, 754 to 0x0F)
-
             .register(ServerWindowConfirmPacket::class, ServerWindowConfirmPacketReader, 754 to 0x11)
             .register(ServerWindowClosePacket::class, ServerWindowClosePacketReader, 754 to 0x12)
             .register(ServerInventoryContentPacket::class, ServerInventoryContentPacketReader, 754 to 0x13)
@@ -397,14 +389,13 @@ enum class Protocols(
             .register(ServerChunkPacket::class, ServerChunkPacketReader, 754 to 0x20)
             .register(ServerWorldEventPacket::class, ServerWorldEventPacketReader, 754 to 0x21)
             .register(ServerParticlePacket::class, ServerParticlePacketReader, 754 to 0x22)
-
             .register(ServerWorldPacket::class, ServerWorldPacketReader, 754 to 0x24)
             .register(ServerMapPacket::class, ServerMapPacketReader, 754 to 0x25)
             .register(ServerTradePacket::class, ServerTradePacketReader, 754 to 0x26)
-            .register(ServerEntityMovePacket::class, ServerEntityMovePacketReader, 754 to 0x27)
-            .register(ServerEntityMoveRotatePacket::class, ServerEntityMoveRotatePacketReader, 754 to 0x28)
-            .register(ServerEntityRotatePacket::class, ServerEntityRotatePacketReader, 754 to 0x29)
-            .register(ServerEntityLocationPacket::class, ServerEntityLocationPacketReader, 754 to 0x2A)
+            .register(ServerEntityMoveRotatePacket::class, ServerEntityMovePacketReader, 754 to 0x27)
+            .register(null, ServerEntityMoveRotatePacketReader, 754 to 0x28)
+            .register(null, ServerEntityRotatePacketReader, 754 to 0x29)
+            .register(null, ServerEntityLocationPacketReader, 754 to 0x2A)
             .register(ServerVehicleLocationPacket::class, ServerVehicleLocationPacketReader, 754 to 0x2B)
             .register(ServerBookOpenPacket::class, ServerBookOpenPacketReader, 754 to 0x2C)
             .register(ServerWindowOpenPacket::class, ServerWindowOpenPacketReader, 754 to 0x2D)
@@ -422,7 +413,6 @@ enum class Protocols(
             .register(ServerRespawnPacket::class, ServerRespawnPacketReader, 754 to 0x39)
             .register(ServerEntityHeadRotationPacket::class, ServerEntityHeadRotationPacketReader, 754 to 0x3A)
             .register(ServerBlockUpdatesPacket::class, ServerBlockUpdatesPacketReader, 754 to 0x3B)
-
             .register(ServerBorderPacket::class, ServerBorderPacketReader, 754 to 0x3D)
             .register(ServerCameraPacket::class, ServerCameraPacketReader, 754 to 0x3E)
             .register(ServerHotbarPacket::class, ServerHotbarPacketReader, 754 to 0x3F)
@@ -449,7 +439,6 @@ enum class Protocols(
             .register(ServerQueryPacket::class, ServerQueryPacketReader, 754 to 0x54)
             .register(ServerStackTakePacket::class, ServerStackTakePacketReader, 754 to 0x55)
             .register(ServerEntityTeleportPacket::class, ServerEntityTeleportPacketReader, 754 to 0x56)
-
             .register(ServerEntityAttributesPacket::class, ServerEntityAttributesPacketReader, 754 to 0x58)
             .register(ServerEntityEffectApplyPacket::class, ServerEntityEffectApplyPacketReader, 754 to 0x59)
             .build()

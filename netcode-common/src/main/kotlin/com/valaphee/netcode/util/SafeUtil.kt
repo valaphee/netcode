@@ -16,6 +16,4 @@
 
 package com.valaphee.netcode.util
 
-fun <T> Array<T>.safeGet(index: Int) = if (index in 0..lastIndex) get(index) else first()
-
 inline fun <T> safeList(size: Int, init: (index: Int) -> T) = mutableListOf<T>().apply { repeat(size) { add(init(it)) } }

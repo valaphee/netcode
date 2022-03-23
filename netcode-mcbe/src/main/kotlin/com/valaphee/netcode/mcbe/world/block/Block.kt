@@ -95,7 +95,7 @@ class Block : Data {
                 is NbtGenerator -> serialize(value, generator, provider)
                 else -> {
                     typeSerializer.writeTypePrefix(generator, typeSerializer.typeId(value, JsonToken.VALUE_STRING))
-                    provider.defaultSerializeValue(value, generator)
+                    serialize(value, generator, provider)
                     typeSerializer.writeTypeSuffix(generator, typeSerializer.typeId(value, JsonToken.VALUE_STRING))
                 }
             }

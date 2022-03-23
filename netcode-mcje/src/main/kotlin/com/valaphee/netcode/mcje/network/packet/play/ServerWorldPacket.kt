@@ -16,12 +16,15 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
+import com.valaphee.netcode.mcje.world.Biome
+import com.valaphee.netcode.mcje.world.Dimension
 import com.valaphee.netcode.mcje.world.GameMode
 import com.valaphee.netcode.util.safeList
 import io.netty.buffer.ByteBufInputStream
@@ -37,8 +40,8 @@ class ServerWorldPacket(
     val gameMode: GameMode,
     val previousGameMode: GameMode,
     val worldNames: List<NamespacedKey>,
-    val dimensionCodec: Any?,
-    val dimension: Any?,
+    val dimensionCodec: DimensionCodec,
+    val dimension: Dimension,
     val worldName: NamespacedKey,
     val hashedSeed: Long,
     val maximumPlayers: Int,
@@ -48,6 +51,22 @@ class ServerWorldPacket(
     val debugGenerator: Boolean,
     val flatGenerator: Boolean,
 ) : Packet<ServerPlayPacketHandler> {
+    data class DimensionCodec(
+        @JsonProperty("minecraft:dimension_type") val dimensions: Registry<Dimension>,
+        @JsonProperty("minecraft:worldgen/biome") val biomes: Registry<Biome>
+    ) {
+        data class Registry<T>(
+            @JsonProperty("type") val key: String,
+            @JsonProperty("value") val value: List<Entry<T>>
+        ) {
+            data class Entry<T>(
+                @JsonProperty("id") val id: Int,
+                @JsonProperty("name") val key: String,
+                @JsonProperty("element") val value: T
+            )
+        }
+    }
+
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt(entityId)
         buffer.writeBoolean(hardcore)

@@ -38,8 +38,7 @@ class Registries(
     @JsonProperty("minecraft:menu") val windowTypes: Registry,
     @JsonProperty("minecraft:recipe_serializer") val recipeTypes: Registry,
 ) {
-    @JsonIgnore
-    lateinit var blockStates: com.valaphee.netcode.mcje.util.Registry<NamespacedKey>
+    @JsonIgnore lateinit var blockStates: com.valaphee.netcode.mcje.util.Registry<NamespacedKey>
 
     @JsonDeserialize(using = Registry.Deserializer::class)
     class Registry : com.valaphee.netcode.mcje.util.Registry<NamespacedKey>() {

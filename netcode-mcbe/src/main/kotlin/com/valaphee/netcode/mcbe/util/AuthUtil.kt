@@ -66,13 +66,13 @@ fun authJws(keyPair: KeyPair, authJws: String): String {
 
 fun parseAuthJws(authJws: String): Triple<Boolean, PublicKey, AuthExtra> {
     val authJwsChain = objectMapper.readValue<Map<*, *>>(authJws)["chain"] as List<*>
-    var verificationKey: PublicKey? = null
     var verified = false
     var authJwsPayloadJson: Map<*, *>? = null
+    var verificationKey: PublicKey? = null
     for (authJwsItem in authJwsChain) {
         val authJwtConsumerBuilder = JwtConsumerBuilder().setJwsAlgorithmConstraints(AlgorithmConstraints.ConstraintType.PERMIT, "ES384").apply {
             if (verified && verificationKey != null) setVerificationKey(verificationKey) else verificationKey?.let {
-                setVerificationKey(verificationKey)
+                setVerificationKey(it)
                 if (verificationKey == mojangKey) verified = true
             } ?: setSkipSignatureVerification()
         }

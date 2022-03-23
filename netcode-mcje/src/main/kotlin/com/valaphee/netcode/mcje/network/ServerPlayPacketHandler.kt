@@ -45,12 +45,9 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerEntityEffectRevokePac
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityEquipmentPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityEventPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityHeadRotationPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerEntityLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityMetadataPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerEntityMovePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityMoveRotatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityPassengersPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerEntityRotatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntitySoundPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityTeleportPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityVelocityPacket
@@ -121,8 +118,6 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun entityAnimation(packet: ServerEntityAnimationPacket) = other(packet)
 
-    /*fun statistics(packet: ServerStatisticsPacket) = other(packet)*/
-
     fun actionResponse(packet: ServerActionResponsePacket) = other(packet)
 
     fun blockBreakAnimation(packet: ServerBlockBreakAnimationPacket) = other(packet)
@@ -177,21 +172,13 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun particle(packet: ServerParticlePacket) = other(packet)
 
-    /*fun chunkLight(packet: ServerChunkLightPacket) = other(packet)*/
-
     fun world(packet: ServerWorldPacket) = other(packet)
 
     fun map(packet: ServerMapPacket) = other(packet)
 
     fun trade(packet: ServerTradePacket) = other(packet)
 
-    fun entityMove(packet: ServerEntityMovePacket) = other(packet)
-
     fun entityMoveRotate(packet: ServerEntityMoveRotatePacket) = other(packet)
-
-    fun entityRotate(packet: ServerEntityRotatePacket) = other(packet)
-
-    fun entityLocation(packet: ServerEntityLocationPacket) = other(packet)
 
     fun vehicleLocation(packet: ServerVehicleLocationPacket) = other(packet)
 
@@ -282,6 +269,4 @@ interface ServerPlayPacketHandler : PacketHandler {
     fun entityAttributes(packet: ServerEntityAttributesPacket) = other(packet)
 
     fun entityEffectApply(packet: ServerEntityEffectApplyPacket) = other(packet)
-
-    /*fun recipes(packet: ServerRecipesPacket) = other(packet)*/
 }

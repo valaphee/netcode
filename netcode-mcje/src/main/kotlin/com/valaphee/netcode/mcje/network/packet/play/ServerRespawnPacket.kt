@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
+import com.valaphee.netcode.mcje.world.Dimension
 import com.valaphee.netcode.mcje.world.GameMode
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
@@ -31,7 +32,7 @@ import java.io.OutputStream
  * @author Kevin Ludwig
  */
 class ServerRespawnPacket(
-    val dimension: Any?,
+    val dimension: Dimension,
     val worldName: NamespacedKey,
     val hashedSeed: Long,
     val gameMode: GameMode,

@@ -28,18 +28,21 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
  */
 class ServerEntityMoveRotatePacket(
     val entityId: Int,
-    val positionDelta: Double3,
-    val rotation: Float2,
+    val positionDelta: Double3?,
+    val rotation: Float2?,
     val onGround: Boolean
 ) : Packet<ServerPlayPacketHandler> {
+    override val idOffset get() = if (positionDelta != null) if (rotation != null) 1 else 0 else if (rotation != null) 2 else 3
+
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        val (x, y, z) = positionDelta.toMutableDouble3().scale(4096.0).toInt3()
-        buffer.writeShort(x)
-        buffer.writeShort(y)
-        buffer.writeShort(z)
-        buffer.writeAngle2(rotation)
-        buffer.writeBoolean(onGround)
+        positionDelta?.let { (x, y, z) ->
+            buffer.writeShort((x * 4096).toInt())
+            buffer.writeShort((y * 4096).toInt())
+            buffer.writeShort((z * 4096).toInt())
+        }
+        rotation?.let { buffer.writeAngle2(it) }
+        if (positionDelta != null || rotation != null) buffer.writeBoolean(onGround)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityMoveRotate(this)
@@ -50,6 +53,27 @@ class ServerEntityMoveRotatePacket(
 /**
  * @author Kevin Ludwig
  */
+object ServerEntityMovePacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityMoveRotatePacket(buffer.readVarInt(), MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 4096.0), null, buffer.readBoolean())
+}
+
+/**
+ * @author Kevin Ludwig
+ */
 object ServerEntityMoveRotatePacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int) = ServerEntityMoveRotatePacket(buffer.readVarInt(), MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 4096.0), buffer.readAngle2(), buffer.readBoolean())
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerEntityRotatePacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityMoveRotatePacket(buffer.readVarInt(), null, buffer.readAngle2(), buffer.readBoolean())
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerEntityLocationPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityMoveRotatePacket(buffer.readVarInt(), null, null, false)
 }

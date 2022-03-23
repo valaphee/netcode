@@ -46,7 +46,7 @@ class LoginPacket(
 
     override fun handle(handler: PacketHandler) = handler.login(this)
 
-    override fun toString() = "LoginPacket(protocolVersion=$protocolVersion, authJws=<omitted>, userJws=<omitted>)"
+    override fun toString() = "LoginPacket(protocolVersion=$protocolVersion, authJws=$authJws, userJws=$userJws)"
 }
 
 /**

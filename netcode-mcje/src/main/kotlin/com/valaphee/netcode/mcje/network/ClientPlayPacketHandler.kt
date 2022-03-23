@@ -42,13 +42,10 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientJigsawBlockUpdatePack
 import com.valaphee.netcode.mcje.network.packet.play.ClientKeepAlivePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerActionPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientPositionPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientPositionRotationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookDisplayRecipePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookStatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientResourcePackStatusPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientRotationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientSettingsPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientSignUpdatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientSpectatePacket
@@ -105,12 +102,6 @@ interface ClientPlayPacketHandler : PacketHandler {
     fun keepAlive(packet: ClientKeepAlivePacket) = other(packet)
 
     fun difficultyLock(packet: ClientDifficultyLockPacket) = other(packet)
-
-    fun position(packet: ClientPositionPacket) = other(packet)
-
-    fun positionRotation(packet: ClientPositionRotationPacket) = other(packet)
-
-    fun rotation(packet: ClientRotationPacket) = other(packet)
 
     fun location(packet: ClientLocationPacket) = other(packet)
 

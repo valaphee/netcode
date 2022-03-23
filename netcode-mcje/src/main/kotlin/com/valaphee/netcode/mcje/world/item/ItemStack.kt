@@ -68,7 +68,7 @@ data class ItemStack(
     object Deserializer : JsonDeserializer<ItemStack>() {
         override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
             val node = parser.readValueAsTree<JsonNode>()
-            return ItemStack(minecraftKey(node["id"].asText()), node["Count"]?.asInt() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
+            return ItemStack(minecraftKey(node["id"].textValue()), node["Count"]?.intValue() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
         }
     }
 }

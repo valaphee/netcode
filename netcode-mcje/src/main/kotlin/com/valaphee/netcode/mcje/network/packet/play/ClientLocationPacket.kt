@@ -16,6 +16,8 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.valaphee.foundry.math.Double3
+import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
@@ -25,20 +27,47 @@ import com.valaphee.netcode.mcje.network.PacketReader
  * @author Kevin Ludwig
  */
 class ClientLocationPacket(
+    val position: Double3?,
+    val rotation: Float2?,
     val onGround: Boolean
 ) : Packet<ClientPlayPacketHandler> {
+    override val idOffset get() = if (position != null) if (rotation != null) 1 else 0 else if (rotation != null) 2 else 3
+
     override fun write(buffer: PacketBuffer, version: Int) {
+        position?.let { buffer.writeDouble3(position) }
+        rotation?.let { buffer.writeFloat2(rotation) }
         buffer.writeBoolean(onGround)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.location(this)
 
-    override fun toString() = "ClientLocationPacket(onGround=$onGround)"
+    override fun toString() = "ClientLocationPacket(position=$position, rotation=$rotation, onGround=$onGround)"
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ClientPositionPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ClientLocationPacket(buffer.readDouble3(), null, buffer.readBoolean())
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ClientPositionRotationPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ClientLocationPacket(buffer.readDouble3(), buffer.readFloat2(), buffer.readBoolean())
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ClientRotationPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ClientLocationPacket(null, buffer.readFloat2(), buffer.readBoolean())
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientLocationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientLocationPacket(buffer.readBoolean())
+    override fun read(buffer: PacketBuffer, version: Int) = ClientLocationPacket(null, null, buffer.readBoolean())
 }

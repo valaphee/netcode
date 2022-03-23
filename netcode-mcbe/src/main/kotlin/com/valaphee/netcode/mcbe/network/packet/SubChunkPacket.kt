@@ -131,7 +131,7 @@ object SubChunkPacketReader : PacketReader {
         val position = buffer.readInt3()
         val responses = safeList(buffer.readIntLE()) {
             val position = Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt())
-            val result = SubChunkPacket.Response.Result.values()[buffer.readVarInt()]
+            val result = SubChunkPacket.Response.Result.values()[buffer.readByte().toInt()]
             val data = if (result != SubChunkPacket.Response.Result.SuccessEmpty || !cache) buffer.readByteArray() else null
             val heightMapStatus = SubChunkPacket.Response.HeightMapStatus.values()[buffer.readByte().toInt()]
             val heightMap = if (heightMapStatus == SubChunkPacket.Response.HeightMapStatus.Available) ByteArray(256).also { buffer.readBytes(it) } else null

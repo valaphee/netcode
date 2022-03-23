@@ -178,10 +178,12 @@ import com.valaphee.netcode.mcbe.network.packet.WindowClosePacketReader
 import com.valaphee.netcode.mcbe.network.packet.WindowOpenPacketReader
 import com.valaphee.netcode.mcbe.network.packet.WindowPropertyPacketReader
 import com.valaphee.netcode.mcbe.network.packet.WorldEventPacketReader
+import com.valaphee.netcode.mcbe.network.packet.WorldGenericEventPacketReader
 import com.valaphee.netcode.mcbe.network.packet.WorldPacketReader
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageCodec
+import io.netty.handler.codec.DecoderException
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import kotlin.reflect.full.findAnnotation
 
@@ -204,16 +206,20 @@ class PacketCodec(
         val buffer = wrapBuffer(`in`)
         val header = buffer.readVarUInt()
         val id = header and Packet.idMask
-        (if (client) clientReaders else serverReaders)[id]?.let {
-            try {
-                out.add(it.read(buffer, version).apply {
-                    senderId = (header shr Packet.senderIdShift) and Packet.senderIdMask
-                    clientId = (header shr Packet.clientIdShift) and Packet.clientIdMask
-                })
-            } catch (ex: Exception) {
-                throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} problematic at 0x${buffer.readerIndex().toString(16).uppercase()}", ex, buffer).also { buffer.readerIndex(buffer.writerIndex()) }
-            }
-            if (buffer.isReadable) throw PacketDecoderException("Packet 0x${id.toString(16).uppercase()} not fully read", buffer).also { buffer.readerIndex(buffer.writerIndex()) }
+        try {
+            (if (client) clientReaders else serverReaders)[id]?.let {
+                try {
+                    out.add(it.read(buffer, version).apply {
+                        senderId = (header shr Packet.senderIdShift) and Packet.senderIdMask
+                        clientId = (header shr Packet.clientIdShift) and Packet.clientIdMask
+                    })
+                } catch (ex: Exception) {
+                    throw DecoderException("0x${id.toString(16).uppercase()} problematic at 0x${buffer.readerIndex().toString(16).uppercase()}", ex)
+                }
+                if (buffer.isReadable) throw DecoderException("0x${id.toString(16).uppercase()} not fully read")
+            } ?: throw DecoderException("0x${id.toString(16).uppercase()} unknown")
+        } finally {
+            if (buffer.isReadable) buffer.skipBytes(buffer.readableBytes())
         }
     }
 
@@ -342,7 +348,7 @@ class PacketCodec(
             this[0x79] = ChunkPublishPacketReader
             this[0x7A] = BiomeDefinitionsPacketReader
             this[0x7B] = SoundEventPacketReader
-            //this[0x7C] = WorldGenericEventPacketReader
+            this[0x7C] = WorldGenericEventPacketReader
             this[0x7D] = LecternUpdatePacketReader
             this[0x7E] = VideoStreamPacketReader
             //this[0x7F] =

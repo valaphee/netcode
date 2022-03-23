@@ -25,19 +25,22 @@ enum class AttributeField(
     val maximum: Float,
     val defaultValue: Float
 ) {
-    Absorption("minecraft:absorption", 0.0f, Float.MAX_VALUE, 0.0f),
-    Saturation("minecraft:player.saturation", 0.0f, 20.0f, 5.0f),
-    Exhaustion("minecraft:player.exhaustion", 0.0f, 5.0f, 0.41f),
-    KnockbackResistance("minecraft:knockback_resistance", 0.0f, 1.0f, 0.0f),
-    Health("minecraft:health", 0.0f, 20.0f, 20.0f),
-    MovementSpeed("minecraft:movement", 0.0f, Float.MAX_VALUE, 0.1f),
-    FollowRange("minecraft:follow_range", 0.0f, 2048.0f, 16.0f),
-    Hunger("minecraft:player.hunger", 0.0f, 20.0f, 20.0f),
-    AttackDamage("minecraft:attack_damage", 0.0f, Float.MAX_VALUE, 1.0f),
-    ExperienceLevel("minecraft:player.level", 0.0f, 24791.0f, 0.0f),
-    Experience("minecraft:player.experience", 0.0f, 1.0f, 0.0f),
     Luck("minecraft:luck", -1024.0f, 1024.0f, 0.0f),
-    HorseJumpStrength("minecraft:horse.jump_strength", 0.0f, 2.0f, 0.7f);
+    Health("minecraft:health", 0.0f, 20.0f, 20.0f),
+    Absorption("minecraft:absorption", 0.0f, Float.MAX_VALUE, 0.0f),
+    KnockbackResistance("minecraft:knockback_resistance", 0.0f, 1.0f, 0.0f),
+    Movement("minecraft:movement", 0.0f, Float.MAX_VALUE, 0.1f),
+    UnderwaterMovement("minecraft:underwater_movement", 0.0f, Float.MAX_VALUE, 0.02f),
+    LavaMovement("minecraft:lava_movement", 0.0f, Float.MAX_VALUE, 0.02f),
+    FollowRange("minecraft:follow_range", 0.0f, 2048.0f, 16.0f),
+    AttackDamage("minecraft:attack_damage", 0.0f, Float.MAX_VALUE, 1.0f),
+    HorseJumpStrength("minecraft:horse.jump_strength", 0.0f, 2.0f, 0.7f),
+    PlayerHunger("minecraft:player.hunger", 0.0f, 20.0f, 20.0f),
+    PlayerExhaustion("minecraft:player.exhaustion", 0.0f, 5.0f, 0.41f),
+    PlayerSaturation("minecraft:player.saturation", 0.0f, 20.0f, 5.0f),
+    PlayerLevel("minecraft:player.level", 0.0f, 24791.0f, 0.0f),
+    PlayerExperience("minecraft:player.experience", 0.0f, 1.0f, 0.0f)/*,
+    ZombieSpawnReinforcements("minecraft:zombie.spawn.reinforcements")*/;
 
     fun attributeValue() = AttributeValue(this, minimum, maximum, defaultValue)
 

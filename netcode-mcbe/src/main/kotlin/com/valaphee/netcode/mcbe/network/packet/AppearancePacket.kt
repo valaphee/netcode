@@ -54,7 +54,7 @@ class AppearancePacket(
 
     override fun handle(handler: PacketHandler) = handler.appearance(this)
 
-    override fun toString() = "AppearancePacket(userId=$userId, appearance=<omitted>, newName='$newName', oldName='$oldName')"
+    override fun toString() = "AppearancePacket(userId=$userId, appearance=$appearance, newName='$newName', oldName='$oldName')"
 }
 
 /**

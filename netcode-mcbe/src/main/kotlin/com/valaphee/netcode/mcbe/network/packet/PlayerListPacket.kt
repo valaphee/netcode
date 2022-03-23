@@ -62,7 +62,7 @@ class PlayerListPacket(
     ) {
         constructor(userId: UUID) : this(userId, 0, null, null, null, null, null, false, false)
 
-        override fun toString() = "Entry(userId=$userId, uniqueEntityId=$uniqueEntityId, userName=$userName, xboxUserId=$xboxUserId, platformChatId=$platformChatId, operatingSystem=$operatingSystem, appearance=<omitted>, teacher=$teacher, host=$host)"
+        override fun toString() = "Entry(userId=$userId, uniqueEntityId=$uniqueEntityId, userName=$userName, xboxUserId=$xboxUserId, platformChatId=$platformChatId, operatingSystem=$operatingSystem, appearance=$appearance, teacher=$teacher, host=$host)"
     }
 
     override val id get() = 0x3F
@@ -77,7 +77,7 @@ class PlayerListPacket(
                 buffer.writeString(it.userName!!)
                 buffer.writeString(it.xboxUserId!!)
                 buffer.writeString(it.platformChatId!!)
-                buffer.writeIntLE(it.operatingSystem!!.ordinal - 1)
+                buffer.writeIntLE(if (it.operatingSystem == User.OperatingSystem.Unknown) -1 else it.operatingSystem!!.ordinal)
                 if (version >= 465) buffer.writeAppearance(it.appearance!!) else if (version >= 428) buffer.writeAppearancePre465(it.appearance!!) else if (version >= 419) buffer.writeAppearancePre428(it.appearance!!) else if (version >= 390) buffer.writeAppearancePre419(it.appearance!!) else buffer.writeAppearancePre390(it.appearance!!)
                 buffer.writeBoolean(it.teacher)
                 buffer.writeBoolean(it.host)
@@ -105,7 +105,7 @@ object PlayerListPacketReader : PacketReader {
                     buffer.readString(),
                     buffer.readString(),
                     buffer.readString(),
-                    User.OperatingSystem.values()[buffer.readIntLE() + 1],
+                    User.OperatingSystem.values().getOrElse(buffer.readIntLE()) { User.OperatingSystem.Unknown },
                     if (version >= 465) buffer.readAppearance() else if (version >= 428) buffer.readAppearancePre465() else if (version >= 419) buffer.readAppearancePre428() else if (version >= 390) buffer.readAppearancePre419() else buffer.readAppearancePre390(),
                     buffer.readBoolean(),
                     buffer.readBoolean()

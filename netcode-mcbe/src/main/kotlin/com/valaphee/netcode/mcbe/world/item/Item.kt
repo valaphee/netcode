@@ -22,4 +22,6 @@ package com.valaphee.netcode.mcbe.world.item
 class Item(
     val key: String,
     val componentBased: Boolean
-)
+) {
+    override fun toString() = key
+}

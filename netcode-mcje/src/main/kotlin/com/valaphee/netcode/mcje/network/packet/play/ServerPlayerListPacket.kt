@@ -21,9 +21,9 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.GameMode
+import com.valaphee.netcode.mcje.world.entity.player.GameProfile
 import com.valaphee.netcode.util.safeList
 import net.kyori.adventure.text.Component
-import java.util.UUID
 
 /**
  * @author Kevin Ludwig
@@ -37,31 +37,25 @@ class ServerPlayerListPacket(
     }
 
     data class Entry(
-        val userId: UUID,
-        val userName: String?,
-        val properties: Map<String, Property>?,
+        val gameProfile: GameProfile,
         val gameMode: GameMode?,
         val latency: Int,
         val customName: Component?
-    ) {
-        data class Property(
-            val value: String,
-            val signature: String?
-        )
-    }
+    )
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(action.ordinal)
         buffer.writeVarInt(entries.size)
         entries.forEach {
+            buffer.writeUuid(it.gameProfile.userId!!)
             when (action) {
                 Action.Add -> {
-                    buffer.writeString(it.userName!!)
-                    buffer.writeVarInt(it.properties!!.size)
-                    it.properties.forEach { (propertyKey, property) ->
-                        buffer.writeString(propertyKey)
-                        buffer.writeString(property.value)
-                        property.signature?.let {
+                    buffer.writeString(it.gameProfile.userName!!)
+                    buffer.writeVarInt(it.gameProfile.properties!!.size)
+                    it.gameProfile.properties.forEach {
+                        buffer.writeString(it.name)
+                        buffer.writeString(it.value)
+                        it.signature?.let {
                             buffer.writeBoolean(true)
                             buffer.writeString(it)
                         } ?: buffer.writeBoolean(false)
@@ -73,14 +67,14 @@ class ServerPlayerListPacket(
                         buffer.writeComponent(it)
                     } ?: buffer.writeBoolean(false)
                 }
+                Action.UpdateGameMode -> buffer.writeVarInt(it.gameMode!!.ordinal)
+                Action.UpdateLatency -> buffer.writeVarInt(it.latency)
                 Action.UpdateCustomName -> {
                     it.customName?.let {
                         buffer.writeBoolean(true)
                         buffer.writeComponent(it)
                     } ?: buffer.writeBoolean(false)
                 }
-                Action.UpdateGameMode -> buffer.writeVarInt(it.gameMode!!.ordinal)
-                Action.UpdateLatency -> buffer.writeVarInt(it.latency)
                 Action.Remove -> Unit
             }
         }
@@ -99,11 +93,11 @@ object ServerPlayerListPacketReader : PacketReader {
         val action = ServerPlayerListPacket.Action.values()[buffer.readVarInt()]
         val entries = safeList(buffer.readVarInt()) {
             when (action) {
-                ServerPlayerListPacket.Action.Add -> ServerPlayerListPacket.Entry(buffer.readUuid(), buffer.readString(16), mutableMapOf<String, ServerPlayerListPacket.Entry.Property>().apply { repeat(buffer.readVarInt()) { this[buffer.readString()] = ServerPlayerListPacket.Entry.Property(buffer.readString(), if (buffer.readBoolean()) buffer.readString() else null) } }, checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())), buffer.readVarInt(), if (buffer.readBoolean()) buffer.readComponent() else null)
-                ServerPlayerListPacket.Action.UpdateGameMode -> ServerPlayerListPacket.Entry(buffer.readUuid(), null, null, checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())), 0, null)
-                ServerPlayerListPacket.Action.UpdateLatency -> ServerPlayerListPacket.Entry(buffer.readUuid(), null, null, null, buffer.readVarInt(), null)
-                ServerPlayerListPacket.Action.UpdateCustomName -> ServerPlayerListPacket.Entry(buffer.readUuid(), null, null, null, 0, if (buffer.readBoolean()) buffer.readComponent() else null)
-                ServerPlayerListPacket.Action.Remove -> ServerPlayerListPacket.Entry(buffer.readUuid(), null, null, null, 0, null)
+                ServerPlayerListPacket.Action.Add -> ServerPlayerListPacket.Entry(GameProfile(buffer.readUuid(), buffer.readString(16), safeList(buffer.readVarInt()) { GameProfile.Property(buffer.readString(), buffer.readString(), if (buffer.readBoolean()) buffer.readString() else null) }), checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())), buffer.readVarInt(), if (buffer.readBoolean()) buffer.readComponent() else null)
+                ServerPlayerListPacket.Action.UpdateGameMode -> ServerPlayerListPacket.Entry(GameProfile(buffer.readUuid(), null), checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())), 0, null)
+                ServerPlayerListPacket.Action.UpdateLatency -> ServerPlayerListPacket.Entry(GameProfile(buffer.readUuid(), null), null, buffer.readVarInt(), null)
+                ServerPlayerListPacket.Action.UpdateCustomName -> ServerPlayerListPacket.Entry(GameProfile(buffer.readUuid(), null), null, 0, if (buffer.readBoolean()) buffer.readComponent() else null)
+                ServerPlayerListPacket.Action.Remove -> ServerPlayerListPacket.Entry(GameProfile(buffer.readUuid(), null), null, 0, null)
             }
         }
         return ServerPlayerListPacket(action, entries)

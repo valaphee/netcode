@@ -41,7 +41,6 @@ import com.valaphee.netcode.mcbe.world.readGameRulePre440
 import com.valaphee.netcode.mcbe.world.writeExperiment
 import com.valaphee.netcode.mcbe.world.writeGameRule
 import com.valaphee.netcode.mcbe.world.writeGameRulePre440
-import com.valaphee.netcode.util.safeGet
 import com.valaphee.netcode.util.safeList
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
@@ -330,9 +329,7 @@ object WorldPacketReader : PacketReader {
                 buffer.readString()
                 buffer.readString()
             }
-            experimentalGameplay = if (version >= 419) {
-                if (buffer.readBoolean()) buffer.readBoolean() else false
-            } else buffer.readBoolean()
+            experimentalGameplay = if (version >= 419) if (buffer.readBoolean()) buffer.readBoolean() else false else buffer.readBoolean()
         } else {
             limitedWorldRadius = 0
             limitedWorldHeight = 0
@@ -344,7 +341,7 @@ object WorldPacketReader : PacketReader {
         val premiumWorldTemplateId = buffer.readString()
         val trial = buffer.readBoolean()
         val movementAuthoritative = when {
-            version >= 419 -> WorldPacket.AuthoritativeMovement.values().safeGet(buffer.readVarInt())
+            version >= 419 -> WorldPacket.AuthoritativeMovement.values()[buffer.readVarInt()]
             buffer.readBoolean() -> WorldPacket.AuthoritativeMovement.Server
             else -> WorldPacket.AuthoritativeMovement.Client
         }
@@ -369,9 +366,8 @@ object WorldPacketReader : PacketReader {
             blocksData = buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer))
             blocks = null
         }
-        val itemCount = buffer.readVarUInt()
         val items = Int2ObjectOpenHashMap<Item>().apply {
-            repeat(itemCount) {
+            repeat(buffer.readVarUInt()) {
                 val key = buffer.readString()
                 val id = buffer.readShortLE()
                 this[id.toInt()] = Item(key, version >= 419 && buffer.readBoolean())
