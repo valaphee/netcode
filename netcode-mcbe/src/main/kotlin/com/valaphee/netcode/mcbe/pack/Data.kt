@@ -41,12 +41,13 @@ import java.io.File
 )
 @JsonSubTypes(
     JsonSubTypes.Type(Block::class),
-    JsonSubTypes.Type(ShapedRecipe::class),
-    JsonSubTypes.Type(ShapelessRecipe::class),
-    JsonSubTypes.Type(FurnaceRecipe::class),
-    JsonSubTypes.Type(BrewingMixRecipe::class),
     JsonSubTypes.Type(BrewingContainerRecipe::class),
-    JsonSubTypes.Type(MaterialReductionRecipe::class)
+    JsonSubTypes.Type(BrewingMixRecipe::class),
+    JsonSubTypes.Type(FurnaceRecipe::class),
+    /*JsonSubTypes.Type(Geometry::class),*/
+    JsonSubTypes.Type(MaterialReductionRecipe::class),
+    JsonSubTypes.Type(ShapedRecipe::class),
+    JsonSubTypes.Type(ShapelessRecipe::class)
 )
 interface Data
 

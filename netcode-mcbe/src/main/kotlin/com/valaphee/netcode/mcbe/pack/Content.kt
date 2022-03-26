@@ -27,6 +27,6 @@ class Content(
 ) {
     class Entry(
         @JsonProperty("path") val path: String,
-        @JsonProperty("key") val key: String?
+        @JsonProperty("key") val key: ByteArray?
     )
 }

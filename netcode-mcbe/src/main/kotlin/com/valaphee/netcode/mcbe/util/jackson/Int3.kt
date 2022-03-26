@@ -22,23 +22,23 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.valaphee.foundry.math.Float4
+import com.valaphee.foundry.math.Int3
 
 /**
  * @author Kevin Ludwig
  */
-object Float4Serializer : JsonSerializer<Float4>() {
-    override fun serialize(value: Float4, generator: JsonGenerator, serializer: SerializerProvider) {
-        generator.writeArray(floatArrayOf(value.x, value.y, value.z, value.w), 0, 4)
+object Int3Serializer : JsonSerializer<Int3>() {
+    override fun serialize(value: Int3, generator: JsonGenerator, serializer: SerializerProvider) {
+        generator.writeArray(intArrayOf(value.x, value.y, value.z), 0, 3)
     }
 }
 
 /**
  * @author Kevin Ludwig
  */
-object Float4Deserializer : JsonDeserializer<Float4>() {
-    override fun deserialize(parser: JsonParser, context: DeserializationContext): Float4 {
-        val array = parser.readValueAs(FloatArray::class.java)
-        return Float4(array[0], array[1], array[2], array[3])
+object Int3Deserializer : JsonDeserializer<Int3>() {
+    override fun deserialize(parser: JsonParser, context: DeserializationContext): Int3 {
+        val array = parser.readValueAs(IntArray::class.java)
+        return Int3(array[0], array[1], array[2])
     }
 }

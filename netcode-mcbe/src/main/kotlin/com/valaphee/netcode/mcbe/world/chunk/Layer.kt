@@ -70,17 +70,15 @@ class Layer(
 
 fun PacketBuffer.readLayer(): Layer {
     val header = readByte().toInt()
-    return if (header != 0b1000_0000) {
-        val version = BitArray.Version.byBitsPerEntry(header shr 1)
-        val runtime = header and 0b1 == 1
-        val bitArray = version.bitArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize, IntArray(version.bitArrayDataSize(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize)) { readIntLE() })
-        val paletteSize = readVarInt()
-        Layer(IntArrayList().apply {
-            if (runtime) repeat(paletteSize) { add(readVarInt()) }
-            else ByteBufInputStream(buffer).use {
-                val stream = it as InputStream
-                repeat(paletteSize) { add(registries.blockStates.getId(nbtVarIntObjectMapper.readValue(stream))) }
-            }
-        }, bitArray)
-    } else TODO()
+    val version = BitArray.Version.byBitsPerEntry(header shr 1)
+    val runtime = header and 0b1 == 1
+    val bitArray = version.bitArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize, IntArray(version.bitArrayDataSize(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize)) { readIntLE() })
+    val paletteSize = readVarInt()
+    return Layer(IntArrayList().apply {
+        if (runtime) repeat(paletteSize) { add(readVarInt()) }
+        else ByteBufInputStream(buffer).use {
+            val stream = it as InputStream
+            repeat(paletteSize) { add(registries.blockStates.getId(nbtVarIntObjectMapper.readValue(stream))) }
+        }
+    }, bitArray)
 }

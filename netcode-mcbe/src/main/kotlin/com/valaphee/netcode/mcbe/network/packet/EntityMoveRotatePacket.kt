@@ -32,7 +32,7 @@ class EntityMoveRotatePacket(
     val positionDelta: Int3,
     val position: Float3,
     val rotation: Float2,
-    val headRotationYaw: Float,
+    val headYaw: Float,
     val onGround: Boolean,
     val immediate: Boolean,
     val force: Boolean
@@ -82,8 +82,8 @@ class EntityMoveRotatePacket(
             buffer.writeAngle(yaw)
             flagsValue = flagsValue or flagHasYaw
         }
-        if (!headRotationYaw.isNaN()) {
-            buffer.writeAngle(headRotationYaw)
+        if (!headYaw.isNaN()) {
+            buffer.writeAngle(headYaw)
             flagsValue = flagsValue or flagHasHeadYaw
         }
         if (onGround) flagsValue = flagsValue or flagOnGround
@@ -94,7 +94,7 @@ class EntityMoveRotatePacket(
 
     override fun handle(handler: PacketHandler) = handler.entityMoveRotate(this)
 
-    override fun toString() = "EntityMoveRotatePacket(runtimeEntityId=$runtimeEntityId, positionDelta=$positionDelta, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, onGround=$onGround, immediate=$immediate, force=$force)"
+    override fun toString() = "EntityMoveRotatePacket(runtimeEntityId=$runtimeEntityId, positionDelta=$positionDelta, position=$position, rotation=$rotation, headYaw=$headYaw, onGround=$onGround, immediate=$immediate, force=$force)"
 
     companion object {
         internal const val flagHasX = 1 shl 0

@@ -23,5 +23,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
  */
 class Signature(
     @JsonProperty("path") val path: String,
-    @JsonProperty("hash") val hash: String
+    @JsonProperty("hash") val hash: ByteArray
 )

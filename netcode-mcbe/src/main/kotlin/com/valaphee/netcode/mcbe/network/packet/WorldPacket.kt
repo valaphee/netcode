@@ -57,8 +57,8 @@ class WorldPacket(
     val uniqueEntityId: Long,
     val runtimeEntityId: Long,
     val gameMode: GameMode,
-    var position: Float3?, // needed for je-be protocol translation
-    var rotation: Float2?, // needed for je-be protocol translation
+    var position: Float3,
+    var rotation: Float2,
     val seed: Int,
     val biomeType: BiomeType,
     val biomeName: String,
@@ -66,7 +66,7 @@ class WorldPacket(
     val generatorId: Int,
     val defaultGameMode: GameMode,
     val difficulty: Difficulty,
-    var defaultSpawn: Int3?, // needed for je-be protocol translation
+    var defaultSpawn: Int3,
     val achievementsDisabled: Boolean,
     val time: Int,
     val educationEditionOffer: EducationEditionOffer,
@@ -144,8 +144,8 @@ class WorldPacket(
         buffer.writeVarLong(uniqueEntityId)
         buffer.writeVarULong(runtimeEntityId)
         buffer.writeVarInt(gameMode.ordinal)
-        buffer.writeFloat3(position!!)
-        buffer.writeFloat2(rotation!!)
+        buffer.writeFloat3(position)
+        buffer.writeFloat2(rotation)
         buffer.writeVarInt(seed)
         if (version >= 407) {
             buffer.writeShortLE(biomeType.ordinal)
@@ -155,7 +155,7 @@ class WorldPacket(
         buffer.writeVarInt(generatorId)
         buffer.writeVarInt(defaultGameMode.ordinal)
         buffer.writeVarInt(difficulty.ordinal)
-        buffer.writeInt3UnsignedY(defaultSpawn!!)
+        buffer.writeInt3UnsignedY(defaultSpawn)
         buffer.writeBoolean(achievementsDisabled)
         buffer.writeVarInt(time)
         if (version >= 407) {
