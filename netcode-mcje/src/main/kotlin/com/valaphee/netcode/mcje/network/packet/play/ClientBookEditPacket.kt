@@ -31,22 +31,56 @@ import com.valaphee.netcode.mcje.world.item.writeItemStack
 class ClientBookEditPacket(
     val itemStack: ItemStack?,
     val sign: Boolean,
-    val hand: Hand
+    val hand: Hand,
+    val pages: List<String>?,
+    val title: String?
 ) : Packet<ClientPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeItemStack(itemStack)
-        buffer.writeBoolean(sign)
-        buffer.writeVarInt(hand.ordinal)
+        if (version >= 758) {
+            buffer.writeVarInt(hand.ordinal)
+            pages!!.let {
+                buffer.writeVarInt(it.size)
+                it.forEach { buffer.writeString(it) }
+            }
+            title?.let {
+                buffer.writeBoolean(true)
+                buffer.writeString(it)
+            } ?: buffer.writeBoolean(false)
+        } else {
+            buffer.writeItemStack(itemStack)
+            buffer.writeBoolean(sign)
+            buffer.writeVarInt(hand.ordinal)
+        }
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.bookEdit(this)
 
-    override fun toString() = "ClientBookEditPacket(stack=$itemStack, sign=$sign, hand=$hand)"
+    override fun toString() = "ClientBookEditPacket(stack=$itemStack, sign=$sign, hand=$hand, pages=$pages, title=$title)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientBookEditPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientBookEditPacket(buffer.readItemStack(), buffer.readBoolean(), Hand.values()[buffer.readVarInt()])
+    override fun read(buffer: PacketBuffer, version: Int): ClientBookEditPacket {
+        val itemStack: ItemStack?
+        val sign: Boolean
+        val hand: Hand
+        val pages: List<String>?
+        val title: String?
+        if (version >= 758) {
+            itemStack = null
+            sign = false
+            hand = Hand.values()[buffer.readVarInt()]
+            pages = List(buffer.readVarInt()) { buffer.readString() }
+            title = if (buffer.readBoolean()) buffer.readString() else null
+        } else {
+            itemStack = buffer.readItemStack()
+            sign = buffer.readBoolean()
+            hand = Hand.values()[buffer.readVarInt()]
+            pages = null
+            title = null
+        }
+        return ClientBookEditPacket(itemStack, sign, hand, pages, title)
+    }
 }

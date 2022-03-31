@@ -85,3 +85,24 @@ object ServerPlayerCombatEventPacketReader : PacketReader {
         return ServerPlayerCombatEventPacket(event, durationOrPlayerEntityId, entityId, message)
     }
 }
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerPlayerCombatEventEndPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerCombatEventPacket(ServerPlayerCombatEventPacket.Event.End, buffer.readVarInt(), buffer.readInt(), null)
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerPlayerCombatEventEnterPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerCombatEventPacket(ServerPlayerCombatEventPacket.Event.Enter, 0, 0, null)
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerPlayerCombatEventDeathPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerCombatEventPacket(ServerPlayerCombatEventPacket.Event.Death, buffer.readVarInt(), buffer.readInt(), buffer.readComponent())
+}

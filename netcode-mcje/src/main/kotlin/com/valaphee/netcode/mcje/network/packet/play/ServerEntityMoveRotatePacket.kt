@@ -32,7 +32,7 @@ class ServerEntityMoveRotatePacket(
     val rotation: Float2?,
     val onGround: Boolean
 ) : Packet<ServerPlayPacketHandler> {
-    override val idOffset get() = if (positionDelta != null) if (rotation != null) 1 else 0 else if (rotation != null) 2 else 3
+    override fun getId(id: Int, version: Int) = id + (if (positionDelta != null) if (rotation != null) 1 else 0 else if (rotation != null) 2 else if (version >= 758) TODO() else 3)
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)

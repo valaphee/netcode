@@ -29,11 +29,12 @@ import com.valaphee.netcode.mcje.world.item.writeItemStack
  */
 class ClientWindowClickPacket(
     val windowId: Int,
+    var confirmOrStateId: Int, // needed for je-be protocol translation
     val slotId: Int,
     val buttonSpecifier: Int,
-    var confirmId: Int, // needed for je-be protocol translation
     val button: Button,
-    val itemStackInSlot: ItemStack? = null
+    val slots: Map<Int, ItemStack?>,
+    val clickedSlot: ItemStack?
 ) : Packet<ClientPlayPacketHandler> {
     enum class Button {
         Normal, Shift, Number, MiddleClick, QOrNoOp, Paint, DoubleClick
@@ -41,25 +42,47 @@ class ClientWindowClickPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
+        if (version >= 758) buffer.writeVarInt(confirmOrStateId)
         buffer.writeShort(slotId)
         buffer.writeByte(buttonSpecifier)
-        buffer.writeShort(confirmId)
+        if (version < 758) buffer.writeShort(confirmOrStateId)
         buffer.writeVarInt(button.ordinal)
-        buffer.writeItemStack(itemStackInSlot)
+        if (version >= 758) {
+            buffer.writeVarInt(slots.size)
+            slots.forEach {
+                buffer.writeShort(it.key)
+                buffer.writeItemStack(it.value)
+            }
+        }
+        buffer.writeItemStack(clickedSlot)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.windowClick(this)
 
-    override fun toString() = "ClientWindowClickPacket(windowId=$windowId, slotId=$slotId, buttonSpecifier=$buttonSpecifier, confirmId=$confirmId, button=$button, stackInSlot=$itemStackInSlot)"
-
-    companion object {
-        const val SlotIdNone = -999
-    }
+    override fun toString() = "ClientWindowClickPacket(windowId=$windowId, confirmOrStateId=$confirmOrStateId, slotId=$slotId, buttonSpecifier=$buttonSpecifier, button=$button, slots=$slots, clickedSlot=$clickedSlot)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientWindowClickPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientWindowClickPacket(buffer.readByte().toInt(), buffer.readShort().toInt(), buffer.readByte().toInt(), buffer.readShort().toInt(), ClientWindowClickPacket.Button.values()[buffer.readVarInt()], buffer.readItemStack())
+    override fun read(buffer: PacketBuffer, version: Int): ClientWindowClickPacket {
+        val windowId = buffer.readByte().toInt()
+        val confirmOrStateId: Int
+        val slotId: Int
+        val buttonSpecifier: Int
+        if (version >= 758) {
+            confirmOrStateId = buffer.readVarInt()
+            slotId = buffer.readShort().toInt()
+            buttonSpecifier = buffer.readByte().toInt()
+        } else {
+            slotId = buffer.readShort().toInt()
+            buttonSpecifier = buffer.readByte().toInt()
+            confirmOrStateId = buffer.readShort().toInt()
+        }
+        val button = ClientWindowClickPacket.Button.values()[buffer.readVarInt()]
+        val slots = if (version >= 758) mutableMapOf<Int, ItemStack?>().apply { repeat(buffer.readVarInt()) { this[buffer.readShort().toInt()] = buffer.readItemStack() } } else emptyMap()
+        val clickedSlot = buffer.readItemStack()
+        return ClientWindowClickPacket(windowId, confirmOrStateId, slotId, buttonSpecifier, button, slots, clickedSlot)
+    }
 }

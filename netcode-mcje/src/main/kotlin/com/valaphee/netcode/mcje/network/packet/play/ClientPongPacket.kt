@@ -16,32 +16,25 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.valaphee.foundry.math.Int3
+import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
-import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
  */
-class ServerSpawnPositionPacket(
-    val position: Int3,
-    val yaw: Float
-) : Packet<ServerPlayPacketHandler> {
-    override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
-        if (version >= 758) buffer.writeAngle(yaw)
-    }
+object ClientPongPacket : Packet<ClientPlayPacketHandler> {
+    override fun write(buffer: PacketBuffer, version: Int) = Unit
 
-    override fun handle(handler: ServerPlayPacketHandler) = handler.spawnPosition(this)
+    override fun handle(handler: ClientPlayPacketHandler) = handler.pong(this)
 
-    override fun toString() = "ServerSpawnPositionPacket(position=$position, yaw=$yaw)"
+    override fun toString() = "ClientPongPacket()"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ServerSpawnPositionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerSpawnPositionPacket(buffer.readInt3UnsignedY(), if (version >= 758) buffer.readAngle() else 0.0f)
+object ClientPongPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ClientPongPacket
 }

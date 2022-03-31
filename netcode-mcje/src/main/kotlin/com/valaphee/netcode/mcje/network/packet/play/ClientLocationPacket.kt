@@ -31,7 +31,7 @@ class ClientLocationPacket(
     val rotation: Float2?,
     val onGround: Boolean
 ) : Packet<ClientPlayPacketHandler> {
-    override val idOffset get() = if (position != null) if (rotation != null) 1 else 0 else if (rotation != null) 2 else 3
+    override fun getId(id: Int, version: Int) = id + (if (position != null) if (rotation != null) 1 else 0 else if (rotation != null) 2 else 3)
 
     override fun write(buffer: PacketBuffer, version: Int) {
         position?.let { buffer.writeDouble3(position) }

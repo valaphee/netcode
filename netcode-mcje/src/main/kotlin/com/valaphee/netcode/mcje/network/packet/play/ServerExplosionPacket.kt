@@ -36,7 +36,7 @@ class ServerExplosionPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeFloat3(position)
         buffer.writeFloat(radius)
-        buffer.writeInt(affectedBlocks.size)
+        if (version >= 758) buffer.writeVarInt(affectedBlocks.size) else buffer.writeInt(affectedBlocks.size)
         affectedBlocks.forEach { (x, y, z) ->
             buffer.writeByte(x)
             buffer.writeByte(y)
@@ -54,5 +54,5 @@ class ServerExplosionPacket(
  * @author Kevin Ludwig
  */
 object ServerExplosionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerExplosionPacket(buffer.readFloat3(), buffer.readFloat(), safeList(buffer.readInt()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) }, buffer.readFloat3())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerExplosionPacket(buffer.readFloat3(), buffer.readFloat(), safeList(if (version >= 758) buffer.readVarInt() else buffer.readInt()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) }, buffer.readFloat3())
 }

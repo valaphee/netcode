@@ -70,6 +70,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerObjectAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerObjectivePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPaintingAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerParticlePacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerPingPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerCombatEventPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerListHeaderFooterPacket
@@ -82,6 +83,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerScorePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerScoreboardDisplayPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSculkVibrationSignalPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSignUpdatePacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerSimulationDistancePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSoundPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSoundStopPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSpawnPositionPacket
@@ -188,6 +190,8 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun signUpdate(packet: ServerSignUpdatePacket) = other(packet)
 
+    fun ping(packet: ServerPingPacket) = other(packet)
+
     fun craft(packet: ServerCraftPacket) = other(packet)
 
     fun abilities(packet: ServerAbilitiesPacket) = other(packet)
@@ -224,6 +228,8 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun viewDistance(packet: ServerViewDistancePacket) = other(packet)
 
+    fun spawnPosition(packet: ServerSpawnPositionPacket) = other(packet)
+
     fun scoreboardDisplay(packet: ServerScoreboardDisplayPacket) = other(packet)
 
     fun entityMetadata(packet: ServerEntityMetadataPacket) = other(packet)
@@ -246,7 +252,7 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun score(packet: ServerScorePacket) = other(packet)
 
-    fun spawnPosition(packet: ServerSpawnPositionPacket) = other(packet)
+    fun simulationDistance(packet: ServerSimulationDistancePacket)
 
     fun time(packet: ServerTimePacket) = other(packet)
 

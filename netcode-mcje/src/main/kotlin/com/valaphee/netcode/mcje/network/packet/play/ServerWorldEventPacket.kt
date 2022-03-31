@@ -92,7 +92,11 @@ class ServerWorldEventPacket(
         ParticleDragonDestroyBlock,
         ParticleEvaporation,
         EndGatewaySpawn,
-        EnderdragonGrowl;
+        EnderdragonGrowl,
+        ElectricSpark,
+        CopperApplyWax,
+        CopperRemoveWax,
+        CopperScrapeOxidation;
 
         companion object {
             val registry = Registry<Event>().apply {
@@ -156,6 +160,10 @@ class ServerWorldEventPacket(
                 this[2009] = ParticleEvaporation
                 this[3000] = EndGatewaySpawn
                 this[3001] = EnderdragonGrowl
+                this[3002] = ElectricSpark
+                this[3003] = CopperApplyWax
+                this[3004] = CopperRemoveWax
+                this[3005] = CopperScrapeOxidation
             }
         }
     }

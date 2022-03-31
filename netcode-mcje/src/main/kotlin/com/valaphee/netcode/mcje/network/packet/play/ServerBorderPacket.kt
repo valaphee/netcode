@@ -36,14 +36,14 @@ class ServerBorderPacket(
     val warningDistance: Int,
 ) : Packet<ServerPlayPacketHandler> {
     enum class Action {
-        SetSize, LeapSize, SetCenter, Initialize, SetWarningTime, SetWarningDistance
+        SetSize, LerpSize, SetCenter, Initialize, SetWarningTime, SetWarningDistance
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(action.ordinal)
         when (action) {
             Action.SetSize -> buffer.writeDouble(diameter)
-            Action.LeapSize -> {
+            Action.LerpSize -> {
                 buffer.writeDouble(oldDiameter)
                 buffer.writeDouble(diameter)
                 buffer.writeVarLong(speed)
@@ -95,7 +95,7 @@ object ServerBorderPacketReader : PacketReader {
                 warningTime = 0
                 warningDistance = 0
             }
-            ServerBorderPacket.Action.LeapSize -> {
+            ServerBorderPacket.Action.LerpSize -> {
                 center = null
                 oldDiameter = buffer.readDouble()
                 diameter = buffer.readDouble()
@@ -143,4 +143,46 @@ object ServerBorderPacketReader : PacketReader {
         }
         return ServerBorderPacket(action, center, oldDiameter, diameter, speed, portalTeleportBoundary, warningTime, warningDistance)
     }
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerBorderInitializePacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerBorderPacket(ServerBorderPacket.Action.Initialize, Double2(buffer.readDouble(), buffer.readDouble()), buffer.readDouble(), buffer.readDouble(), buffer.readVarLong(), buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt())
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerBorderSetCenterPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerBorderPacket(ServerBorderPacket.Action.SetCenter, Double2(buffer.readDouble(), buffer.readDouble()), 0.0, 0.0, 0, 0, 0, 0)
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerBorderLerpSizePacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerBorderPacket(ServerBorderPacket.Action.LerpSize, null, buffer.readDouble(), buffer.readDouble(), buffer.readVarLong(), 0, 0, 0)
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerBorderSetSizePacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerBorderPacket(ServerBorderPacket.Action.SetSize, null, 0.0, buffer.readDouble(), 0, 0, 0, 0)
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerBorderSetWarningTimePacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerBorderPacket(ServerBorderPacket.Action.SetWarningTime, null, 0.0, 0.0, 0, 0, buffer.readVarInt(), 0)
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+object ServerBorderSetWarningDistancePacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerBorderPacket(ServerBorderPacket.Action.SetWarningDistance, null, 0.0, 0.0, 0, 0, 0, buffer.readVarInt())
 }

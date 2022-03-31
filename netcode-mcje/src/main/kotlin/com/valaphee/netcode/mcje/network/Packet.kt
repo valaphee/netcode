@@ -22,7 +22,7 @@ import com.valaphee.netcode.network.ProtocolHandler
  * @author Kevin Ludwig
  */
 interface Packet<T : ProtocolHandler> {
-    val idOffset get() = 0
+    fun getId(id: Int, version: Int) = id
 
     fun write(buffer: PacketBuffer, version: Int)
 

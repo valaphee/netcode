@@ -46,6 +46,7 @@ class ServerWorldPacket(
     val hashedSeed: Long,
     val maximumPlayers: Int,
     val viewDistance: Int,
+    val simulationDistance: Int,
     val reducedDebugInfo: Boolean,
     val respawnScreen: Boolean,
     val debugGenerator: Boolean,
@@ -80,6 +81,7 @@ class ServerWorldPacket(
         buffer.writeLong(hashedSeed)
         buffer.writeVarInt(maximumPlayers)
         buffer.writeVarInt(viewDistance)
+        if (version >= 758) buffer.writeVarInt(simulationDistance)
         buffer.writeBoolean(reducedDebugInfo)
         buffer.writeBoolean(respawnScreen)
         buffer.writeBoolean(debugGenerator)
@@ -88,12 +90,12 @@ class ServerWorldPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.world(this)
 
-    override fun toString() = "ServerWorldPacket(entityId=$entityId, hardcore=$hardcore, gameMode=$gameMode, previousGameMode=$previousGameMode, worldNames=$worldNames, dimensionCodec=$dimensionCodec, dimension=$dimension, worldName=$worldName, hashedSeed=$hashedSeed, maximumPlayers=$maximumPlayers, viewDistance=$viewDistance, reducedDebugInfo=$reducedDebugInfo, respawnScreen=$respawnScreen, debugGenerator=$debugGenerator, flatGenerator=$flatGenerator)"
+    override fun toString() = "ServerWorldPacket(entityId=$entityId, hardcore=$hardcore, gameMode=$gameMode, previousGameMode=$previousGameMode, worldNames=$worldNames, dimensionCodec=$dimensionCodec, dimension=$dimension, worldName=$worldName, hashedSeed=$hashedSeed, maximumPlayers=$maximumPlayers, viewDistance=$viewDistance, simulationDistance=$simulationDistance, reducedDebugInfo=$reducedDebugInfo, respawnScreen=$respawnScreen, debugGenerator=$debugGenerator, flatGenerator=$flatGenerator)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerWorldPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldPacket(buffer.readInt(), buffer.readBoolean(), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }, buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.readNamespacedKey(), buffer.readLong(), buffer.readVarInt(), buffer.readVarInt(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldPacket(buffer.readInt(), buffer.readBoolean(), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }, buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.readNamespacedKey(), buffer.readLong(), buffer.readVarInt(), buffer.readVarInt(), if (version >= 758) buffer.readVarInt() else 0, buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
 }

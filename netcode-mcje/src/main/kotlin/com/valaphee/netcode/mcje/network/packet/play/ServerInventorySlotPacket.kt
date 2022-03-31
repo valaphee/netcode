@@ -29,6 +29,7 @@ import com.valaphee.netcode.mcje.world.item.writeItemStack
  */
 class ServerInventorySlotPacket(
     val windowId: Int,
+    val stateId: Int,
     val slotId: Int,
     val itemStack: ItemStack?
 ) : Packet<ServerPlayPacketHandler> {
@@ -40,12 +41,12 @@ class ServerInventorySlotPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.inventorySlot(this)
 
-    override fun toString() = "ServerInventorySlotPacket(windowId=$windowId, slotId=$slotId, stack=$itemStack)"
+    override fun toString() = "ServerInventorySlotPacket(windowId=$windowId, stateId=$stateId, slotId=$slotId, stack=$itemStack)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerInventorySlotPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerInventorySlotPacket(buffer.readByte().toInt(), buffer.readShort().toInt(), buffer.readItemStack())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerInventorySlotPacket(buffer.readByte().toInt(), buffer.readShort().toInt(), if (version >= 758) buffer.readVarInt() else 0, buffer.readItemStack())
 }

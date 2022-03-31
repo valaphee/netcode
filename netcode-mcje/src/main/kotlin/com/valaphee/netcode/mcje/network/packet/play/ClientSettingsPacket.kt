@@ -34,7 +34,8 @@ class ClientSettingsPacket(
     val chatColors: Boolean,
     val skinParts: Set<SkinPart>,
     val mainHand: MainHand,
-    val disableTextFiltering: Boolean
+    val textFilter: Boolean,
+    val visibleInStatus: Boolean
 ) : Packet<ClientPlayPacketHandler> {
     enum class ChatMode {
         Enabled, CommandsOnly, Hidden
@@ -47,16 +48,37 @@ class ClientSettingsPacket(
         buffer.writeBoolean(chatColors)
         buffer.writeByteFlags(skinParts)
         buffer.writeVarInt(mainHand.ordinal)
+        if (version >= 758) {
+            buffer.writeBoolean(textFilter)
+            buffer.writeBoolean(visibleInStatus)
+        }
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.settings(this)
 
-    override fun toString() = "ClientSettingsPacket(locale=$locale, viewDistance=$viewDistance, chatMode=$chatMode, chatColors=$chatColors, skinParts=$skinParts, mainHand=$mainHand, disableTextFiltering=$disableTextFiltering)"
+    override fun toString() = "ClientSettingsPacket(locale=$locale, viewDistance=$viewDistance, chatMode=$chatMode, chatColors=$chatColors, skinParts=$skinParts, mainHand=$mainHand, filterText=$textFilter, visibleInStatus=$visibleInStatus)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientSettingsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientSettingsPacket(Locale.forLanguageTag(buffer.readString(16).replace('_', '-')), buffer.readUnsignedByte().toInt(), ClientSettingsPacket.ChatMode.values()[buffer.readVarInt()], buffer.readBoolean(), buffer.readByteFlags(), MainHand.values()[buffer.readVarInt()], true)
+    override fun read(buffer: PacketBuffer, version: Int): ClientSettingsPacket {
+        val locale = Locale.forLanguageTag(buffer.readString(16).replace('_', '-'))
+        val viewDistance = buffer.readUnsignedByte().toInt()
+        val chatMode = ClientSettingsPacket.ChatMode.values()[buffer.readVarInt()]
+        val chatColors = buffer.readBoolean()
+        val skinParts = buffer.readByteFlags<SkinPart>()
+        val mainHand = MainHand.values()[buffer.readVarInt()]
+        val textFilter: Boolean
+        val present: Boolean
+        if (version >= 758) {
+            textFilter = buffer.readBoolean()
+            present = buffer.readBoolean()
+        } else {
+            textFilter = false
+            present = false
+        }
+        return ClientSettingsPacket(locale, viewDistance, chatMode, chatColors, skinParts, mainHand, textFilter, present)
+    }
 }

@@ -42,8 +42,8 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientJigsawBlockUpdatePack
 import com.valaphee.netcode.mcje.network.packet.play.ClientKeepAlivePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerActionPacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientPongPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookDisplayRecipePacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookStatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientResourcePackStatusPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientSettingsPacket
@@ -121,7 +121,7 @@ interface ClientPlayPacketHandler : PacketHandler {
 
     fun steer(packet: ClientSteerPacket) = other(packet)
 
-    fun recipeBook(packet: ClientRecipeBookPacket) = other(packet)
+    fun pong(packet: ClientPongPacket) = other(packet)
 
     fun recipeBookDisplayRecipe(packet: ClientRecipeBookDisplayRecipePacket) = other(packet)
 

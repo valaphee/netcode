@@ -20,34 +20,25 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.world.item.ItemStack
-import com.valaphee.netcode.mcje.world.item.readItemStack
-import com.valaphee.netcode.mcje.world.item.writeItemStack
-import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig
  */
-class ServerInventoryContentPacket(
-    val windowId: Int,
-    val stateId: Int,
-    val content: List<ItemStack?>
+class ServerSimulationDistancePacket(
+    val distance: Int
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeByte(windowId)
-        if (version >= 758) buffer.writeVarInt(stateId)
-        buffer.writeShort(content.size)
-        content.forEach { buffer.writeItemStack(it) }
+        buffer.writeVarInt(distance)
     }
 
-    override fun handle(handler: ServerPlayPacketHandler) = handler.inventoryContent(this)
+    override fun handle(handler: ServerPlayPacketHandler) = handler.simulationDistance(this)
 
-    override fun toString() = "ServerInventoryContentPacket(windowId=$windowId, stateId=$stateId, content=$content)"
+    override fun toString() = "ServerSimulationDistancePacket(distance=$distance)"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ServerInventoryContentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerInventoryContentPacket(buffer.readUnsignedByte().toInt(), if (version >= 758) buffer.readVarInt() else 0, safeList(buffer.readShort().toInt()) { buffer.readItemStack() })
+object ServerSimulationDistancePacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerSimulationDistancePacket(buffer.readVarInt())
 }

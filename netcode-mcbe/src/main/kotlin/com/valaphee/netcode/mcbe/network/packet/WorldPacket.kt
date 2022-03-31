@@ -57,8 +57,8 @@ class WorldPacket(
     val uniqueEntityId: Long,
     val runtimeEntityId: Long,
     val gameMode: GameMode,
-    var position: Float3,
-    var rotation: Float2,
+    var position: Float3, // needed for je-be protocol translation
+    var rotation: Float2, // needed for je-be protocol translation
     val seed: Int,
     val biomeType: BiomeType,
     val biomeName: String,
@@ -66,7 +66,7 @@ class WorldPacket(
     val generatorId: Int,
     val defaultGameMode: GameMode,
     val difficulty: Difficulty,
-    var defaultSpawn: Int3,
+    var defaultSpawn: Int3, // needed for je-be protocol translation
     val achievementsDisabled: Boolean,
     val time: Int,
     val educationEditionOffer: EducationEditionOffer,

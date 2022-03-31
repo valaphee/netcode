@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.util
+package com.valaphee.netcode.mcje.util
 
 /**
  * @author Kevin Ludwig

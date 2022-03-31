@@ -56,12 +56,12 @@ class ServerBlockUpdatesPacket(
  */
 object ServerBlockUpdatesPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): ServerBlockUpdatesPacket {
-        val chunkSectionPosition = buffer.readLong()
+        val subChunkPosition = buffer.readLong()
         val trustEdges = buffer.readBoolean()
         val updates = safeList(buffer.readVarInt()) {
             val update = buffer.readVarLong()
-            ServerBlockUpdatesPacket.Update(Int3((update.toInt() shr 8) and 0xF, update.toInt() and 0xF, (update.toInt() shr 4) and 0xF), (update shr 12).toInt())
+            ServerBlockUpdatesPacket.Update(Int3(((update shr 8) and 0xF).toInt(), (update and 0xF).toInt(), ((update shr 4) and 0xF).toInt()), (update shr 12).toInt())
         }
-        return ServerBlockUpdatesPacket(Int3((chunkSectionPosition shr 42).toInt(), ((chunkSectionPosition shl 44) shr 44).toInt(), ((chunkSectionPosition shl 22) shr 42).toInt()), trustEdges, updates)
+        return ServerBlockUpdatesPacket(Int3((subChunkPosition shr 42).toInt(), ((subChunkPosition shl 44) shr 44).toInt(), ((subChunkPosition shl 22) shr 42).toInt()), trustEdges, updates)
     }
 }

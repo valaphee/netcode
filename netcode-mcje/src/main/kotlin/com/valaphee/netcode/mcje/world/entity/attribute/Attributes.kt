@@ -36,7 +36,7 @@ class Attributes(
 
     val modified get() = attributes.values.any { it.modified }
 
-    fun readFromBuffer(buffer: PacketBuffer) {
+    fun readFromBufferPre758(buffer: PacketBuffer) {
         repeat(buffer.readInt()) {
             val field = AttributeField.byKey(buffer.readNamespacedKey())
             val value = AttributeValue(field, buffer.readDouble())
@@ -45,9 +45,37 @@ class Attributes(
         }
     }
 
-    fun writeToBuffer(buffer: PacketBuffer) {
+    fun readFromBuffer(buffer: PacketBuffer) {
+        repeat(buffer.readVarInt()) {
+            val field = AttributeField.byKey(buffer.readNamespacedKey())
+            val value = AttributeValue(field, buffer.readDouble())
+            repeat(buffer.readVarInt()) { value.applyModifier(AttributeValueModifier(buffer.readUuid(), buffer.readDouble(), AttributeValueModifier.Operation.values()[buffer.readByte().toInt()])) }
+            attributes[field] = value
+        }
+    }
+
+    fun writeToBufferPre758(buffer: PacketBuffer) {
         val modifiedAttributes = attributes.filter { it.value.modified }
         buffer.writeInt(modifiedAttributes.count())
+        modifiedAttributes.forEach { (field, value) ->
+            if (value.modified) {
+                buffer.writeNamespacedKey(field.key)
+                buffer.writeDouble(value.value)
+                val modifiers = value.modifiers
+                buffer.writeVarInt(modifiers.size)
+                modifiers.forEach {
+                    buffer.writeUuid(it.id)
+                    buffer.writeDouble(it.value)
+                    buffer.writeByte(it.operation.ordinal)
+                }
+                value.flagAsSaved()
+            }
+        }
+    }
+
+    fun writeToBuffer(buffer: PacketBuffer) {
+        val modifiedAttributes = attributes.filter { it.value.modified }
+        buffer.writeVarInt(modifiedAttributes.count())
         modifiedAttributes.forEach { (field, value) ->
             if (value.modified) {
                 buffer.writeNamespacedKey(field.key)
