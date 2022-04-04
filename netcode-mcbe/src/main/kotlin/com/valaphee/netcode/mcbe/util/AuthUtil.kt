@@ -35,7 +35,7 @@ import java.security.spec.ECGenParameterSpec
 import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
 
-fun authJws(keyPair: KeyPair, authExtra: AuthExtra) = objectMapper.writeValueAsString(
+fun authJws(keyPair: KeyPair, authExtra: AuthExtra): String = objectMapper.writeValueAsString(
     mapOf(
         "chain" to listOf(
             JsonWebSignature().apply {
@@ -54,12 +54,13 @@ fun authJws(keyPair: KeyPair, authJws: String): String {
     val authJwtContext = JwtConsumerBuilder().setJwsAlgorithmConstraints(AlgorithmConstraints.ConstraintType.PERMIT, "ES384").apply { setSkipSignatureVerification() }.build().process(authJwsChain.first() as String)
     return objectMapper.writeValueAsString(
         mapOf(
-            "chain" to authJwsChain.toMutableList().add(0, JsonWebSignature().apply {
+            "chain" to listOf(JsonWebSignature().apply {
                 setHeader("alg", "ES384")
                 setHeader("x5u", Base64.getEncoder().encodeToString(keyPair.public.encoded))
-                payload = objectMapper.writeValueAsString(mapOf("nbf" to authJwtContext.joseObjects.first().headers.getStringHeaderValue("nbf"), "exp" to authJwtContext.joseObjects.first().headers.getStringHeaderValue("exp"), "certificateAuthority" to true, "identityPublicKey" to authJwtContext.joseObjects.first().headers.getStringHeaderValue("x5u")))
+                val authJwsHeaders = authJwtContext.joseObjects.single().headers
+                payload = objectMapper.writeValueAsString(mapOf("nbf" to authJwsHeaders.getStringHeaderValue("nbf"), "exp" to authJwsHeaders.getStringHeaderValue("exp"), "certificateAuthority" to true, "identityPublicKey" to authJwsHeaders.getStringHeaderValue("x5u")))
                 key = keyPair.private
-            }.compactSerialization)
+            }.compactSerialization) + authJwsChain
         )
     )
 }
@@ -125,7 +126,7 @@ fun serverToClientHandshakeJws(keyPair: KeyPair, salt: ByteArray): String = Json
 
 fun parseServerToClientHandshakeJws(serverToClientHandshakeJws: String): Pair<PublicKey, ByteArray> {
     val jwtContext = JwtConsumerBuilder().setJwsAlgorithmConstraints(AlgorithmConstraints.ConstraintType.PERMIT, "ES384").apply { setSkipSignatureVerification() }.build().process(serverToClientHandshakeJws)
-    return generatePublicKey(jwtContext.joseObjects.first().headers.getStringHeaderValue("x5u")) to base64Decoder.decode(objectMapper.readValue<Map<*, *>>(jwtContext.jwtClaims.rawJson)["salt"] as String)
+    return generatePublicKey(jwtContext.joseObjects.single().headers.getStringHeaderValue("x5u")) to base64Decoder.decode(objectMapper.readValue<Map<*, *>>(jwtContext.jwtClaims.rawJson)["salt"] as String)
 }
 
 private val objectMapper = jacksonObjectMapper().apply { disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES) }

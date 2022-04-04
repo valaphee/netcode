@@ -133,7 +133,7 @@ data class ItemStack(
 fun PacketBuffer.readItemStackPre431(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
-    val item = checkNotNull(registries.items[id])
+    val item = registries.items[id] ?: "minecraft:unknown"
     val countAndSubId = readVarInt()
     return ItemStack(
         item,
@@ -162,7 +162,7 @@ fun PacketBuffer.readItemStackWithNetIdPre431(): ItemStack? {
 fun PacketBuffer.readItemStack(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
-    val item = checkNotNull(registries.items[id])
+    val item = registries.items[id] ?: "minecraft:unknown"
     val count = readUnsignedShortLE()
     val subId = readVarUInt()
     val netId = if (readBoolean()) readVarInt() else 0
@@ -183,14 +183,14 @@ fun PacketBuffer.readItemStack(): ItemStack? {
         readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
         if (item == shieldItem) readLongLE() else 0,
         netId,
-        if (blockStateId != 0) checkNotNull(registries.blockStates[blockStateId]) else null
+        if (blockStateId != 0) registries.blockStates[blockStateId] else null
     )
 }
 
 fun PacketBuffer.readItemStackInstance(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
-    val item = checkNotNull(registries.items[id])
+    val item = registries.items[id] ?: "minecraft:unknown"
     val count = readUnsignedShortLE()
     val subId = readVarUInt()
     val blockStateId = readVarInt()
@@ -210,14 +210,14 @@ fun PacketBuffer.readItemStackInstance(): ItemStack? {
         readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
         if (item == shieldItem) readLongLE() else 0,
         0,
-        if (blockStateId != 0) checkNotNull(registries.blockStates[blockStateId]) else null
+        if (blockStateId != 0) registries.blockStates[blockStateId] else null
     )
 }
 
 fun PacketBuffer.readIngredient(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
-    return ItemStack(checkNotNull(registries.items[id]), readVarInt().let { if (it == Short.MAX_VALUE.toInt()) -1 else it }, readVarInt())
+    return ItemStack(registries.items[id] ?: "minecraft:unknown", readVarInt().let { if (it == Short.MAX_VALUE.toInt()) -1 else it }, readVarInt())
 }
 
 fun PacketBuffer.writeItemStackPre431(value: ItemStack?) {

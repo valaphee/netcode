@@ -29,19 +29,19 @@ import io.netty.util.ReferenceCountUtil
  */
 class ClientCustomPayloadPacket(
     val channel: NamespacedKey,
-    val data: ByteBuf
+    val payload: ByteBuf
 ) : Packet<ClientPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeNamespacedKey(channel)
-        buffer.writeBytes(data)
+        buffer.writeBytes(payload)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) {
         handler.customPayload(this)
-        ReferenceCountUtil.safeRelease(data)
+        ReferenceCountUtil.safeRelease(payload)
     }
 
-    override fun toString() = "ClientCustomPayloadPacket(channel=$channel, data=$data)"
+    override fun toString() = "ClientCustomPayloadPacket(channel=$channel, payload=$payload)"
 }
 
 /**

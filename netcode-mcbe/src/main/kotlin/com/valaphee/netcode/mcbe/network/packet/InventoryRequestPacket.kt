@@ -19,16 +19,13 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.util.Registry
 import com.valaphee.netcode.mcbe.world.inventory.WindowSlotType
 import com.valaphee.netcode.mcbe.world.item.ItemStack
-import com.valaphee.netcode.mcbe.world.item.readItemStackInstance
-import com.valaphee.netcode.mcbe.world.item.readItemStackPre431
 import com.valaphee.netcode.mcbe.world.item.writeItemStackInstance
 import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
-import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig
@@ -37,46 +34,236 @@ import com.valaphee.netcode.util.safeList
 class InventoryRequestPacket(
     val requests: List<Request>
 ) : Packet() {
-    enum class ActionType {
-        Move, Place, Swap, Drop, Destroy, Consume, Create, LabTableCombine, BeaconPayment, MineBlock, CraftRecipe, CraftRecipeAuto, CraftCreative, CraftRecipeOptional, CraftNonImplementedDeprecated, CraftResultsDeprecated
+    interface Action {
+        enum class Type {
+            Move, Place, Swap, Drop, Destroy, Consume, Create, LabTableCombine, BeaconPayment, MineBlock, CraftRecipe, CraftRecipeAuto, CraftCreative, CraftRecipeOptional, CraftRepairAndDisenchant, CraftLoom, CraftNonImplementedDeprecated, CraftResultsDeprecated;
+
+            companion object {
+                internal val registryPre422 = Registry<Type>().apply {
+                    this[0] = Move
+                    this[1] = Place
+                    this[2] = Swap
+                    this[3] = Drop
+                    this[4] = Destroy
+                    this[5] = Consume
+                    this[6] = Create
+                    this[7] = LabTableCombine
+                    this[8] = BeaconPayment
+                    this[9] = CraftRecipe
+                    this[10] = CraftRecipeAuto
+                    this[11] = CraftCreative
+                    this[12] = CraftNonImplementedDeprecated
+                    this[13] = CraftResultsDeprecated
+                }
+                internal val registryPre428 = Registry<Type>().apply {
+                    this[0] = Move
+                    this[1] = Place
+                    this[2] = Swap
+                    this[3] = Drop
+                    this[4] = Destroy
+                    this[5] = Consume
+                    this[6] = Create
+                    this[7] = LabTableCombine
+                    this[8] = BeaconPayment
+                    this[9] = CraftRecipe
+                    this[10] = CraftRecipeAuto
+                    this[11] = CraftCreative
+                    this[12] = CraftRecipeOptional
+                    this[13] = CraftNonImplementedDeprecated
+                    this[14] = CraftResultsDeprecated
+                }
+                internal val registryPre471 = Registry<Type>().apply {
+                    this[0] = Move
+                    this[1] = Place
+                    this[2] = Swap
+                    this[3] = Drop
+                    this[4] = Destroy
+                    this[5] = Consume
+                    this[6] = Create
+                    this[7] = LabTableCombine
+                    this[8] = BeaconPayment
+                    this[9] = MineBlock
+                    this[10] = CraftRecipe
+                    this[11] = CraftRecipeAuto
+                    this[12] = CraftCreative
+                    this[13] = CraftRecipeOptional
+                    this[14] = CraftNonImplementedDeprecated
+                    this[15] = CraftResultsDeprecated
+                }
+                internal val registry = Registry<Type>().apply {
+                    this[0] = Move
+                    this[1] = Place
+                    this[2] = Swap
+                    this[3] = Drop
+                    this[4] = Destroy
+                    this[5] = Consume
+                    this[6] = Create
+                    this[7] = LabTableCombine
+                    this[8] = BeaconPayment
+                    this[9] = MineBlock
+                    this[10] = CraftRecipe
+                    this[11] = CraftRecipeAuto
+                    this[12] = CraftCreative
+                    this[13] = CraftRecipeOptional
+                    this[14] = CraftRepairAndDisenchant
+                    this[15] = CraftLoom
+                    this[16] = CraftNonImplementedDeprecated
+                    this[17] = CraftResultsDeprecated
+                }
+            }
+        }
+
+        val type: Type
     }
 
-    class Action(
-        val result: List<ItemStack?>?,
-        val type: ActionType,
+    data class MoveAction(
         val count: Int,
         val sourceSlotType: WindowSlotType?,
         val sourceSlotId: Int,
         val sourceNetId: Int,
-        val random: Boolean,
         val destinationSlotType: WindowSlotType?,
         val destinationSlotId: Int,
-        val destinationNetId: Int,
-        val slotId: Int,
-        val auxInt: Int,
-        val auxInt2: Int
-    ) {
-        override fun toString() = "Action(result=$result, type=$type, count=$count, sourceSlotType=$sourceSlotType, sourceSlotId=$sourceSlotId, sourceNetId=$sourceNetId, random=$random, destinationSlotType=$destinationSlotType, destinationSlotId=$destinationSlotId, destinationNetId=$destinationNetId, slotId=$slotId, auxInt=$auxInt, auxInt2=$auxInt2)"
+        val destinationNetId: Int
+    ) : Action {
+        override val type get() = Action.Type.Move
     }
 
-    class Request(
+    data class PlaceAction(
+        val count: Int,
+        val sourceSlotType: WindowSlotType?,
+        val sourceSlotId: Int,
+        val sourceNetId: Int,
+        val destinationSlotType: WindowSlotType?,
+        val destinationSlotId: Int,
+        val destinationNetId: Int
+    ) : Action {
+        override val type get() = Action.Type.Place
+    }
+
+    data class SwapAction(
+        val sourceSlotType: WindowSlotType?,
+        val sourceSlotId: Int,
+        val sourceNetId: Int,
+        val destinationSlotType: WindowSlotType?,
+        val destinationSlotId: Int,
+        val destinationNetId: Int
+    ) : Action {
+        override val type get() = Action.Type.Swap
+    }
+
+    data class DropAction(
+        val count: Int,
+        val sourceSlotType: WindowSlotType?,
+        val sourceSlotId: Int,
+        val sourceNetId: Int,
+        val random: Boolean
+    ) : Action {
+        override val type get() = Action.Type.Drop
+    }
+
+    data class DestroyAction(
+        val count: Int,
+        val sourceSlotType: WindowSlotType?,
+        val sourceSlotId: Int,
+        val sourceNetId: Int,
+    ) : Action {
+        override val type get() = Action.Type.Destroy
+    }
+
+    data class ConsumeAction(
+        val count: Int,
+        val sourceSlotType: WindowSlotType?,
+        val sourceSlotId: Int,
+        val sourceNetId: Int,
+    ) : Action {
+        override val type get() = Action.Type.Consume
+    }
+
+    data class CreateAction(
+        val slotId: Int
+    ) : Action {
+        override val type get() = Action.Type.Create
+    }
+
+    data class BeaconPaymentAction(
+        val primaryEffect: Int,
+        val secondaryEffect: Int
+    ) : Action {
+        override val type get() = Action.Type.BeaconPayment
+    }
+
+    data class MineBlockAction(
+        val hotbarSlot: Int,
+        val durability: Int,
+        val netId: Int
+    ) : Action {
+        override val type get() = Action.Type.MineBlock
+    }
+
+    data class CraftRecipeAction(
+        val recipeNetId: Int
+    ) : Action {
+        override val type get() = Action.Type.CraftRecipe
+    }
+
+    data class CraftRecipeAutoAction(
+        val recipeNetId: Int,
+        val count: Int
+    ) : Action {
+        override val type get() = Action.Type.CraftRecipeAuto
+    }
+
+    data class CraftCreativeAction(
+        val netId: Int
+    ) : Action {
+        override val type get() = Action.Type.CraftCreative
+    }
+
+    data class CraftRecipeOptionalAction(
+        val recipeNetId: Int,
+        val filteredText: Int
+    ) : Action {
+        override val type get() = Action.Type.CraftRecipeOptional
+    }
+
+    data class CraftRepairAndDisenchantAction(
+        val recipeNetId: Int,
+        val repairCost: Int
+    ) : Action {
+        override val type get() = Action.Type.CraftRepairAndDisenchant
+    }
+
+    data class CraftLoomAction(
+        val patternId: String
+    ) : Action {
+        override val type get() = Action.Type.CraftLoom
+    }
+
+    data class CraftResultsDeprecatedAction(
+        val result: List<ItemStack?>,
+        val count: Int
+    ) : Action {
+        override val type get() = Action.Type.CraftResultsDeprecated
+    }
+
+    data class Request(
         val requestId: Int,
         val actions: List<Action>,
         val filteredTexts: List<String>
-    ) {
-        override fun toString() = "Request(requestId=$requestId, actions=$actions, filteredTexts=$filteredTexts)"
-    }
+    )
 
     override val id get() = 0x93
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarUInt(requests.size)
+        val actionTypes = if (version >= 471) Action.Type.registry else if (version >= 428) Action.Type.registryPre471 else if (version >= 422) Action.Type.registryPre428 else Action.Type.registryPre422
         requests.forEach {
             buffer.writeVarInt(it.requestId)
             buffer.writeVarUInt(it.actions.size)
             it.actions.forEach {
-                when (it.type) {
-                    ActionType.Move, ActionType.Place -> {
+                buffer.writeByte(actionTypes.getId(it.type))
+                when (it) {
+                    is MoveAction -> {
                         buffer.writeByte(it.count)
                         buffer.writeByte(it.sourceSlotType!!.ordinal)
                         buffer.writeByte(it.sourceSlotId)
@@ -85,7 +272,8 @@ class InventoryRequestPacket(
                         buffer.writeByte(it.destinationSlotId)
                         buffer.writeVarInt(it.destinationNetId)
                     }
-                    ActionType.Swap -> {
+                    is PlaceAction -> {
+                        buffer.writeByte(it.count)
                         buffer.writeByte(it.sourceSlotType!!.ordinal)
                         buffer.writeByte(it.sourceSlotId)
                         buffer.writeVarInt(it.sourceNetId)
@@ -93,40 +281,63 @@ class InventoryRequestPacket(
                         buffer.writeByte(it.destinationSlotId)
                         buffer.writeVarInt(it.destinationNetId)
                     }
-                    ActionType.Drop -> {
+                    is SwapAction -> {
+                        buffer.writeByte(it.sourceSlotType!!.ordinal)
+                        buffer.writeByte(it.sourceSlotId)
+                        buffer.writeVarInt(it.sourceNetId)
+                        buffer.writeByte(it.destinationSlotType!!.ordinal)
+                        buffer.writeByte(it.destinationSlotId)
+                        buffer.writeVarInt(it.destinationNetId)
+                    }
+                    is DropAction -> {
                         buffer.writeByte(it.count)
                         buffer.writeByte(it.sourceSlotType!!.ordinal)
                         buffer.writeByte(it.sourceSlotId)
                         buffer.writeVarInt(it.sourceNetId)
                         buffer.writeBoolean(it.random)
                     }
-                    ActionType.Destroy, ActionType.Consume -> {
+                    is DestroyAction -> {
                         buffer.writeByte(it.count)
                         buffer.writeByte(it.sourceSlotType!!.ordinal)
                         buffer.writeByte(it.sourceSlotId)
                         buffer.writeVarInt(it.sourceNetId)
                     }
-                    ActionType.Create -> buffer.writeByte(it.sourceSlotId)
-                    ActionType.LabTableCombine -> TODO()
-                    ActionType.BeaconPayment -> {
-                        buffer.writeVarInt(it.auxInt)
-                        buffer.writeVarInt(it.auxInt2)
+                    is ConsumeAction -> {
+                        buffer.writeByte(it.count)
+                        buffer.writeByte(it.sourceSlotType!!.ordinal)
+                        buffer.writeByte(it.sourceSlotId)
+                        buffer.writeVarInt(it.sourceNetId)
                     }
-                    ActionType.MineBlock -> TODO()
-                    ActionType.CraftRecipe, ActionType.CraftCreative -> buffer.writeVarUInt(it.auxInt)
-                    ActionType.CraftRecipeAuto -> {
-                        buffer.writeVarUInt(it.auxInt)
-                        if (version >= 448) buffer.writeByte(it.auxInt2)
+                    is CreateAction -> buffer.writeByte(it.slotId)
+                    is BeaconPaymentAction -> {
+                        buffer.writeVarInt(it.primaryEffect)
+                        buffer.writeVarInt(it.secondaryEffect)
                     }
-                    ActionType.CraftRecipeOptional -> {
-                        buffer.writeVarUInt(it.auxInt)
-                        buffer.writeIntLE(it.auxInt2)
+                    is MineBlockAction -> {
+                        buffer.writeVarInt(it.hotbarSlot)
+                        buffer.writeVarInt(it.durability)
+                        buffer.writeVarInt(it.netId)
                     }
-                    ActionType.CraftNonImplementedDeprecated, ActionType.CraftResultsDeprecated -> {
-                        it.result!!.let {
-                            buffer.writeVarUInt(it.size)
-                            it.forEach { if (version >= 431) buffer.writeItemStackInstance(it) else buffer.writeItemStackPre431(it) }
-                        }
+                    is CraftRecipeAction -> {
+                        buffer.writeVarUInt(it.recipeNetId)
+                    }
+                    is CraftRecipeAutoAction -> {
+                        buffer.writeVarUInt(it.recipeNetId)
+                        if (version >= 448) buffer.writeByte(it.count)
+                    }
+                    is CraftCreativeAction -> buffer.writeVarUInt(it.netId)
+                    is CraftRecipeOptionalAction -> {
+                        buffer.writeVarUInt(it.recipeNetId)
+                        buffer.writeIntLE(it.filteredText)
+                    }
+                    is CraftRepairAndDisenchantAction -> {
+                        buffer.writeVarUInt(it.recipeNetId)
+                        buffer.writeVarInt(it.repairCost)
+                    }
+                    is CraftLoomAction -> buffer.writeString(it.patternId)
+                    is CraftResultsDeprecatedAction -> {
+                        buffer.writeVarUInt(it.result.size)
+                        it.result.forEach { if (version >= 431) buffer.writeItemStackInstance(it) else buffer.writeItemStackPre431(it) }
                         buffer.writeByte(it.count)
                     }
                 }
@@ -141,29 +352,4 @@ class InventoryRequestPacket(
     override fun handle(handler: PacketHandler) = handler.inventoryRequest(this)
 
     override fun toString() = "InventoryRequestPacket(requests=$requests)"
-}
-
-/**
- * @author Kevin Ludwig
- */
-object InventoryRequestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = InventoryRequestPacket(safeList(buffer.readVarUInt()) {
-        InventoryRequestPacket.Request(buffer.readVarInt(), safeList(buffer.readVarUInt()) {
-            when (val actionType = InventoryRequestPacket.ActionType.values()[buffer.readByte().toInt()]) {
-                InventoryRequestPacket.ActionType.Move, InventoryRequestPacket.ActionType.Place -> InventoryRequestPacket.Action(null, actionType, buffer.readByte().toInt(), WindowSlotType.values()[buffer.readByte().toInt()], buffer.readByte().toInt(), buffer.readVarInt(), false, WindowSlotType.values()[buffer.readByte().toInt()], buffer.readByte().toInt(), buffer.readVarInt(), 0, 0, 0)
-                InventoryRequestPacket.ActionType.Swap -> InventoryRequestPacket.Action(null, actionType, 0, WindowSlotType.values()[buffer.readByte().toInt()], buffer.readByte().toInt(), buffer.readVarInt(), false, WindowSlotType.values()[buffer.readByte().toInt()], buffer.readByte().toInt(), buffer.readVarInt(), 0, 0, 0)
-                InventoryRequestPacket.ActionType.Drop -> InventoryRequestPacket.Action(null, actionType, buffer.readByte().toInt(), WindowSlotType.values()[buffer.readByte().toInt()], buffer.readByte().toInt(), buffer.readVarInt(), buffer.readBoolean(), null, 0, 0, 0, 0, 0)
-                InventoryRequestPacket.ActionType.Destroy, InventoryRequestPacket.ActionType.Consume -> InventoryRequestPacket.Action(null, actionType, buffer.readByte().toInt(), WindowSlotType.values()[buffer.readByte().toInt()], buffer.readByte().toInt(), buffer.readVarInt(), false, null, 0, 0, 0, 0, 0)
-                InventoryRequestPacket.ActionType.Create -> InventoryRequestPacket.Action(null, actionType, 0, null, buffer.readByte().toInt(), 0, false, null, 0, 0, 0, 0, 0)
-                InventoryRequestPacket.ActionType.LabTableCombine -> TODO()
-                InventoryRequestPacket.ActionType.BeaconPayment -> InventoryRequestPacket.Action(null, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readVarInt(), buffer.readVarInt())
-                InventoryRequestPacket.ActionType.MineBlock -> TODO()
-                InventoryRequestPacket.ActionType.CraftRecipe, InventoryRequestPacket.ActionType.CraftCreative -> InventoryRequestPacket.Action(null, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readVarInt(), 0)
-                InventoryRequestPacket.ActionType.CraftRecipeAuto -> InventoryRequestPacket.Action(null, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readVarInt(), if (version >= 448) buffer.readByte().toInt() else 0)
-                InventoryRequestPacket.ActionType.CraftRecipeOptional -> InventoryRequestPacket.Action(null, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readVarUInt(), buffer.readIntLE())
-                InventoryRequestPacket.ActionType.CraftResultsDeprecated -> InventoryRequestPacket.Action(safeList(buffer.readVarUInt()) { if (version >= 431) buffer.readItemStackInstance() else buffer.readItemStackPre431() }, actionType, 0, null, 0, 0, false, null, 0, 0, 0, buffer.readByte().toInt(), 0)
-                InventoryRequestPacket.ActionType.CraftNonImplementedDeprecated -> TODO()
-            }
-        }, if (version >= 422) safeList(buffer.readVarUInt()) { buffer.readString() } else emptyList())
-    })
 }

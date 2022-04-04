@@ -43,9 +43,6 @@ data class GameProfile(
         @JsonProperty("signature") val signature: String? = null
     ) {
         data class Textures(
-            @JsonProperty("timestamp") val timestamp: Long,
-            @JsonProperty("profileId") @JsonSerialize(using = UuidSerializer::class) @JsonDeserialize(using = UuidDeserializer::class) val userId: UUID,
-            @JsonProperty("profileName") val userName: String,
             @JsonProperty("textures") val textures: Map<String, Texture>
         ) {
             data class Texture(

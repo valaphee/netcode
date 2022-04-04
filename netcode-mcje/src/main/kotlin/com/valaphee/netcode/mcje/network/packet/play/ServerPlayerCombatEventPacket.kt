@@ -35,8 +35,14 @@ class ServerPlayerCombatEventPacket(
         Enter, End, Death
     }
 
+    override fun getId(id: Int, version: Int) = if (version >= 758) when (event) {
+        Event.End -> 0x33
+        Event.Enter -> 0x34
+        Event.Death -> 0x35
+    } else id
+
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(event.ordinal)
+        if (version < 758) buffer.writeVarInt(event.ordinal)
         when (event) {
             Event.Enter -> Unit
             Event.End -> {

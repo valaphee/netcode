@@ -39,8 +39,17 @@ class ServerBorderPacket(
         SetSize, LerpSize, SetCenter, Initialize, SetWarningTime, SetWarningDistance
     }
 
+    override fun getId(id: Int, version: Int) = if (version >= 758) when (action) {
+        Action.Initialize -> 0x20
+        Action.SetCenter -> 0x42
+        Action.LerpSize -> 0x43
+        Action.SetSize -> 0x44
+        Action.SetWarningTime -> 0x45
+        Action.SetWarningDistance -> 0x46
+    } else id
+
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(action.ordinal)
+        if (version < 758) buffer.writeVarInt(action.ordinal)
         when (action) {
             Action.SetSize -> buffer.writeDouble(diameter)
             Action.LerpSize -> {

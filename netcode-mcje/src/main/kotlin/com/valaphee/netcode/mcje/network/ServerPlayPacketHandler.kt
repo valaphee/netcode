@@ -27,6 +27,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerBookOpenPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBorderPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBossBarPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerCameraPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerChunkLightPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkPublishPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkUnloadPacket
@@ -174,6 +175,8 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun particle(packet: ServerParticlePacket) = other(packet)
 
+    fun chunkLight(packet: ServerChunkLightPacket) = other(packet)
+
     fun world(packet: ServerWorldPacket) = other(packet)
 
     fun map(packet: ServerMapPacket) = other(packet)
@@ -252,7 +255,7 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun score(packet: ServerScorePacket) = other(packet)
 
-    fun simulationDistance(packet: ServerSimulationDistancePacket)
+    fun simulationDistance(packet: ServerSimulationDistancePacket) = other(packet)
 
     fun time(packet: ServerTimePacket) = other(packet)
 
@@ -274,5 +277,5 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun entityAttributes(packet: ServerEntityAttributesPacket) = other(packet)
 
-    fun entityEffectApply(packet: ServerEntityEffectApplyPacket) = other(packet)
+    fun entityEffectApply(packet: ServerEntityEffectApplyPacket)
 }

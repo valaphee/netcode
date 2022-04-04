@@ -20,6 +20,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
+import com.valaphee.jackson.dataformat.nbt.getStringOrNull
 import com.valaphee.netcode.mcbe.network.GamePublishMode
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
@@ -360,8 +361,13 @@ object WorldPacketReader : PacketReader {
         val blocks: List<Block>?
         if (version >= 419) {
             blocksData = null
-            val nbtObjectReader = buffer.nbtVarIntObjectMapper.readerFor(Block::class.java).withAttribute("version", version)
-            blocks = safeList(buffer.readVarUInt()) { nbtObjectReader.readValue(ByteBufInputStream(buffer) as InputStream) }
+            val nbtObjectReader = buffer.nbtVarIntObjectMapper/*.readerFor(Block::class.java).withAttribute("version", version)*/
+            blocks = safeList(buffer.readVarUInt()) {
+                val blockKey = buffer.readString()
+                val block = nbtObjectReader.readValue<Map<String, Any?>>(ByteBufInputStream(buffer) as InputStream)
+                val blockProperties = (block["properties"] as List<Any?>?)
+                Block(Block.Description(blockKey, blockProperties?.associate { (it as Map<String, Any?>).getStringOrNull("name")!! to it["enum"] as List<Any> } ?: emptyMap()))
+            }
         } else {
             blocksData = buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer))
             blocks = null

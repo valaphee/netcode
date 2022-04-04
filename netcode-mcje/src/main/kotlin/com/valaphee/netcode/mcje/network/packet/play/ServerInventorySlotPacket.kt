@@ -35,6 +35,7 @@ class ServerInventorySlotPacket(
 ) : Packet<ServerPlayPacketHandler> {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
+        if (version >= 758) buffer.writeVarInt(stateId)
         buffer.writeShort(slotId)
         buffer.writeItemStack(itemStack)
     }
@@ -48,5 +49,5 @@ class ServerInventorySlotPacket(
  * @author Kevin Ludwig
  */
 object ServerInventorySlotPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerInventorySlotPacket(buffer.readByte().toInt(), buffer.readShort().toInt(), if (version >= 758) buffer.readVarInt() else 0, buffer.readItemStack())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerInventorySlotPacket(buffer.readByte().toInt(), if (version >= 758) buffer.readVarInt() else 0, buffer.readShort().toInt(), buffer.readItemStack())
 }

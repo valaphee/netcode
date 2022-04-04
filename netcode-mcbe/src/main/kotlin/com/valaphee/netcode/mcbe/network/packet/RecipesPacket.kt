@@ -64,7 +64,7 @@ class RecipesPacket(
                     buffer.writeVarUInt(1)
                     if (version >= 431) buffer.writeItemStackInstance(it.output) else buffer.writeItemStackPre431(it.output)
                     buffer.writeUuid(it.id)
-                    buffer.writeString(it.tags.first())
+                    buffer.writeString(it.tags.single())
                     buffer.writeVarInt(it.priority)
                     if (version >= 407) buffer.writeVarUInt(it.netId)
                 }
@@ -77,7 +77,7 @@ class RecipesPacket(
                     buffer.writeVarUInt(it.output.size)
                     it.output.forEach { if (version >= 431) buffer.writeItemStackInstance(it) else buffer.writeItemStackPre431(it) }
                     buffer.writeUuid(it.id)
-                    buffer.writeString(it.tags.first())
+                    buffer.writeString(it.tags.single())
                     buffer.writeVarInt(it.priority)
                     if (version >= 407) buffer.writeVarUInt(it.netId)
                 }
@@ -91,14 +91,14 @@ class RecipesPacket(
                         buffer.writeVarInt(it.input.subId)
                     }
                     if (version >= 431) buffer.writeItemStackInstance(it.output) else buffer.writeItemStackPre431(it.output)
-                    buffer.writeString(it.tags.first())
+                    buffer.writeString(it.tags.single())
                 }
                 is MultiRecipe -> {
                     buffer.writeVarInt(4)
                     buffer.writeUuid(it.id)
                     buffer.writeVarUInt(it.netId)
                 }
-                else -> TODO()
+                else -> TODO("$it")
             }
         }
 
@@ -143,7 +143,7 @@ object RecipesPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int) = RecipesPacket(
         safeList(buffer.readVarUInt()) {
             when (val type = buffer.readVarInt()) {
-                0, 5, 6 -> ShapelessRecipe(ShapelessRecipe.Description(buffer.readString()), safeList(buffer.readVarUInt()) { checkNotNull(buffer.readIngredient()) }, safeList(buffer.readVarUInt()) { checkNotNull(if (version >= 431) buffer.readItemStackInstance() else buffer.readItemStackPre431()) }.first(), buffer.readUuid(), listOf(buffer.readString()), buffer.readVarInt(), if (version >= 407) buffer.readVarUInt() else 0)
+                0, 5, 6 -> ShapelessRecipe(ShapelessRecipe.Description(buffer.readString()), safeList(buffer.readVarUInt()) { checkNotNull(buffer.readIngredient()) }, safeList(buffer.readVarUInt()) { checkNotNull(if (version >= 431) buffer.readItemStackInstance() else buffer.readItemStackPre431()) }.single(), buffer.readUuid(), listOf(buffer.readString()), buffer.readVarInt(), if (version >= 407) buffer.readVarUInt() else 0)
                 1, 7 -> {
                     val name = buffer.readString()
                     val width = buffer.readVarInt()
@@ -162,7 +162,7 @@ object RecipesPacketReader : PacketReader {
                 else -> TODO("$type")
             }
         },
-        safeList(buffer.readVarUInt()) { BrewingMixRecipe(BrewingMixRecipe.Description(""), emptyList(), ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()]), buffer.readVarInt()), ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()]), buffer.readVarInt()), ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()]), buffer.readVarInt())) },
+        safeList(buffer.readVarUInt()) { BrewingMixRecipe(BrewingMixRecipe.Description(""), emptyList(), ItemStack(buffer.registries.items[buffer.readVarInt()] ?: "minecraft:unknown", buffer.readVarInt()), ItemStack(buffer.registries.items[buffer.readVarInt()] ?: "minecraft:unknown", buffer.readVarInt()), ItemStack(buffer.registries.items[buffer.readVarInt()] ?: "minecraft:unknown", buffer.readVarInt())) },
         safeList(buffer.readVarUInt()) { BrewingContainerRecipe(BrewingContainerRecipe.Description(""), emptyList(), checkNotNull(buffer.registries.items[buffer.readVarInt()]), checkNotNull(buffer.registries.items[buffer.readVarInt()]), checkNotNull(buffer.registries.items[buffer.readVarInt()])) },
         if (version >= 465) safeList(buffer.readVarUInt()) { MaterialReductionRecipe(MaterialReductionRecipe.Description(""), emptyList(), ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()])), safeList(buffer.readVarUInt()) { ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()]), buffer.readVarInt()) }) } else emptyList(),
         buffer.readBoolean()

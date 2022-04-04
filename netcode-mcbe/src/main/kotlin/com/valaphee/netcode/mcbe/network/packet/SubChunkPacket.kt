@@ -103,15 +103,15 @@ class SubChunkPacket(
             }
         } else {
             buffer.writeVarInt(dimension)
-            val it = responses.first()
-            buffer.writeInt3(it.position)
-            buffer.writeByteArray(it.data!!)
-            buffer.writeVarInt(it.result.ordinal)
-            buffer.writeByte(it.heightMapStatus.ordinal)
-            if (it.heightMapStatus == Response.HeightMapStatus.Available || version < 475) buffer.writeBytes(it.heightMap!!)
+            val response = responses.single()
+            buffer.writeInt3(response.position)
+            buffer.writeByteArray(response.data!!)
+            buffer.writeVarInt(response.result.ordinal)
+            buffer.writeByte(response.heightMapStatus.ordinal)
+            if (response.heightMapStatus == Response.HeightMapStatus.Available || version < 475) buffer.writeBytes(response.heightMap!!)
             if (version >= 475) if (cache) {
                 buffer.writeBoolean(true)
-                buffer.writeLongLE(it.blobId)
+                buffer.writeLongLE(response.blobId)
             } else buffer.writeBoolean(false)
         }
     }

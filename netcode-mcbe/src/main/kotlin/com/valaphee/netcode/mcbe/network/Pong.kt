@@ -49,5 +49,6 @@ class Pong(
         .add(if (nintendoLimited) "0" else "1")
         .add(ipv4Port.toString())
         .add(ipv6Port.toString())
+        .add("")
         .toString()
 }

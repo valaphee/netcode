@@ -20,6 +20,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToMessageDecoder
 import io.netty.util.ReferenceCountUtil
+import network.ycc.raknet.RakNet
 import java.util.zip.Inflater
 
 /**
@@ -28,19 +29,15 @@ import java.util.zip.Inflater
 class Decompressor : MessageToMessageDecoder<ByteBuf>() {
     private val buffer = ByteArray(8192)
 
-    private lateinit var inflater: Inflater
-
-    override fun handlerAdded(context: ChannelHandlerContext) {
-        super.handlerAdded(context)
-        inflater = Inflater(true)
-    }
+    private var inflater: Inflater? = null
 
     override fun handlerRemoved(context: ChannelHandlerContext) {
-        inflater.end()
-        super.handlerRemoved(context)
+        inflater?.end()
     }
 
     override fun decode(context: ChannelHandlerContext, `in`: ByteBuf, out: MutableList<Any>) {
+        val inflater = inflater ?: Inflater(RakNet.config(context).protocolVersion >= 10).also { inflater = it }
+
         var out0: ByteBuf? = null
         try {
             out0 = context.alloc().ioBuffer(`in`.readableBytes() shl 2)

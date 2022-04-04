@@ -33,11 +33,11 @@ class TitlePacket(
     val fadeInTime: Int,
     val stayTime: Int,
     val fadeOutTime: Int,
-    val xboxUserId: String,
-    val platformChatId: String
+    val xboxUserId: String?,
+    val platformChatId: String?
 ) : Packet() {
     enum class Action {
-        ClearTitle, ResetTitle, SetTitle, SetSubTitle, SetActionBarMessage, SetTimings
+        Clear, Reset, SetTitle, SetSubTitle, ActionBar, SetTimings
     }
 
     override val id get() = 0x58
@@ -48,26 +48,36 @@ class TitlePacket(
         buffer.writeVarInt(fadeInTime)
         buffer.writeVarInt(stayTime)
         buffer.writeVarInt(fadeOutTime)
-        buffer.writeString(xboxUserId)
-        buffer.writeString(platformChatId)
+        if (version >= 448) {
+            buffer.writeString(xboxUserId!!)
+            buffer.writeString(platformChatId!!)
+        }
     }
 
     override fun handle(handler: PacketHandler) = handler.title(this)
 
-    override fun toString() = "TitlePacket(action=$action, text='$text', fadeInTime=$fadeInTime, stayTime=$stayTime, fadeOutTime=$fadeOutTime, xboxUserId='$xboxUserId', platformChatId='$platformChatId')"
+    override fun toString() = "TitlePacket(action=$action, text='$text', fadeInTime=$fadeInTime, stayTime=$stayTime, fadeOutTime=$fadeOutTime, xboxUserId=$xboxUserId, platformChatId=$platformChatId)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object TitlePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = TitlePacket(
-        TitlePacket.Action.values()[buffer.readVarInt()],
-        buffer.readString(),
-        buffer.readVarInt(),
-        buffer.readVarInt(),
-        buffer.readVarInt(),
-        buffer.readString(),
-        buffer.readString()
-    )
+    override fun read(buffer: PacketBuffer, version: Int): TitlePacket {
+        val action = TitlePacket.Action.values()[buffer.readVarInt()]
+        val text = buffer.readString()
+        val fadeInTime = buffer.readVarInt()
+        val stayTime = buffer.readVarInt()
+        val fadeOutTime = buffer.readVarInt()
+        val xboxUserId: String?
+        val platformChatId: String?
+        if (version >= 448) {
+            xboxUserId = buffer.readString()
+            platformChatId = buffer.readString()
+        } else {
+            xboxUserId = null
+            platformChatId = null
+        }
+        return TitlePacket(action, text, fadeInTime, stayTime, fadeOutTime, xboxUserId, platformChatId)
+    }
 }

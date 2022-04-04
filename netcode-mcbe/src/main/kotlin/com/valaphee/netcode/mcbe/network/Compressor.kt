@@ -23,6 +23,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelOutboundHandlerAdapter
 import io.netty.channel.ChannelPromise
 import io.netty.util.ReferenceCountUtil
+import network.ycc.raknet.RakNet
 import network.ycc.raknet.pipeline.FlushTickHandler
 import java.util.zip.Deflater
 
@@ -30,18 +31,16 @@ import java.util.zip.Deflater
  * @author Kevin Ludwig
  */
 class Compressor(
-    val level: Int = 7
+    val level: Int
 ) : ChannelOutboundHandlerAdapter() {
     private val buffer = ByteArray(8192)
 
-    private lateinit var deflater: Deflater
+    private var deflater: Deflater? = null
     private lateinit var `in`: CompositeByteBuf
     private lateinit var out: CompositeByteBuf
     private var dirty = false
 
     override fun handlerAdded(context: ChannelHandlerContext) {
-        super.handlerAdded(context)
-        deflater = Deflater(level, true)
         val allocator = context.alloc()
         `in` = allocator.compositeDirectBuffer(componentMaximum)
         out = allocator.compositeDirectBuffer(componentMaximum)
@@ -50,8 +49,7 @@ class Compressor(
     override fun handlerRemoved(context: ChannelHandlerContext) {
         ReferenceCountUtil.safeRelease(out)
         ReferenceCountUtil.safeRelease(`in`)
-        deflater.end()
-        super.handlerRemoved(context)
+        deflater?.end()
     }
 
     override fun write(context: ChannelHandlerContext, message: Any, promise: ChannelPromise) {
@@ -79,6 +77,8 @@ class Compressor(
     }
 
     private fun _flush(context: ChannelHandlerContext) {
+        val deflater = deflater ?: Deflater(level, RakNet.config(context).protocolVersion >= 10).also { deflater = it }
+
         dirty = false
         val allocator = context.alloc()
         val out = allocator.directBuffer(`in`.readableBytes() / 4 + 16)

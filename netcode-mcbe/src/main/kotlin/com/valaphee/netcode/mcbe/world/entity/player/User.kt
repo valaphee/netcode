@@ -75,12 +75,27 @@ data class User constructor(
         Classic, Pocket, Unknown2, Unknown3
     }
 
+    val skinId get() = appearance.skinId
+    val playFabId get() = appearance.playFabId
+    val skinResourcePatch get() = appearance.skinResourcePatch
     val skinWidth get() = appearance.skinImage.width
     val skinHeight get() = appearance.skinImage.height
     val skinData get() = appearance.skinImage.data
+    val animations get() = appearance.animations
     val capeWidth get() = appearance.capeImage.width
     val capeHeight get() = appearance.capeImage.height
     val capeData get() = appearance.capeImage.data
+    val geometryData get() = appearance.geometryData
+    val geometryDataEngineVersion get() = appearance.geometryDataEngineVersion
+    val animationData get() = appearance.animationData
+    val capeId get() = appearance.capeId
+    val armSize get() = appearance.armSize
+    val skinColor get() = appearance.skinColor
+    val personaPieces get() = appearance.personaPieces
+    val personaPieceTints get() = appearance.personaPieceTints
+    val premiumSkin get() = appearance.premiumSkin
+    val personaSkin get() = appearance.personaSkin
+    val capeOnClassicSkin get() = appearance.capeOnClassicSkin
 
     @JsonCreator
     constructor(
@@ -102,10 +117,10 @@ data class User constructor(
         @JsonProperty("SkinGeometryDataEngineVersion") geometryDataEngineVersion: String?,
         @JsonProperty("SkinAnimationData") animationData: ByteArray,
         @JsonProperty("CapeId") capeId: String,
-        @JsonProperty("ArmSize") armSize: String,
-        @JsonProperty("SkinColor") skinColor: String,
-        @JsonProperty("PersonaPieces") personaPieces: List<Appearance.PersonaPiece>,
-        @JsonProperty("PieceTintColors") personaPieceTints: List<Appearance.PersonaPieceTint>,
+        @JsonProperty("ArmSize") armSize: String = "",
+        @JsonProperty("SkinColor") skinColor: String = "#0",
+        @JsonProperty("PersonaPieces") personaPieces: List<Appearance.PersonaPiece> = emptyList(),
+        @JsonProperty("PieceTintColors") personaPieceTints: List<Appearance.PersonaPieceTint> = emptyList(),
         @JsonProperty("PremiumSkin") premiumSkin: Boolean,
         @JsonProperty("PersonaSkin") personaSkin: Boolean,
         @JsonProperty("CapeOnClassicSkin") capeOnClassicSkin: Boolean,
