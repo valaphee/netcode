@@ -39,22 +39,22 @@ sealed class Component
  * @author Kevin Ludwig
  */
 data class TextComponent(
-    @JsonProperty("text") var text: String
+    @get:JsonProperty("text") var text: String
 ) : Component()
 
 /**
  * @author Kevin Ludwig
  */
 data class TranslatableComponent(
-    @JsonProperty("translate") var name: String,
-    @JsonProperty("with") var arguments: List<Component> = emptyList()
+    @get:JsonProperty("translate") var name: String,
+    @get:JsonProperty("with") var arguments: List<Component> = emptyList()
 ) : Component()
 
 /**
  * @author Kevin Ludwig
  */
 data class ScoreComponent(
-    @JsonProperty("name") var name: String,
-    @JsonProperty("objective") var objective: String,
-    @JsonProperty("value") var value: String
+    @get:JsonProperty("name") var name: String,
+    @get:JsonProperty("objective") var objective: String,
+    @get:JsonProperty("value") var value: String
 ) : Component()

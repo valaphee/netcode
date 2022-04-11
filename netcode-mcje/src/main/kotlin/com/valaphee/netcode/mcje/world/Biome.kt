@@ -22,45 +22,45 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @author Kevin Ludwig
  */
 data class Biome(
-    @JsonProperty("category") val category: String,
-    @JsonProperty("depth") val depth: Float,
-    @JsonProperty("downfall") val downfall: Float,
-    @JsonProperty("effects") val effects: Effects,
-    @JsonProperty("precipitation") val precipitation: String,
-    @JsonProperty("scale") val scale: Float,
-    @JsonProperty("temperature") val temperature: Float,
-    @JsonProperty("temperature_modifier") val temperatureModifier: String?
+    @get:JsonProperty("category") val category: String,
+    @get:JsonProperty("depth") val depth: Float,
+    @get:JsonProperty("downfall") val downfall: Float,
+    @get:JsonProperty("effects") val effects: Effects,
+    @get:JsonProperty("precipitation") val precipitation: String,
+    @get:JsonProperty("scale") val scale: Float,
+    @get:JsonProperty("temperature") val temperature: Float,
+    @get:JsonProperty("temperature_modifier") val temperatureModifier: String?
 ) {
     data class Effects(
-        @JsonProperty("additions_sound") val additionsSound: AdditionsSound?,
-        @JsonProperty("ambient_sound") val ambientSound: String?,
-        @JsonProperty("fog_color") val fogColor: Int,
-        @JsonProperty("foliage_color") val foliageColor: Int?,
-        @JsonProperty("grass_color") val grassColor: Int?,
-        @JsonProperty("grass_color_modifier") val grassColorModifier: String?,
-        @JsonProperty("mood_sound") val moodSound: MoodSound?,
-        @JsonProperty("music") val music: Music?,
-        @JsonProperty("sky_color") val skyColor: Int,
-        @JsonProperty("water_color") val waterColor: Int,
-        @JsonProperty("water_fog_color") val waterFogColor: Int
+        @get:JsonProperty("additions_sound") val additionsSound: AdditionsSound?,
+        @get:JsonProperty("ambient_sound") val ambientSound: String?,
+        @get:JsonProperty("fog_color") val fogColor: Int,
+        @get:JsonProperty("foliage_color") val foliageColor: Int?,
+        @get:JsonProperty("grass_color") val grassColor: Int?,
+        @get:JsonProperty("grass_color_modifier") val grassColorModifier: String?,
+        @get:JsonProperty("mood_sound") val moodSound: MoodSound?,
+        @get:JsonProperty("music") val music: Music?,
+        @get:JsonProperty("sky_color") val skyColor: Int,
+        @get:JsonProperty("water_color") val waterColor: Int,
+        @get:JsonProperty("water_fog_color") val waterFogColor: Int
     ) {
         data class Music(
-            @JsonProperty("replace_current_music") val replaceCurrentMusic: Boolean,
-            @JsonProperty("sound") val sound: String,
-            @JsonProperty("max_delay") val maxDelay: Int,
-            @JsonProperty("min_delay") val minDelay: Int
+            @get:JsonProperty("replace_current_music") val replaceCurrentMusic: Boolean,
+            @get:JsonProperty("sound") val sound: String,
+            @get:JsonProperty("max_delay") val maxDelay: Int,
+            @get:JsonProperty("min_delay") val minDelay: Int
         )
 
         data class AdditionsSound(
-            @JsonProperty("sound") val sound: String,
-            @JsonProperty("tick_chance") val tickChance: Double
+            @get:JsonProperty("sound") val sound: String,
+            @get:JsonProperty("tick_chance") val tickChance: Double
         )
 
         data class MoodSound(
-            @JsonProperty("block_search_extent") val blockSearchExtent: Int,
-            @JsonProperty("offset") val offset: Double,
-            @JsonProperty("sound") val sound: String,
-            @JsonProperty("tick_delay") val tickDelay: Int
+            @get:JsonProperty("block_search_extent") val blockSearchExtent: Int,
+            @get:JsonProperty("offset") val offset: Double,
+            @get:JsonProperty("sound") val sound: String,
+            @get:JsonProperty("tick_delay") val tickDelay: Int
         )
     }
 }

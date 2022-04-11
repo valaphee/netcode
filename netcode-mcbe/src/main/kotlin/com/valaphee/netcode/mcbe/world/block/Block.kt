@@ -37,20 +37,20 @@ import com.valaphee.netcode.mcbe.pack.Data
 @JsonSerialize(using = Block.Serializer::class)
 class Block : Data {
     class Description(
-        @JsonProperty("identifier") val key: String,
-        @JsonProperty("properties") val properties: Map<String, List<Any>>? = null
+        @get:JsonProperty("identifier") val key: String,
+        @get:JsonProperty("properties") val properties: Map<String, List<Any>>? = null
     )
 
     class Permutation(
-        @JsonProperty("condition") val condition: String,
-        @JsonProperty("components") val components: Map<String, Any>
+        @get:JsonProperty("condition") val condition: String,
+        @get:JsonProperty("components") val components: Map<String, Any>
     )
 
     val description: Description
     val events: Map<String, Map<String, Any>>?
     val components: Map<String, Any>?
     val permutations: List<Permutation>?
-    @JsonIgnore val states: List<BlockState>
+    @get:JsonIgnore val states: List<BlockState>
 
     @JsonCreator
     constructor(

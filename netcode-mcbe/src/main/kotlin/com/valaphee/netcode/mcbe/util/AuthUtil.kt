@@ -74,7 +74,7 @@ fun parseAuthJws(authJws: String): Triple<Boolean, PublicKey, AuthExtra> {
         val authJwtConsumerBuilder = JwtConsumerBuilder().setJwsAlgorithmConstraints(AlgorithmConstraints.ConstraintType.PERMIT, "ES384").apply {
             if (verified && verificationKey != null) setVerificationKey(verificationKey) else verificationKey?.let {
                 setVerificationKey(it)
-                if (verificationKey == mojangKey) verified = true
+                if (verificationKey == key) verified = true
             } ?: setSkipSignatureVerification()
         }
         val authJwtClaims = try {
@@ -133,7 +133,7 @@ private val objectMapper = jacksonObjectMapper().apply { disable(Deserialization
 private val base64Encoder = Base64.getEncoder()
 private val base64Decoder = Base64.getDecoder()
 private val keyFactory = KeyFactory.getInstance("EC")
-private val mojangKey = generatePublicKey("MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V")
+private val key = generatePublicKey("MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V")
 private val keyPairGenerator = KeyPairGenerator.getInstance("EC")
 
 fun generatePublicKey(base64: String) = keyFactory.generatePublic(X509EncodedKeySpec(base64Decoder.decode(base64))) as ECPublicKey

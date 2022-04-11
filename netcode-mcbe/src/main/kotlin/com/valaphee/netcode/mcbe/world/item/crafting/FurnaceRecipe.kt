@@ -27,12 +27,12 @@ import com.valaphee.netcode.mcbe.world.item.ItemStack
  */
 @JsonTypeName("minecraft:recipe_furnace")
 data class FurnaceRecipe(
-    @JsonProperty("description") val description: Description,
-    @JsonProperty("input") @JsonSerialize(using = SingleIngredientSerializer::class) @JsonDeserialize(using = SingleIngredientDeserializer::class) val input: ItemStack,
-    @JsonProperty("output") @JsonSerialize(using = SingleItemSerializer::class) @JsonDeserialize(using = SingleItemDeserializer::class) val output: ItemStack,
-    @JsonProperty("tags") val tags: List<String>
+    @get:JsonProperty("description") val description: Description,
+    @get:JsonProperty("input") @get:JsonSerialize(using = SingleIngredientSerializer::class) @get:JsonDeserialize(using = SingleIngredientDeserializer::class) val input: ItemStack,
+    @get:JsonProperty("output") @get:JsonSerialize(using = SingleItemSerializer::class) @get:JsonDeserialize(using = SingleItemDeserializer::class) val output: ItemStack,
+    @get:JsonProperty("tags") val tags: List<String>
 ) : Recipe {
     data class Description(
-        @JsonProperty("identifier") val key: String
+        @get:JsonProperty("identifier") val key: String
     )
 }

@@ -53,17 +53,17 @@ class ServerWorldPacket(
     val flatGenerator: Boolean,
 ) : Packet<ServerPlayPacketHandler> {
     data class DimensionCodec(
-        @JsonProperty("minecraft:dimension_type") val dimensions: Registry<Dimension>,
-        @JsonProperty("minecraft:worldgen/biome") val biomes: Registry<Biome>
+        @get:JsonProperty("minecraft:dimension_type") val dimensions: Registry<Dimension>,
+        @get:JsonProperty("minecraft:worldgen/biome") val biomes: Registry<Biome>
     ) {
         data class Registry<T>(
-            @JsonProperty("type") val key: String,
-            @JsonProperty("value") val value: List<Entry<T>>
+            @get:JsonProperty("type") val key: String,
+            @get:JsonProperty("value") val value: List<Entry<T>>
         ) {
             data class Entry<T>(
-                @JsonProperty("id") val id: Int,
-                @JsonProperty("name") val key: String,
-                @JsonProperty("element") val value: T
+                @get:JsonProperty("id") val id: Int,
+                @get:JsonProperty("name") val key: String,
+                @get:JsonProperty("element") val value: T
             )
         }
     }

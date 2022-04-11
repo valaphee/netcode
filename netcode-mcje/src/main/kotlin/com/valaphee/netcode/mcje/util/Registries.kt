@@ -27,18 +27,18 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
  * @author Kevin Ludwig
  */
 class Registries(
-    @JsonProperty("minecraft:sound_event") val sounds: Registry,
-    @JsonProperty("minecraft:mob_effect") val effects: Registry,
-    @JsonProperty("minecraft:block") val blocks: Registry,
-    @JsonProperty("minecraft:enchantment") val enchantments: Registry,
-    @JsonProperty("minecraft:entity_type") val entityTypes: Registry,
-    @JsonProperty("minecraft:item") val items: Registry,
-    @JsonProperty("minecraft:particle_type") val particleTypes: Registry,
-    @JsonProperty("minecraft:motive") val motive: Registry,
-    @JsonProperty("minecraft:menu") val windowTypes: Registry,
-    @JsonProperty("minecraft:recipe_serializer") val recipeTypes: Registry,
+    @get:JsonProperty("minecraft:sound_event") val sounds: Registry,
+    @get:JsonProperty("minecraft:mob_effect") val effects: Registry,
+    @get:JsonProperty("minecraft:block") val blocks: Registry,
+    @get:JsonProperty("minecraft:enchantment") val enchantments: Registry,
+    @get:JsonProperty("minecraft:entity_type") val entityTypes: Registry,
+    @get:JsonProperty("minecraft:item") val items: Registry,
+    @get:JsonProperty("minecraft:particle_type") val particleTypes: Registry,
+    @get:JsonProperty("minecraft:motive") val motive: Registry,
+    @get:JsonProperty("minecraft:menu") val windowTypes: Registry,
+    @get:JsonProperty("minecraft:recipe_serializer") val recipeTypes: Registry,
 ) {
-    @JsonIgnore lateinit var blockStates: com.valaphee.netcode.mcje.util.Registry<NamespacedKey>
+    @get:JsonIgnore lateinit var blockStates: com.valaphee.netcode.mcje.util.Registry<NamespacedKey>
 
     @JsonDeserialize(using = Registry.Deserializer::class)
     class Registry : com.valaphee.netcode.mcje.util.Registry<NamespacedKey>() {
@@ -52,13 +52,13 @@ class Registries(
     }
 
     class Block(
-        @JsonProperty("properties") val properties: Map<String, List<String>> = emptyMap(),
-        @JsonProperty("states") val states: List<State>
+        @get:JsonProperty("properties") val properties: Map<String, List<String>> = emptyMap(),
+        @get:JsonProperty("states") val states: List<State>
     ) {
         class State(
-            @JsonProperty("id") val id: Int,
-            @JsonProperty("default") val default: Boolean = false,
-            @JsonProperty("properties") val properties: Map<String, String> = emptyMap()
+            @get:JsonProperty("id") val id: Int,
+            @get:JsonProperty("default") val default: Boolean = false,
+            @get:JsonProperty("properties") val properties: Map<String, String> = emptyMap()
         )
     }
 }

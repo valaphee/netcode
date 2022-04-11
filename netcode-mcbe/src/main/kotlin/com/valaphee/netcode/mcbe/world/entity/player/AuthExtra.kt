@@ -23,8 +23,8 @@ import java.util.UUID
  * @author Kevin Ludwig
  */
 data class AuthExtra(
-    @JsonProperty("titleId") val titleId: String?,
-    @JsonProperty("XUID") val xboxUserId: String,
-    @JsonProperty("identity") val userId: UUID,
-    @JsonProperty("displayName") val userName: String,
+    @get:JsonProperty("titleId") val titleId: String?,
+    @get:JsonProperty("XUID") val xboxUserId: String,
+    @get:JsonProperty("identity") val userId: UUID,
+    @get:JsonProperty("displayName") val userName: String,
 )

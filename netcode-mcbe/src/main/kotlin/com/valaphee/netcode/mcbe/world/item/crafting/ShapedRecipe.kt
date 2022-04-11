@@ -29,17 +29,17 @@ import java.util.UUID
  */
 @JsonTypeName("minecraft:recipe_shaped")
 data class ShapedRecipe(
-    @JsonProperty("description") val description: Description,
-    @JsonProperty("key") @JsonSerialize(contentUsing = IngredientSerializer::class) @JsonDeserialize(contentUsing = IngredientDeserializer::class) val key: Map<Char, ItemStack>,
-    @JsonProperty("pattern") val pattern: List<String>,
-    @JsonProperty("result") val output: List<ItemStack>,
-    @JsonIgnore val id: UUID = UUID.randomUUID(),
-    @JsonProperty("tags") val tags: List<String>,
-    @JsonProperty("priority") val priority: Int = 0,
-    @JsonIgnore val netId: Int = 0
+    @get:JsonProperty("description") val description: Description,
+    @get:JsonProperty("key") @get:JsonSerialize(contentUsing = IngredientSerializer::class) @get:JsonDeserialize(contentUsing = IngredientDeserializer::class) val key: Map<Char, ItemStack>,
+    @get:JsonProperty("pattern") val pattern: List<String>,
+    @get:JsonProperty("result") val output: List<ItemStack>,
+    @get:JsonIgnore val id: UUID = UUID.randomUUID(),
+    @get:JsonProperty("tags") val tags: List<String>,
+    @get:JsonProperty("priority") val priority: Int = 0,
+    @get:JsonIgnore val netId: Int = 0
 ) : Recipe {
     data class Description(
-        @JsonProperty("identifier") val key: String
+        @get:JsonProperty("identifier") val key: String
     )
 
     val width: Int

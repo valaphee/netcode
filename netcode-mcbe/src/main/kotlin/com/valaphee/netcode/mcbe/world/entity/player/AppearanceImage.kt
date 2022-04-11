@@ -29,9 +29,9 @@ import java.awt.image.DataBufferByte
  * @author Kevin Ludwig
  */
 class AppearanceImage(
-    @JsonProperty("ImageWidth") val width: Int?,
-    @JsonProperty("ImageHeight") val height: Int?,
-    @JsonProperty("Data") val data: ByteArray
+    @get:JsonProperty("ImageWidth") val width: Int?,
+    @get:JsonProperty("ImageHeight") val height: Int?,
+    @get:JsonProperty("Data") val data: ByteArray
 ) {
     val _width: Int
     val _height: Int
