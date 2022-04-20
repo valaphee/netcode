@@ -60,7 +60,7 @@ class WorldPacket(
     val gameMode: GameMode,
     var position: Float3, // needed for je-be protocol translation
     var rotation: Float2, // needed for je-be protocol translation
-    val seed: Int,
+    val seed: Long,
     val biomeType: BiomeType,
     val biomeName: String,
     val dimension: Dimension,
@@ -147,7 +147,7 @@ class WorldPacket(
         buffer.writeVarInt(gameMode.ordinal)
         buffer.writeFloat3(position)
         buffer.writeFloat2(rotation)
-        buffer.writeVarInt(seed)
+        if (version >= 503) buffer.writeLongLE(seed) else buffer.writeVarInt(seed.toInt())
         if (version >= 407) {
             buffer.writeShortLE(biomeType.ordinal)
             buffer.writeString(biomeName)
@@ -255,7 +255,7 @@ object WorldPacketReader : PacketReader {
         val gameMode = GameMode.values()[buffer.readVarInt()]
         val position = buffer.readFloat3()
         val rotation = buffer.readFloat2()
-        val seed = buffer.readVarInt()
+        val seed = if (version >= 503) buffer.readLongLE() else buffer.readVarInt().toLong()
         val biomeType: WorldPacket.BiomeType
         val biomeName: String
         if (version >= 407) {

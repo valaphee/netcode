@@ -16,5 +16,5 @@
 
 package com.valaphee.netcode.mcbe
 
-const val latestVersion = "1.18.10"
-const val latestProtocolVersion = 486
+const val latestVersion = "1.18.30"
+const val latestProtocolVersion = 503

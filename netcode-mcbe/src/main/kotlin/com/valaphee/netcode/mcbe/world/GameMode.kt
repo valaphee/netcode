@@ -28,7 +28,7 @@ enum class GameMode(
     SurvivalViewer,
     CreativeViewer,
     Default("Default"),
-    WorldDefault;
+    Spectator;
 
     companion object {
         private val byKey = values().associateBy { it.key }

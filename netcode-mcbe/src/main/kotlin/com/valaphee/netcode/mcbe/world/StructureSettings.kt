@@ -27,6 +27,7 @@ data class StructureSettings(
     val paletteName: String,
     val ignoringEntities: Boolean,
     val ignoringBlocks: Boolean,
+    val disableTicking: Boolean,
     val size: Int3,
     val offset: Int3,
     val lastEditedByEntityId: Long,
@@ -51,9 +52,11 @@ data class StructureSettings(
     }
 }
 
-fun PacketBuffer.readStructureSettingsPre440() = StructureSettings(readString(), readBoolean(), readBoolean(), readInt3UnsignedY(), readInt3UnsignedY(), readVarLong(), StructureSettings.Rotation.values()[readUnsignedByte().toInt()], StructureSettings.Mirror.values()[readUnsignedByte().toInt()], StructureSettings.AnimationMode.None, 0.0f, readFloatLE(), readIntLE(), readFloat3())
+fun PacketBuffer.readStructureSettingsPre440() = StructureSettings(readString(), readBoolean(), readBoolean(), true, readInt3UnsignedY(), readInt3UnsignedY(), readVarLong(), StructureSettings.Rotation.values()[readUnsignedByte().toInt()], StructureSettings.Mirror.values()[readUnsignedByte().toInt()], StructureSettings.AnimationMode.None, 0.0f, readFloatLE(), readIntLE(), readFloat3())
 
-fun PacketBuffer.readStructureSettings() = StructureSettings(readString(), readBoolean(), readBoolean(), readInt3UnsignedY(), readInt3UnsignedY(), readVarLong(), StructureSettings.Rotation.values()[readUnsignedByte().toInt()], StructureSettings.Mirror.values()[readUnsignedByte().toInt()], StructureSettings.AnimationMode.values()[readUnsignedByte().toInt()], readFloatLE(), readFloatLE(), readIntLE(), readFloat3())
+fun PacketBuffer.readStructureSettingsPre503() = StructureSettings(readString(), readBoolean(), readBoolean(), true, readInt3UnsignedY(), readInt3UnsignedY(), readVarLong(), StructureSettings.Rotation.values()[readUnsignedByte().toInt()], StructureSettings.Mirror.values()[readUnsignedByte().toInt()], StructureSettings.AnimationMode.values()[readUnsignedByte().toInt()], readFloatLE(), readFloatLE(), readIntLE(), readFloat3())
+
+fun PacketBuffer.readStructureSettings() = StructureSettings(readString(), readBoolean(), readBoolean(), readBoolean(), readInt3UnsignedY(), readInt3UnsignedY(), readVarLong(), StructureSettings.Rotation.values()[readUnsignedByte().toInt()], StructureSettings.Mirror.values()[readUnsignedByte().toInt()], StructureSettings.AnimationMode.values()[readUnsignedByte().toInt()], readFloatLE(), readFloatLE(), readIntLE(), readFloat3())
 
 fun PacketBuffer.writeStructureSettingsPre440(value: StructureSettings) {
     writeString(value.paletteName)
@@ -69,10 +72,27 @@ fun PacketBuffer.writeStructureSettingsPre440(value: StructureSettings) {
     writeFloat3(value.pivot)
 }
 
+fun PacketBuffer.writeStructureSettingsPre503(value: StructureSettings) {
+    writeString(value.paletteName)
+    writeBoolean(value.ignoringEntities)
+    writeBoolean(value.ignoringBlocks)
+    writeInt3UnsignedY(value.size)
+    writeInt3UnsignedY(value.offset)
+    writeVarLong(value.lastEditedByEntityId)
+    writeByte(value.rotation.ordinal)
+    writeByte(value.mirror.ordinal)
+    writeByte(value.animationMode.ordinal)
+    writeFloatLE(value.animationTime)
+    writeFloatLE(value.integrityValue)
+    writeIntLE(value.integritySeed)
+    writeFloat3(value.pivot)
+}
+
 fun PacketBuffer.writeStructureSettings(value: StructureSettings) {
     writeString(value.paletteName)
     writeBoolean(value.ignoringEntities)
     writeBoolean(value.ignoringBlocks)
+    writeBoolean(value.disableTicking)
     writeInt3UnsignedY(value.size)
     writeInt3UnsignedY(value.offset)
     writeVarLong(value.lastEditedByEntityId)

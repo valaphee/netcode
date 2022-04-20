@@ -58,7 +58,8 @@ enum class WindowType(
     Cartography(30, 3),
     Hud(31),
     JigsawEditor(32),
-    SmithingTable(33, 3);
+    SmithingTable(33, 3),
+    ChestBoat(34, 9 * 3);
 
     companion object {
         private val byId = Int2ObjectOpenHashMap<WindowType>(values().size).apply { values().forEach { this[it.id] = it } }

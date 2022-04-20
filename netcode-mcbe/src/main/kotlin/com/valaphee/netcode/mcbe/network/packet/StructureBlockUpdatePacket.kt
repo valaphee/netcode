@@ -26,8 +26,10 @@ import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.StructureSettings
 import com.valaphee.netcode.mcbe.world.readStructureSettings
 import com.valaphee.netcode.mcbe.world.readStructureSettingsPre440
+import com.valaphee.netcode.mcbe.world.readStructureSettingsPre503
 import com.valaphee.netcode.mcbe.world.writeStructureSettings
 import com.valaphee.netcode.mcbe.world.writeStructureSettingsPre440
+import com.valaphee.netcode.mcbe.world.writeStructureSettingsPre503
 
 /**
  * @author Kevin Ludwig
@@ -61,7 +63,7 @@ class StructureBlockUpdatePacket(
         buffer.writeBoolean(includingPlayers)
         buffer.writeBoolean(showBoundingBox)
         buffer.writeVarInt(mode.ordinal)
-        if (version >= 440) buffer.writeStructureSettings(settings) else buffer.writeStructureSettingsPre440(settings)
+        if (version >= 503) buffer.writeStructureSettings(settings) else if (version >= 440) buffer.writeStructureSettingsPre503(settings) else buffer.writeStructureSettingsPre440(settings)
         buffer.writeVarInt(redstoneSaveMode.ordinal)
         buffer.writeBoolean(powered)
     }
@@ -82,7 +84,7 @@ object StructureBlockUpdatePacketReader : PacketReader {
         buffer.readBoolean(),
         buffer.readBoolean(),
         StructureBlockUpdatePacket.Mode.values()[buffer.readVarInt()],
-        if (version >= 440) buffer.readStructureSettings() else buffer.readStructureSettingsPre440(),
+        if (version >= 503) buffer.readStructureSettings() else if (version >= 440) buffer.readStructureSettingsPre503() else buffer.readStructureSettingsPre440(),
         StructureBlockUpdatePacket.RedstoneSaveMode.values()[buffer.readVarInt()],
         buffer.readBoolean()
     )

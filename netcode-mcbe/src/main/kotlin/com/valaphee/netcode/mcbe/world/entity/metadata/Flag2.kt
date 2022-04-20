@@ -56,5 +56,9 @@ enum class Flag2 {
     IsAscendableBlock,
     OverDescendalbeBlock,
     Croaking,
-    EatMob
+    EatMob,
+    JumpGoalJump,
+    Emerging,
+    Sniffing,
+    Digging
 }

@@ -149,5 +149,8 @@ class MetadataField<T>(
         val BaseRuntimeId = MetadataField(122, MetadataType.Int)
         val DefineProperties = MetadataField(123, MetadataType.Int)
         val UpdateProperties = MetadataField(124, MetadataType.Int)
+        val MovementSoundDistanceOffset = MetadataField(125, MetadataType.Int)
+        val HeartbeatIntervalTicks = MetadataField(126, MetadataType.Int)
+        val HeartbeatSoundEvent = MetadataField(127, MetadataType.Int)
     }
 }

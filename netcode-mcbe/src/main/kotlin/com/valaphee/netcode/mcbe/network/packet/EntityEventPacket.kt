@@ -86,7 +86,8 @@ class EntityEventPacket(
         SummonAgent,
         FinishedChargingCrossbow,
         LandedOnGround,
-        GrowUp;
+        GrowUp,
+        VibrationDetected;
 
         companion object {
             val registry = Registry<Event>().apply {

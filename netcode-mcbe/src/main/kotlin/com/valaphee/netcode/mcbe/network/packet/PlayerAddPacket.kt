@@ -25,6 +25,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.world.GameMode
 import com.valaphee.netcode.mcbe.world.WorldFlag
 import com.valaphee.netcode.mcbe.world.entity.Link
 import com.valaphee.netcode.mcbe.world.entity.metadata.Metadata
@@ -58,6 +59,7 @@ class PlayerAddPacket(
     val rotation: Float2,
     val headRotationYaw: Float,
     val itemStackInHand: ItemStack?,
+    val gameMode: GameMode?,
     val metadata: Metadata,
     val playerFlags: Set<PlayerFlag>,
     val permission: Permission,
@@ -66,7 +68,7 @@ class PlayerAddPacket(
     val customFlags: Int,
     val links: List<Link>,
     val deviceId: String,
-    val operatingSystem: User.OperatingSystem
+    val operatingSystem: User.OperatingSystem,
 ) : Packet() {
     override val id get() = 0x0C
 
@@ -81,6 +83,7 @@ class PlayerAddPacket(
         buffer.writeFloat2(rotation)
         buffer.writeFloatLE(headRotationYaw)
         if (version >= 431) buffer.writeItemStack(itemStackInHand) else buffer.writeItemStackPre431(itemStackInHand)
+        if (version >= 503) buffer.writeVarInt(gameMode!!.ordinal)
         metadata.writeToBuffer(buffer)
         buffer.writeVarUIntFlags(playerFlags)
         buffer.writeVarUInt(permission.ordinal)
@@ -114,6 +117,7 @@ object PlayerAddPacketReader : PacketReader {
         buffer.readFloat2(),
         buffer.readFloatLE(),
         if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431(),
+        if (version >= 503) GameMode.values()[buffer.readVarInt()] else null,
         Metadata().apply { readFromBuffer(buffer) },
         buffer.readVarUIntFlags(),
         Permission.values()[buffer.readVarUInt()],
