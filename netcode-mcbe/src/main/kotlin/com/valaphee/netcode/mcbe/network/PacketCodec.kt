@@ -54,6 +54,7 @@ import com.valaphee.netcode.mcbe.network.packet.DebugPacketReader
 import com.valaphee.netcode.mcbe.network.packet.DebugRendererPacketReader
 import com.valaphee.netcode.mcbe.network.packet.DefaultGameModePacketReader
 import com.valaphee.netcode.mcbe.network.packet.DifficultyPacketReader
+import com.valaphee.netcode.mcbe.network.packet.DimensionDataPacketReader
 import com.valaphee.netcode.mcbe.network.packet.DimensionPacketReader
 import com.valaphee.netcode.mcbe.network.packet.DisconnectPacketReader
 import com.valaphee.netcode.mcbe.network.packet.EducationUriResourcePacketReader
@@ -75,6 +76,7 @@ import com.valaphee.netcode.mcbe.network.packet.EntityMetadataPacketReader
 import com.valaphee.netcode.mcbe.network.packet.EntityMoveRotatePacketReader
 import com.valaphee.netcode.mcbe.network.packet.EntityPickPacketReader
 import com.valaphee.netcode.mcbe.network.packet.EntityPropertiesPacketReader
+import com.valaphee.netcode.mcbe.network.packet.EntityPropertyPacketReader
 import com.valaphee.netcode.mcbe.network.packet.EntityRemovePacketReader
 import com.valaphee.netcode.mcbe.network.packet.EntityTeleportPacketReader
 import com.valaphee.netcode.mcbe.network.packet.EntityVelocityPacketReader
@@ -403,6 +405,10 @@ class PacketCodec(
             //this[0xB0] = ItemCooldownPacketReader
             //this[0xB1] = ScriptMessagePacketReader
             //this[0xB2] = CodeBuilderSourcePacketReader
+            //this[0xB3] = TickingAreasLoadStatusPacket
+            this[0xB4] = DimensionDataPacketReader
+            //this[0xB5] = AgentActionEventPacket
+            this[0xB6] = EntityPropertyPacketReader
         }
         private val clientReaders = readers.filterValues { it::class.java.getMethod("read", PacketBuffer::class.java, Int::class.java).returnType.kotlin.findAnnotation<Restrict>()?.value?.contains(Restriction.ToClient) ?: true }
         private val serverReaders = readers.filterValues { it::class.java.getMethod("read", PacketBuffer::class.java, Int::class.java).returnType.kotlin.findAnnotation<Restrict>()?.value?.contains(Restriction.ToServer) ?: true }

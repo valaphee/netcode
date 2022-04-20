@@ -239,6 +239,8 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerQueryPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerQueryPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerRecipeBookPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerRecipeBookPacketReader
+import com.valaphee.netcode.mcje.network.packet.play.ServerRecipesPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerRecipesPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerResourcePackPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerResourcePackPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerRespawnPacket
@@ -482,6 +484,7 @@ enum class Protocols(
             .register(ServerEntityTeleportPacket::class        , ServerEntityTeleportPacketReader          , 754 to 0x56, 758 to 0x62)
             .register(ServerEntityAttributesPacket::class      , ServerEntityAttributesPacketReader        , 754 to 0x58, 758 to 0x64)
             .register(ServerEntityEffectApplyPacket::class     , ServerEntityEffectApplyPacketReader       , 754 to 0x59, 758 to 0x65)
+            .register(ServerRecipesPacket::class               , ServerRecipesPacketReader                 , 754 to 0x5A, 758 to 0x66)
             .build()
     )
 }

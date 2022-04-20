@@ -78,6 +78,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerListHeaderFoote
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerListPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerQueryPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerRecipeBookPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerRecipesPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerResourcePackPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerRespawnPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerScorePacket
@@ -277,5 +278,7 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun entityAttributes(packet: ServerEntityAttributesPacket) = other(packet)
 
-    fun entityEffectApply(packet: ServerEntityEffectApplyPacket)
+    fun entityEffectApply(packet: ServerEntityEffectApplyPacket) = other(packet)
+
+    fun recipes(packet: ServerRecipesPacket) = other(packet)
 }

@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.world.ParticleData
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
 import com.valaphee.netcode.mcje.world.item.writeItemStack
-import com.valaphee.netcode.mcje.world.readParticle
+import com.valaphee.netcode.mcje.world.readParticleData
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import net.kyori.adventure.text.Component
@@ -176,7 +176,7 @@ interface MetadataType<T> {
         }
 
         val Particle = object : MetadataType<ParticleData> {
-            override fun read(buffer: PacketBuffer) = buffer.readParticle(checkNotNull(buffer.registries.particleTypes[buffer.readVarInt()]))
+            override fun read(buffer: PacketBuffer) = buffer.readParticleData(checkNotNull(buffer.registries.particleTypes[buffer.readVarInt()]))
 
             override fun write(buffer: PacketBuffer, value: Any?) {
                 buffer.writeVarInt(buffer.registries.particleTypes.getId((value as ParticleData).type))

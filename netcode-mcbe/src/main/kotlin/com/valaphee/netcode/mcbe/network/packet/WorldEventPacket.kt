@@ -150,6 +150,7 @@ class WorldEventPacket(
 
         AllPlayersSleeping,
         JumpPrevented,
+        SleepingPlayers,
 
         // more particle
         ParticleBubble,
@@ -552,9 +553,12 @@ class WorldEventPacket(
                 this[particleOffset + 35] = ParticleSculkShriek
                 this[particleLegacyOffset + 82] = ParticleShriek
             }
-            private val registryPre503 = registryPre471.clone().apply {
+            private val registryPre475 = registryPre465.clone().apply {
                 this[particleOffset + 36] = ParticleSculkCatalystBloom
                 this[particleLegacyOffset + 83] = ParticleSculkSoul
+            }
+            private val registryPre503 = registryPre475.clone().apply {
+                this[9801] = SleepingPlayers
             }
             private val registry = registryPre503.clone().apply {
                 this[particleOffset + 37] = ParticleSculkCharge
@@ -563,7 +567,8 @@ class WorldEventPacket(
 
             fun registryByVersion(version: Int) =
                 if (version >= 503) registry
-                else if (version >= 471) registryPre503
+                else if (version >= 475) registryPre503
+                else if (version >= 471) registryPre475
                 else if (version >= 465) registryPre471
                 else if (version >= 448) registryPre465
                 else if (version >= 440) registryPre448

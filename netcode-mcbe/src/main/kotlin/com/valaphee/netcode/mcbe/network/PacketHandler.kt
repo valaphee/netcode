@@ -16,7 +16,6 @@
 
 package com.valaphee.netcode.mcbe.network
 
-import com.valaphee.netcode.network.ProtocolHandler
 import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsPacket
 import com.valaphee.netcode.mcbe.network.packet.AnvilDamagePacket
 import com.valaphee.netcode.mcbe.network.packet.AppearancePacket
@@ -54,6 +53,7 @@ import com.valaphee.netcode.mcbe.network.packet.DebugPacket
 import com.valaphee.netcode.mcbe.network.packet.DebugRendererPacket
 import com.valaphee.netcode.mcbe.network.packet.DefaultGameModePacket
 import com.valaphee.netcode.mcbe.network.packet.DifficultyPacket
+import com.valaphee.netcode.mcbe.network.packet.DimensionDataPacket
 import com.valaphee.netcode.mcbe.network.packet.DimensionPacket
 import com.valaphee.netcode.mcbe.network.packet.DisconnectPacket
 import com.valaphee.netcode.mcbe.network.packet.EducationUriResourcePacket
@@ -75,6 +75,7 @@ import com.valaphee.netcode.mcbe.network.packet.EntityMetadataPacket
 import com.valaphee.netcode.mcbe.network.packet.EntityMoveRotatePacket
 import com.valaphee.netcode.mcbe.network.packet.EntityPickPacket
 import com.valaphee.netcode.mcbe.network.packet.EntityPropertiesPacket
+import com.valaphee.netcode.mcbe.network.packet.EntityPropertyPacket
 import com.valaphee.netcode.mcbe.network.packet.EntityRemovePacket
 import com.valaphee.netcode.mcbe.network.packet.EntityTeleportPacket
 import com.valaphee.netcode.mcbe.network.packet.EntityVelocityPacket
@@ -183,6 +184,7 @@ import com.valaphee.netcode.mcbe.network.packet.WindowPropertyPacket
 import com.valaphee.netcode.mcbe.network.packet.WorldEventPacket
 import com.valaphee.netcode.mcbe.network.packet.WorldGenericEventPacket
 import com.valaphee.netcode.mcbe.network.packet.WorldPacket
+import com.valaphee.netcode.network.ProtocolHandler
 
 /**
  * @author Kevin Ludwig
@@ -521,4 +523,8 @@ interface PacketHandler : ProtocolHandler {
     fun subChunk(packet: SubChunkPacket) = other(packet)
 
     fun subChunkRequest(packet: SubChunkRequestPacket) = other(packet)
+
+    fun dimensionData(packet: DimensionDataPacket) = other(packet)
+
+    fun entityProperty(packet: EntityPropertyPacket) = other(packet)
 }

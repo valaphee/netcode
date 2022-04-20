@@ -23,7 +23,7 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.ParticleData
-import com.valaphee.netcode.mcje.world.readParticle
+import com.valaphee.netcode.mcje.world.readParticleData
 
 /**
  * @author Kevin Ludwig
@@ -47,6 +47,8 @@ class ServerParticlePacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.particle(this)
+
+    override fun toString() = "ServerParticlePacket(data=$data, longDistance=$longDistance, position=$position, offset=$offset, speed=$speed, count=$count)"
 }
 
 /**
@@ -60,7 +62,7 @@ object ServerParticlePacketReader : PacketReader {
         val offset = buffer.readFloat3()
         val speed = buffer.readFloat()
         val count = buffer.readInt()
-        val data = buffer.readParticle(type)
+        val data = buffer.readParticleData(type)
         return ServerParticlePacket(data, longDistance, position, offset, speed, count)
     }
 }
