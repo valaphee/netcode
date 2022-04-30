@@ -30,14 +30,14 @@ data class Appearance constructor(
     val skinId: String,
     val playFabId: String?,
     val skinResourcePatch: ByteArray,
-    /*@JsonUnwrapped(prefix = "Skin")*/@JsonIgnore val skinImage: AppearanceImage,
+    /*@JsonUnwrapped(prefix = "Skin")*/@get:JsonIgnore val skinImage: AppearanceImage,
     val animations: List<Animation>,
-    /*@JsonUnwrapped(prefix = "Cape")*/@JsonIgnore val capeImage: AppearanceImage,
+    /*@JsonUnwrapped(prefix = "Cape")*/@get:JsonIgnore val capeImage: AppearanceImage,
     val geometryData: ByteArray,
     val geometryDataEngineVersion: String?,
     val animationData: ByteArray,
     val capeId: String,
-    @JsonIgnore var id: String?,
+    @get:JsonIgnore var id: String?,
     val armSize: String,
     val skinColor: String,
     val personaPieces: List<PersonaPiece>,
@@ -45,8 +45,8 @@ data class Appearance constructor(
     val premiumSkin: Boolean,
     val personaSkin: Boolean,
     val capeOnClassicSkin: Boolean,
-    @JsonIgnore val primaryUser: Boolean,
-    @JsonIgnore var trusted: Boolean
+    @get:JsonIgnore val primaryUser: Boolean,
+    @get:JsonIgnore var trusted: Boolean
 ) {
     data class Animation constructor(
         @JsonIgnore val image: AppearanceImage,

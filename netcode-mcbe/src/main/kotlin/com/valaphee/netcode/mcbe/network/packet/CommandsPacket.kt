@@ -92,7 +92,7 @@ class CommandsPacket(
                 buffer.writeVarUInt(overload.size)
                 overload.forEach { parameter ->
                     buffer.writeString(parameter.name)
-                    buffer.writeIntLE(parameter.postfix?.let { postfixes.indexOf(it) or parameterFlagPostfix } ?: parameter.enumeration?.let { (if (it.soft) softEnumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagSoftEnumeration else enumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagEnumeration) or parameterFlagValid } ?: parameter.type?.let { (if (version >= 419) Parameter.Type.registry else Parameter.Type.registryPre419).getId(it) or parameterFlagValid } ?: error("Unknown type in ${parameter.name}"))
+                    buffer.writeIntLE(parameter.postfix?.let { postfixes.indexOf(it) or parameterFlagPostfix } ?: parameter.enumeration?.let { (if (it.soft) softEnumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagSoftEnumeration else enumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagEnumeration) or parameterFlagValid } ?: parameter.type?.let { Parameter.Type.registryByVersion(version).getId(it) or parameterFlagValid } ?: error("Unknown type in ${parameter.name}"))
                     buffer.writeBoolean(parameter.optional)
                     buffer.writeByteFlags(parameter.options)
                 }
@@ -173,7 +173,7 @@ object CommandsPacketReader : PacketReader {
                         it.postfix -> postfix = postfixes[it.index]
                         it.enumeration -> enumeration = enumerations[it.index]
                         it.softEnumeration -> enumeration = softEnumerations[it.index]
-                        else -> type = if (version >= 419) Parameter.Type.registry[it.index] else Parameter.Type.registryPre419[it.index]
+                        else -> type = Parameter.Type.registryByVersion(version)[it.index]
                     }
                     Parameter(it.name, it.optional, it.options, enumeration, postfix, type)
                 }

@@ -40,4 +40,6 @@ data class ShapelessRecipe(
     data class Description(
         @get:JsonProperty("identifier") val key: String
     )
+
+    constructor(id: UUID, key: String, input: List<ItemStack>, output: ItemStack, tag: String, priority: Int, netId: Int) : this(Description(key), input, output, id, listOf(tag), priority, netId)
 }

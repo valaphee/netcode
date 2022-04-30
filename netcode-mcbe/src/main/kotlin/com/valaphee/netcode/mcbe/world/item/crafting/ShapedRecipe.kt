@@ -16,6 +16,7 @@
 
 package com.valaphee.netcode.mcbe.world.item.crafting
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
@@ -28,31 +29,61 @@ import java.util.UUID
  * @author Kevin Ludwig
  */
 @JsonTypeName("minecraft:recipe_shaped")
-data class ShapedRecipe(
-    @get:JsonProperty("description") val description: Description,
-    @get:JsonProperty("key") @get:JsonSerialize(contentUsing = IngredientSerializer::class) @get:JsonDeserialize(contentUsing = IngredientDeserializer::class) val key: Map<Char, ItemStack>,
-    @get:JsonProperty("pattern") val pattern: List<String>,
-    @get:JsonProperty("result") val output: List<ItemStack>,
-    @get:JsonIgnore val id: UUID = UUID.randomUUID(),
-    @get:JsonProperty("tags") val tags: List<String>,
-    @get:JsonProperty("priority") val priority: Int = 0,
-    @get:JsonIgnore val netId: Int = 0
-) : Recipe {
+class ShapedRecipe : Recipe {
     data class Description(
         @get:JsonProperty("identifier") val key: String
     )
 
-    val width: Int
-    val height = pattern.size
-    val input: Array<ItemStack?>
+    val description: Description
+    val key: Map<Char, ItemStack>
+    val pattern: List<String>
+    @get:JsonIgnore var width: Int
+    @get:JsonIgnore val height: Int
+    @get:JsonIgnore var input: Array<ItemStack?>
+    val output: List<ItemStack>
+    @get:JsonIgnore val id: UUID
+    val tags: List<String>
+    val priority: Int
+    @get:JsonIgnore val netId: Int
 
-    init {
+    @JsonCreator
+    constructor(
+        @JsonProperty("description") description: Description,
+        @JsonProperty("key") @JsonSerialize(contentUsing = IngredientSerializer::class) @JsonDeserialize(contentUsing = IngredientDeserializer::class) key: Map<Char, ItemStack>,
+        @JsonProperty("pattern") pattern: List<String>,
+        @JsonProperty("result") output: List<ItemStack>,
+        @JsonProperty("tags") tags: List<String>,
+        @JsonProperty("priority") priority: Int = 0,
+    ) {
+        this.description = description
+        this.key = key
+        this.pattern = pattern
         var width = 0
         pattern.forEach {
             val patternRowWidth = it.length
             if (patternRowWidth > width) width = patternRowWidth
         }
         this.width = width
+        this.height = pattern.size
         input = arrayOfNulls<ItemStack?>(width * height).apply { pattern.forEachIndexed { i, patternRow -> patternRow.forEachIndexed { j, patternColumn -> this[i * width + j] = key[patternColumn] } } }
+        this.output = output
+        id = UUID.randomUUID()
+        this.tags = tags
+        this.priority = priority
+        netId = 0
+    }
+
+    constructor(id: UUID, key: String, width: Int, height: Int, input: Array<ItemStack?>, output: List<ItemStack>, tag: String, priority: Int, netId: Int) {
+        this.description = Description(key)
+        this.key = emptyMap()
+        this.pattern = emptyList()
+        this.width = width
+        this.height = height
+        this.input = input
+        this.output = output
+        this.id = id
+        this.tags = listOf(tag)
+        this.priority = priority
+        this.netId = netId
     }
 }

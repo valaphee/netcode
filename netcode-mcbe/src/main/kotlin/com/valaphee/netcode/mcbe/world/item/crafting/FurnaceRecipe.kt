@@ -35,4 +35,6 @@ data class FurnaceRecipe(
     data class Description(
         @get:JsonProperty("identifier") val key: String
     )
+
+    constructor(input: ItemStack, output: ItemStack, tag: String) : this(Description(""), input, output, listOf(tag))
 }

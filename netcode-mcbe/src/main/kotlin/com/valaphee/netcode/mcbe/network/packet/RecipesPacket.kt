@@ -145,7 +145,7 @@ object RecipesPacketReader : PacketReader {
             when (val type = buffer.readVarInt()) {
                 0, 5, 6 -> ShapelessRecipe(ShapelessRecipe.Description(buffer.readString()), safeList(buffer.readVarUInt()) { checkNotNull(buffer.readIngredient()) }, safeList(buffer.readVarUInt()) { checkNotNull(if (version >= 431) buffer.readItemStackInstance() else buffer.readItemStackPre431()) }.single(), buffer.readUuid(), listOf(buffer.readString()), buffer.readVarInt(), if (version >= 407) buffer.readVarUInt() else 0)
                 1, 7 -> {
-                    val name = buffer.readString()
+                    val key = buffer.readString()
                     val width = buffer.readVarInt()
                     val height = buffer.readVarInt()
                     val input = safeList(width * height) { buffer.readIngredient() }
@@ -154,7 +154,7 @@ object RecipesPacketReader : PacketReader {
                     val tag = buffer.readString()
                     val priority = buffer.readVarInt()
                     val netId = if (version >= 407) buffer.readVarUInt() else 0
-                    ShapedRecipe(ShapedRecipe.Description(name), emptyMap(), emptyList(), output, id, listOf(tag), priority, netId)
+                    ShapedRecipe(id, key, width, height, input.toTypedArray(), output, tag, priority, netId)
                 }
                 2 -> FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()]), -1), checkNotNull(if (version >= 431) buffer.readItemStackInstance() else buffer.readItemStackPre431()), listOf(buffer.readString()))
                 3 -> FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()]), buffer.readVarInt()), checkNotNull(if (version >= 431) buffer.readItemStackInstance() else buffer.readItemStackPre431()), listOf(buffer.readString()))

@@ -37,56 +37,68 @@ data class Parameter(
         Integer,
         Float,
         Float1,
-        Unknown5,
-        Unknown6,
         Target,
-        Unknown9,
-        Unknown16,
         String,
         Int3,
         Float3,
         Message,
-        Unknown46,
         Json,
-        BlockStates,
-        Unknown63;
+        BlockStates;
 
         companion object {
-            val registryPre419 = Registry<Type>().apply {
+            private val registryPre419 = Registry<Type>().apply {
                 this[0x01] = Integer
                 this[0x02] = Float
                 this[0x03] = Float1
-                this[0x04] = Unknown5
-                this[0x05] = Unknown6
+                /*this[0x04] =
+                this[0x05] =*/
                 this[0x06] = Target
-                this[0x07] = Unknown9
-                this[0x0E] = Unknown16
+                /*this[0x07] =
+                this[0x0E] =*/
                 this[0x1D] = String
                 this[0x25] = Int3
                 this[0x26] = Float3
                 this[0x29] = Message
-                this[0x2B] = Unknown46
+                /*this[0x2B] =*/
                 this[0x2F] = Json
-                this[0x36] = Unknown63
+                /*this[0x36] =*/
             }
-            val registry = Registry<Type>().apply {
+            private val registryPre503 = Registry<Type>().apply {
                 this[0x01] = Integer
                 this[0x03] = Float
                 this[0x04] = Float1
-                this[0x05] = Unknown5
-                this[0x06] = Unknown6
+                /*this[0x05] =
+                this[0x06] =*/
                 this[0x07] = Target
-                this[0x09] = Unknown9
-                this[0x10] = Unknown16
+                /*this[0x09] =
+                this[0x10] =*/
                 this[0x20] = String
                 this[0x28] = Int3
                 this[0x29] = Float3
                 this[0x2C] = Message
-                this[0x2E] = Unknown46
+                /*this[0x2E] =*/
                 this[0x32] = Json
                 this[0x3C] = BlockStates
-                this[0x3F] = Unknown63
+                /*this[0x3F] =*/
             }
+            private val registry = Registry<Type>().apply {
+                this[0x01] = Integer
+                this[0x03] = Float
+                this[0x04] = Float1
+                /*this[0x05] =
+                this[0x06] =*/
+                this[0x07] = Target
+                /*this[0x09] =
+                this[0x10] =*/
+                this[0x26] = String
+                this[0x2E] = Int3
+                this[0x2F] = Float3
+                this[0x32] = Message
+                /*this[0x34] =*/
+                this[0x38] = Json
+            }
+
+            fun registryByVersion(version: Int) = if (version >= 503) registry else if (version >= 419) registryPre503 else registryPre419
         }
     }
 
