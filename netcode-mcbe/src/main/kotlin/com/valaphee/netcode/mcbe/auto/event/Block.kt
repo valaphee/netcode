@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.world.entity.player
+package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
-data class AuthExtra(
-    @get:JsonProperty("titleId") val titleId: Int?,
-    @get:JsonProperty("XUID") val xboxUserId: String,
-    @get:JsonProperty("identity") val userId: UUID,
-    @get:JsonProperty("displayName") val userName: String,
-)
+class Block(
+    @get:JsonProperty("namespace") val namespace: String,
+    @get:JsonProperty("id") val id: String,
+    @get:JsonProperty("aux") val aux: Int
+) {
+    override fun toString() = "Block(namespace='$namespace', id='$id', aux=$aux)"
+}

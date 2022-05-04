@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.world.entity.player
+package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.UUID
+import com.valaphee.foundry.math.Float3
 
 /**
  * @author Kevin Ludwig
  */
-data class AuthExtra(
-    @get:JsonProperty("titleId") val titleId: Int?,
-    @get:JsonProperty("XUID") val xboxUserId: String,
-    @get:JsonProperty("identity") val userId: UUID,
-    @get:JsonProperty("displayName") val userName: String,
-)
+class Entity(
+    @get:JsonProperty("id") val id: Long,
+    @get:JsonProperty("type") val type: String,
+    @get:JsonProperty("name") val name: String,
+    @get:JsonProperty("dimension") val dimension: Int,
+    @get:JsonProperty("position") val position: Float3,
+    @get:JsonProperty("yRot") val yRot: Float,
+    @get:JsonProperty("variant") val variant: Int,
+    @get:JsonProperty("color") val color: String
+) {
+    override fun toString() = "Entity(id=$id, type='$type', name='$name', dimension=$dimension, position=$position, yRot=$yRot, variant=$variant, color='$color')"
+}

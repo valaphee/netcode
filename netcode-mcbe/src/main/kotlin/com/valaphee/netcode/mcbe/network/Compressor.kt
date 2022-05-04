@@ -105,7 +105,7 @@ class Compressor(
     }
 
     companion object {
-        const val NAME = "mcbe-compressor"
+        const val Name = "mcbe-compressor"
         private const val componentMaximum = 512
         private const val poolByteMaximum = 128 * 1024
     }

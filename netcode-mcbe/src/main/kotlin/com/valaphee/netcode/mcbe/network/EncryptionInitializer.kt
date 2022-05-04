@@ -16,10 +16,8 @@
 
 package com.valaphee.netcode.mcbe.network
 
-import com.valaphee.netcode.mcbe.network.packet.ServerToClientHandshakePacket
-import com.valaphee.netcode.mcbe.util.serverToClientHandshakeJws
 import io.netty.buffer.ByteBuf
-import io.netty.buffer.PooledByteBufAllocator
+import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
@@ -31,7 +29,6 @@ import io.netty.util.ReferenceCountUtil
 import java.security.Key
 import java.security.KeyPair
 import java.security.MessageDigest
-import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.KeyAgreement
 import javax.crypto.spec.IvParameterSpec
@@ -44,9 +41,8 @@ class EncryptionInitializer(
     keyPair: KeyPair,
     otherPublicKey: Key,
     val gcm: Boolean,
-    salt: ByteArray = ByteArray(16).apply(random::nextBytes),
+    salt: ByteArray,
 ) : ChannelInitializer<Channel>() {
-    val serverToClientHandshakePacket: ServerToClientHandshakePacket
     private val key: ByteArray
     private val iv: ByteArray
     private lateinit var keyBuffer: ByteBuf
@@ -57,7 +53,7 @@ class EncryptionInitializer(
             doPhase(otherPublicKey, true)
         }.generateSecret()
         val sha256 = sha256Local.get()
-        val sha256Data = PooledByteBufAllocator.DEFAULT.directBuffer(salt.size + secret.size)
+        val sha256Data = Unpooled.directBuffer(salt.size + secret.size)
         try {
             sha256Data.writeBytes(salt)
             sha256Data.writeBytes(secret)
@@ -65,7 +61,6 @@ class EncryptionInitializer(
         } finally {
             sha256Data.release()
         }
-        serverToClientHandshakePacket = ServerToClientHandshakePacket(serverToClientHandshakeJws(keyPair, salt))
         key = sha256.digest()
         if (gcm) {
             iv = ByteArray(16)
@@ -80,13 +75,13 @@ class EncryptionInitializer(
     override fun initChannel(channel: Channel) {
         keyBuffer = channel.alloc().directBuffer(32, 32).writeBytes(key)
         channel.pipeline()
-            .addBefore(Compressor.NAME, "mcbe-encryptor", Encryptor())
+            .addBefore(Compressor.Name, "mcbe-encryptor", Encryptor())
             .addBefore("mcbe-encryptor", "mcbe-decryptor", Decryptor())
     }
 
     private inner class Encryptor : ChannelOutboundHandlerAdapter() {
         private val aes = Cipher.getInstance(if (gcm) "AES/CTR/NoPadding" else "AES/CFB8/NoPadding").apply { init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(this@EncryptionInitializer.iv)) }
-        private var counter = 0L
+        private var count = 0L
 
         override fun write(context: ChannelHandlerContext, message: Any, promise: ChannelPromise) {
             if (message is ByteBuf) {
@@ -95,7 +90,7 @@ class EncryptionInitializer(
                     val sha256 = sha256Local.get()
                     val sha256Data = context.alloc().directBuffer()
                     try {
-                        sha256Data.writeLongLE(counter++)
+                        sha256Data.writeLongLE(count++)
                         sha256Data.writeBytes(message)
                         keyBuffer.markReaderIndex()
                         sha256Data.writeBytes(keyBuffer)
@@ -131,7 +126,7 @@ class EncryptionInitializer(
         override fun channelRead(context: ChannelHandlerContext, message: Any) {
             if (message is ByteBuf) {
                 val `in`: ByteBuf
-                if (1 < message.nioBufferCount()) {
+                if (message.nioBufferCount() > 1) {
                     `in` = context.alloc().directBuffer(message.readableBytes())
                     `in`.writeBytes(message)
                     message.release()
@@ -175,6 +170,5 @@ class EncryptionInitializer(
         private val heapInLocal = ThreadLocal.withInitial { ByteArray(0) }
         private val heapOutLocal = ThreadLocal.withInitial { ByteArray(0) }
         private val sha256Local = ThreadLocal.withInitial { MessageDigest.getInstance("SHA-256") }
-        private val random = SecureRandom()
     }
 }

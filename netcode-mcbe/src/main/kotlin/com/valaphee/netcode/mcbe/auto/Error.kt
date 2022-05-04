@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, Valaphee.
+ * Copyright (c) 2022, Valaphee.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.world.entity.player
+package com.valaphee.netcode.mcbe.auto
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
-data class AuthExtra(
-    @get:JsonProperty("titleId") val titleId: Int?,
-    @get:JsonProperty("XUID") val xboxUserId: String,
-    @get:JsonProperty("identity") val userId: UUID,
-    @get:JsonProperty("displayName") val userName: String,
-)
+class Error(
+    @get:JsonProperty("statusCode") val statusCode: Int,
+    @get:JsonProperty("statusMessage") val statusMessage: String
+) {
+    override fun toString() = "Error(statusCode=$statusCode, statusMessage='$statusMessage')"
+}

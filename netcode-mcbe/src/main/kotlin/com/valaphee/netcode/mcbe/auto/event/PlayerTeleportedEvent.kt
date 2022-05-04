@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.world.entity.player
+package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
-data class AuthExtra(
-    @get:JsonProperty("titleId") val titleId: Int?,
-    @get:JsonProperty("XUID") val xboxUserId: String,
-    @get:JsonProperty("identity") val userId: UUID,
-    @get:JsonProperty("displayName") val userName: String,
-)
+class PlayerTeleportedEvent(
+    @get:JsonProperty("player") val player: Entity,
+    @get:JsonProperty("cause") val cause: Int,
+    @get:JsonProperty("itemType") val item: Int,
+    @get:JsonProperty("metersTravelled") val distance: Float
+) : Event {
+    override fun toString() = "PlayerTeleportedEvent(player=$player, cause=$cause, item=$item, distance=$distance)"
+}

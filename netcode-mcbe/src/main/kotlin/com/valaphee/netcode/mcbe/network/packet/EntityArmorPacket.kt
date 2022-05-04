@@ -31,24 +31,24 @@ import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
  */
 class EntityArmorPacket(
     val runtimeEntityId: Long,
-    val helmet: ItemStack?,
-    val chestplate: ItemStack?,
-    val leggings: ItemStack?,
-    val boots: ItemStack?
+    val head: ItemStack?,
+    val torso: ItemStack?,
+    val legs: ItemStack?,
+    val feet: ItemStack?
 ) : Packet() {
     override val id get() = 0x20
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarULong(runtimeEntityId)
-        if (version >= 431) buffer.writeItemStack(helmet) else buffer.writeItemStackPre431(helmet)
-        if (version >= 431) buffer.writeItemStack(chestplate) else buffer.writeItemStackPre431(chestplate)
-        if (version >= 431) buffer.writeItemStack(leggings) else buffer.writeItemStackPre431(leggings)
-        if (version >= 431) buffer.writeItemStack(boots) else buffer.writeItemStackPre431(boots)
+        if (version >= 431) buffer.writeItemStack(head) else buffer.writeItemStackPre431(head)
+        if (version >= 431) buffer.writeItemStack(torso) else buffer.writeItemStackPre431(torso)
+        if (version >= 431) buffer.writeItemStack(legs) else buffer.writeItemStackPre431(legs)
+        if (version >= 431) buffer.writeItemStack(feet) else buffer.writeItemStackPre431(feet)
     }
 
     override fun handle(handler: PacketHandler) = handler.entityArmor(this)
 
-    override fun toString() = "EntityArmorPacket(runtimeEntityId=$runtimeEntityId, helmet=$helmet, chestplate=$chestplate, leggings=$leggings, boots=$boots)"
+    override fun toString() = "EntityArmorPacket(runtimeEntityId=$runtimeEntityId, head=$head, torso=$torso, legs=$legs, feet=$feet)"
 }
 
 /**

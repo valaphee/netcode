@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.world.entity.player
+package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
-data class AuthExtra(
-    @get:JsonProperty("titleId") val titleId: Int?,
-    @get:JsonProperty("XUID") val xboxUserId: String,
-    @get:JsonProperty("identity") val userId: UUID,
-    @get:JsonProperty("displayName") val userName: String,
-)
+class BlockPlacedEvent(
+    @get:JsonProperty("player") val player: Entity,
+    @get:JsonProperty("block") val block: Block,
+    @get:JsonProperty("tool") val tool: ItemStack,
+    @get:JsonProperty("placementMethod") val method: Int,
+    @get:JsonProperty("count") val count: Int,
+    @get:JsonProperty("placedUnderWater") val underwater: Boolean,
+) : Event {
+    override fun toString() = "BlockPlacedEvent(player=$player, block=$block, tool=$tool, method=$method, count=$count, underwater=$underwater)"
+}

@@ -33,7 +33,7 @@ class PlayerLocationPacket(
     val headRotationYaw: Float,
     val mode: Mode,
     val onGround: Boolean,
-    val drivingRuntimeEntityId: Long,
+    val vehicleRuntimeEntityId: Long,
     val teleportationCause: TeleportationCause = TeleportationCause.Unknown,
     val entityTypeId: Int,
     val tick: Long = 0
@@ -55,7 +55,7 @@ class PlayerLocationPacket(
         buffer.writeFloatLE(headRotationYaw)
         buffer.writeByte(mode.ordinal)
         buffer.writeBoolean(onGround)
-        buffer.writeVarULong(drivingRuntimeEntityId)
+        buffer.writeVarULong(vehicleRuntimeEntityId)
         if (mode == Mode.Teleport) {
             buffer.writeIntLE(teleportationCause.ordinal)
             buffer.writeIntLE(entityTypeId)
@@ -65,7 +65,7 @@ class PlayerLocationPacket(
 
     override fun handle(handler: PacketHandler) = handler.playerLocation(this)
 
-    override fun toString() = "PlayerLocationPacket(runtimeEntityId=$runtimeEntityId, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, mode=$mode, onGround=$onGround, drivingRuntimeEntityId=$drivingRuntimeEntityId, teleportationCause=$teleportationCause, entityTypeId=$entityTypeId, tick=$tick)"
+    override fun toString() = "PlayerLocationPacket(runtimeEntityId=$runtimeEntityId, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, mode=$mode, onGround=$onGround, drivingRuntimeEntityId=$vehicleRuntimeEntityId, teleportationCause=$teleportationCause, entityTypeId=$entityTypeId, tick=$tick)"
 }
 
 /**

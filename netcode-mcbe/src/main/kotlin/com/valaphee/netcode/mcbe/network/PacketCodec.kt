@@ -226,7 +226,7 @@ class PacketCodec(
     }
 
     companion object {
-        const val NAME = "mcbe-packet-codec"
+        const val Name = "mcbe-codec"
         private val readers = Int2ObjectOpenHashMap<PacketReader>().apply {
             this[0x01] = LoginPacketReader
             this[0x02] = StatusPacketReader

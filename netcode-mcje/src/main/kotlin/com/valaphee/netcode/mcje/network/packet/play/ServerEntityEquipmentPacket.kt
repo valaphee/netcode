@@ -36,7 +36,7 @@ class ServerEntityEquipmentPacket(
         var itemStack: ItemStack?
     ) {
         enum class Slot {
-            MainHand, OffHand, Boots, Leggings, Chestplate, Helmet
+            MainHand, OffHand, Feet, Legs, Torso, Head
         }
     }
 

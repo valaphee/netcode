@@ -63,7 +63,7 @@ class Decompressor : MessageToMessageDecoder<ByteBuf>() {
     }
 
     companion object {
-        const val NAME = "mcbe-decompressor"
+        const val Name = "mcbe-decompressor"
         private const val chunkSize = 8192
         private const val chunkFloor = 512
     }
