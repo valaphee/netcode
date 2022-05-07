@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcbe.world.item
 /**
  * @author Kevin Ludwig
  */
-class Item(
+data class Item(
     val key: String,
     val componentBased: Boolean
 ) {

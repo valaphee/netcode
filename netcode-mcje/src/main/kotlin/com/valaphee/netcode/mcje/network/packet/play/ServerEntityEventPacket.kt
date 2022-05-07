@@ -16,10 +16,10 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.Packet
 
 /**
  * @author Kevin Ludwig
@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerEntityEventPacket(
     val entityId: Int,
     val event: Event
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Event {
         TippedArrowParticles,
         JumpingParticlesOrResetSpawnerAnimation,

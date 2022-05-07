@@ -28,7 +28,7 @@ class ServerExperiencePacket(
     val bar: Float,
     val level: Int,
     val total: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeFloat(bar)
         buffer.writeVarInt(level)

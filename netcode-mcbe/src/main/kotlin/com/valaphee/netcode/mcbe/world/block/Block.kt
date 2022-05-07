@@ -36,12 +36,12 @@ import com.valaphee.netcode.mcbe.pack.Data
 @JsonTypeName("minecraft:block")
 @JsonSerialize(using = Block.Serializer::class)
 class Block : Data {
-    class Description(
+    data class Description(
         @get:JsonProperty("identifier") val key: String,
         @get:JsonProperty("properties") val properties: Map<String, List<Any>>? = null
     )
 
-    class Permutation(
+    data class Permutation(
         @get:JsonProperty("condition") val condition: String,
         @get:JsonProperty("components") val components: Map<String, Any>
     )

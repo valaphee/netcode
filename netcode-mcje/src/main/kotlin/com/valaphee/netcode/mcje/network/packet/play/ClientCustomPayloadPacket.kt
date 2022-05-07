@@ -30,7 +30,7 @@ import io.netty.util.ReferenceCountUtil
 class ClientCustomPayloadPacket(
     val channel: NamespacedKey,
     val payload: ByteBuf
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeNamespacedKey(channel)
         buffer.writeBytes(payload)

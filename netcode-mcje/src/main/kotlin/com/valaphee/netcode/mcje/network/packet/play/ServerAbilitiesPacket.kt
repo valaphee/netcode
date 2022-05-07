@@ -28,7 +28,7 @@ class ServerAbilitiesPacket(
     val flags: Set<Flag>,
     val flySpeed: Float,
     val walkSpeed: Float
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Flag {
         Invulnerable, Flying, AllowFlight, CreativeMode
     }

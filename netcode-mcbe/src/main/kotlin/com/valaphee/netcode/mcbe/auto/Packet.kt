@@ -22,11 +22,11 @@ import java.util.UUID
 /**
  * @author Kevin Ludwig
  */
-class Packet(
+data class Packet(
     @get:JsonProperty("header") val header: Header,
     @get:JsonProperty("body") val body: Any?
 ) {
-    class Header(
+    data class Header(
         @get:JsonProperty("messagePurpose") val messagePurpose: MessagePurpose,
         @get:JsonProperty("requestId") val requestId: UUID?,
         @get:JsonProperty("eventName") val eventName: String?,
@@ -40,9 +40,5 @@ class Packet(
             @JsonProperty("subscribe") EventSubscribe,
             @JsonProperty("unsubscribe") EventUnsubscribe,
         }
-
-        override fun toString() = "Header(messagePurpose=$messagePurpose, requestId=$requestId, version=$version, eventName=$eventName)"
     }
-
-    override fun toString() = "Packet(header=$header, body=$body)"
 }

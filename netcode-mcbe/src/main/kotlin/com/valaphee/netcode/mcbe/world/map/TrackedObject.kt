@@ -21,7 +21,7 @@ import com.valaphee.foundry.math.Int3
 /**
  * @author Kevin Ludwig
  */
-data class TrackedObject private constructor(
+data class TrackedObject(
     val type: Type,
     val uniqueEntityId: Long?,
     val blockPosition: Int3?

@@ -35,7 +35,7 @@ class ClientWindowClickPacket(
     val button: Button,
     val slots: Map<Int, ItemStack?>,
     val clickedSlot: ItemStack?
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     enum class Button {
         Normal, Shift, Number, MiddleClick, QOrNoOp, Paint, DoubleClick
     }

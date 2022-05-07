@@ -17,12 +17,11 @@
 package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.auto.Event
 
 /**
  * @author Kevin Ludwig
  */
-class PlayerTransformEvent(
+data class PlayerTransformEvent(
     @get:JsonProperty("player") val player: Entity,
-) : Event {
-    override fun toString() = "PlayerTransformEvent(player=$player)"
-}
+) : Event()

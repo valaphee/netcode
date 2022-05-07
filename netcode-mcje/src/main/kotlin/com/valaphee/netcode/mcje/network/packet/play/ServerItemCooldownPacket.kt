@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
 class ServerItemCooldownPacket(
     val itemKey: NamespacedKey,
     val cooldown: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(buffer.registries.items.getId(itemKey))
         buffer.writeVarInt(cooldown)

@@ -26,7 +26,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
  */
 class ServerWindowClosePacket(
     val windowId: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
     }

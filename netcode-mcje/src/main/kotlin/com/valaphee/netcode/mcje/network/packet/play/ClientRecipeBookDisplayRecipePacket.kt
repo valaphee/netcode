@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
  */
 class ClientRecipeBookDisplayRecipePacket(
     val recipeId: NamespacedKey
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeNamespacedKey(recipeId)
     }

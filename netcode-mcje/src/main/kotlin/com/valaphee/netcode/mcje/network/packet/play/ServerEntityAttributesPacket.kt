@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.world.entity.attribute.Attributes
 class ServerEntityAttributesPacket(
     val entityId: Int,
     val attributes: Attributes
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         if (version >= 758) attributes.writeToBuffer(buffer) else attributes.writeToBufferPre758(buffer)

@@ -35,7 +35,7 @@ class ServerTradePacket(
     val experience: Int,
     val regular: Boolean,
     val restock: Boolean
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     data class Offer(
         val buyA: ItemStack?,
         val sell: ItemStack?,

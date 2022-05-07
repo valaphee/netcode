@@ -17,15 +17,14 @@
 package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.auto.Event
 
 /**
  * @author Kevin Ludwig
  */
-class ItemUsedEvent(
+data class ItemUsedEvent(
     @get:JsonProperty("player") val player: Entity,
     @get:JsonProperty("item") val item: Item,
     @get:JsonProperty("useMethod") val method: Int,
     @get:JsonProperty("count") val count: Int
-) : Event {
-    override fun toString() = "ItemUsedEvent(player=$player, item=$item, method=$method, count=$count)"
-}
+) : Event()

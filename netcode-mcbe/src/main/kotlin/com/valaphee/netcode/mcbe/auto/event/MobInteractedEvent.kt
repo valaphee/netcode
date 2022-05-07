@@ -17,22 +17,19 @@
 package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.auto.Event
 
 /**
  * @author Kevin Ludwig
  */
-class MobInteractedEvent(
+data class MobInteractedEvent(
     @get:JsonProperty("player") val player: Entity,
     @get:JsonProperty("mob") val mob: Entity,
     @get:JsonProperty("interactionType") val method: Int
-) : Event {
-    class Mob(
+) : Event() {
+    data class Mob(
         @get:JsonProperty("color") val color: Int,
         @get:JsonProperty("type") val type: Int,
         @get:JsonProperty("variant") val variant: Int
-    ) {
-        override fun toString() = "Mob(color=$color, type=$type, variant=$variant)"
-    }
-
-    override fun toString() = "MobInteractedEvent(player=$player, mob=$mob, method=$method)"
+    )
 }

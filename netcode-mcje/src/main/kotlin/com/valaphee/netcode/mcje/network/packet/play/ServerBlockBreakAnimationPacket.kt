@@ -29,7 +29,7 @@ class ServerBlockBreakAnimationPacket(
     val entityId: Int,
     val position: Int3,
     val progress: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeInt3UnsignedY(position)

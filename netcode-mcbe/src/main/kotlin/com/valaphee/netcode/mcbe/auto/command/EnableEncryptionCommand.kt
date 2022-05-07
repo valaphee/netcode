@@ -18,28 +18,26 @@ package com.valaphee.netcode.mcbe.auto.command
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.auto.Command
+import com.valaphee.netcode.mcbe.auto.CommandResponse
 
 /**
  * @author Kevin Ludwig
  */
-class EnableEncryptionCommand(
+data class EnableEncryptionCommand(
     @get:JsonIgnore val publicKey: String,
     @get:JsonIgnore val salt: String
-) : Command {
+) : Command() {
     override val commandLine get() = """enableencryption "$publicKey" "$salt""""
 
     override val responseType get() = EnableEncryptionCommandResponse::class
-
-    override fun toString() = "EnableEncryptionCommand(publicKey='$publicKey', salt='$salt')"
 }
 
 /**
  * @author Kevin Ludwig
  */
-class EnableEncryptionCommandResponse(
+data class EnableEncryptionCommandResponse(
     @get:JsonProperty("publicKey") val publicKey: String,
     @get:JsonProperty("statusCode") val statusCode: Int,
     @get:JsonProperty("statusMessage") val statusMessage: String
-) : CommandResponse {
-    override fun toString() = "EnableEncryptionCommandResponse(publicKey='$publicKey', statusCode=$statusCode, statusMessage='$statusMessage')"
-}
+) : CommandResponse()

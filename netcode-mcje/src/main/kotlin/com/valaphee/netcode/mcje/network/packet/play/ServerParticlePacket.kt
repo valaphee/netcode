@@ -35,7 +35,7 @@ class ServerParticlePacket(
     val offset: Float3,
     val speed: Float,
     val count: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt(buffer.registries.particleTypes.getId(data.type))
         buffer.writeBoolean(longDistance)

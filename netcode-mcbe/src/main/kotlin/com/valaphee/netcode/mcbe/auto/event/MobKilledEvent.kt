@@ -17,11 +17,12 @@
 package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.auto.Event
 
 /**
  * @author Kevin Ludwig
  */
-class MobKilledEvent(
+data class MobKilledEvent(
     @get:JsonProperty("player") val player: Entity,
     @get:JsonProperty("victim") val victim: Entity,
     @get:JsonProperty("killMethodType") val method: Int,
@@ -32,6 +33,4 @@ class MobKilledEvent(
     @get:JsonProperty("armorFeet") val armorFeet: ItemStack,
     @get:JsonProperty("weapon") val weapon: ItemStack,
     @get:JsonProperty("playerIsHiddenFrom") val ambush: Boolean
-) : Event {
-    override fun toString() = "MobKilledEvent(player=$player, victim=$victim, method=$method, monster=$monster, armorHead=$armorHead, armorTorso=$armorTorso, armorLegs=$armorLegs, armorFeet=$armorFeet, weapon=$weapon, ambush=$ambush)"
-}
+) : Event()

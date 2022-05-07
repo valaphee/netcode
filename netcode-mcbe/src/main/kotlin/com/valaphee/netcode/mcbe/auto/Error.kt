@@ -21,9 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * @author Kevin Ludwig
  */
-class Error(
+data class Error(
     @get:JsonProperty("statusCode") val statusCode: Int,
     @get:JsonProperty("statusMessage") val statusMessage: String
-) {
-    override fun toString() = "Error(statusCode=$statusCode, statusMessage='$statusMessage')"
-}
+)

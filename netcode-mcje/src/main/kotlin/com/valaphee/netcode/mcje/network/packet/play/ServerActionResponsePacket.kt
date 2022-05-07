@@ -30,7 +30,7 @@ class ServerActionResponsePacket(
     val blockStateId: Int,
     val action: Action,
     val succeed: Boolean
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Action {
         StartBreak, AbortBreak, StopBreak
     }

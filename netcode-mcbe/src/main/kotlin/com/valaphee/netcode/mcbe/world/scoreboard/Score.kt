@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcbe.world.scoreboard
 /**
  * @author Kevin Ludwig
  */
-data class Score private constructor(
+data class Score(
     val scoreboardId: Long,
     val objectiveName: String,
     val value: Int,

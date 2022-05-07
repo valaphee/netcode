@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerScoreboardDisplayPacket(
     val displaySlot: DisplaySlot,
     val name: String
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class DisplaySlot {
         PlayerList,
         Sidebar,

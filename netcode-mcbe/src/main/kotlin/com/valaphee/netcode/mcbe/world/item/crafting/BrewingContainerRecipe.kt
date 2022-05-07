@@ -30,7 +30,7 @@ data class BrewingContainerRecipe(
     @get:JsonProperty("input") val input: String,
     @get:JsonProperty("reagent") val reagent: String,
     @get:JsonProperty("output") val output: String
-) : Data {
+) : Data() {
     data class Description(
         @get:JsonProperty("identifier") val key: String
     )

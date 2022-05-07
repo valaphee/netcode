@@ -53,7 +53,7 @@ sealed class BitArray(
             return if (indices > indicesRounded) indicesRounded + 1 else indicesRounded
         }
 
-        fun bitArray(size: Int, data: IntArray? = null) = if (this == V3 || this == V5 || this == V6) PaddedBitArray(this, size, data ?: IntArray(bitArrayDataSize(size))) else if (this == V0) NoneBitArray else PowerOfTwoBitArray(this, size, data ?: IntArray(bitArrayDataSize(size)))
+        fun bitArray(size: Int, data: IntArray? = null) = if (this == V0) NoneBitArray else if (this == V3 || this == V5 || this == V6) PaddedBitArray(this, size, data ?: IntArray(bitArrayDataSize(size))) else PowerOfTwoBitArray(this, size, data ?: IntArray(bitArrayDataSize(size)))
 
         companion object {
             fun byBitsPerEntry(bitsPerEntry: Int): Version {
@@ -72,7 +72,16 @@ sealed class BitArray(
 /**
  * @author Kevin Ludwig
  */
-internal class PaddedBitArray(
+object NoneBitArray : BitArray(Version.V0, 0, intArrayOf()) {
+    override fun get(index: Int) = 0
+
+    override fun set(index: Int, value: Int) = Unit
+}
+
+/**
+ * @author Kevin Ludwig
+ */
+class PaddedBitArray(
     version: Version,
     size: Int,
     data: IntArray
@@ -93,16 +102,7 @@ internal class PaddedBitArray(
 /**
  * @author Kevin Ludwig
  */
-internal object NoneBitArray : BitArray(Version.V0, 0, intArrayOf()) {
-    override fun get(index: Int) = 0
-
-    override fun set(index: Int, value: Int) = Unit
-}
-
-/**
- * @author Kevin Ludwig
- */
-internal class PowerOfTwoBitArray(
+class PowerOfTwoBitArray(
     version: Version,
     size: Int,
     data: IntArray

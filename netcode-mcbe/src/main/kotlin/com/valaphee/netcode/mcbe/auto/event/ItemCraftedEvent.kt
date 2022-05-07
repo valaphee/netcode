@@ -17,11 +17,12 @@
 package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.auto.Event
 
 /**
  * @author Kevin Ludwig
  */
-class ItemCraftedEvent(
+data class ItemCraftedEvent(
     @get:JsonProperty("player") val player: Entity,
     @get:JsonProperty("item") val item: ItemStack,
     @get:JsonProperty("count") val count: Int,
@@ -33,6 +34,4 @@ class ItemCraftedEvent(
     @get:JsonProperty("recipeBookShown") val recipeBookOpen: Boolean,
     @get:JsonProperty("hasCraftableFilterOn") val recipeBookFilterActive: Boolean,
     @get:JsonProperty("craftedAutomatically") val auto: Boolean
-) : Event {
-    override fun toString() = "ItemCraftedEvent(player=$player, item=$item, count=$count, usedCraftingTable=$usedCraftingTable, usedSearchBar=$usedSearchBar, startingTabId=$startingTabId, endingTabId=$endingTabId, numberOfTabsChanged=$numberOfTabsChanged, recipeBookOpen=$recipeBookOpen, recipeBookFilterActive=$recipeBookFilterActive, auto=$auto)"
-}
+) : Event()

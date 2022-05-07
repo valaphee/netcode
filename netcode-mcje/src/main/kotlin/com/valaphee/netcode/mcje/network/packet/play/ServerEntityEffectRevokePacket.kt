@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
 class ServerEntityEffectRevokePacket(
     val entityId: Int,
     val effect: NamespacedKey
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeByte(buffer.registries.effects.getId(effect))

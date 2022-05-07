@@ -28,7 +28,7 @@ class ServerResourcePackPacket(
     val url: String,
     val hash: String,
     val forced: Boolean
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(url)
         buffer.writeString(hash)

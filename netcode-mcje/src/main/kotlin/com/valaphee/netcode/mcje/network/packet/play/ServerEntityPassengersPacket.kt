@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerEntityPassengersPacket(
     val entityId: Int,
     val passengerEntityIds: IntArray
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeVarInt(passengerEntityIds.size)

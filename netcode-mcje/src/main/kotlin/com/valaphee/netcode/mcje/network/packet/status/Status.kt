@@ -16,7 +16,6 @@
 
 package com.valaphee.netcode.mcje.network.packet.status
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import net.kyori.adventure.text.Component
 import java.util.UUID
@@ -24,20 +23,19 @@ import java.util.UUID
 /**
  * @author Kevin Ludwig
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-class Status(
+data class Status(
     @get:JsonProperty("version") val version: Version,
     @get:JsonProperty("modinfo") val mods: Mods?,
     @get:JsonProperty("players") val players: Players,
     @get:JsonProperty("description") val description: Component,
     @get:JsonProperty("favicon") val favicon: String?
 ) {
-    class Version(
+    data class Version(
         @get:JsonProperty("name") val name: String,
         @get:JsonProperty("protocol") val protocol: Int
     )
 
-    class Players(
+    data class Players(
         @get:JsonProperty("max") val maximum: Int,
         @get:JsonProperty("online") val current: Int,
         @get:JsonProperty("sample") val sample: List<Sample>?
@@ -48,7 +46,7 @@ class Status(
         )
     }
 
-    class Mods(
+    data class Mods(
         @get:JsonProperty("type") val type: String,
         @get:JsonProperty("modlist") val mods: List<Mod>?
     ) {

@@ -28,7 +28,7 @@ class ClientPlayerActionPacket(
     val entityId: Int,
     val action: Action,
     val jumpStrength: Float = 0.0f
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     enum class Action {
         StartSneak,
         StopSneak,

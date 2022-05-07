@@ -37,7 +37,7 @@ class ServerTeamPacket(
     val prefix: Component?,
     val suffix: Component?,
     val userNames: List<String>?
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Action {
         Create, Remove, Update, AddUserNames, RemoveUserNames
     }

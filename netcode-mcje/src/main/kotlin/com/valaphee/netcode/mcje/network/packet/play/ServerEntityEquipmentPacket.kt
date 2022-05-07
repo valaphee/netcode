@@ -30,7 +30,7 @@ import com.valaphee.netcode.mcje.world.item.writeItemStack
 class ServerEntityEquipmentPacket(
     val entityId: Int,
     val equipments: List<Equipment>
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     class Equipment(
         var slot: Slot,
         var itemStack: ItemStack?

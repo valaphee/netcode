@@ -29,7 +29,7 @@ class ServerScorePacket(
     val action: Action,
     val objectiveName: String,
     val value: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Action {
         Set, Remove
     }

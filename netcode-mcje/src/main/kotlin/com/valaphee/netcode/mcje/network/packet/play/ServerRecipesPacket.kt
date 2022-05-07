@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.world.item.crafting.readRecipe
  */
 class ServerRecipesPacket(
     val recipes: List<Recipe>,
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(recipes.size)
         recipes.forEach {

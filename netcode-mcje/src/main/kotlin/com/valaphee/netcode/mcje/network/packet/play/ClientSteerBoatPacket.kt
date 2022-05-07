@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
 class ClientSteerBoatPacket(
     val rowLeft: Boolean,
     val rowRight: Boolean
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeBoolean(rowLeft)
         buffer.writeBoolean(rowRight)

@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.world.entity.player.Hand
  */
 class ServerBookOpenPacket(
     val hand: Hand
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(hand.ordinal)
     }

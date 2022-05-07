@@ -29,7 +29,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerVehicleLocationPacket(
     val position: Double3,
     val rotation: Float2
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeDouble3(position)
         buffer.writeFloat2(rotation)

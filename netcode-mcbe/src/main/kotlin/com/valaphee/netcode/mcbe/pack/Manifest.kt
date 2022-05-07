@@ -22,7 +22,7 @@ import java.util.UUID
 /**
  * @author Kevin Ludwig
  */
-class Manifest(
+data class Manifest(
     @get:JsonProperty("format_version") val version: String,
     @get:JsonProperty("header") val header: Header,
     @get:JsonProperty("modules") val modules: List<Module>?,
@@ -31,7 +31,7 @@ class Manifest(
     @get:JsonProperty("capabilities") val capabilities: List<String>?,
     @get:JsonProperty("subpacks") val subPacks: List<SubPack>?
 ) {
-    class Header(
+    data class Header(
         @get:JsonProperty("uuid") val id: UUID,
         @get:JsonProperty("name") val name: String,
         @get:JsonProperty("version") val version: Version,
@@ -46,7 +46,7 @@ class Manifest(
         @get:JsonProperty("population_control") val populationControl: Boolean?
     )
 
-    class Module(
+    data class Module(
         @get:JsonProperty("uuid") val id: UUID,
         @get:JsonProperty("version") val version: Version,
         @get:JsonProperty("description") val description: String?,
@@ -64,18 +64,18 @@ class Manifest(
         }
     }
 
-    class Metadata(
+    data class Metadata(
         val authors: List<String>?,
         @get:JsonProperty("license") val license: String?,
         @get:JsonProperty("url") val website: String?
     )
 
-    class Dependency(
+    data class Dependency(
         @get:JsonProperty("uuid") val id: UUID,
         @get:JsonProperty("version") val version: Version
     )
 
-    class SubPack(
+    data class SubPack(
         @get:JsonProperty("folder_name") val path: String? = null,
         @get:JsonProperty("name") val name: String? = null,
         @get:JsonProperty("memory_tier") val memoryTier: Int = 0

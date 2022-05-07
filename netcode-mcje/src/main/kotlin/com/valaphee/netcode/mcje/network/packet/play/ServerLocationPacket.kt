@@ -32,7 +32,7 @@ class ServerLocationPacket(
     val flags: Set<Flag>,
     val teleportId: Int,
     val dismountVehicle: Boolean
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Flag {
         RelativeX, RelativeY, RelativeZ, RelativePitch, RelativeYaw
     }

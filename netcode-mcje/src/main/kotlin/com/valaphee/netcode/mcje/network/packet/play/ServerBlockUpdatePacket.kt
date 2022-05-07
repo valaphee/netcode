@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerBlockUpdatePacket(
     val position: Int3,
     val id: Int,
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
         buffer.writeVarInt(id)

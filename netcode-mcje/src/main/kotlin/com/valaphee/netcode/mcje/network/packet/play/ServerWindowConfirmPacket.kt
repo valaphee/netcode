@@ -28,7 +28,7 @@ class ServerWindowConfirmPacket(
     val windowId: Int,
     val id: Int,
     val accepted: Boolean
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
         buffer.writeShort(id)

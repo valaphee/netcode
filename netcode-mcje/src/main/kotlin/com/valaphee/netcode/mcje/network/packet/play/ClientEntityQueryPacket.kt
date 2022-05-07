@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
 class ClientEntityQueryPacket(
     val id: Int,
     val entityId: Int
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(id)
         buffer.writeVarInt(entityId)

@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
 class ClientAdvancementTabPacket(
     val action: Action,
     val tabId: NamespacedKey,
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     enum class Action {
         Opened, Closed
     }

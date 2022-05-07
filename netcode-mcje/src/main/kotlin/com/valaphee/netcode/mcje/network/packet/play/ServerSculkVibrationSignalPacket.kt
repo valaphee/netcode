@@ -32,7 +32,7 @@ class ServerSculkVibrationSignalPacket(
     val destinationPosition: Int3,
     val destinationEntityId: Int,
     val arrivalTicks: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(sourcePosition)
         buffer.writeNamespacedKey(destinationIdentifier)

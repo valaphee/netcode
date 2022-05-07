@@ -22,7 +22,7 @@ import com.valaphee.foundry.math.Float3
 /**
  * @author Kevin Ludwig
  */
-class Entity(
+data class Entity(
     @get:JsonProperty("id") val id: Long,
     @get:JsonProperty("type") val type: String,
     @get:JsonProperty("name") val name: String,
@@ -31,6 +31,4 @@ class Entity(
     @get:JsonProperty("yRot") val yRot: Float,
     @get:JsonProperty("variant") val variant: Int,
     @get:JsonProperty("color") val color: String
-) {
-    override fun toString() = "Entity(id=$id, type='$type', name='$name', dimension=$dimension, position=$position, yRot=$yRot, variant=$variant, color='$color')"
-}
+)

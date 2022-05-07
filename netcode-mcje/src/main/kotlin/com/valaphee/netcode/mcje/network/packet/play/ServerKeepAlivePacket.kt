@@ -26,7 +26,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
  */
 class ServerKeepAlivePacket(
     val id: Long
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeLong(id)
     }

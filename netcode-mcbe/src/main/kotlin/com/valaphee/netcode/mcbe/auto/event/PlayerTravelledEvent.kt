@@ -17,17 +17,16 @@
 package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.auto.Event
 
 /**
  * @author Kevin Ludwig
  */
-class PlayerTravelledEvent(
+data class PlayerTravelledEvent(
     @get:JsonProperty("player") val player: Entity,
     @get:JsonProperty("travelMethod") val method: Int,
     @get:JsonProperty("metersTravelled") val distance: Float,
     @get:JsonProperty("isUnderwater") val underwater: Boolean,
     @get:JsonProperty("newBiome") val biome: Int,
     @get:JsonProperty("vehicle") val vehicle: Entity?,
-) : Event {
-    override fun toString() = "PlayerTravelledEvent(player=$player, method=$method, distance=$distance, underwater=$underwater, biome=$biome, vehicle=$vehicle)"
-}
+) : Event()

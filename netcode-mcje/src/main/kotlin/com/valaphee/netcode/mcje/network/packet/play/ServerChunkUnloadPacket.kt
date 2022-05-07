@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
  */
 class ServerChunkUnloadPacket(
     val position: Int2
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt(position.x)
         buffer.writeInt(position.y)

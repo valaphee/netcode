@@ -21,4 +21,4 @@ import com.valaphee.netcode.mcbe.pack.Data
 /**
  * @author Kevin Ludwig
  */
-interface Recipe : Data
+abstract class Recipe : Data()

@@ -29,7 +29,7 @@ class ClientSteerPacket(
     val move: Float2,
     val jumping: Boolean,
     val sneaking: Boolean
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeFloat2(move)
         buffer.writeByte(if (jumping) flagJumping else 0 or if (sneaking) flagSneaking else 0)

@@ -30,7 +30,7 @@ class ServerLookAtPacket(
     val position: Double3,
     val entityId: Int,
     val entityFeetOrEyes: FeetOrEyes?
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class FeetOrEyes {
         Feet, Eyes
     }

@@ -31,7 +31,7 @@ class ServerTitlePacket(
     val fadeInTime: Int,
     val stayTime: Int,
     val fadeOutTime: Int,
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Action {
         SetTitle, SetSubTitle, ActionBar, SetTimings, Clear, Reset
     }

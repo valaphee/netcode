@@ -30,7 +30,7 @@ class ServerBlockUpdatesPacket(
     val subChunkPosition: Int3,
     val trustEdges: Boolean,
     val updates: List<Update>,
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     data class Update(
         val position: Int3,
         val id: Int

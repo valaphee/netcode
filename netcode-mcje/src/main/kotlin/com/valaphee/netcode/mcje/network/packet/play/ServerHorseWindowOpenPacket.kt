@@ -28,7 +28,7 @@ class ServerHorseWindowOpenPacket(
     val windowId: Int,
     val slotCount: Int,
     val entityId: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
         buffer.writeVarInt(slotCount)

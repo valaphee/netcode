@@ -21,11 +21,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * @author Kevin Ludwig
  */
-class Content(
+data class Content(
     @get:JsonProperty("version") val version: Int,
     @get:JsonProperty("content") val content: List<Entry>
 ) {
-    class Entry(
+    data class Entry(
         @get:JsonProperty("path") val path: String,
         @get:JsonProperty("key") val key: ByteArray?
     )

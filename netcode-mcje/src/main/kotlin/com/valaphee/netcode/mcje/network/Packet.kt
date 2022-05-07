@@ -21,10 +21,10 @@ import com.valaphee.netcode.network.ProtocolHandler
 /**
  * @author Kevin Ludwig
  */
-interface Packet<T : ProtocolHandler> {
+abstract class Packet<T : ProtocolHandler> {
     fun getId(id: Int, version: Int) = id
 
-    fun write(buffer: PacketBuffer, version: Int)
+    abstract fun write(buffer: PacketBuffer, version: Int)
 
-    fun handle(handler: T)
+    abstract fun handle(handler: T)
 }

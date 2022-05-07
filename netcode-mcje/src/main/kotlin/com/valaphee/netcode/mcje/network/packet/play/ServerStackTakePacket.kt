@@ -28,7 +28,7 @@ class ServerStackTakePacket(
     val stackEntityId: Int,
     val entityId: Int,
     val stackCount: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(stackEntityId)
         buffer.writeVarInt(entityId)

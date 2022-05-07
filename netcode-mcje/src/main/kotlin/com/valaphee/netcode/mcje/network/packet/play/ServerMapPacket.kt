@@ -37,7 +37,7 @@ class ServerMapPacket(
     val offsetX: Int,
     val offsetY: Int,
     val data: ByteArray?
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(mapId)
         buffer.writeByte(scale)

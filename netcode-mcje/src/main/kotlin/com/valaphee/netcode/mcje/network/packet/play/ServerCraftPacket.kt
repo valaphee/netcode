@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
 class ServerCraftPacket(
     val windowId: Int,
     val recipeId: NamespacedKey
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
         buffer.writeNamespacedKey(recipeId)

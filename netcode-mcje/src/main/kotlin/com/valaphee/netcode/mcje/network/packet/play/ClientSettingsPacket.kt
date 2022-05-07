@@ -36,7 +36,7 @@ class ClientSettingsPacket(
     val mainHand: MainHand,
     val textFilter: Boolean,
     val visibleInStatus: Boolean
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     enum class ChatMode {
         Enabled, CommandsOnly, Hidden
     }

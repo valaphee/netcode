@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
 class ClientCommandSuggestPacket(
     val id: Int,
     val command: String
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(id)
         buffer.writeString(command)

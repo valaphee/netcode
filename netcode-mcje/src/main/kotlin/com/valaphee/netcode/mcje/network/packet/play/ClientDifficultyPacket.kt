@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.world.Difficulty
  */
 class ClientDifficultyPacket(
     val difficulty: Difficulty
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(difficulty.ordinal)
     }

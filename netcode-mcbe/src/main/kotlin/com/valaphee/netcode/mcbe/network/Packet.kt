@@ -29,10 +29,10 @@ abstract class Packet {
     abstract fun handle(handler: PacketHandler)
 
     companion object {
-        const val idMask = 0x3FF
-        const val senderIdShift = 10
-        const val senderIdMask = 0x3
-        const val clientIdShift = 12
-        const val clientIdMask = 0x3
+        const val IdMask = 0x3FF
+        const val SenderIdShift = 10
+        const val SenderIdMask = 0x3
+        const val ClientIdShift = 12
+        const val ClientIdMask = 0x3
     }
 }

@@ -26,7 +26,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
  */
 class ClientResourcePackStatusPacket(
     val status: Status
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     enum class Status {
         Succeed, Declined, Failed, Accepted
     }

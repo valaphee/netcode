@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * @author Kevin Ludwig
  */
-class ItemStack(
+data class ItemStack(
     @get:JsonProperty("namespace") val namespace: String,
     @get:JsonProperty("id") val key: String,
     @get:JsonProperty("aux") val aux: Int,
@@ -34,9 +34,5 @@ class ItemStack(
         @get:JsonProperty("type") val id: Int,
         @get:JsonProperty("name") val name: String,
         @get:JsonProperty("level") val value: Int
-    ) {
-        override fun toString() = "Enchantment(id=$id, name='$name', value=$value)"
-    }
-
-    override fun toString() = "ItemStack(namespace='$namespace', key='$key', aux=$aux, count=$count, maximumCount=$maximumCount, remainingCount=$remainingCount, enchantments=$enchantments)"
+    )
 }

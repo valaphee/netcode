@@ -49,7 +49,7 @@ import java.io.File
     JsonSubTypes.Type(ShapedRecipe::class),
     JsonSubTypes.Type(ShapelessRecipe::class)
 )
-interface Data
+abstract class Data
 
 inline fun <reified T : Data> ObjectMapper.readData(file: File): Pair<T, String?> {
     val data = readValue<MutableMap<*, *>>(file)

@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
 class ClientBeaconUpdatePacket(
     val primaryEffect: NamespacedKey?,
     val secondaryEffect: NamespacedKey?
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(primaryEffect?.let { buffer.registries.effects.getId(it) } ?: 0)
         buffer.writeVarInt(secondaryEffect?.let { buffer.registries.effects.getId(it) } ?: 0)

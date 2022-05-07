@@ -20,30 +20,33 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.network.Restrict
-import com.valaphee.netcode.mcbe.network.Restriction
 
 /**
  * @author Kevin Ludwig
  */
-@Restrict(Restriction.ToClient)
-class WebSocketPacket(
-    val url: String
+class ToastPacket(
+    val title: String,
+    val content: String
 ) : Packet() {
-    override val id get() = 0x5F
-
-    override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(url)
+    enum class Type {
+        None, Bool, Float
     }
 
-    override fun handle(handler: PacketHandler) = handler.webSocket(this)
+    override val id get() = 0x00
 
-    override fun toString() = "WebSocketPacket(url='$url')"
+    override fun write(buffer: PacketBuffer, version: Int) {
+        buffer.writeString(title)
+        buffer.writeString(content)
+    }
+
+    override fun handle(handler: PacketHandler) = handler.toast(this)
+
+    override fun toString() = "ToastPacket(title='$title', content='$content')"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object WebSocketPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = WebSocketPacket(buffer.readString())
+object ToastPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ToastPacket(buffer.readString(), buffer.readString())
 }

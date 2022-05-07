@@ -34,7 +34,7 @@ class ServerBorderPacket(
     val portalTeleportBoundary: Int,
     val warningTime: Int,
     val warningDistance: Int,
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Action {
         SetSize, LerpSize, SetCenter, Initialize, SetWarningTime, SetWarningDistance
     }

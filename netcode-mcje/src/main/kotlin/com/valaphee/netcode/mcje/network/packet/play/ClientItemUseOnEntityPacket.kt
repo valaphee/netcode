@@ -32,7 +32,7 @@ class ClientItemUseOnEntityPacket(
     var position: Float3?,
     var hand: Hand?,
     var sneaking: Boolean
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     enum class Type {
         Interact, Attack, InteractAt
     }

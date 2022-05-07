@@ -34,7 +34,7 @@ class ServerPaintingAddPacket(
     val painting: NamespacedKey,
     val position: Int3,
     val direction: Direction
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeUuid(entityUid)

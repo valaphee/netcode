@@ -31,7 +31,7 @@ import java.io.OutputStream
 class ServerQueryPacket(
     val id: Int,
     val data: Any?
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(id)
         buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)

@@ -38,7 +38,7 @@ class ServerRecipeBookPacket(
     val smokingRecipeBookFilterActive: Boolean,
     val recipeIds: List<NamespacedKey>,
     val availableRecipeIds: List<NamespacedKey>?
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Action {
         Initialize, Add, Remove
     }

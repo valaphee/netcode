@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerSpawnPositionPacket(
     val position: Int3,
     val yaw: Float
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
         if (version >= 758) buffer.writeAngle(yaw)

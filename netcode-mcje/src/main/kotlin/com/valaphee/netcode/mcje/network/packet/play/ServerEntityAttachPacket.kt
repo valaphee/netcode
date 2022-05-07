@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerEntityAttachPacket(
     val entityId: Int,
     val holderEntityId: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt(entityId)
         buffer.writeInt(holderEntityId)

@@ -33,7 +33,7 @@ class ServerBlockEntityPacket(
     val position: Int3,
     val type: Type,
     val data: Any?
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Type {
         Unused,
         MobSpawner,

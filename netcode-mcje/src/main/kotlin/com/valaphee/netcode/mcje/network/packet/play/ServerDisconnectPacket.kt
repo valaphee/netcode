@@ -27,7 +27,7 @@ import net.kyori.adventure.text.Component
  */
 class ServerDisconnectPacket(
     val message: Component
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeComponent(message)
     }

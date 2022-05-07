@@ -26,7 +26,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
  */
 class ServerEntitiesRemovePacket(
     val entityIds: IntArray
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityIds.size)
         entityIds.forEach { buffer.writeVarInt(it) }

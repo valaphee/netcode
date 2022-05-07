@@ -17,15 +17,14 @@
 package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.auto.Event
 
 /**
  * @author Kevin Ludwig
  */
-class PlayerTeleportedEvent(
+data class PlayerTeleportedEvent(
     @get:JsonProperty("player") val player: Entity,
     @get:JsonProperty("cause") val cause: Int,
     @get:JsonProperty("itemType") val item: Int,
     @get:JsonProperty("metersTravelled") val distance: Float
-) : Event {
-    override fun toString() = "PlayerTeleportedEvent(player=$player, cause=$cause, item=$item, distance=$distance)"
-}
+) : Event()

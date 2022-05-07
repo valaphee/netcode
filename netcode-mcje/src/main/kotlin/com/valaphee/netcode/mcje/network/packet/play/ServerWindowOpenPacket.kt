@@ -30,7 +30,7 @@ class ServerWindowOpenPacket(
     val windowId: Int,
     val windowTypeKey: NamespacedKey,
     val title: Component
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(windowId)
         buffer.writeVarInt(buffer.registries.windowTypes.getId(windowTypeKey))

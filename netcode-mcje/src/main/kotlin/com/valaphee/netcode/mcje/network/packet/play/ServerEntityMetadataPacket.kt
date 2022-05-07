@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.world.entity.metadata.Metadata
 class ServerEntityMetadataPacket(
     val entityId: Int,
     val metadata: Metadata
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         metadata.writeToBuffer(buffer)

@@ -40,7 +40,7 @@ data class BrewingMixRecipe(
     @get:JsonProperty("input") @get:JsonSerialize(using = PotionSerializer::class) @get:JsonDeserialize(using = PotionDeserializer::class) val input: ItemStack,
     @get:JsonProperty("reagent") @get:JsonSerialize(using = SingleItemSerializer::class) @get:JsonDeserialize(using = SingleItemDeserializer::class) val reagent: ItemStack,
     @get:JsonProperty("output") @get:JsonSerialize(using = PotionSerializer::class) @get:JsonDeserialize(using = PotionDeserializer::class) val output: ItemStack
-) : Data {
+) : Data() {
     data class Description(
         @get:JsonProperty("identifier") val key: String
     )
@@ -59,7 +59,7 @@ data class BrewingMixRecipe(
     }
 
     companion object {
-        val potionTypes = Registry<String>().apply {
+        private val potionTypes = Registry<String>().apply {
             this[ 0] = "water"
             this[ 1] = "mundane"
             this[ 3] = "thick"

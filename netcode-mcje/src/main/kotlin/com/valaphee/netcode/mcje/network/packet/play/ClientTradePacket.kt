@@ -26,7 +26,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
  */
 class ClientTradePacket(
     val slotId: Int
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(slotId)
     }

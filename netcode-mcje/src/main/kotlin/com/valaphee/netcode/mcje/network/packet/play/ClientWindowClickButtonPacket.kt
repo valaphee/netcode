@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
 class ClientWindowClickButtonPacket(
     val windowId: Int,
     val buttonId: Int
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
         buffer.writeByte(buttonId)

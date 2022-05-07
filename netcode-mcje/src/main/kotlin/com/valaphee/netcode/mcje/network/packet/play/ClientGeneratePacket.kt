@@ -29,7 +29,7 @@ class ClientGeneratePacket(
     val position: Int3,
     val depth: Int,
     val keepJigsaws: Boolean
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
         buffer.writeVarInt(depth)

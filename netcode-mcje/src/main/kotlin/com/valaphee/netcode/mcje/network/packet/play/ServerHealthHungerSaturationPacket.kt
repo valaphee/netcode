@@ -28,7 +28,7 @@ class ServerHealthHungerSaturationPacket(
     val health: Float,
     val hunger: Int,
     val saturation: Float
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeFloat(health)
         buffer.writeVarInt(hunger)

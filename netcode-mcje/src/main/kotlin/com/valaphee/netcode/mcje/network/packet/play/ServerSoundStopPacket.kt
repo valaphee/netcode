@@ -29,7 +29,7 @@ import com.valaphee.netcode.mcje.world.SoundCategory
 class ServerSoundStopPacket(
     val category: SoundCategory?,
     val soundKey: NamespacedKey?
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         val flagsIndex = buffer.writerIndex()
         var flagsValue = 0

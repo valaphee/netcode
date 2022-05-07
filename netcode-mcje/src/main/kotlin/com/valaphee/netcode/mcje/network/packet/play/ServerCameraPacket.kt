@@ -26,7 +26,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
  */
 class ServerCameraPacket(
     val cameraEntityId: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(cameraEntityId)
     }

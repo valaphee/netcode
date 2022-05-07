@@ -34,7 +34,7 @@ class ClientBookEditPacket(
     val hand: Hand,
     val pages: List<String>?,
     val title: String?
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         if (version >= 758) {
             buffer.writeVarInt(hand.ordinal)

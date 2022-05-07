@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerEntityAnimationPacket(
     val entityId: Int,
     val animation: Animation
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Animation {
         SwingMainArm, Hit, WakeUp, SwingOffArm, CriticalHit, MagicCriticalHit
     }

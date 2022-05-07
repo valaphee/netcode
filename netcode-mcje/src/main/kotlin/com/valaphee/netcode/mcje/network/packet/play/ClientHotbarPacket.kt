@@ -26,7 +26,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
  */
 class ClientHotbarPacket(
     val slot: Int
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeShort(slot)
     }

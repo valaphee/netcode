@@ -17,10 +17,12 @@
 package com.valaphee.netcode.mcbe.network
 
 import com.valaphee.netcode.mcbe.latestProtocolVersion
+import com.valaphee.netcode.mcbe.network.packet.AbilityPacketReader
 import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsPacketReader
 import com.valaphee.netcode.mcbe.network.packet.AnvilDamagePacketReader
 import com.valaphee.netcode.mcbe.network.packet.AppearancePacketReader
 import com.valaphee.netcode.mcbe.network.packet.ArmorDamagePacketReader
+import com.valaphee.netcode.mcbe.network.packet.AutomationPacketReader
 import com.valaphee.netcode.mcbe.network.packet.BehaviorTreePacketReader
 import com.valaphee.netcode.mcbe.network.packet.BiomeDefinitionsPacketReader
 import com.valaphee.netcode.mcbe.network.packet.BlockComponentPacketReader
@@ -103,6 +105,7 @@ import com.valaphee.netcode.mcbe.network.packet.LabTablePacketReader
 import com.valaphee.netcode.mcbe.network.packet.LastHurtByPacketReader
 import com.valaphee.netcode.mcbe.network.packet.LatencyPacketReader
 import com.valaphee.netcode.mcbe.network.packet.LecternUpdatePacketReader
+import com.valaphee.netcode.mcbe.network.packet.LessonProgressPacketReader
 import com.valaphee.netcode.mcbe.network.packet.LocalPlayerAsInitializedPacketReader
 import com.valaphee.netcode.mcbe.network.packet.LoginPacketReader
 import com.valaphee.netcode.mcbe.network.packet.MapCreateLockedCopyPacketReader
@@ -122,6 +125,7 @@ import com.valaphee.netcode.mcbe.network.packet.PacksResponsePacketReader
 import com.valaphee.netcode.mcbe.network.packet.PacksStackPacketReader
 import com.valaphee.netcode.mcbe.network.packet.PaintingAddPacketReader
 import com.valaphee.netcode.mcbe.network.packet.ParticlePacketReader
+import com.valaphee.netcode.mcbe.network.packet.PermissionsPacketReader
 import com.valaphee.netcode.mcbe.network.packet.PhotoItemPacketReader
 import com.valaphee.netcode.mcbe.network.packet.PhotoPacketReader
 import com.valaphee.netcode.mcbe.network.packet.PhotoRequestPacketReader
@@ -168,6 +172,7 @@ import com.valaphee.netcode.mcbe.network.packet.TextPacketReader
 import com.valaphee.netcode.mcbe.network.packet.TickSyncPacketReader
 import com.valaphee.netcode.mcbe.network.packet.TimePacketReader
 import com.valaphee.netcode.mcbe.network.packet.TitlePacketReader
+import com.valaphee.netcode.mcbe.network.packet.ToastPacketReader
 import com.valaphee.netcode.mcbe.network.packet.TradePacketReader
 import com.valaphee.netcode.mcbe.network.packet.TransferPacketReader
 import com.valaphee.netcode.mcbe.network.packet.VelocityPredictionPacketReader
@@ -175,7 +180,6 @@ import com.valaphee.netcode.mcbe.network.packet.VideoStreamPacketReader
 import com.valaphee.netcode.mcbe.network.packet.ViewDistancePacketReader
 import com.valaphee.netcode.mcbe.network.packet.ViewDistanceRequestPacketReader
 import com.valaphee.netcode.mcbe.network.packet.ViolationPacketReader
-import com.valaphee.netcode.mcbe.network.packet.WebSocketPacketReader
 import com.valaphee.netcode.mcbe.network.packet.WindowClosePacketReader
 import com.valaphee.netcode.mcbe.network.packet.WindowOpenPacketReader
 import com.valaphee.netcode.mcbe.network.packet.WindowPropertyPacketReader
@@ -199,7 +203,7 @@ class PacketCodec(
 ) : ByteToMessageCodec<Packet>() {
     public override fun encode(context: ChannelHandlerContext?, message: Packet, out: ByteBuf) {
         wrapBuffer(out).apply {
-            writeVarUInt(message.id and Packet.idMask or ((message.senderId and Packet.senderIdMask) shl Packet.senderIdShift) or ((message.clientId and Packet.clientIdMask) shl Packet.clientIdShift))
+            writeVarUInt(message.id and Packet.IdMask or ((message.senderId and Packet.SenderIdMask) shl Packet.SenderIdShift) or ((message.clientId and Packet.ClientIdMask) shl Packet.ClientIdShift))
             message.write(this, version)
         }
     }
@@ -207,13 +211,13 @@ class PacketCodec(
     public override fun decode(context: ChannelHandlerContext?, `in`: ByteBuf, out: MutableList<Any>) {
         val buffer = wrapBuffer(`in`)
         val header = buffer.readVarUInt()
-        val id = header and Packet.idMask
+        val id = header and Packet.IdMask
         try {
             (if (client) clientReaders else serverReaders)[id]?.let {
                 try {
                     out.add(it.read(buffer, version).apply {
-                        senderId = (header shr Packet.senderIdShift) and Packet.senderIdMask
-                        clientId = (header shr Packet.clientIdShift) and Packet.clientIdMask
+                        senderId = (header shr Packet.SenderIdShift) and Packet.SenderIdMask
+                        clientId = (header shr Packet.ClientIdShift) and Packet.ClientIdMask
                     })
                 } catch (ex: Exception) {
                     throw DecoderException("0x${id.toString(16).uppercase()} problematic at 0x${buffer.readerIndex().toString(16).uppercase()}", ex)
@@ -321,7 +325,7 @@ class PacketCodec(
             this[0x5C] = PurchaseReceiptPacketReader
             this[0x5D] = AppearancePacketReader
             this[0x5E] = SubLoginPacketReader
-            this[0x5F] = WebSocketPacketReader
+            this[0x5F] = AutomationPacketReader
             this[0x60] = LastHurtByPacketReader
             this[0x61] = BookEditPacketReader
             this[0x62] = NpcRequestPacketReader
@@ -409,6 +413,10 @@ class PacketCodec(
             this[0xB4] = DimensionDataPacketReader
             //this[0xB5] = AgentActionEventPacket
             this[0xB6] = EntityPropertyPacketReader
+            this[0xB7] = LessonProgressPacketReader
+            this[0xB8] = AbilityPacketReader
+            this[0xB9] = PermissionsPacketReader
+            this[0xBA] = ToastPacketReader
         }
         private val clientReaders = readers.filterValues { it::class.java.getMethod("read", PacketBuffer::class.java, Int::class.java).returnType.kotlin.findAnnotation<Restrict>()?.value?.contains(Restriction.ToClient) ?: true }
         private val serverReaders = readers.filterValues { it::class.java.getMethod("read", PacketBuffer::class.java, Int::class.java).returnType.kotlin.findAnnotation<Restrict>()?.value?.contains(Restriction.ToServer) ?: true }

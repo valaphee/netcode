@@ -28,7 +28,7 @@ import net.kyori.adventure.text.Component
 class ServerPlayerListHeaderFooterPacket(
     val header: Component,
     val footer: Component
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeComponent(header)
         buffer.writeComponent(footer)

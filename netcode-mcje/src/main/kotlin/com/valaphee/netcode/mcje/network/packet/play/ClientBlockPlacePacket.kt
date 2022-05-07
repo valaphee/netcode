@@ -34,7 +34,7 @@ class ClientBlockPlacePacket(
     val blockFace: Direction?,
     val clickPosition: Float3,
     val insideBlock: Boolean,
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(hand.ordinal)
         buffer.writeInt3UnsignedY(blockPosition)

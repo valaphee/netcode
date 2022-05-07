@@ -31,7 +31,7 @@ class ServerBlockEventPacket(
     val data1: Int,
     val data2: Int,
     val blockKey: NamespacedKey
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
         buffer.writeByte(data1)

@@ -31,7 +31,7 @@ class ServerCommandSuggestPacket(
     val start: Int,
     val length: Int,
     val matches: List<Match>
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     class Match(
         val match: String,
         val tooltip: Component?

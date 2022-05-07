@@ -27,7 +27,7 @@ import java.util.UUID
  */
 class ClientSpectatePacket(
     val userId: UUID
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeUuid(userId)
     }

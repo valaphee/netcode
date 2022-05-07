@@ -29,7 +29,7 @@ class ServerExperienceOrbAddPacket(
     val entityId: Int,
     val position: Double3,
     val amount: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeDouble3(position)

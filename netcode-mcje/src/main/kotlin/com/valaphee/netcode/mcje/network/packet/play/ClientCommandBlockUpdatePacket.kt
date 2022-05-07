@@ -32,7 +32,7 @@ class ClientCommandBlockUpdatePacket(
     val outputTracked: Boolean,
     val conditionMet: Boolean,
     val executeOnFirstTick: Boolean
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     enum class Mode {
         Chain, Repeat, Impulse
     }

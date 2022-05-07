@@ -32,7 +32,7 @@ class ServerExplosionPacket(
     val radius: Float,
     val affectedBlocks: List<Int3>,
     val velocity: Float3
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeFloat3(position)
         buffer.writeFloat(radius)

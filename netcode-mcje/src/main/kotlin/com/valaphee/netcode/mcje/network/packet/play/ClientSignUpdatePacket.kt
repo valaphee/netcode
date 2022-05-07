@@ -31,7 +31,7 @@ class ClientSignUpdatePacket(
     val text1: String,
     val text2: String,
     val text3: String
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
         buffer.writeString(text0)

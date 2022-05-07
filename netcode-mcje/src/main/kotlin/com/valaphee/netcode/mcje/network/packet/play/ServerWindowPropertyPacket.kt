@@ -28,7 +28,7 @@ class ServerWindowPropertyPacket(
     val windowId: Int,
     val property: Int,
     val value: Int
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
         buffer.writeShort(property)

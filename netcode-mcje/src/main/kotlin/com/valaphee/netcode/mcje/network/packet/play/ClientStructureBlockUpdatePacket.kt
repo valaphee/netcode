@@ -40,7 +40,7 @@ class ClientStructureBlockUpdatePacket(
     val ignoreEntities: Boolean,
     val showAir: Boolean,
     val showBoundingBox: Boolean
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     enum class Action {
         Update, Save, Load, DetectSize
     }

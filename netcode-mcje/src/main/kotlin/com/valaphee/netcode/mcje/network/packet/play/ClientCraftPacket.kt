@@ -29,7 +29,7 @@ class ClientCraftPacket(
     val windowId: Int,
     val recipeId: NamespacedKey,
     val all: Boolean
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
         buffer.writeNamespacedKey(recipeId)

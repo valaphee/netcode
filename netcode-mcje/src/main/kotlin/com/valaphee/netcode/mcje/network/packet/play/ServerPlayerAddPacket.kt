@@ -32,7 +32,7 @@ class ServerPlayerAddPacket(
     val userId: UUID,
     val position: Double3,
     val rotation: Float2
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeUuid(userId)

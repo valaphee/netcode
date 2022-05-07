@@ -36,8 +36,8 @@ data class ShapelessRecipe(
     @get:JsonProperty("tags") val tags: List<String>,
     @get:JsonProperty("priority") val priority: Int = 0,
     @get:JsonIgnore val netId: Int = 0
-) : Recipe {
-    data class Description(
+) : Recipe() {
+    class Description(
         @get:JsonProperty("identifier") val key: String
     )
 

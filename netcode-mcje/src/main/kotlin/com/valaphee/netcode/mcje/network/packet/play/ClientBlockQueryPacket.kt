@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
 class ClientBlockQueryPacket(
     val id: Int,
     val position: Int3,
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(id)
         buffer.writeInt3UnsignedY(position)

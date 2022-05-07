@@ -30,7 +30,7 @@ class ServerPlayerCombatEventPacket(
     val durationOrPlayerEntityId: Int,
     val entityId: Int,
     val message: Component?
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Event {
         Enter, End, Death
     }

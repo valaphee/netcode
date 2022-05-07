@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation
+package com.valaphee.netcode.mcbe.auto
 
-import com.valaphee.netcode.mcbe.auto.PacketCodec
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext

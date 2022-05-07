@@ -24,4 +24,4 @@ import java.util.UUID
 data class MultiRecipe(
     val id: UUID,
     val netId: Int = 0
-) : Recipe
+) : Recipe()

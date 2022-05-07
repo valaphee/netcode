@@ -28,7 +28,7 @@ import java.awt.image.DataBufferByte
 /**
  * @author Kevin Ludwig
  */
-class AppearanceImage(
+data class AppearanceImage(
     @get:JsonProperty("ImageWidth") val width: Int?,
     @get:JsonProperty("ImageHeight") val height: Int?,
     @get:JsonProperty("Data") val data: ByteArray
@@ -56,6 +56,30 @@ class AppearanceImage(
 
     companion object {
         val Empty = AppearanceImage(0, 0, ByteArray(0))
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as AppearanceImage
+
+        if (width != other.width) return false
+        if (height != other.height) return false
+        if (!data.contentEquals(other.data)) return false
+        if (_width != other._width) return false
+        if (_height != other._height) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = width ?: 0
+        result = 31 * result + (height ?: 0)
+        result = 31 * result + data.contentHashCode()
+        result = 31 * result + _width
+        result = 31 * result + _height
+        return result
     }
 }
 

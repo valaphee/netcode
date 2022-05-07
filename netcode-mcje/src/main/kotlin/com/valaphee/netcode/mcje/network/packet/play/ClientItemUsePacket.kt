@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.world.entity.player.Hand
  */
 class ClientItemUsePacket(
     val hand: Hand
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(hand.ordinal)
     }

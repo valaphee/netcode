@@ -29,7 +29,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerEntityVelocityPacket(
     val entityId: Int,
     val velocity: Double3
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         val (motionX, motionY, motionZ) = velocity.toMutableDouble3().scale(8000.0).toInt3()

@@ -30,7 +30,7 @@ class ServerObjectivePacket(
     val action: Action,
     val displayName: Component?,
     val type: Type?
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Action {
         Create, Remove, Update
     }

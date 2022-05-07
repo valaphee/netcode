@@ -31,7 +31,7 @@ class ServerWorldEventPacket(
     val position: Int3,
     val data: Int,
     val relativeVolumeDisabled: Boolean
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Event {
         SoundClick,
         SoundClickFail,

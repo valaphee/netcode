@@ -28,7 +28,7 @@ class ClientRecipeBookStatePacket(
     val recipeBook: RecipeBook,
     val recipeBookOpen: Boolean,
     val recipeBookFilterActive: Boolean
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     enum class RecipeBook {
         Crafting, Smelting, Blasting, Smoking
     }

@@ -26,7 +26,7 @@ import com.valaphee.netcode.util.safeList
 /**
  * @author Kevin Ludwig
  */
-data class Appearance constructor(
+data class Appearance(
     val skinId: String,
     val playFabId: String?,
     val skinResourcePatch: ByteArray,
@@ -48,7 +48,7 @@ data class Appearance constructor(
     @get:JsonIgnore val primaryUser: Boolean,
     @get:JsonIgnore var trusted: Boolean
 ) {
-    data class Animation constructor(
+    data class Animation(
         @JsonIgnore val image: AppearanceImage,
         val type: Type,
         val frames: Float,

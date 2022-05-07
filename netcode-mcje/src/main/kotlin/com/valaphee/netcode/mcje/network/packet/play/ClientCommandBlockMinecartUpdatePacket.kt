@@ -28,7 +28,7 @@ class ClientCommandBlockMinecartUpdatePacket(
     val entityId: Int,
     val command: String,
     val outputTracked: Boolean
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeString(command)

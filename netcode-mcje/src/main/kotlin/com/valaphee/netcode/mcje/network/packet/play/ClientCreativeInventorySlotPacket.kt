@@ -30,7 +30,7 @@ import com.valaphee.netcode.mcje.world.item.writeItemStack
 class ClientCreativeInventorySlotPacket(
     val slotId: Int,
     val itemStack: ItemStack?
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeShort(slotId)
         buffer.writeItemStack(itemStack)

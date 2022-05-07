@@ -47,7 +47,7 @@ class ServerChunkPacket(
     val emptyBlockLight: BitSet?,
     val skyLight: Array<NibbleArray>?,
     val blockLight: Array<NibbleArray>?
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     data class BlockEntity(
         val position: Int3,
         val type: Int,
@@ -83,11 +83,11 @@ class ServerChunkPacket(
             emptyBlockLight.forEach { buffer.writeLong(it) }
             skyLight!!.let {
                 buffer.writeVarInt(it.size)
-                it.forEach { buffer.writeByteArray(it.data) }
+                it.forEach { buffer.writeByteArray(it.bytes) }
             }
             blockLight!!.let {
                 buffer.writeVarInt(it.size)
-                it.forEach { buffer.writeByteArray(it.data) }
+                it.forEach { buffer.writeByteArray(it.bytes) }
             }
         } else {
             buffer.writeBoolean(biomes != null)

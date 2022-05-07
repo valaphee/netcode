@@ -17,12 +17,11 @@
 package com.valaphee.netcode.mcbe.auto.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.auto.Event
 
 /**
  * @author Kevin Ludwig
  */
-class EndOfDayEvent(
+data class EndOfDayEvent(
     @get:JsonProperty("player") val player: Entity
-) : Event {
-    override fun toString() = "EndOfDayEvent(player=$player)"
-}
+) : Event()

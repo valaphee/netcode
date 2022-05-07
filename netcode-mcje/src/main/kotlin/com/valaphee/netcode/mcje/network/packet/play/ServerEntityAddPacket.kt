@@ -37,7 +37,7 @@ class ServerEntityAddPacket(
     val rotation: Float2,
     val headRotationYaw: Float,
     val velocity: Double3
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeUuid(entityUid!!)

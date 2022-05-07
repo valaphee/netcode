@@ -26,7 +26,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
  */
 class ClientDifficultyLockPacket(
     val locked: Boolean
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeBoolean(locked)
     }

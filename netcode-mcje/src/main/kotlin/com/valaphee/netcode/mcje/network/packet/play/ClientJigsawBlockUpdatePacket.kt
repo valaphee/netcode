@@ -33,7 +33,7 @@ class ClientJigsawBlockUpdatePacket(
     val pool: NamespacedKey,
     val finalState: String,
     val jointType: String
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
         buffer.writeNamespacedKey(name)

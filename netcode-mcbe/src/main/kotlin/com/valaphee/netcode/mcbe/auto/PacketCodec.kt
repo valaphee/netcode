@@ -19,10 +19,6 @@ package com.valaphee.netcode.mcbe.auto
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.valaphee.netcode.mcbe.auto.command.Command
-import com.valaphee.netcode.mcbe.auto.command.CommandResponse
-import com.valaphee.netcode.mcbe.auto.event.Event
-import com.valaphee.netcode.mcbe.auto.event.EventRequest
 import io.netty.buffer.ByteBufInputStream
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToMessageCodec

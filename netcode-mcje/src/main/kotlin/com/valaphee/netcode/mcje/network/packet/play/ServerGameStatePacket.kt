@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerGameStatePacket(
     val reason: Reason,
     val data: Float
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Reason {
         InvalidBed,
         StopRain,

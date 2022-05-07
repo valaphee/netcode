@@ -39,7 +39,7 @@ class ServerChunkLightPacket(
     val emptyBlockLight: BitSet,
     val skyLight: Array<NibbleArray?>,
     val blockLight: Array<NibbleArray?>
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     data class BlockEntity(
         val position: Int3,
         val type: Int,
@@ -64,16 +64,16 @@ class ServerChunkLightPacket(
             buffer.writeVarInt(emptyBlockLight.size)
             emptyBlockLight.forEach { buffer.writeLong(it) }
             buffer.writeVarInt(skyLight.size)
-            skyLight.forEach { buffer.writeByteArray(it!!.data) }
+            skyLight.forEach { buffer.writeByteArray(it!!.bytes) }
             buffer.writeVarInt(blockLight.size)
-            blockLight.forEach { buffer.writeByteArray(it!!.data) }
+            blockLight.forEach { buffer.writeByteArray(it!!.bytes) }
         } else {
             buffer.writeVarInt(withSkyLight.toLongArray().single().toInt())
             buffer.writeVarInt(withBlockLight.toLongArray().single().toInt())
             buffer.writeVarInt(emptySkyLight.toLongArray().single().toInt())
             buffer.writeVarInt(emptyBlockLight.toLongArray().single().toInt())
-            skyLight.forEach { buffer.writeByteArray(it!!.data) }
-            blockLight.forEach { buffer.writeByteArray(it!!.data) }
+            skyLight.forEach { buffer.writeByteArray(it!!.bytes) }
+            blockLight.forEach { buffer.writeByteArray(it!!.bytes) }
         }
     }
 

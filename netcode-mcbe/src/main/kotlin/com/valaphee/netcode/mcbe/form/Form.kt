@@ -33,8 +33,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(ButtonList::class, name = "form"),
     JsonSubTypes.Type(CustomForm::class, name = "custom_form")
 )
-abstract class Form<T>(
+interface Form<T> {
     @get:JsonProperty("title") val title: String
-) {
-    abstract fun getResponse(response: Any?): T?
+
+    fun getResponse(response: Any?): T?
 }

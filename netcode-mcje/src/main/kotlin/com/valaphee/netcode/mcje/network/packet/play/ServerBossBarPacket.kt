@@ -36,7 +36,7 @@ class ServerBossBarPacket(
     val darkenSky: Boolean,
     val playEndMusic: Boolean,
     val showFog: Boolean
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Action {
         Show, Hide, SetPercentage, SetTitle, SetStyle, SetFlags
     }

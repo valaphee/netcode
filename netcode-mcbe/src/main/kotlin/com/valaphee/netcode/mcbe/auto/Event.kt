@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Valaphee.
+ * Copyright (c) 2021-2022, Valaphee.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto.command
+package com.valaphee.netcode.mcbe.auto
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import kotlin.reflect.KClass
 
 /**
  * @author Kevin Ludwig
  */
-interface Command {
-    @get:JsonProperty("commandLine") val commandLine: String
+abstract class Event
 
-    @get:JsonIgnore val responseType: KClass<out CommandResponse>
-}
-
-interface CommandResponse
+/**
+ * @author Kevin Ludwig
+ */
+data class EventRequest(
+    @get:JsonProperty("eventName") val eventName: String
+)

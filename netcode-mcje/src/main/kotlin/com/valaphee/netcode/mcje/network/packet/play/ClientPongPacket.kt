@@ -24,7 +24,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
 /**
  * @author Kevin Ludwig
  */
-object ClientPongPacket : Packet<ClientPlayPacketHandler> {
+object ClientPongPacket : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) = Unit
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.pong(this)

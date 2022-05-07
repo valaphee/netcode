@@ -26,7 +26,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
  */
 class ClientStatusPacket(
     val action: Action
-) : Packet<ClientPlayPacketHandler> {
+) : Packet<ClientPlayPacketHandler>() {
     enum class Action {
         PerformRespawn, RequestStatistics, TakingInventoryAchievement
     }

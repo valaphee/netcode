@@ -21,10 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * @author Kevin Ludwig
  */
-class Block(
+data class Block(
     @get:JsonProperty("namespace") val namespace: String,
     @get:JsonProperty("id") val id: String,
     @get:JsonProperty("aux") val aux: Int
-) {
-    override fun toString() = "Block(namespace='$namespace', id='$id', aux=$aux)"
-}
+)

@@ -31,7 +31,7 @@ import net.kyori.adventure.text.Component
 class ServerPlayerListPacket(
     val action: Action,
     val entries: List<Entry>
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Action {
         Add, UpdateGameMode, UpdateLatency, UpdateCustomName, Remove
     }

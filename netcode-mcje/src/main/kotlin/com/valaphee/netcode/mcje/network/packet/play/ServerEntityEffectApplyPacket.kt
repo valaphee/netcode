@@ -31,7 +31,7 @@ class ServerEntityEffectApplyPacket(
     val amplifier: Int,
     val duration: Int,
     val flags: Set<Flag>
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Flag {
         Ambient, ShowParticles, ShowIcon
     }

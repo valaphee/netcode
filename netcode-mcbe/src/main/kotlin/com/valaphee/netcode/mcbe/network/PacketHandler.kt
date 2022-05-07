@@ -16,10 +16,12 @@
 
 package com.valaphee.netcode.mcbe.network
 
+import com.valaphee.netcode.mcbe.network.packet.AbilityPacket
 import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsPacket
 import com.valaphee.netcode.mcbe.network.packet.AnvilDamagePacket
 import com.valaphee.netcode.mcbe.network.packet.AppearancePacket
 import com.valaphee.netcode.mcbe.network.packet.ArmorDamagePacket
+import com.valaphee.netcode.mcbe.network.packet.AutomationPacket
 import com.valaphee.netcode.mcbe.network.packet.BehaviorTreePacket
 import com.valaphee.netcode.mcbe.network.packet.BiomeDefinitionsPacket
 import com.valaphee.netcode.mcbe.network.packet.BlockComponentPacket
@@ -104,6 +106,7 @@ import com.valaphee.netcode.mcbe.network.packet.LabTablePacket
 import com.valaphee.netcode.mcbe.network.packet.LastHurtByPacket
 import com.valaphee.netcode.mcbe.network.packet.LatencyPacket
 import com.valaphee.netcode.mcbe.network.packet.LecternUpdatePacket
+import com.valaphee.netcode.mcbe.network.packet.LessonProgressPacket
 import com.valaphee.netcode.mcbe.network.packet.LocalPlayerAsInitializedPacket
 import com.valaphee.netcode.mcbe.network.packet.LoginPacket
 import com.valaphee.netcode.mcbe.network.packet.MapCreateLockedCopyPacket
@@ -124,6 +127,7 @@ import com.valaphee.netcode.mcbe.network.packet.PacksResponsePacket
 import com.valaphee.netcode.mcbe.network.packet.PacksStackPacket
 import com.valaphee.netcode.mcbe.network.packet.PaintingAddPacket
 import com.valaphee.netcode.mcbe.network.packet.ParticlePacket
+import com.valaphee.netcode.mcbe.network.packet.PermissionsPacket
 import com.valaphee.netcode.mcbe.network.packet.PhotoItemPacket
 import com.valaphee.netcode.mcbe.network.packet.PhotoPacket
 import com.valaphee.netcode.mcbe.network.packet.PhotoRequestPacket
@@ -170,6 +174,7 @@ import com.valaphee.netcode.mcbe.network.packet.TextPacket
 import com.valaphee.netcode.mcbe.network.packet.TickSyncPacket
 import com.valaphee.netcode.mcbe.network.packet.TimePacket
 import com.valaphee.netcode.mcbe.network.packet.TitlePacket
+import com.valaphee.netcode.mcbe.network.packet.ToastPacket
 import com.valaphee.netcode.mcbe.network.packet.TradePacket
 import com.valaphee.netcode.mcbe.network.packet.TransferPacket
 import com.valaphee.netcode.mcbe.network.packet.VelocityPredictionPacket
@@ -177,7 +182,6 @@ import com.valaphee.netcode.mcbe.network.packet.VideoStreamPacket
 import com.valaphee.netcode.mcbe.network.packet.ViewDistancePacket
 import com.valaphee.netcode.mcbe.network.packet.ViewDistanceRequestPacket
 import com.valaphee.netcode.mcbe.network.packet.ViolationPacket
-import com.valaphee.netcode.mcbe.network.packet.WebSocketPacket
 import com.valaphee.netcode.mcbe.network.packet.WindowClosePacket
 import com.valaphee.netcode.mcbe.network.packet.WindowOpenPacket
 import com.valaphee.netcode.mcbe.network.packet.WindowPropertyPacket
@@ -374,7 +378,7 @@ interface PacketHandler : ProtocolHandler {
 
     fun subLogin(packet: SubLoginPacket) = other(packet)
 
-    fun webSocket(packet: WebSocketPacket) = other(packet)
+    fun webSocket(packet: AutomationPacket) = other(packet)
 
     fun lastHurtBy(packet: LastHurtByPacket) = other(packet)
 
@@ -527,4 +531,12 @@ interface PacketHandler : ProtocolHandler {
     fun dimensionData(packet: DimensionDataPacket) = other(packet)
 
     fun entityProperty(packet: EntityPropertyPacket) = other(packet)
+
+    fun lessonProgress(packet: LessonProgressPacket) = other(packet)
+
+    fun ability(packet: AbilityPacket) = other(packet)
+
+    fun permissions(packet: PermissionsPacket) = other(packet)
+
+    fun toast(packet: ToastPacket) = other(packet)
 }

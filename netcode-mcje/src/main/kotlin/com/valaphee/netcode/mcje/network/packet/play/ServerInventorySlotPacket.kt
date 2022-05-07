@@ -32,7 +32,7 @@ class ServerInventorySlotPacket(
     val stateId: Int,
     val slotId: Int,
     val itemStack: ItemStack?
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
         if (version >= 758) buffer.writeVarInt(stateId)

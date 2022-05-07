@@ -21,10 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  * @author Kevin Ludwig
  */
-class Item(
+data class Item(
     @get:JsonProperty("namespace") val namespace: String,
     @get:JsonProperty("id") val key: String,
     @get:JsonProperty("aux") val aux: Int
-) {
-    override fun toString() = "Item(namespace='$namespace', key='$key', aux=$aux)"
-}
+)

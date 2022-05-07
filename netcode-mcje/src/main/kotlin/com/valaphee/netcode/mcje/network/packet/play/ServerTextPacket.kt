@@ -30,7 +30,7 @@ class ServerTextPacket(
     val message: Component,
     val type: Type,
     val userId: UUID = UUID(0, 0)
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     enum class Type {
         Chat, System, Tip
     }

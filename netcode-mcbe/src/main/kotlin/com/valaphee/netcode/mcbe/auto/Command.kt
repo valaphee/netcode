@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto.event
+package com.valaphee.netcode.mcbe.auto
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import kotlin.reflect.KClass
 
 /**
  * @author Kevin Ludwig
  */
-interface Event
+abstract class Command {
+    @get:JsonProperty("commandLine") abstract val commandLine: String
 
-/**
- * @author Kevin Ludwig
- */
-class EventRequest(
-    @get:JsonProperty("eventName") val eventName: String
-) {
-    override fun toString() = "EventRequest(eventName='$eventName')"
+    @get:JsonIgnore abstract val responseType: KClass<out CommandResponse>
 }
+
+abstract class CommandResponse

@@ -31,7 +31,7 @@ class ServerEntityTeleportPacket(
     val position: Double3,
     val rotation: Float2,
     val onGround: Boolean
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeDouble3(position)

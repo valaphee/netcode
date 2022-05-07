@@ -40,7 +40,7 @@ class ServerRespawnPacket(
     val debugGenerator: Boolean,
     val flatGenerator: Boolean,
     val keepMetadata: Boolean
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension)
         buffer.writeNamespacedKey(worldName)

@@ -33,7 +33,7 @@ class ServerSoundPacket(
     val position: Float3,
     val volume: Float,
     val pitch: Float
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(buffer.registries.sounds.getId(soundKey))
         buffer.writeVarInt(category.ordinal)

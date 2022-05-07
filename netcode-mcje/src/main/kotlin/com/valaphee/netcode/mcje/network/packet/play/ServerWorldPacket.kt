@@ -51,7 +51,7 @@ class ServerWorldPacket(
     val respawnScreen: Boolean,
     val debugGenerator: Boolean,
     val flatGenerator: Boolean,
-) : Packet<ServerPlayPacketHandler> {
+) : Packet<ServerPlayPacketHandler>() {
     data class DimensionCodec(
         @get:JsonProperty("minecraft:dimension_type") val dimensions: Registry<Dimension>,
         @get:JsonProperty("minecraft:worldgen/biome") val biomes: Registry<Biome>
