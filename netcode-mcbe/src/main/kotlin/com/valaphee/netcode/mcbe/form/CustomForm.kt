@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 data class CustomForm(
     override val title: String,
     @get:JsonProperty("content") val elements: List<Element>
-) : Form<Map<String, Any?>> {
+) : Form<Map<String, Any?>>() {
     override fun getResponse(response: Any?) = (response as List<*>).mapIndexed { i, answer -> Pair(elements[i].text, elements[i].answer(answer)) }.toMap()
 }
 

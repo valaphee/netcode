@@ -25,7 +25,7 @@ data class ButtonList(
     override val title: String,
     @get:JsonProperty("content") val content: String,
     @get:JsonProperty("buttons") val buttons: List<Button>
-) : Form<String> {
+) : Form<String>() {
     override fun getResponse(response: Any?) = if (response as Int >= buttons.size) null else buttons[response].text
 }
 

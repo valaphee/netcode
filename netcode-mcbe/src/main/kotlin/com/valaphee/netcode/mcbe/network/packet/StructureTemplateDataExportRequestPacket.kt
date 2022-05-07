@@ -24,10 +24,10 @@ import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.StructureSettings
-import com.valaphee.netcode.mcbe.world.readStructureSettingsPre503
 import com.valaphee.netcode.mcbe.world.readStructureSettingsPre440
-import com.valaphee.netcode.mcbe.world.writeStructureSettingsPre503
+import com.valaphee.netcode.mcbe.world.readStructureSettingsPre503
 import com.valaphee.netcode.mcbe.world.writeStructureSettingsPre440
+import com.valaphee.netcode.mcbe.world.writeStructureSettingsPre503
 
 /**
  * @author Kevin Ludwig

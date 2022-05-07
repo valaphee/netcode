@@ -44,7 +44,6 @@ class ServerPaintingAddPacket(
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.paintingAdd(this)
-
 }
 
 /**

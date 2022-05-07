@@ -73,7 +73,7 @@ object SingleIngredientDeserializer : JsonDeserializer<ItemStack>() {
     override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
         val item = parser.readValueAs(String::class.java)
         val subIdDelimiter = item.lastIndexOf(':')
-        return (if (subIdDelimiter != -1) item.substring(subIdDelimiter + 1).toIntOrNull() else null)?.let { ItemStack(item.substring(0, subIdDelimiter),  it) } ?: ItemStack(item, -1)
+        return (if (subIdDelimiter != -1) item.substring(subIdDelimiter + 1).toIntOrNull() else null)?.let { ItemStack(item.substring(0, subIdDelimiter), it) } ?: ItemStack(item, -1)
     }
 }
 
@@ -84,6 +84,6 @@ object SingleItemDeserializer : JsonDeserializer<ItemStack>() {
     override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
         val item = parser.readValueAs(String::class.java)
         val subIdDelimiter = item.lastIndexOf(':')
-        return (if (subIdDelimiter != -1) item.substring(subIdDelimiter + 1).toIntOrNull() else null)?.let { ItemStack(item.substring(0, subIdDelimiter),  it) } ?: ItemStack(item)
+        return (if (subIdDelimiter != -1) item.substring(subIdDelimiter + 1).toIntOrNull() else null)?.let { ItemStack(item.substring(0, subIdDelimiter), it) } ?: ItemStack(item)
     }
 }
