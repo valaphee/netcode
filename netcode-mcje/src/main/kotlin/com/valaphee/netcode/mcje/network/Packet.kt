@@ -22,7 +22,7 @@ import com.valaphee.netcode.network.ProtocolHandler
  * @author Kevin Ludwig
  */
 abstract class Packet<T : ProtocolHandler> {
-    fun getId(id: Int, version: Int) = id
+    open fun getId(id: Int, version: Int) = id
 
     abstract fun write(buffer: PacketBuffer, version: Int)
 

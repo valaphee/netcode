@@ -16,7 +16,7 @@
 
 dependencies {
     api(project(":netcode-common"))
-    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
+    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
     api("com.valaphee:foundry-math:1.4.0")
     api("com.valaphee:jackson-dataformat-nbt:1.2.4")
     api("it.unimi.dsi:fastutil:8.5.8")

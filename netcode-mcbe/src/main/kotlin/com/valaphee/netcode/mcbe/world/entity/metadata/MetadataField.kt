@@ -152,5 +152,8 @@ class MetadataField<T>(
         val MovementSoundDistanceOffset = MetadataField(125, MetadataType.Int)
         val HeartbeatIntervalTicks = MetadataField(126, MetadataType.Int)
         val HeartbeatSoundEvent = MetadataField(127, MetadataType.Int)
+        val PlayerLastDeathPosition = MetadataField(128, MetadataType.Int3)
+        val PlayerLastDeathDimension = MetadataField(129, MetadataType.Int)
+        val PlayerHasDied = MetadataField(130, MetadataType.Byte)
     }
 }

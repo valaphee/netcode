@@ -60,5 +60,6 @@ enum class Flag2 {
     JumpGoalJump,
     Emerging,
     Sniffing,
-    Digging
+    Digging,
+    SonicBoom
 }

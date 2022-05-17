@@ -24,7 +24,7 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 /**
  * @author Kevin Ludwig
  */
-object ServerPingPacket : Packet<ServerPlayPacketHandler> {
+object ServerPingPacket : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) = Unit
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.ping(this)

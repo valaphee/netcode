@@ -59,7 +59,9 @@ class PlayerActionPacket(
         StopSpinAttack,
         BlockInteract,
         BlockPredictDestroy,
-        BlockContinueDestroy
+        BlockContinueDestroy,
+        ItemUseOnStart,
+        ItemUseOnStop
     }
 
     override val id get() = 0x24

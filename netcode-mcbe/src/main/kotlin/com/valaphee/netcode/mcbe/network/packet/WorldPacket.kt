@@ -49,6 +49,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.UUID
 
 /**
  * @author Kevin Ludwig
@@ -117,7 +118,8 @@ class WorldPacket(
     val multiplayerCorrelationId: String,
     val inventoriesServerAuthoritative: Boolean,
     val engineVersion: String,
-    val blocksChecksum: Long
+    val blocksChecksum: Long,
+    val worldTemplateId: UUID
 ) : Packet() {
     enum class BiomeType {
         Default, UserDefined
@@ -238,6 +240,10 @@ class WorldPacket(
         if (version >= 407) buffer.writeBoolean(inventoriesServerAuthoritative)
         if (version >= 440) buffer.writeString(engineVersion)
         if (version >= 475) buffer.writeLongLE(blocksChecksum)
+        if (version >= 526) {
+            buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, null)
+            buffer.writeUuid(worldTemplateId)
+        }
     }
 
     override fun handle(handler: PacketHandler) = handler.world(this)
@@ -383,6 +389,14 @@ object WorldPacketReader : PacketReader {
         val inventoriesServerAuthoritative = buffer.readBoolean()
         val engineVersion = if (version >= 440) buffer.readString() else ""
         val blocksChecksum = if (version >= 475) buffer.readLongLE() else 0
-        return WorldPacket(uniqueEntityId, runtimeEntityId, gameMode, position, rotation, seed, biomeType, biomeName, dimension, generatorId, defaultGameMode, difficulty, defaultSpawn, achievementsDisabled, time, educationEditionOffer, educationModeId, educationFeaturesEnabled, educationProductId, rainLevel, thunderLevel, platformLockedContentConfirmed, multiplayerGame, broadcastingToLan, xboxLiveBroadcastMode, platformBroadcastMode, commandsEnabled, resourcePacksRequired, gameRules, experiments, experimentsPreviouslyToggled, bonusChestEnabled, startingWithMap, defaultPlayerPermission, serverChunkTickRange, behaviorPackLocked, resourcePackLocked, fromLockedWorldTemplate, usingMsaGamertagsOnly, fromWorldTemplate, worldTemplateOptionLocked, onlySpawningV1Villagers, version0, limitedWorldRadius, limitedWorldHeight, v2Nether, experimentalGameplay, levelId, worldName, premiumWorldTemplateId, trial, movementAuthoritative, movementRewindHistory, blockBreakingServerAuthoritative, tick, enchantmentSeed, blocksData, blocks, items, multiplayerCorrelationId, inventoriesServerAuthoritative, engineVersion, blocksChecksum)
+        val worldTemplateId: UUID
+        if (version >= 526) {
+            buffer.nbtVarIntObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
+            worldTemplateId = buffer.readUuid()
+        } else {
+
+            worldTemplateId = UUID.randomUUID()
+        }
+        return WorldPacket(uniqueEntityId, runtimeEntityId, gameMode, position, rotation, seed, biomeType, biomeName, dimension, generatorId, defaultGameMode, difficulty, defaultSpawn, achievementsDisabled, time, educationEditionOffer, educationModeId, educationFeaturesEnabled, educationProductId, rainLevel, thunderLevel, platformLockedContentConfirmed, multiplayerGame, broadcastingToLan, xboxLiveBroadcastMode, platformBroadcastMode, commandsEnabled, resourcePacksRequired, gameRules, experiments, experimentsPreviouslyToggled, bonusChestEnabled, startingWithMap, defaultPlayerPermission, serverChunkTickRange, behaviorPackLocked, resourcePackLocked, fromLockedWorldTemplate, usingMsaGamertagsOnly, fromWorldTemplate, worldTemplateOptionLocked, onlySpawningV1Villagers, version0, limitedWorldRadius, limitedWorldHeight, v2Nether, experimentalGameplay, levelId, worldName, premiumWorldTemplateId, trial, movementAuthoritative, movementRewindHistory, blockBreakingServerAuthoritative, tick, enchantmentSeed, blocksData, blocks, items, multiplayerCorrelationId, inventoriesServerAuthoritative, engineVersion, blocksChecksum, worldTemplateId)
     }
 }
