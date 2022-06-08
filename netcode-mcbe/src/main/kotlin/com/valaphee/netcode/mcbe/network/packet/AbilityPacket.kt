@@ -25,11 +25,31 @@ import com.valaphee.netcode.mcbe.network.PacketReader
  * @author Kevin Ludwig
  */
 class AbilityPacket(
-    val ability: Int,
+    val ability: Ability,
     val type: Type,
     val boolValue: Boolean,
     val floatValue: Float
 ) : Packet() {
+    enum class Ability {
+        Build,
+        Mine,
+        DoorsAndSwitches,
+        AttackPlayers,
+        AttackMobs,
+        OperatorCommands,
+        Teleport,
+        Invulnerable,
+        Flying,
+        MayFly,
+        Instabuild,
+        Lightning,
+        FlySpeed,
+        WalkSpeed,
+        Muted,
+        WorldBuilder,
+        NoClip
+    }
+
     enum class Type {
         None, Bool, Float
     }
@@ -37,7 +57,7 @@ class AbilityPacket(
     override val id get() = 0xB8
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(ability)
+        buffer.writeVarInt(ability.ordinal)
         buffer.writeByte(type.ordinal)
         buffer.writeBoolean(boolValue)
         buffer.writeFloatLE(floatValue)
@@ -52,5 +72,5 @@ class AbilityPacket(
  * @author Kevin Ludwig
  */
 object AbilityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = AbilityPacket(buffer.readVarInt(), AbilityPacket.Type.values()[buffer.readUnsignedByte().toInt()], buffer.readBoolean(), buffer.readFloatLE())
+    override fun read(buffer: PacketBuffer, version: Int) = AbilityPacket(AbilityPacket.Ability.values()[buffer.readVarInt()], AbilityPacket.Type.values()[buffer.readUnsignedByte().toInt()], buffer.readBoolean(), buffer.readFloatLE())
 }

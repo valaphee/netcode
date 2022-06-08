@@ -38,6 +38,7 @@ class InputPacket(
     val input: Set<Input>,
     val inputMode: User.InputMode,
     val playMode: PlayMode,
+    val inputInteractionModel: InputInteractionModel,
     val virtualRealityGazeDirection: Float3? = null,
     val tick: Long,
     val positionDelta: Float3
@@ -51,6 +52,12 @@ class InputPacket(
         PlacementLivingRoom,
         ExitLevel,
         ExitLevelLivingRoom
+    }
+
+    enum class InputInteractionModel {
+        Touch,
+        Crosshair,
+        Classic
     }
 
     enum class Input {
@@ -103,6 +110,7 @@ class InputPacket(
         buffer.writeVarULongFlags(input)
         buffer.writeVarUInt(inputMode.ordinal)
         buffer.writeVarUInt(playMode.ordinal)
+        if (version >= 527) buffer.writeIntLE(inputInteractionModel.ordinal)
         if (playMode == PlayMode.VirtualReality) buffer.writeFloat3(virtualRealityGazeDirection!!)
         if (version >= 419) {
             buffer.writeVarULong(tick)
@@ -135,6 +143,7 @@ object InputPacketReader : PacketReader {
         val input = buffer.readVarULongFlags<InputPacket.Input>()
         val inputMode = User.InputMode.values()[buffer.readVarUInt()]
         val playMode = InputPacket.PlayMode.values()[buffer.readVarUInt()]
+        val inputInteractionModel = if (version >= 527) InputPacket.InputInteractionModel.values()[buffer.readIntLE()] else InputPacket.InputInteractionModel.Classic
         val virtualRealityGazeDirection = if (playMode == InputPacket.PlayMode.VirtualReality) buffer.readFloat3() else null
         val tick: Long
         val positionDelta: Float3
@@ -153,6 +162,6 @@ object InputPacketReader : PacketReader {
             if (input.equals(InputPacket.Input.PerformBlockActions)) {
             }
         }*/
-        return InputPacket(rotation, position, move, headRotationYaw, input, inputMode, playMode, virtualRealityGazeDirection, tick, positionDelta)
+        return InputPacket(rotation, position, move, headRotationYaw, input, inputMode, playMode, inputInteractionModel, virtualRealityGazeDirection, tick, positionDelta)
     }
 }

@@ -61,5 +61,6 @@ enum class Flag2 {
     Emerging,
     Sniffing,
     Digging,
+    Unknown105,
     SonicBoom
 }

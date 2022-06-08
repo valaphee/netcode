@@ -240,7 +240,7 @@ class WorldPacket(
         if (version >= 407) buffer.writeBoolean(inventoriesServerAuthoritative)
         if (version >= 440) buffer.writeString(engineVersion)
         if (version >= 475) buffer.writeLongLE(blocksChecksum)
-        if (version >= 526) {
+        if (version >= 527) {
             buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, null)
             buffer.writeUuid(worldTemplateId)
         }
@@ -390,7 +390,7 @@ object WorldPacketReader : PacketReader {
         val engineVersion = if (version >= 440) buffer.readString() else ""
         val blocksChecksum = if (version >= 475) buffer.readLongLE() else 0
         val worldTemplateId: UUID
-        if (version >= 526) {
+        if (version >= 527) {
             buffer.nbtVarIntObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
             worldTemplateId = buffer.readUuid()
         } else {

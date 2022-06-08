@@ -562,18 +562,18 @@ class WorldEventPacket(
             private val registryPre503 = registryPre475.clone().apply {
                 this[9801] = SleepingPlayers
             }
-            private val registryPre526 = registryPre503.clone().apply {
+            private val registryPre527 = registryPre503.clone().apply {
                 this[particleOffset + 37] = ParticleSculkCharge
                 this[particleOffset + 38] = ParticleSculkChargePop
             }
-            private val registry = registryPre526.clone().apply {
+            private val registry = registryPre527.clone().apply {
                 this[particleOffset + 39] = ParticleSonicExplosion
                 this[particleLegacyOffset + 84] = ParticleSonicExplosion2
             }
 
             fun registryByVersion(version: Int) =
-                if (version >= 526) registry
-                else if (version >= 503) registryPre526
+                if (version >= 527) registry
+                else if (version >= 503) registryPre527
                 else if (version >= 475) registryPre503
                 else if (version >= 471) registryPre475
                 else if (version >= 465) registryPre471

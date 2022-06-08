@@ -81,7 +81,7 @@ data class Parameter(
                 this[0x3C] = BlockStates
                 /*this[0x3F] =*/
             }
-            private val registry = Registry<Type>().apply {
+            private val registryPre527 = Registry<Type>().apply {
                 this[0x01] = Integer
                 this[0x03] = Float
                 this[0x04] = Float1
@@ -97,8 +97,24 @@ data class Parameter(
                 /*this[0x34] =*/
                 this[0x38] = Json
             }
+            private val registry = Registry<Type>().apply {
+                this[0x01] = Integer
+                this[0x03] = Float
+                this[0x04] = Float1
+                /*this[0x05] =
+                this[0x06] =*/
+                this[0x08] = Target
+                /*this[0x0A] =
+                this[0x11] =*/
+                this[0x27] = String
+                this[0x2F] = Int3
+                this[0x30] = Float3
+                this[0x33] = Message
+                /*this[0x35] =*/
+                this[0x39] = Json
+            }
 
-            fun registryByVersion(version: Int) = if (version >= 503) registry else if (version >= 419) registryPre503 else registryPre419
+            fun registryByVersion(version: Int) = if (version >= 527) registry else if (version >= 503) registryPre527 else if (version >= 419) registryPre503 else registryPre419
         }
     }
 
