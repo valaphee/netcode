@@ -29,6 +29,7 @@ class PlayerActionPacket(
     val runtimeEntityId: Long,
     val action: Action,
     val blockPosition: Int3,
+    val resultPosition: Int3,
     val data: Int
 ) : Packet() {
     enum class Action {
@@ -70,17 +71,18 @@ class PlayerActionPacket(
         buffer.writeVarULong(runtimeEntityId)
         buffer.writeVarInt(action.ordinal)
         buffer.writeInt3UnsignedY(blockPosition)
+        if (version >= 527) buffer.writeInt3UnsignedY(resultPosition)
         buffer.writeVarUInt(data)
     }
 
     override fun handle(handler: PacketHandler) = handler.playerAction(this)
 
-    override fun toString() = "PlayerActionPacket(runtimeEntityId=$runtimeEntityId, action=$action, blockPosition=$blockPosition, data=$data)"
+    override fun toString() = "PlayerActionPacket(runtimeEntityId=$runtimeEntityId, action=$action, blockPosition=$blockPosition, resultPosition=$resultPosition, data=$data)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object PlayerActionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = PlayerActionPacket(buffer.readVarULong(), PlayerActionPacket.Action.values()[buffer.readVarInt()], buffer.readInt3UnsignedY(), buffer.readVarInt())
+    override fun read(buffer: PacketBuffer, version: Int) = PlayerActionPacket(buffer.readVarULong(), PlayerActionPacket.Action.values()[buffer.readVarInt()], buffer.readInt3UnsignedY(), if (version >= 527) buffer.readInt3UnsignedY() else Int3.Zero, buffer.readVarInt())
 }
