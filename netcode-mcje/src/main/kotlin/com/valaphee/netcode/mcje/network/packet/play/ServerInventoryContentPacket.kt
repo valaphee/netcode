@@ -31,23 +31,25 @@ import com.valaphee.netcode.util.safeList
 class ServerInventoryContentPacket(
     val windowId: Int,
     val stateId: Int,
-    val content: List<ItemStack?>
+    val content: List<ItemStack?>,
+    val itemStackInHand: ItemStack?
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
         if (version >= 758) buffer.writeVarInt(stateId)
-        buffer.writeShort(content.size)
+        if (version >= 759) buffer.writeVarInt(content.size) else buffer.writeShort(content.size)
         content.forEach { buffer.writeItemStack(it) }
+        if (version >= 759) buffer.writeItemStack(itemStackInHand)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.inventoryContent(this)
 
-    override fun toString() = "ServerInventoryContentPacket(windowId=$windowId, stateId=$stateId, content=$content)"
+    override fun toString() = "ServerInventoryContentPacket(windowId=$windowId, stateId=$stateId, content=$content, itemStackInHand=$itemStackInHand)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerInventoryContentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerInventoryContentPacket(buffer.readUnsignedByte().toInt(), if (version >= 758) buffer.readVarInt() else 0, safeList(buffer.readShort().toInt()) { buffer.readItemStack() })
+    override fun read(buffer: PacketBuffer, version: Int) = ServerInventoryContentPacket(buffer.readUnsignedByte().toInt(), if (version >= 758) buffer.readVarInt() else 0, safeList(if (version >= 759) buffer.readVarInt() else buffer.readShort().toInt()) { buffer.readItemStack() }, if (version >= 759) buffer.readItemStack() else null)
 }

@@ -24,21 +24,23 @@ import com.valaphee.netcode.mcje.network.PacketReader
 /**
  * @author Kevin Ludwig
  */
-class ClientPongPacket(
-    val id: Int
+class ClientTextPreviewPacket(
+    val id: Int,
+    val message: String
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt(id)
+        buffer.writeString(message)
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.pong(this)
+    override fun handle(handler: ClientPlayPacketHandler) = handler.textPreview(this)
 
-    override fun toString() = "ClientPongPacket(id=$id)"
+    override fun toString() = "ClientTextPreviewPacket(id=$id, message=$message)"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ClientPongPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientPongPacket(buffer.readInt())
+object ClientTextPreviewPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ClientTextPreviewPacket(buffer.readInt(), buffer.readString(256))
 }

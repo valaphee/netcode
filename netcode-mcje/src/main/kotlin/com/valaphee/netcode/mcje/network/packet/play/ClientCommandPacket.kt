@@ -24,21 +24,32 @@ import com.valaphee.netcode.mcje.network.PacketReader
 /**
  * @author Kevin Ludwig
  */
-class ClientPongPacket(
-    val id: Int
+class ClientCommandPacket(
+    val command: String,
+    val time: Long,
+    val salt: Long,
+    val signatures: List<Pair<String, ByteArray>>,
+    val preview: Boolean
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt(id)
+        buffer.writeString(command)
+        buffer.writeLong(time)
+        buffer.writeLong(salt)
+        signatures.forEach {
+            buffer.writeString(it.first)
+            buffer.writeByteArray(it.second)
+        }
+        buffer.writeBoolean(preview)
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.pong(this)
+    override fun handle(handler: ClientPlayPacketHandler) = handler.command(this)
 
-    override fun toString() = "ClientPongPacket(id=$id)"
+    override fun toString() = "ClientCommandPacket(command='$command', time=$time, salt=$salt, signatures=$signatures, preview=$preview)"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ClientPongPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientPongPacket(buffer.readInt())
+object ClientCommandPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ClientCommandPacket(buffer.readString(), buffer.readLong(), buffer.readLong(), emptyList(), buffer.readBoolean())
 }

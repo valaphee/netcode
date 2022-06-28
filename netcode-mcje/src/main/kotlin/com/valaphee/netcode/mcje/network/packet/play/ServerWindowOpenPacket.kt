@@ -28,18 +28,18 @@ import net.kyori.adventure.text.Component
  */
 class ServerWindowOpenPacket(
     val windowId: Int,
-    val windowTypeKey: NamespacedKey,
+    val typeKey: NamespacedKey,
     val title: Component
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(windowId)
-        buffer.writeVarInt(buffer.registries.windowTypes.getId(windowTypeKey))
+        buffer.writeVarInt(buffer.registries.windowTypes.getId(typeKey))
         buffer.writeComponent(title)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.windowOpen(this)
 
-    override fun toString() = "ServerWindowOpenPacket(windowId=$windowId, windowTypeKey=$windowTypeKey, title=$title)"
+    override fun toString() = "ServerWindowOpenPacket(windowId=$windowId, typeKey=$typeKey, title=$title)"
 }
 
 /**

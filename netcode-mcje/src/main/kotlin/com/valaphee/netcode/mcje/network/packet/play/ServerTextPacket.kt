@@ -29,16 +29,16 @@ import java.util.UUID
 class ServerTextPacket(
     val message: Component,
     val type: Type,
-    val userId: UUID = UUID(0, 0)
+    val userId: UUID? = null
 ) : Packet<ServerPlayPacketHandler>() {
     enum class Type {
-        Chat, System, Tip
+        Chat, System, Tip, SayCommand, MsgCommand, TeamMsgCommand, EmoteCommand, TellrawCommand
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeComponent(message)
         buffer.writeByte(type.ordinal)
-        buffer.writeUuid(userId)
+        if (version < 759) buffer.writeUuid(userId ?: UUID(0, 0))
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.text(this)
@@ -50,5 +50,5 @@ class ServerTextPacket(
  * @author Kevin Ludwig
  */
 object ServerTextPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTextPacket(buffer.readComponent(), ServerTextPacket.Type.values()[buffer.readByte().toInt()], buffer.readUuid())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerTextPacket(buffer.readComponent(), ServerTextPacket.Type.values()[buffer.readByte().toInt()], if (version < 759) buffer.readUuid() else null)
 }

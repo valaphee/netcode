@@ -36,6 +36,7 @@ class ServerEntityAddPacket(
     val position: Double3,
     val rotation: Float2,
     val headRotationYaw: Float,
+    val data: Int,
     val velocity: Double3
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
@@ -45,6 +46,7 @@ class ServerEntityAddPacket(
         buffer.writeDouble3(position)
         buffer.writeAngle2(rotation)
         buffer.writeAngle(headRotationYaw)
+        if (version >= 759) buffer.writeVarInt(data)
         val (velocityX, velocityY, velocityZ) = velocity.toMutableDouble3().scale(8000.0).toInt3()
         buffer.writeShort(velocityX)
         buffer.writeShort(velocityY)
@@ -53,12 +55,12 @@ class ServerEntityAddPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityAdd(this)
 
-    override fun toString() = "ServerEntityAddPacket(entityId=$entityId, entityUid=$entityUid, entityTypeKey=$typeKey, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, motion=$velocity)"
+    override fun toString() = "ServerEntityAddPacket(entityId=$entityId, entityUid=$entityUid, typeKey=$typeKey, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, motion=$velocity)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerEntityAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAddPacket(buffer.readVarInt(), buffer.readUuid(), checkNotNull(buffer.registries.entityTypes[buffer.readVarInt()]), buffer.readDouble3(), buffer.readAngle2(), buffer.readAngle(), MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAddPacket(buffer.readVarInt(), buffer.readUuid(), checkNotNull(buffer.registries.entityTypes[buffer.readVarInt()]), buffer.readDouble3(), buffer.readAngle2(), buffer.readAngle(), if (version >= 759) buffer.readVarInt() else 0, MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
 }

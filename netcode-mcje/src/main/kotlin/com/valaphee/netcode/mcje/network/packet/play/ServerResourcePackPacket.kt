@@ -20,6 +20,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import net.kyori.adventure.text.Component
 
 /**
  * @author Kevin Ludwig
@@ -27,21 +28,42 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 class ServerResourcePackPacket(
     val url: String,
     val hash: String,
-    val forced: Boolean
+    val forced: Boolean,
+    val message: Component?
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(url)
         buffer.writeString(hash)
+        if (version >= 758) {
+            buffer.writeBoolean(forced)
+            message?.let {
+                buffer.writeBoolean(true)
+                buffer.writeComponent(message)
+            } ?: buffer.writeBoolean(false)
+        }
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.resourcePack(this)
 
-    override fun toString() = "ServerResourcePackPacket(url='$url', hash='$hash', forced=$forced)"
+    override fun toString() = "ServerResourcePackPacket(url='$url', hash='$hash', forced=$forced, message=$message)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerResourcePackPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerResourcePackPacket(buffer.readString(), buffer.readString(40), false)
+    override fun read(buffer: PacketBuffer, version: Int): ServerResourcePackPacket {
+        val url = buffer.readString()
+        val hash = buffer.readString(40)
+        val forced: Boolean
+        val message: Component?
+        if (version >= 758) {
+            forced = buffer.readBoolean()
+            message = buffer.readComponent()
+        } else {
+            forced = false
+            message = null
+        }
+        return ServerResourcePackPacket(url, hash, forced, message)
+    }
 }

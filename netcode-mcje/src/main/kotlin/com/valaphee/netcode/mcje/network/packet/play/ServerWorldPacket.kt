@@ -18,6 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
@@ -26,6 +27,7 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.world.Biome
 import com.valaphee.netcode.mcje.world.Dimension
 import com.valaphee.netcode.mcje.world.GameMode
+import com.valaphee.netcode.mcje.world.entity.player.DeathLocation
 import com.valaphee.netcode.util.safeList
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
@@ -51,6 +53,7 @@ class ServerWorldPacket(
     val respawnScreen: Boolean,
     val debugGenerator: Boolean,
     val flatGenerator: Boolean,
+    val deathLocation: DeathLocation?
 ) : Packet<ServerPlayPacketHandler>() {
     data class DimensionCodec(
         @get:JsonProperty("minecraft:dimension_type") val dimensions: Registry<Dimension>,
@@ -86,16 +89,21 @@ class ServerWorldPacket(
         buffer.writeBoolean(respawnScreen)
         buffer.writeBoolean(debugGenerator)
         buffer.writeBoolean(flatGenerator)
+        if (version >= 759) deathLocation?.let {
+            buffer.writeBoolean(true)
+            buffer.writeNamespacedKey(it.dimension)
+            buffer.writeInt3UnsignedY(it.position)
+        } ?: buffer.writeBoolean(false)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.world(this)
 
-    override fun toString() = "ServerWorldPacket(entityId=$entityId, hardcore=$hardcore, gameMode=$gameMode, previousGameMode=$previousGameMode, worldNames=$worldNames, dimensionCodec=$dimensionCodec, dimension=$dimension, worldName=$worldName, hashedSeed=$hashedSeed, maximumPlayers=$maximumPlayers, viewDistance=$viewDistance, simulationDistance=$simulationDistance, reducedDebugInfo=$reducedDebugInfo, respawnScreen=$respawnScreen, debugGenerator=$debugGenerator, flatGenerator=$flatGenerator)"
+    override fun toString() = "ServerWorldPacket(entityId=$entityId, hardcore=$hardcore, gameMode=$gameMode, previousGameMode=$previousGameMode, worldNames=$worldNames, dimensionCodec=$dimensionCodec, dimension=$dimension, worldName=$worldName, hashedSeed=$hashedSeed, maximumPlayers=$maximumPlayers, viewDistance=$viewDistance, simulationDistance=$simulationDistance, reducedDebugInfo=$reducedDebugInfo, respawnScreen=$respawnScreen, debugGenerator=$debugGenerator, flatGenerator=$flatGenerator, deathLocation=$deathLocation)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerWorldPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldPacket(buffer.readInt(), buffer.readBoolean(), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }, buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.readNamespacedKey(), buffer.readLong(), buffer.readVarInt(), buffer.readVarInt(), if (version >= 758) buffer.readVarInt() else 0, buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldPacket(buffer.readInt(), buffer.readBoolean(), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }, buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.readNamespacedKey(), buffer.readLong(), buffer.readVarInt(), buffer.readVarInt(), if (version >= 758) buffer.readVarInt() else 0, buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), if (version >= 759 && buffer.readBoolean()) DeathLocation(buffer.readNamespacedKey(), buffer.readInt3UnsignedY()) else null)
 }

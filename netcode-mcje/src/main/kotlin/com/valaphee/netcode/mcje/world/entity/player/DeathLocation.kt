@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcje
+package com.valaphee.netcode.mcje.world.entity.player
 
-const val latestVersion = "1.19"
-const val latestProtocolVersion = 759
+import com.valaphee.foundry.math.Int3
+import com.valaphee.netcode.mcje.util.NamespacedKey
+
+/**
+ * @author Kevin Ludwig
+ */
+data class DeathLocation(
+    val dimension: NamespacedKey,
+    val position: Int3
+)

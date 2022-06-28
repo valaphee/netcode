@@ -31,19 +31,21 @@ import java.util.UUID
 class ServerPaintingAddPacket(
     val entityId: Int,
     val entityUid: UUID,
-    val painting: NamespacedKey,
+    val typeKey: NamespacedKey,
     val position: Int3,
     val direction: Direction
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeUuid(entityUid)
-        buffer.writeVarInt(buffer.registries.motive.getId(painting))
+        buffer.writeVarInt(buffer.registries.motive.getId(typeKey))
         buffer.writeInt3UnsignedY(position)
         buffer.writeByte(direction.horizontalIndex)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.paintingAdd(this)
+
+    override fun toString() = "ServerPaintingAddPacket(entityId=$entityId, entityUid=$entityUid, typeKey=$typeKey, position=$position, direction=$direction)"
 }
 
 /**

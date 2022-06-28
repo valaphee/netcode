@@ -25,6 +25,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientBlockQueryPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientBookEditPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientCommandBlockMinecartUpdatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientCommandBlockUpdatePacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientCommandPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientCommandSuggestPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientCraftPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientCreativeInventorySlotPacket
@@ -56,6 +57,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientStructureBlockUpdateP
 import com.valaphee.netcode.mcje.network.packet.play.ClientSwingArmPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientTeleportConfirmPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientTextPacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientTextPreviewPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientTradePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientVehicleLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientWindowClickButtonPacket
@@ -73,7 +75,11 @@ interface ClientPlayPacketHandler : PacketHandler {
 
     fun difficulty(packet: ClientDifficultyPacket) = other(packet)
 
+    fun command(packet: ClientCommandPacket) = other(packet)
+
     fun text(packet: ClientTextPacket) = other(packet)
+
+    fun textPreview(packet: ClientTextPreviewPacket) = other(packet)
 
     fun status(packet: ClientStatusPacket) = other(packet)
 

@@ -25,20 +25,48 @@ import com.valaphee.netcode.mcje.network.PacketReader
  * @author Kevin Ludwig
  */
 class ClientTextPacket(
-    val message: String
+    val message: String,
+    val time: Long,
+    val salt: Long,
+    val signature: ByteArray?,
+    val preview: Boolean
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(message)
+        if (version >= 759) {
+            buffer.writeLong(time)
+            buffer.writeLong(salt)
+            buffer.writeByteArray(signature!!)
+            buffer.writeBoolean(preview)
+        }
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.text(this)
 
-    override fun toString() = "ClientTextPacket(message='$message')"
+    override fun toString() = "ClientTextPacket(message='$message', time=$time, salt=$salt, signature=${signature.contentToString()}, preview=$preview)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientTextPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientTextPacket(buffer.readString(256))
+    override fun read(buffer: PacketBuffer, version: Int): ClientTextPacket {
+        val message = buffer.readString(256)
+        val time: Long
+        val salt: Long
+        val signature: ByteArray?
+        val preview: Boolean
+        if (version >= 759) {
+            time = buffer.readLong()
+            salt = buffer.readLong()
+            signature = buffer.readByteArray()
+            preview = buffer.readBoolean()
+        } else {
+            time = 0
+            salt = 0
+            signature = null
+            preview = false
+        }
+        return ClientTextPacket(message, time, salt, signature, preview)
+    }
 }

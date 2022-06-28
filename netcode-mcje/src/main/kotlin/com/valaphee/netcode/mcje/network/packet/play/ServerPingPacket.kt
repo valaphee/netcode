@@ -24,17 +24,21 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 /**
  * @author Kevin Ludwig
  */
-object ServerPingPacket : Packet<ServerPlayPacketHandler>() {
-    override fun write(buffer: PacketBuffer, version: Int) = Unit
+class ServerPingPacket(
+    val id: Int
+) : Packet<ServerPlayPacketHandler>() {
+    override fun write(buffer: PacketBuffer, version: Int) {
+        buffer.writeInt(id)
+    }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.ping(this)
 
-    override fun toString() = "ServerPingPacket()"
+    override fun toString() = "ServerPingPacket(id=$id)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerPingPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerPingPacket
+    override fun read(buffer: PacketBuffer, version: Int) = ServerPingPacket(buffer.readInt())
 }

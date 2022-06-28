@@ -53,7 +53,7 @@ class ServerObjectAddPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.objectAdd(this)
 
-    override fun toString() = "ServerObjectAddPacket(entityId=$entityId, entityUid=$entityUid, type=$typeKey, position=$position, rotation=$rotation, data=$data, velocity=$velocity)"
+    override fun toString() = "ServerObjectAddPacket(entityId=$entityId, entityUid=$entityUid, typeKey=$typeKey, position=$position, rotation=$rotation, data=$data, velocity=$velocity)"
 }
 
 /**
