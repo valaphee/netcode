@@ -45,6 +45,7 @@ class EntityAddPacket(
     val velocity: Float3,
     val rotation: Float2,
     val headRotationYaw: Float,
+    val bodyRotation: Float,
     val attributes: Attributes,
     val metadata: Metadata,
     val links: List<Link>
@@ -59,6 +60,7 @@ class EntityAddPacket(
         buffer.writeFloat3(velocity)
         buffer.writeFloat2(rotation)
         buffer.writeFloatLE(headRotationYaw)
+        if (version >= 534) buffer.writeFloatLE(bodyRotation)
         attributes.writeToBuffer(buffer, false)
         metadata.writeToBuffer(buffer)
         buffer.writeVarUInt(links.size)
@@ -67,7 +69,7 @@ class EntityAddPacket(
 
     override fun handle(handler: PacketHandler) = handler.entityAdd(this)
 
-    override fun toString() = "EntityAddPacket(uniqueEntityId=$uniqueEntityId, runtimeEntityId=$runtimeEntityId, type='$type', position=$position, velocity=$velocity, rotation=$rotation, headRotationYaw=$headRotationYaw, attributes=$attributes, metadata=$metadata, links=$links)"
+    override fun toString() = "EntityAddPacket(uniqueEntityId=$uniqueEntityId, runtimeEntityId=$runtimeEntityId, type='$type', position=$position, velocity=$velocity, rotation=$rotation, headRotationYaw=$headRotationYaw, bodyRotation=$bodyRotation, attributes=$attributes, metadata=$metadata, links=$links)"
 }
 
 /**
@@ -82,6 +84,7 @@ object EntityAddPacketReader : PacketReader {
         buffer.readFloat3(),
         buffer.readFloat2(),
         buffer.readFloatLE(),
+        if (version >= 534) buffer.readFloatLE() else 0.0f,
         Attributes().apply { readFromBuffer(buffer, false) },
         Metadata().apply { readFromBuffer(buffer) },
         safeList(buffer.readVarUInt()) { if (version >= 407) buffer.readLink() else buffer.readLinkPre407() }

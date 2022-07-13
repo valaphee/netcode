@@ -20,11 +20,13 @@ package com.valaphee.netcode.mcbe.world
  * @author Kevin Ludwig
  */
 enum class WorldFlag {
-    BuildAndMine,
+    Mine,
     DoorsAndSwitches,
     OpenContainers,
     AttackPlayers,
     AttackEntities,
     Operator,
-    Teleport
+    Teleport,
+    Build,
+    Default
 }

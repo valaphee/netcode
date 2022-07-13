@@ -110,7 +110,7 @@ class InputPacket(
         buffer.writeVarULongFlags(input)
         buffer.writeVarUInt(inputMode.ordinal)
         buffer.writeVarUInt(playMode.ordinal)
-        if (version >= 527) buffer.writeVarInt(inputInteractionModel.ordinal)
+        if (version >= 527) buffer.writeVarUInt(inputInteractionModel.ordinal)
         if (playMode == PlayMode.VirtualReality) buffer.writeFloat3(virtualRealityGazeDirection!!)
         if (version >= 419) {
             buffer.writeVarULong(tick)
@@ -143,7 +143,7 @@ object InputPacketReader : PacketReader {
         val input = buffer.readVarULongFlags<InputPacket.Input>()
         val inputMode = User.InputMode.values()[buffer.readVarUInt()]
         val playMode = InputPacket.PlayMode.values()[buffer.readVarUInt()]
-        val inputInteractionModel = if (version >= 527) InputPacket.InputInteractionModel.values()[buffer.readVarInt()] else InputPacket.InputInteractionModel.Classic
+        val inputInteractionModel = if (version >= 527) InputPacket.InputInteractionModel.values()[buffer.readVarUInt()] else InputPacket.InputInteractionModel.Classic
         val virtualRealityGazeDirection = if (playMode == InputPacket.PlayMode.VirtualReality) buffer.readFloat3() else null
         val tick: Long
         val positionDelta: Float3

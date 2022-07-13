@@ -31,6 +31,7 @@ class EntityEventPacket(
     val data: Int = 0
 ) : Packet() {
     enum class Event {
+        Unknown0,
         JumpAnimation,
         HurtAnimation,
         DeathAnimation,
@@ -47,6 +48,7 @@ class EntityEventPacket(
         FishHookLured,
         SquidInkCloud,
         ZombieVillagerCure,
+        Unknown17,
         Respawn,
         IronGolemOfferFlower,
         IronGolemWithdrawFlower,
@@ -69,7 +71,26 @@ class EntityEventPacket(
         EnderDragonDeath,
         DustParticles,
         ArrowShake,
+        Unknown40,
+        Unknown41,
+        Unknown42,
+        Unknown43,
+        Unknown44,
+        Unknown45,
+        Unknown46,
+        Unknown47,
+        Unknown48,
+        Unknown49,
+        Unknown50,
+        Unknown51,
+        Unknown52,
+        Unknown53,
+        Unknown54,
+        Unknown55,
+        Unknown56,
         EatingItem,
+        Unknown58,
+        Unknown59,
         BabyAnimalFeed,
         DeathSmokeCloud,
         CompleteTrade,
@@ -87,75 +108,15 @@ class EntityEventPacket(
         FinishedChargingCrossbow,
         LandedOnGround,
         GrowUp,
-        VibrationDetected;
-
-        companion object {
-            val registry = Registry<Event>().apply {
-                this[0x01] = JumpAnimation
-                this[0x02] = HurtAnimation
-                this[0x03] = DeathAnimation
-                this[0x04] = AttackStart
-                this[0x05] = AttackStop
-                this[0x06] = TameFail
-                this[0x07] = TameSuccess
-                this[0x08] = WolfShakeWet
-                this[0x09] = UseItem
-                this[0x0A] = EatBlockAnimation
-                this[0x0B] = FishHookBubble
-                this[0x0C] = FishHookPosition
-                this[0x0D] = FishHookHook
-                this[0x0E] = FishHookLured
-                this[0x0F] = SquidInkCloud
-                this[0x10] = ZombieVillagerCure
-                this[0x12] = Respawn
-                this[0x13] = IronGolemOfferFlower
-                this[0x14] = IronGolemWithdrawFlower
-                this[0x15] = LoveParticles
-                this[0x16] = VillagerHurt
-                this[0x17] = VillagerStopTrading
-                this[0x18] = WitchSpellParticles
-                this[0x19] = FireworkParticles
-                this[0x1A] = InLoveHearts
-                this[0x1B] = ExplosionParticles
-                this[0x1C] = GuardianAttackAnimation
-                this[0x1D] = WitchDrinkPotion
-                this[0x1E] = WitchThrowPotion
-                this[0x1F] = MinecartTntPrimeFuse
-                this[0x20] = PrimeCreeper
-                this[0x21] = AirSupply
-                this[0x22] = PlayerAddXpLevels
-                this[0x23] = ElderGuardianCurse
-                this[0x24] = AgentArmSwing
-                this[0x25] = EnderDragonDeath
-                this[0x26] = DustParticles
-                this[0x27] = ArrowShake
-                this[0x39] = EatingItem
-                this[0x3C] = BabyAnimalFeed
-                this[0x3D] = DeathSmokeCloud
-                this[0x3E] = CompleteTrade
-                this[0x3F] = RemoveLeash
-                this[0x40] = Caravan
-                this[0x41] = ConsumeTotem
-                this[0x42] = CheckTreasureHunterAchievement
-                this[0x43] = Spawn
-                this[0x44] = DragonFlaming
-                this[0x45] = MergeStack
-                this[0x46] = StartSwimming
-                this[0x47] = BalloonPop
-                this[0x48] = FindTreasureBribe
-                this[0x49] = SummonAgent
-                this[0x4A] = FinishedChargingCrossbow
-                this[0x4B] = LandedOnGround
-                this[0x4C] = GrowUp
-            }
-        }
+        VibrationDetected,
+        DrinkMilk
     }
 
     override val id get() = 0x1B
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarULong(runtimeEntityId)
-        buffer.writeByte(Event.registry.getId(event))
+        buffer.writeByte(event.ordinal)
         buffer.writeVarInt(data)
     }
 
@@ -168,5 +129,5 @@ class EntityEventPacket(
  * @author Kevin Ludwig
  */
 object EntityEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityEventPacket(buffer.readVarULong(), checkNotNull(EntityEventPacket.Event.registry[buffer.readUnsignedByte().toInt()]), buffer.readVarInt())
+    override fun read(buffer: PacketBuffer, version: Int) = EntityEventPacket(buffer.readVarULong(), EntityEventPacket.Event.values()[buffer.readUnsignedByte().toInt()], buffer.readVarInt())
 }

@@ -29,9 +29,12 @@ import com.valaphee.netcode.mcbe.world.GameMode
 import com.valaphee.netcode.mcbe.world.WorldFlag
 import com.valaphee.netcode.mcbe.world.entity.Link
 import com.valaphee.netcode.mcbe.world.entity.metadata.Metadata
+import com.valaphee.netcode.mcbe.world.entity.player.AbilityLayer
 import com.valaphee.netcode.mcbe.world.entity.player.PlayerFlag
 import com.valaphee.netcode.mcbe.world.entity.player.Rank
 import com.valaphee.netcode.mcbe.world.entity.player.User
+import com.valaphee.netcode.mcbe.world.entity.player.readAbilityLayer
+import com.valaphee.netcode.mcbe.world.entity.player.writeAbilityLayer
 import com.valaphee.netcode.mcbe.world.entity.readLink
 import com.valaphee.netcode.mcbe.world.entity.readLinkPre407
 import com.valaphee.netcode.mcbe.world.entity.writeLink
@@ -61,11 +64,12 @@ class PlayerAddPacket(
     val itemStackInHand: ItemStack?,
     val gameMode: GameMode?,
     val metadata: Metadata,
-    val playerFlags: Set<PlayerFlag>,
+    val playerFlags: Set<PlayerFlag>?,
     val permission: Permission,
-    val worldFlags: Set<WorldFlag>,
+    val worldFlags: Set<WorldFlag>?,
     val rank: Rank,
     val customFlags: Int,
+    val abilityLayers: List<AbilityLayer>?,
     val links: List<Link>,
     val deviceId: String,
     val operatingSystem: User.OperatingSystem,
@@ -75,7 +79,7 @@ class PlayerAddPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeUuid(userId)
         buffer.writeString(userName)
-        buffer.writeVarLong(uniqueEntityId)
+        if (version < 534) buffer.writeVarLong(uniqueEntityId)
         buffer.writeVarULong(runtimeEntityId)
         buffer.writeString(platformChatId)
         buffer.writeFloat3(position)
@@ -85,12 +89,22 @@ class PlayerAddPacket(
         if (version >= 431) buffer.writeItemStack(itemStackInHand) else buffer.writeItemStackPre431(itemStackInHand)
         if (version >= 503) buffer.writeVarInt(gameMode!!.ordinal)
         metadata.writeToBuffer(buffer)
-        buffer.writeVarUIntFlags(playerFlags)
-        buffer.writeVarUInt(permission.ordinal)
-        buffer.writeVarUIntFlags(worldFlags)
-        buffer.writeVarUInt(rank.ordinal)
-        buffer.writeVarUInt(customFlags)
-        buffer.writeLongLE(uniqueEntityId)
+        if (version >= 534) {
+            buffer.writeLongLE(uniqueEntityId)
+            buffer.writeVarUInt(rank.ordinal)
+            buffer.writeVarUInt(permission.ordinal)
+            abilityLayers!!.let {
+                buffer.writeVarUInt(it.size)
+                it.forEach { buffer.writeAbilityLayer(it) }
+            }
+        } else {
+            buffer.writeVarUIntFlags(playerFlags!!)
+            buffer.writeVarUInt(permission.ordinal)
+            buffer.writeVarUIntFlags(worldFlags!!)
+            buffer.writeVarUInt(rank.ordinal)
+            buffer.writeVarUInt(customFlags)
+            buffer.writeLongLE(uniqueEntityId)
+        }
         buffer.writeVarUInt(links.size)
         if (version >= 407) links.forEach(buffer::writeLink) else links.forEach(buffer::writeLinkPre407)
         buffer.writeString(deviceId)
@@ -99,33 +113,52 @@ class PlayerAddPacket(
 
     override fun handle(handler: PacketHandler) = handler.playerAdd(this)
 
-    override fun toString() = "PlayerAddPacket(userId=$userId, userName='$userName', uniqueEntityId=$uniqueEntityId, runtimeEntityId=$runtimeEntityId, platformChatId='$platformChatId', position=$position, velocity=$velocity, rotation=$rotation, headRotationYaw=$headRotationYaw, stackInHand=$itemStackInHand, metadata=$metadata, playerFlags=$playerFlags, permission=$permission, worldFlags=$worldFlags, rank=$rank, customFlags=$customFlags, links=$links, deviceId='$deviceId', operatingSystem=$operatingSystem)"
+    override fun toString() = "PlayerAddPacket(userId=$userId, userName='$userName', uniqueEntityId=$uniqueEntityId, runtimeEntityId=$runtimeEntityId, platformChatId='$platformChatId', position=$position, velocity=$velocity, rotation=$rotation, headRotationYaw=$headRotationYaw, stackInHand=$itemStackInHand, metadata=$metadata, playerFlags=$playerFlags, permission=$permission, worldFlags=$worldFlags, rank=$rank, customFlags=$customFlags, abilityLayers=$abilityLayers, links=$links, deviceId='$deviceId', operatingSystem=$operatingSystem)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object PlayerAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = PlayerAddPacket(
-        buffer.readUuid(),
-        buffer.readString(),
-        buffer.readVarLong(),
-        buffer.readVarULong(),
-        buffer.readString(),
-        buffer.readFloat3(),
-        buffer.readFloat3(),
-        buffer.readFloat2(),
-        buffer.readFloatLE(),
-        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431(),
-        if (version >= 503) GameMode.values()[buffer.readVarInt()] else null,
-        Metadata().apply { readFromBuffer(buffer) },
-        buffer.readVarUIntFlags(),
-        Permission.values()[buffer.readVarUInt()],
-        buffer.readVarUIntFlags(),
-        Rank.values()[buffer.readVarUInt()],
-        buffer.readVarUInt().also { buffer.readLongLE() },
-        safeList(buffer.readVarUInt()) { if (version >= 407) buffer.readLink() else buffer.readLinkPre407() },
-        buffer.readString(),
-        User.OperatingSystem.values()[buffer.readIntLE() + 1],
-    )
+    override fun read(buffer: PacketBuffer, version: Int): PlayerAddPacket {
+        val userId: UUID = buffer.readUuid()
+        val userName: String = buffer.readString()
+        val uniqueEntityId: Long = if (version >= 534) 0 else buffer.readVarLong()
+        val runtimeEntityId: Long = buffer.readVarULong()
+        val platformChatId: String = buffer.readString()
+        val position: Float3 = buffer.readFloat3()
+        val velocity: Float3 = buffer.readFloat3()
+        val rotation: Float2 = buffer.readFloat2()
+        val headRotationYaw: Float = buffer.readFloatLE()
+        val itemStackInHand: ItemStack? = if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431()
+        val gameMode: GameMode? = if (version >= 503) GameMode.values()[buffer.readVarInt()] else null
+        val metadata: Metadata = Metadata().apply { readFromBuffer(buffer) }
+        val playerFlags: Set<PlayerFlag>?
+        val permission: Permission
+        val worldFlags: Set<WorldFlag>?
+        val rank: Rank
+        val customFlags: Int
+        val abilityLayers: List<AbilityLayer>?
+        if (version >= 534) {
+            playerFlags = buffer.readVarUIntFlags()
+            permission = Permission.values()[buffer.readVarUInt()]
+            worldFlags = buffer.readVarUIntFlags()
+            rank = Rank.values()[buffer.readVarUInt()]
+            customFlags = buffer.readVarUInt()
+            buffer.readLongLE()
+            abilityLayers = null
+        } else {
+            buffer.readLongLE()
+            playerFlags = null
+            worldFlags = null
+            rank = Rank.values()[buffer.readVarUInt()]
+            permission = Permission.values()[buffer.readVarUInt()]
+            customFlags = 0
+            abilityLayers = safeList(buffer.readVarUInt()) { buffer.readAbilityLayer() }
+        }
+        val links: List<Link> = safeList(buffer.readVarUInt()) { if (version >= 407) buffer.readLink() else buffer.readLinkPre407() }
+        val deviceId: String = buffer.readString()
+        val operatingSystem: User.OperatingSystem = User.OperatingSystem.values()[buffer.readIntLE() + 1]
+        return PlayerAddPacket(userId, userName, uniqueEntityId, runtimeEntityId, platformChatId, position, velocity, rotation, headRotationYaw, itemStackInHand, gameMode, metadata, playerFlags, permission, worldFlags, rank, customFlags, abilityLayers, links, deviceId, operatingSystem)
+    }
 }

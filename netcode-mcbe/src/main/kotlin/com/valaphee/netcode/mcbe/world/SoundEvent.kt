@@ -452,7 +452,7 @@ enum class SoundEvent {
     ItemTaken,
     Disappeared,
     Reappeared,
-    Unknown432,
+    MilkDrink,
     FrogspawnHatched,
     LaySpawn,
     FrogspawnBreak,
@@ -460,5 +460,6 @@ enum class SoundEvent {
     SonicCharge,
     ItemThrown,
     Record5,
-    ConvertToFrog
+    ConvertToFrog,
+    RecordPlaying
 }

@@ -59,6 +59,13 @@ class PacketBuffer(
 
     fun <T : Enum<T>> writeShortLEFlags(flags: Set<T>) = writeShortLE(flags.map { 1 shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
 
+    inline fun <reified T : Enum<T>> readIntLEFlags(): Set<T> {
+        val flagsValue = readIntLE()
+        return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1 shl it.ordinal)) != 0 }.forEach { add(it) } }
+    }
+
+    fun <T : Enum<T>> writeIntLEFlags(flags: Set<T>) = writeIntLE(flags.map { 1 shl it.ordinal }.fold(0) { flagsValue, flagValue -> flagsValue or flagValue })
+
     fun readUuid() = UUID(readLongLE(), readLongLE())
 
     fun writeUuid(value: UUID) {

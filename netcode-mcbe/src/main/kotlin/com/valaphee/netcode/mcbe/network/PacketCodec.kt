@@ -17,8 +17,10 @@
 package com.valaphee.netcode.mcbe.network
 
 import com.valaphee.netcode.mcbe.latestProtocolVersion
+import com.valaphee.netcode.mcbe.network.packet.AbilitiesPacketReader
 import com.valaphee.netcode.mcbe.network.packet.AbilityPacketReader
 import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsPacketReader
+import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsWithoutAbilitiesPacketReader
 import com.valaphee.netcode.mcbe.network.packet.AnvilDamagePacketReader
 import com.valaphee.netcode.mcbe.network.packet.AppearancePacketReader
 import com.valaphee.netcode.mcbe.network.packet.ArmorDamagePacketReader
@@ -52,6 +54,7 @@ import com.valaphee.netcode.mcbe.network.packet.CommandsPacketReader
 import com.valaphee.netcode.mcbe.network.packet.CraftingEventPacketReader
 import com.valaphee.netcode.mcbe.network.packet.CreativeInventoryPacketReader
 import com.valaphee.netcode.mcbe.network.packet.CustomEventPacketReader
+import com.valaphee.netcode.mcbe.network.packet.DeathPacketReader
 import com.valaphee.netcode.mcbe.network.packet.DebugPacketReader
 import com.valaphee.netcode.mcbe.network.packet.DebugRendererPacketReader
 import com.valaphee.netcode.mcbe.network.packet.DefaultGameModePacketReader
@@ -417,6 +420,10 @@ class PacketCodec(
             this[0xB8] = AbilityPacketReader
             this[0xB9] = PermissionsPacketReader
             this[0xBA] = ToastPacketReader
+            this[0xBB] = AbilitiesPacketReader
+            this[0xBC] = AdventureSettingsWithoutAbilitiesPacketReader
+            this[0xBD] = DeathPacketReader
+            //this[0xBE] = EditorNetworkPacketReader
         }
         private val clientReaders = readers.filterValues { it::class.java.getMethod("read", PacketBuffer::class.java, Int::class.java).returnType.kotlin.findAnnotation<Restrict>()?.value?.contains(Restriction.ToClient) ?: true }
         private val serverReaders = readers.filterValues { it::class.java.getMethod("read", PacketBuffer::class.java, Int::class.java).returnType.kotlin.findAnnotation<Restrict>()?.value?.contains(Restriction.ToServer) ?: true }

@@ -21,10 +21,10 @@ package com.valaphee.netcode.mcbe.world.entity.player
  */
 enum class PlayerFlag {
     WorldImmutable,
-    NoPvP,
-    Unknown2,
+    NoPvM,
+    NoMvP,
     Unknown3,
-    Unknown4,
+    ShowNameTags,
     AutoJump,
     AllowFlight,
     NoClip,

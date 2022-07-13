@@ -20,38 +20,33 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.world.entity.player.AbilityLayer
+import com.valaphee.netcode.mcbe.network.Restrict
+import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig
  */
-class AbilityPacket(
-    val ability: AbilityLayer.Ability,
-    val type: Type,
-    val boolValue: Boolean,
-    val floatValue: Float
+class DeathPacket(
+    val cause: String,
+    val messages: List<String>
 ) : Packet() {
-    enum class Type {
-        None, Bool, Float
-    }
-
-    override val id get() = 0xB8
+    override val id get() = 0xBD
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(ability.ordinal)
-        buffer.writeByte(type.ordinal)
-        buffer.writeBoolean(boolValue)
-        buffer.writeFloatLE(floatValue)
+        buffer.writeString(cause)
+        buffer.writeVarUInt(messages.size)
+        messages.forEach { buffer.writeString(it) }
     }
 
-    override fun handle(handler: PacketHandler) = handler.ability(this)
+    override fun handle(handler: PacketHandler) = handler.death(this)
 
-    override fun toString() = "AbilityPacket(ability=$ability, type=$type, boolValue=$boolValue, floatValue=$floatValue)"
+    override fun toString() = "DeathPacket(cause='$cause', messages=$messages)"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object AbilityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = AbilityPacket(AbilityLayer.Ability.values()[buffer.readVarInt()], AbilityPacket.Type.values()[buffer.readUnsignedByte().toInt()], buffer.readBoolean(), buffer.readFloatLE())
+object DeathPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = DeathPacket(buffer.readString(), safeList(buffer.readVarUInt()) { buffer.readString() })
 }

@@ -16,8 +16,10 @@
 
 package com.valaphee.netcode.mcbe.network
 
+import com.valaphee.netcode.mcbe.network.packet.AbilitiesPacket
 import com.valaphee.netcode.mcbe.network.packet.AbilityPacket
 import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsPacket
+import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsWithoutAbilitiesPacket
 import com.valaphee.netcode.mcbe.network.packet.AnvilDamagePacket
 import com.valaphee.netcode.mcbe.network.packet.AppearancePacket
 import com.valaphee.netcode.mcbe.network.packet.ArmorDamagePacket
@@ -51,6 +53,7 @@ import com.valaphee.netcode.mcbe.network.packet.CommandsPacket
 import com.valaphee.netcode.mcbe.network.packet.CraftingEventPacket
 import com.valaphee.netcode.mcbe.network.packet.CreativeInventoryPacket
 import com.valaphee.netcode.mcbe.network.packet.CustomEventPacket
+import com.valaphee.netcode.mcbe.network.packet.DeathPacket
 import com.valaphee.netcode.mcbe.network.packet.DebugPacket
 import com.valaphee.netcode.mcbe.network.packet.DebugRendererPacket
 import com.valaphee.netcode.mcbe.network.packet.DefaultGameModePacket
@@ -539,4 +542,10 @@ interface PacketHandler : ProtocolHandler {
     fun permissions(packet: PermissionsPacket) = other(packet)
 
     fun toast(packet: ToastPacket) = other(packet)
+
+    fun abilities(abilitiesPacket: AbilitiesPacket)
+
+    fun adventureSettingsWithoutAbilities(packet: AdventureSettingsWithoutAbilitiesPacket) = other(packet)
+
+    fun death(packet: DeathPacket) = other(packet)
 }
