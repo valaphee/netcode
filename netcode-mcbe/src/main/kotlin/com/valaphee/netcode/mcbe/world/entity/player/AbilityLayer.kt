@@ -45,7 +45,7 @@ class AbilityLayer(
         Teleport,
         Invulnerable,
         Flying,
-        MayFly,
+        AllowFlight,
         Instabuild,
         Lightning,
         FlySpeed,

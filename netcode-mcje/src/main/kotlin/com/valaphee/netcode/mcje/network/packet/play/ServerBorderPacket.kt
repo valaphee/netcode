@@ -39,14 +39,14 @@ class ServerBorderPacket(
         SetSize, LerpSize, SetCenter, Initialize, SetWarningTime, SetWarningDistance
     }
 
-    override fun getId(id: Int, version: Int) = if (version >= 758) when (action) {
-        Action.Initialize -> 0x20
-        Action.SetCenter -> 0x42
-        Action.LerpSize -> 0x43
-        Action.SetSize -> 0x44
-        Action.SetWarningTime -> 0x45
-        Action.SetWarningDistance -> 0x46
-    } else id
+    override val reader get() = when (action) {
+        Action.Initialize -> ServerBorderInitializePacketReader
+        Action.SetCenter -> ServerBorderSetCenterPacketReader
+        Action.LerpSize -> ServerBorderLerpSizePacketReader
+        Action.SetSize -> ServerBorderSetSizePacketReader
+        Action.SetWarningTime -> ServerBorderSetWarningTimePacketReader
+        Action.SetWarningDistance -> ServerBorderSetWarningDistancePacketReader
+    }
 
     override fun write(buffer: PacketBuffer, version: Int) {
         if (version < 758) buffer.writeVarInt(action.ordinal)

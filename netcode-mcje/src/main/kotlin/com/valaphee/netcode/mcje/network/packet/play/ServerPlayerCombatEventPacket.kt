@@ -35,11 +35,11 @@ class ServerPlayerCombatEventPacket(
         Enter, End, Death
     }
 
-    override fun getId(id: Int, version: Int) = if (version >= 758) when (event) {
-        Event.End -> 0x33
-        Event.Enter -> 0x34
-        Event.Death -> 0x35
-    } else id
+    override val reader get() = when (event) {
+        Event.End -> ServerPlayerCombatEventEndPacketReader
+        Event.Enter -> ServerPlayerCombatEventEnterPacketReader
+        Event.Death -> ServerPlayerCombatEventDeathPacketReader
+    }
 
     override fun write(buffer: PacketBuffer, version: Int) {
         if (version < 758) buffer.writeVarInt(event.ordinal)

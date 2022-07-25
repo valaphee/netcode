@@ -27,7 +27,7 @@ class Pong(
     val serverName: String? = null,
     val version: String? = null,
     val protocolVersion: Int,
-    val edition: String = "MCPE",
+    val edition: String = BedrockEdition,
     val nintendoLimited: Boolean = false,
     val gameMode: GameMode? = null,
     val playerCount: Int,
@@ -51,4 +51,9 @@ class Pong(
         .add(ipv6Port.toString())
         .add("")
         .toString()
+
+    companion object {
+        const val BedrockEdition = "MCPE"
+        const val EducationEdition = "MCEE"
+    }
 }

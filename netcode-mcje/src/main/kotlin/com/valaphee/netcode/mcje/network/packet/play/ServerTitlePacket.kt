@@ -36,14 +36,14 @@ class ServerTitlePacket(
         SetTitle, SetSubTitle, ActionBar, SetTimings, Clear, Reset
     }
 
-    override fun getId(id: Int, version: Int) = if (version >= 758) when (action) {
-        Action.Clear -> 0x10
-        Action.ActionBar -> 0x41
-        Action.SetSubTitle -> 0x58
-        Action.SetTitle -> 0x5A
-        Action.SetTimings -> 0x5B
-        else -> TODO("$action")
-    } else id
+    override val reader get() = when (action) {
+        Action.Clear -> ServerTitleClearPacketReader
+        Action.ActionBar -> ServerTitleActionBarPacketReader
+        Action.SetSubTitle -> ServerTitleSetSubTitlePacketReader
+        Action.SetTitle -> ServerTitleSetTitlePacketReader
+        Action.SetTimings -> ServerTitleSetTimingsPacketReader
+        else -> null
+    }
 
     override fun write(buffer: PacketBuffer, version: Int) {
         if (version < 758) buffer.writeVarInt(action.ordinal)

@@ -543,7 +543,7 @@ interface PacketHandler : ProtocolHandler {
 
     fun toast(packet: ToastPacket) = other(packet)
 
-    fun abilities(abilitiesPacket: AbilitiesPacket)
+    fun abilities(packet: AbilitiesPacket) = other(packet)
 
     fun adventureSettingsWithoutAbilities(packet: AdventureSettingsWithoutAbilitiesPacket) = other(packet)
 

@@ -33,7 +33,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientCustomPayloadPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientDifficultyLockPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientDifficultyPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientEntityQueryPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientGeneratePacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientJigsawGeneratePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientHotbarPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientItemNamePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientItemPickPacket
@@ -103,7 +103,7 @@ interface ClientPlayPacketHandler : PacketHandler {
 
     fun itemUseOnEntity(packet: ClientItemUseOnEntityPacket) = other(packet)
 
-    fun generate(packet: ClientGeneratePacket) = other(packet)
+    fun jigsawGenerate(packet: ClientJigsawGeneratePacket) = other(packet)
 
     fun keepAlive(packet: ClientKeepAlivePacket) = other(packet)
 

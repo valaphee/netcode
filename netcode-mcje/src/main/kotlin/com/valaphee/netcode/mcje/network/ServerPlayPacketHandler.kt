@@ -17,7 +17,7 @@
 package com.valaphee.netcode.mcje.network
 
 import com.valaphee.netcode.mcje.network.packet.play.ServerAbilitiesPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerActionResponsePacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerActionConfirmPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBlockBreakAnimationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBlockEntityPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBlockEventPacket
@@ -124,7 +124,7 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun entityAnimation(packet: ServerEntityAnimationPacket) = other(packet)
 
-    fun actionResponse(packet: ServerActionResponsePacket) = other(packet)
+    fun actionResponse(packet: ServerActionConfirmPacket) = other(packet)
 
     fun blockBreakAnimation(packet: ServerBlockBreakAnimationPacket) = other(packet)
 

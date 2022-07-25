@@ -62,6 +62,8 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientItemUsePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientItemUsePacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ClientJigsawBlockUpdatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientJigsawBlockUpdatePacketReader
+import com.valaphee.netcode.mcje.network.packet.play.ClientJigsawGeneratePacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientJigsawGeneratePacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ClientKeepAlivePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientKeepAlivePacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ClientLocationPacket
@@ -115,8 +117,8 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientWindowConfirmPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientWindowConfirmPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerAbilitiesPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerAbilitiesPacketReader
-import com.valaphee.netcode.mcje.network.packet.play.ServerActionResponsePacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerActionResponsePacketReader
+import com.valaphee.netcode.mcje.network.packet.play.ServerActionConfirmPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerActionConfirmPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerBlockBreakAnimationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBlockBreakAnimationPacketReader
 import com.valaphee.netcode.mcje.network.packet.play.ServerBlockEntityPacket
@@ -363,7 +365,7 @@ enum class Protocols(
             .register(ClientBookEditPacket::class                  , ClientBookEditPacketReader                  , 754 to 0x0C, 758 to 0x0B, 759 to 0x0D)
             .register(ClientEntityQueryPacket::class               , ClientEntityQueryPacketReader               , 754 to 0x0D, 758 to 0x0C, 759 to 0x0E)
             .register(ClientItemUseOnEntityPacket::class           , ClientItemUseOnEntityPacketReader           , 754 to 0x0E, 758 to 0x0D, 759 to 0x0F)
-
+            .register(ClientJigsawGeneratePacket::class            , ClientJigsawGeneratePacketReader            , 754 to 0x0F, 758 to 0x0E, 759 to 0x10)
             .register(ClientKeepAlivePacket::class                 , ClientKeepAlivePacketReader                 , 754 to 0x10, 758 to 0x0F, 759 to 0x11)
             .register(ClientDifficultyLockPacket::class            , ClientDifficultyLockPacketReader            , 754 to 0x11, 758 to 0x10, 759 to 0x12)
             .register(ClientLocationPacket::class                  , ClientPositionPacketReader                  , 754 to 0x12, 758 to 0x11, 759 to 0x13)
@@ -405,8 +407,7 @@ enum class Protocols(
             .register(ServerPaintingAddPacket::class           , ServerPaintingAddPacketReader             , 754 to 0x03, 758 to 0x03             )
             .register(ServerPlayerAddPacket::class             , ServerPlayerAddPacketReader               , 754 to 0x04, 758 to 0x04, 759 to 0x02)
             .register(ServerEntityAnimationPacket::class       , ServerEntityAnimationPacketReader         , 754 to 0x05, 758 to 0x06, 759 to 0x03)
-
-            .register(ServerActionResponsePacket::class        , ServerActionResponsePacketReader          , 754 to 0x07, 758 to 0x08, 759 to 0x05) // TODO
+            .register(ServerActionConfirmPacket::class         , ServerActionConfirmPacketReader           , 754 to 0x07, 758 to 0x08, 759 to 0x05)
             .register(ServerBlockBreakAnimationPacket::class   , ServerBlockBreakAnimationPacketReader     , 754 to 0x08, 758 to 0x09, 759 to 0x06)
             .register(ServerBlockEntityPacket::class           , ServerBlockEntityPacketReader             , 754 to 0x09, 758 to 0x0A, 759 to 0x07)
             .register(ServerBlockEventPacket::class            , ServerBlockEventPacketReader              , 754 to 0x0A, 758 to 0x0B, 759 to 0x08)
@@ -418,7 +419,6 @@ enum class Protocols(
             .register(null                                     , ServerTitleClearPacketReader              ,              758 to 0x10, 759 to 0x0D)
             .register(ServerCommandSuggestPacket::class        , ServerCommandSuggestPacketReader          , 754 to 0x0F, 758 to 0x11, 759 to 0x0E)
             .register(ServerWindowConfirmPacket::class         , ServerWindowConfirmPacketReader           , 754 to 0x11                          )
-
             .register(ServerWindowClosePacket::class           , ServerWindowClosePacketReader             , 754 to 0x12, 758 to 0x13, 759 to 0x10)
             .register(ServerInventoryContentPacket::class      , ServerInventoryContentPacketReader        , 754 to 0x13, 758 to 0x14, 759 to 0x11)
             .register(ServerWindowPropertyPacket::class        , ServerWindowPropertyPacketReader          , 754 to 0x14, 758 to 0x15, 759 to 0x12)
@@ -437,7 +437,6 @@ enum class Protocols(
             .register(ServerChunkPacket::class                 , ServerChunkPacketReader                   , 754 to 0x20, 758 to 0x22, 759 to 0x1F)
             .register(ServerWorldEventPacket::class            , ServerWorldEventPacketReader              , 754 to 0x21, 758 to 0x23, 759 to 0x20)
             .register(ServerParticlePacket::class              , ServerParticlePacketReader                , 754 to 0x22, 758 to 0x24, 759 to 0x21)
-
             .register(ServerWorldPacket::class                 , ServerWorldPacketReader                   , 754 to 0x24, 758 to 0x26, 759 to 0x23)
             .register(ServerMapPacket::class                   , ServerMapPacketReader                     , 754 to 0x25, 758 to 0x27, 759 to 0x24)
             .register(ServerTradePacket::class                 , ServerTradePacketReader                   , 754 to 0x26, 758 to 0x28, 759 to 0x25)
@@ -453,11 +452,11 @@ enum class Protocols(
             .register(ServerCraftPacket::class                 , ServerCraftPacketReader                   , 754 to 0x2F, 758 to 0x31, 759 to 0x2E)
             .register(ServerAbilitiesPacket::class             , ServerAbilitiesPacketReader               , 754 to 0x30, 758 to 0x32, 759 to 0x2F)
             .register(ServerTextSignedPacket::class            , ServerTextSignedPacketReader              ,                           759 to 0x30)
-            .register(ServerPlayerCombatEventPacket::class     , ServerPlayerCombatEventPacketReader       , 754 to 0x31                          )
+            .register(ServerPlayerCombatEventPacket::class     , ServerPlayerCombatEventPacketReader       , 754 to 0x31, 758 to 0x33, 759 to 0x31)
             .register(null                                     , ServerPlayerCombatEventEndPacketReader    ,              758 to 0x33, 759 to 0x31)
             .register(null                                     , ServerPlayerCombatEventEnterPacketReader  ,              758 to 0x34, 759 to 0x32)
             .register(null                                     , ServerPlayerCombatEventDeathPacketReader  ,              758 to 0x35, 759 to 0x33)
-            .register(ServerPlayerListPacket::class            , ServerPlayerListPacketReader              , 754 to 0x32, 758 to 0x36, 759 to 0x34) //
+            .register(ServerPlayerListPacket::class            , ServerPlayerListPacketReader              , 754 to 0x32, 758 to 0x36, 759 to 0x34)
             .register(ServerLookAtPacket::class                , ServerLookAtPacketReader                  , 754 to 0x33, 758 to 0x37, 759 to 0x35)
             .register(ServerLocationPacket::class              , ServerLocationPacketReader                , 754 to 0x34, 758 to 0x38, 759 to 0x36)
             .register(ServerRecipeBookPacket::class            , ServerRecipeBookPacketReader              , 754 to 0x35, 758 to 0x39, 759 to 0x37)
@@ -467,9 +466,8 @@ enum class Protocols(
             .register(ServerRespawnPacket::class               , ServerRespawnPacketReader                 , 754 to 0x39, 758 to 0x3D, 759 to 0x3B)
             .register(ServerEntityHeadRotationPacket::class    , ServerEntityHeadRotationPacketReader      , 754 to 0x3A, 758 to 0x3E, 759 to 0x3C)
             .register(ServerBlockUpdatesPacket::class          , ServerBlockUpdatesPacketReader            , 754 to 0x3B, 758 to 0x3F, 759 to 0x3D)
-
-            .register(ServerBorderPacket::class                , ServerBorderPacketReader                  , 754 to 0x3D                          )
             .register(null                                     , ServerTitleActionBarPacketReader          ,              758 to 0x41, 759 to 0x40)
+            .register(ServerBorderPacket::class                , ServerBorderPacketReader                  , 754 to 0x3D, 758 to 0x42, 759 to 0x41)
             .register(null                                     , ServerBorderSetCenterPacketReader         ,              758 to 0x42, 759 to 0x41)
             .register(null                                     , ServerBorderLerpSizePacketReader          ,              758 to 0x43, 759 to 0x42)
             .register(null                                     , ServerBorderSetSizePacketReader           ,              758 to 0x44, 759 to 0x43)
@@ -480,7 +478,6 @@ enum class Protocols(
             .register(ServerChunkPublishPacket::class          , ServerChunkPublishPacketReader            , 754 to 0x40, 758 to 0x49, 759 to 0x48)
             .register(ServerViewDistancePacket::class          , ServerViewDistancePacketReader            , 754 to 0x41, 758 to 0x4A, 759 to 0x49)
             .register(ServerSpawnPositionPacket::class         , ServerSpawnPositionPacketReader           , 754 to 0x42, 758 to 0x4B, 759 to 0x4A)
-
             .register(ServerScoreboardDisplayPacket::class     , ServerScoreboardDisplayPacketReader       , 754 to 0x43, 758 to 0x4C, 759 to 0x4C)
             .register(ServerEntityMetadataPacket::class        , ServerEntityMetadataPacketReader          , 754 to 0x44, 758 to 0x4D, 759 to 0x4D)
             .register(ServerEntityAttachPacket::class          , ServerEntityAttachPacketReader            , 754 to 0x45, 758 to 0x4E, 759 to 0x4E)
@@ -501,7 +498,6 @@ enum class Protocols(
             .register(ServerEntitySoundPacket::class           , ServerEntitySoundPacketReader             , 754 to 0x50, 758 to 0x5C, 759 to 0x5C)
             .register(ServerSoundPacket::class                 , ServerSoundPacketReader                   , 754 to 0x51, 758 to 0x5D, 759 to 0x5D)
             .register(ServerSoundStopPacket::class             , ServerSoundStopPacketReader               , 754 to 0x52, 758 to 0x5E, 759 to 0x5E)
-
             .register(ServerPlayerListHeaderFooterPacket::class, ServerPlayerListHeaderFooterPacketReader  , 754 to 0x53, 758 to 0x5F, 759 to 0x60)
             .register(ServerQueryPacket::class                 , ServerQueryPacketReader                   , 754 to 0x54, 758 to 0x60, 759 to 0x61)
             .register(ServerStackTakePacket::class             , ServerStackTakePacketReader               , 754 to 0x55, 758 to 0x61, 759 to 0x62)

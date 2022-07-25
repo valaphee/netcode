@@ -26,20 +26,22 @@ import com.valaphee.netcode.mcje.world.entity.player.Hand
  * @author Kevin Ludwig
  */
 class ClientItemUsePacket(
-    val hand: Hand
+    val hand: Hand,
+    val confirmId: Int
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(hand.ordinal)
+        if (version >= 759) buffer.writeVarInt(confirmId)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.itemUse(this)
 
-    override fun toString() = "ClientItemUsePacket(hand=$hand)"
+    override fun toString() = "ClientItemUsePacket(hand=$hand, confirmId=$confirmId)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientItemUsePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientItemUsePacket(Hand.values()[buffer.readVarInt()])
+    override fun read(buffer: PacketBuffer, version: Int) = ClientItemUsePacket(Hand.values()[buffer.readVarInt()], if (version >= 759) buffer.readVarInt() else 0)
 }

@@ -34,6 +34,7 @@ class ClientBlockPlacePacket(
     val blockFace: Direction?,
     val clickPosition: Float3,
     val insideBlock: Boolean,
+    val confirmId: Int
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(hand.ordinal)
@@ -41,11 +42,12 @@ class ClientBlockPlacePacket(
         buffer.writeVarInt(blockFace?.ordinal ?: 0xFF)
         buffer.writeFloat3(clickPosition)
         buffer.writeBoolean(insideBlock)
+        if (version >= 759) buffer.writeVarInt(confirmId)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.blockPlace(this)
 
-    override fun toString() = "ClientBlockPlacePacket(hand=$hand, blockPosition=$blockPosition, blockFace=$blockFace, clickPosition=$clickPosition, insideBlock=$insideBlock)"
+    override fun toString() = "ClientBlockPlacePacket(hand=$hand, blockPosition=$blockPosition, blockFace=$blockFace, clickPosition=$clickPosition, insideBlock=$insideBlock, confirmId=$confirmId)"
 }
 
 /**
@@ -58,6 +60,7 @@ object ClientBlockPlacePacketReader : PacketReader {
         val blockFace = buffer.readVarInt()
         val clickPosition = buffer.readFloat3()
         val insideBlock = buffer.readBoolean()
-        return ClientBlockPlacePacket(hand, blockPosition, if (blockFace == 0xFF) null else Direction.values()[blockFace], clickPosition, insideBlock)
+        val confirmId = if (version >= 759) buffer.readVarInt() else 0
+        return ClientBlockPlacePacket(hand, blockPosition, if (blockFace == 0xFF) null else Direction.values()[blockFace], clickPosition, insideBlock, confirmId)
     }
 }

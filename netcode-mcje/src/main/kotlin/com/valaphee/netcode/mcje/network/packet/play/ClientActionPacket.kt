@@ -30,6 +30,7 @@ class ClientActionPacket(
     val action: Action,
     val blockPosition: Int3,
     val blockFace: Direction,
+    val confirmId: Int
 ) : Packet<ClientPlayPacketHandler>() {
     enum class Action {
         StartBreak, AbortBreak, StopBreak, DropStack, DropStack1, ReleaseItem, SwapHands
@@ -39,16 +40,17 @@ class ClientActionPacket(
         buffer.writeVarInt(action.ordinal)
         buffer.writeInt3UnsignedY(blockPosition)
         buffer.writeDirection(blockFace)
+        if (version >= 759) buffer.writeVarInt(confirmId)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.action(this)
 
-    override fun toString() = "ClientActionPacket(action=$action, blockPosition=$blockPosition, blockFace=$blockFace)"
+    override fun toString() = "ClientActionPacket(action=$action, blockPosition=$blockPosition, blockFace=$blockFace, confirmId=$confirmId)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientActionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientActionPacket(ClientActionPacket.Action.values()[buffer.readVarInt()], buffer.readInt3UnsignedY(), buffer.readDirection())
+    override fun read(buffer: PacketBuffer, version: Int) = ClientActionPacket(ClientActionPacket.Action.values()[buffer.readVarInt()], buffer.readInt3UnsignedY(), buffer.readDirection(), if (version >= 759) buffer.readVarInt() else 0)
 }

@@ -25,7 +25,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
 /**
  * @author Kevin Ludwig
  */
-class ClientGeneratePacket(
+class ClientJigsawGeneratePacket(
     val position: Int3,
     val depth: Int,
     val keepJigsaws: Boolean
@@ -36,14 +36,14 @@ class ClientGeneratePacket(
         buffer.writeBoolean(keepJigsaws)
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.generate(this)
+    override fun handle(handler: ClientPlayPacketHandler) = handler.jigsawGenerate(this)
 
-    override fun toString() = "ClientGeneratePacket(position=$position, depth=$depth, keepJigsaws=$keepJigsaws)"
+    override fun toString() = "ClientJigsawGeneratePacket(position=$position, depth=$depth, keepJigsaws=$keepJigsaws)"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ClientGeneratePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientGeneratePacket(buffer.readInt3UnsignedY(), buffer.readVarInt(), buffer.readBoolean())
+object ClientJigsawGeneratePacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ClientJigsawGeneratePacket(buffer.readInt3UnsignedY(), buffer.readVarInt(), buffer.readBoolean())
 }
