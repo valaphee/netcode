@@ -92,7 +92,7 @@ class CommandsPacket(
                 buffer.writeVarUInt(overload.size)
                 overload.forEach { parameter ->
                     buffer.writeString(parameter.name)
-                    buffer.writeIntLE(parameter.postfix?.let { postfixes.indexOf(it) or parameterFlagPostfix } ?: parameter.enumeration?.let { (if (it.soft) softEnumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagSoftEnumeration else enumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagEnumeration) or parameterFlagValid } ?: parameter.type?.let { Parameter.Type.registryByVersion(version).getId(it) or parameterFlagValid } ?: error("Unknown type in ${parameter.name}"))
+                    buffer.writeIntLE(parameter.postfix?.let { postfixes.indexOf(it) or parameterFlagPostfix } ?: parameter.enumeration?.let { (if (it.soft) softEnumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagSoftEnumeration else enumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagEnumeration) or parameterFlagValid } ?: parameter.type?.let { Parameter.Type.registryByVersion(version).getId(it) or parameterFlagValid } ?: error("No such command parameter type: ${parameter.name}"))
                     buffer.writeBoolean(parameter.optional)
                     buffer.writeByteFlags(parameter.options)
                 }

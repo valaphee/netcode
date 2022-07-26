@@ -211,6 +211,30 @@ interface MetadataType<T> {
             }
         }
 
+        val CatVariant = object : MetadataType<Int> {
+            override fun read(buffer: PacketBuffer) = buffer.readVarInt()
+
+            override fun write(buffer: PacketBuffer, value: Any?) {
+                buffer.writeVarInt(value as Int)
+            }
+        }
+
+        val FrogVariant = object : MetadataType<Int> {
+            override fun read(buffer: PacketBuffer) = buffer.readVarInt()
+
+            override fun write(buffer: PacketBuffer, value: Any?) {
+                buffer.writeVarInt(value as Int)
+            }
+        }
+
+        val PaintingVariant = object : MetadataType<Int> {
+            override fun read(buffer: PacketBuffer) = buffer.readVarInt()
+
+            override fun write(buffer: PacketBuffer, value: Any?) {
+                buffer.writeVarInt(value as Int)
+            }
+        }
+
         val Flags = object : MetadataType<Set<Flag>> {
             override fun read(buffer: PacketBuffer) = buffer.readByteFlags<Flag>()
 
@@ -241,6 +265,9 @@ interface MetadataType<T> {
             this[16] = VillagerData
             this[17] = OptionalInt
             this[18] = Pose
+            this[19] = CatVariant
+            this[20] = FrogVariant
+            this[21] = PaintingVariant
         }
     }
 }

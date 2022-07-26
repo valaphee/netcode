@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.valaphee.foundry.math.Int3
+import com.valaphee.netcode.mcje.chat.ChatType
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
@@ -42,8 +42,9 @@ class ServerWorldPacket(
     val gameMode: GameMode,
     val previousGameMode: GameMode,
     val worldNames: List<NamespacedKey>,
-    val dimensionCodec: DimensionCodec,
-    val dimension: Dimension,
+    val registries: Registries,
+    val dimensionName: NamespacedKey?,
+    val dimension: Dimension?,
     val worldName: NamespacedKey,
     val hashedSeed: Long,
     val maximumPlayers: Int,
@@ -55,9 +56,10 @@ class ServerWorldPacket(
     val flatGenerator: Boolean,
     val deathLocation: DeathLocation?
 ) : Packet<ServerPlayPacketHandler>() {
-    data class DimensionCodec(
+    data class Registries(
         @get:JsonProperty("minecraft:dimension_type") val dimensions: Registry<Dimension>,
-        @get:JsonProperty("minecraft:worldgen/biome") val biomes: Registry<Biome>
+        @get:JsonProperty("minecraft:worldgen/biome") val biomes: Registry<Biome>,
+        @get:JsonProperty("minecraft:chat_type") val chatTypes: Registry<ChatType>
     ) {
         data class Registry<T>(
             @get:JsonProperty("type") val key: String,
@@ -78,8 +80,8 @@ class ServerWorldPacket(
         buffer.writeByte(previousGameMode.id)
         buffer.writeVarInt(worldNames.size)
         worldNames.forEach { buffer.writeNamespacedKey(it) }
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimensionCodec)
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension)
+        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, registries)
+        if (version >= 759) buffer.writeNamespacedKey(dimensionName!!) else buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension!!)
         buffer.writeNamespacedKey(worldName)
         buffer.writeLong(hashedSeed)
         buffer.writeVarInt(maximumPlayers)
@@ -98,12 +100,39 @@ class ServerWorldPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.world(this)
 
-    override fun toString() = "ServerWorldPacket(entityId=$entityId, hardcore=$hardcore, gameMode=$gameMode, previousGameMode=$previousGameMode, worldNames=$worldNames, dimensionCodec=$dimensionCodec, dimension=$dimension, worldName=$worldName, hashedSeed=$hashedSeed, maximumPlayers=$maximumPlayers, viewDistance=$viewDistance, simulationDistance=$simulationDistance, reducedDebugInfo=$reducedDebugInfo, respawnScreen=$respawnScreen, debugGenerator=$debugGenerator, flatGenerator=$flatGenerator, deathLocation=$deathLocation)"
+    override fun toString() = "ServerWorldPacket(entityId=$entityId, hardcore=$hardcore, gameMode=$gameMode, previousGameMode=$previousGameMode, worldNames=$worldNames, registries=$registries, dimensionName=$dimensionName, dimension=$dimension, worldName=$worldName, hashedSeed=$hashedSeed, maximumPlayers=$maximumPlayers, viewDistance=$viewDistance, simulationDistance=$simulationDistance, reducedDebugInfo=$reducedDebugInfo, respawnScreen=$respawnScreen, debugGenerator=$debugGenerator, flatGenerator=$flatGenerator, deathLocation=$deathLocation)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerWorldPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldPacket(buffer.readInt(), buffer.readBoolean(), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }, buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.readNamespacedKey(), buffer.readLong(), buffer.readVarInt(), buffer.readVarInt(), if (version >= 758) buffer.readVarInt() else 0, buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), if (version >= 759 && buffer.readBoolean()) DeathLocation(buffer.readNamespacedKey(), buffer.readInt3UnsignedY()) else null)
+    override fun read(buffer: PacketBuffer, version: Int): ServerWorldPacket {
+        val entityId = buffer.readInt()
+        val hardcore = buffer.readBoolean()
+        val gameMode = checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt()))
+        val previousGameMode = checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt()))
+        val worldNames = safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }
+        val registries = buffer.nbtObjectMapper.readValue<ServerWorldPacket.Registries>(ByteBufInputStream(buffer))
+        val dimensionName: NamespacedKey?
+        val dimension: Dimension?
+        if (version >= 759) {
+            dimensionName = buffer.readNamespacedKey()
+            dimension = registries.dimensions.value.find { it.key == dimensionName.toString() }?.value
+        } else {
+            dimensionName = null
+            dimension = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
+        }
+        val worldName = buffer.readNamespacedKey()
+        val hashedSeed = buffer.readLong()
+        val maximumPlayers = buffer.readVarInt()
+        val viewDistance = buffer.readVarInt()
+        val simulationDistance = if (version >= 758) buffer.readVarInt() else 5
+        val reducedDebugInfo = buffer.readBoolean()
+        val respawnScreen = buffer.readBoolean()
+        val debugGenerator = buffer.readBoolean()
+        val flatGenerator = buffer.readBoolean()
+        val deathLocation = /*if (version >= 759 && buffer.readBoolean()) DeathLocation(buffer.readNamespacedKey(), buffer.readInt3UnsignedY()) else */null
+        return ServerWorldPacket(entityId, hardcore, gameMode, previousGameMode, worldNames, registries, dimensionName, dimension, worldName, hashedSeed, maximumPlayers, viewDistance, simulationDistance, reducedDebugInfo, respawnScreen, debugGenerator, flatGenerator, deathLocation)
+    }
 }

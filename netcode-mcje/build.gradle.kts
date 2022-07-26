@@ -20,7 +20,7 @@ dependencies {
     api("com.valaphee:foundry-math:1.4.0")
     api("com.valaphee:jackson-dataformat-nbt:1.2.4")
     api("it.unimi.dsi:fastutil:8.5.8")
-    api("net.kyori:adventure-text-serializer-gson:4.10.1")
+    api("net.kyori:adventure-text-serializer-gson:4.11.0")
 }
 
 publishing {

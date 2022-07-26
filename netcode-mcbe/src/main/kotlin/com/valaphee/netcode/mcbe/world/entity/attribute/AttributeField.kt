@@ -16,6 +16,9 @@
 
 package com.valaphee.netcode.mcbe.world.entity.attribute
 
+import kotlin.math.max
+import kotlin.math.min
+
 /**
  * @author Kevin Ludwig
  */
@@ -44,13 +47,13 @@ enum class AttributeField(
 
     fun attributeValue() = AttributeValue(this, minimum, maximum, defaultValue)
 
-    fun inBounds(value: Float) = value.coerceIn(minimum, maximum)
+    fun inBounds(value: Float) = if (value < minimum) minimum else if (value > maximum) maximum else value
 
     override fun toString() = key
 
     companion object {
         private val byKey = values().associateBy { it.key }
 
-        fun byKey(key: String) = byKey[key] ?: error(key)
+        fun byKey(key: String) = byKey[key] ?: error("No such attribute field: $key")
     }
 }

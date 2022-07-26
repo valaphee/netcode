@@ -318,8 +318,9 @@ import kotlin.reflect.KClass
  * @author Kevin Ludwig
  */
 class Protocol(
-    val packets: Object2IntMap<KClass<out Packet<out PacketHandler>>>,
-    val readers: Int2ObjectMap<PacketReader>
+    val idByPacket: Object2IntMap<KClass<out Packet<out PacketHandler>>>,
+    val readerById: Int2ObjectMap<PacketReader>,
+    val idByReader: Object2IntMap<PacketReader>
 ) {
     class Builder {
         private val packetsAndReadersByVersion = Int2ObjectOpenHashMap<Pair<Object2IntMap<KClass<out Packet<out PacketHandler>>>, Int2ObjectMap<PacketReader>>>()
@@ -332,7 +333,7 @@ class Protocol(
             }
         }
 
-        fun build(): Int2ObjectMap<Protocol> = Int2ObjectMaps.unmodifiable(Int2ObjectOpenHashMap<Protocol>().apply { packetsAndReadersByVersion.forEach { this[it.key] = Protocol(Object2IntMaps.unmodifiable(it.value.first), Int2ObjectMaps.unmodifiable(it.value.second)) } })
+        fun build(): Int2ObjectMap<Protocol> = Int2ObjectMaps.unmodifiable(Int2ObjectOpenHashMap<Protocol>().apply { packetsAndReadersByVersion.forEach { this[it.key] = Protocol(Object2IntMaps.unmodifiable(it.value.first), Int2ObjectMaps.unmodifiable(it.value.second), Object2IntOpenHashMap(it.value.second.map { it.value to  it.key }.toMap()) ) } })
     }
 }
 

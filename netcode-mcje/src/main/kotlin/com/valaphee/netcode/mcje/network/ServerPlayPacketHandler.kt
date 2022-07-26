@@ -124,7 +124,7 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun entityAnimation(packet: ServerEntityAnimationPacket) = other(packet)
 
-    fun actionResponse(packet: ServerActionConfirmPacket) = other(packet)
+    fun actionConfirm(packet: ServerActionConfirmPacket) = other(packet)
 
     fun blockBreakAnimation(packet: ServerBlockBreakAnimationPacket) = other(packet)
 

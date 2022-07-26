@@ -56,7 +56,7 @@ fun PacketBuffer.readParticleData(type: NamespacedKey) = when (type) {
         val block = when (val positionType = readString()) {
             "minecraft:block" -> true
             "minecraft:entity" -> false
-            else -> TODO(positionType)
+            else -> error("No such position type: $positionType")
         }
         val blockPosition: Int3?
         val entityId: Int

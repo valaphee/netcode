@@ -30,36 +30,36 @@ import java.io.OutputStream
  */
 class Layer(
     var palette: IntList,
-    var bitArray: BitArray,
+    var data: BitArray,
 ) {
     constructor(default: Int, version: BitArray.Version) : this(IntArrayList(16).apply { add(default) }, version.bitArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize))
 
-    operator fun get(index: Int) = palette.getInt(bitArray[index])
+    operator fun get(index: Int) = palette.getInt(data[index])
 
     operator fun set(index: Int, value: Int) {
         var paletteIndex = palette.indexOf(value)
         if (paletteIndex == -1) {
             paletteIndex = palette.size
             palette.add(value)
-            val blocksVersion = bitArray.version
+            val blocksVersion = data.version
             if (paletteIndex > blocksVersion.maximumEntryValue) {
                 blocksVersion.next?.let {
                     val newBlockStorage = it.bitArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize)
-                    repeat(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize) { newBlockStorage[it] = bitArray[it] }
-                    bitArray = newBlockStorage
+                    repeat(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize) { newBlockStorage[it] = data[it] }
+                    data = newBlockStorage
                 }
             }
         }
-        bitArray[index] = paletteIndex
+        data[index] = paletteIndex
     }
 
-    val empty get() = bitArray.empty
+    val empty get() = data.empty
 
     fun writeToBuffer(buffer: PacketBuffer, runtime: Boolean) {
-        check(palette.size <= bitArray.version.maximumEntryValue + 1)
-        buffer.writeByte((bitArray.version.bitsPerEntry shl 1) or if (runtime) 1 else 0)
-        bitArray.data.forEach { buffer.writeIntLE(it) }
-        if (bitArray.version != BitArray.Version.V0) buffer.writeVarInt(palette.size)
+        check(palette.size <= data.version.maximumEntryValue + 1)
+        buffer.writeByte((data.version.bitsPerEntry shl 1) or if (runtime) 1 else 0)
+        data.data.forEach { buffer.writeIntLE(it) }
+        if (data.version != BitArray.Version.V0) buffer.writeVarInt(palette.size)
         if (runtime) palette.forEach { buffer.writeVarInt(it) }
         else ByteBufOutputStream(buffer).use {
             val stream = it as OutputStream

@@ -38,6 +38,7 @@ import com.valaphee.netcode.mcbe.world.item.writeIngredient
 import com.valaphee.netcode.mcbe.world.item.writeItemStackInstance
 import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
 import com.valaphee.netcode.util.safeList
+import kotlin.reflect.jvm.jvmName
 
 /**
  * @author Kevin Ludwig
@@ -98,7 +99,7 @@ class RecipesPacket(
                     buffer.writeUuid(it.id)
                     buffer.writeVarUInt(it.netId)
                 }
-                else -> TODO("$it")
+                else -> error("Unsupported recipe type: ${it::class.jvmName}")
             }
         }
 
@@ -159,7 +160,7 @@ object RecipesPacketReader : PacketReader {
                 2 -> FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()]), -1), checkNotNull(if (version >= 431) buffer.readItemStackInstance() else buffer.readItemStackPre431()), listOf(buffer.readString()))
                 3 -> FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()]), buffer.readVarInt()), checkNotNull(if (version >= 431) buffer.readItemStackInstance() else buffer.readItemStackPre431()), listOf(buffer.readString()))
                 4 -> MultiRecipe(buffer.readUuid(), buffer.readVarUInt())
-                else -> TODO("$type")
+                else -> error("No such recipe type: $type")
             }
         },
         safeList(buffer.readVarUInt()) { BrewingMixRecipe(BrewingMixRecipe.Description(""), emptyList(), ItemStack(buffer.registries.items[buffer.readVarInt()] ?: "minecraft:unknown", buffer.readVarInt()), ItemStack(buffer.registries.items[buffer.readVarInt()] ?: "minecraft:unknown", buffer.readVarInt()), ItemStack(buffer.registries.items[buffer.readVarInt()] ?: "minecraft:unknown", buffer.readVarInt())) },

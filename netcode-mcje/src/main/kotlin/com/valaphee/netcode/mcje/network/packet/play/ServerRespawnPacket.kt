@@ -33,7 +33,8 @@ import java.io.OutputStream
  * @author Kevin Ludwig
  */
 class ServerRespawnPacket(
-    val dimension: Dimension,
+    val dimensionName: NamespacedKey?,
+    val dimension: Dimension?,
     val worldName: NamespacedKey,
     val hashedSeed: Long,
     val gameMode: GameMode,
@@ -44,7 +45,7 @@ class ServerRespawnPacket(
     val deathLocation: DeathLocation?
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension)
+        if (version >= 759) buffer.writeNamespacedKey(dimensionName!!) else buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension!!)
         buffer.writeNamespacedKey(worldName)
         buffer.writeLong(hashedSeed)
         buffer.writeByte(gameMode.id)
@@ -68,5 +69,5 @@ class ServerRespawnPacket(
  * @author Kevin Ludwig
  */
 object ServerRespawnPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerRespawnPacket(buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)), buffer.readNamespacedKey(), buffer.readLong(), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), if (version >= 759 && buffer.readBoolean()) DeathLocation(buffer.readNamespacedKey(), buffer.readInt3UnsignedY()) else null)
+    override fun read(buffer: PacketBuffer, version: Int) = ServerRespawnPacket(if (version >= 759) buffer.readNamespacedKey() else null, if (version < 759) buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)) else null, buffer.readNamespacedKey(), buffer.readLong(), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), if (version >= 759 && buffer.readBoolean()) DeathLocation(buffer.readNamespacedKey(), buffer.readInt3UnsignedY()) else null)
 }

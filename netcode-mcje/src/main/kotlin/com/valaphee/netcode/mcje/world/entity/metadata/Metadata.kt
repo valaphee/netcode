@@ -42,7 +42,8 @@ class Metadata {
     fun readFromBuffer(buffer: PacketBuffer) {
         var fieldId = buffer.readByte().toInt()
         while (fieldId != -1) {
-            val type = MetadataType.registry.idToValue.get(buffer.readVarInt())
+            val typeId = buffer.readVarInt()
+            val type = MetadataType.registry.idToValue[typeId] ?: error("No such metadata type: $typeId (field id: $fieldId)")
             values[fieldId] = MetadataValue(type, type.read(buffer))
             fieldId = buffer.readByte().toInt()
         }

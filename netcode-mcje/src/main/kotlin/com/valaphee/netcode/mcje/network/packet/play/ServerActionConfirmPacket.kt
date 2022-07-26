@@ -45,7 +45,7 @@ class ServerActionConfirmPacket(
         }
     }
 
-    override fun handle(handler: ServerPlayPacketHandler) = handler.actionResponse(this)
+    override fun handle(handler: ServerPlayPacketHandler) = handler.actionConfirm(this)
 
     override fun toString() = "ServerActionConfirmPacket(position=$position, blockStateId=$blockStateId, action=$action, succeed=$succeed, confirmId=$confirmId)"
 }

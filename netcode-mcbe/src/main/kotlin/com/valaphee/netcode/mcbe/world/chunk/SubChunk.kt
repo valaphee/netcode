@@ -122,5 +122,5 @@ fun PacketBuffer.readSubChunk() = when (val version = readUnsignedByte().toInt()
         val index = readByte().toInt()
         CompactSubChunk(List(layerCount) { readLayer() }, index)
     }
-    else -> TODO("$version")
+    else -> error("No such sub chunk version: $version")
 }

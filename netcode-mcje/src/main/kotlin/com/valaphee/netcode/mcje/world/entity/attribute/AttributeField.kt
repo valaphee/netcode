@@ -53,8 +53,8 @@ enum class AttributeField(
         private val byKey = values().associateBy { it.key }
         private val byLegacyKey = values().associateBy { it.legacyKey }
 
-        fun byKey(key: NamespacedKey) = byKey[key] ?: error(key.toString())
+        fun byKey(key: NamespacedKey) = byKey[key] ?: error("No such attribute field: $key")
 
-        fun byLegacyKey(key: String) = byLegacyKey[key] ?: error(key)
+        fun byLegacyKey(key: String) = byLegacyKey[key] ?: error("No such attribute field: $key (legacy)")
     }
 }

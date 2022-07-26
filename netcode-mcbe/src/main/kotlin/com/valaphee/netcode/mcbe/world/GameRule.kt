@@ -17,6 +17,7 @@
 package com.valaphee.netcode.mcbe.world
 
 import com.valaphee.netcode.mcbe.network.PacketBuffer
+import kotlin.reflect.jvm.jvmName
 
 /**
  * @author Kevin Ludwig
@@ -29,22 +30,22 @@ data class GameRule<T>(
 
 fun PacketBuffer.readGameRulePre440(): GameRule<*> {
     val name = readString()
-    return when (readVarUInt()) {
+    return when (val type = readVarUInt()) {
         1 -> GameRule(name, true, readBoolean())
         2 -> GameRule(name, true, readVarUInt())
         3 -> GameRule(name, true, readFloatLE())
-        else -> TODO()
+        else -> error("No such gamerule type: $type (name: $name)")
     }
 }
 
 fun PacketBuffer.readGameRule(): GameRule<*> {
     val name = readString()
     val editable = readBoolean()
-    return when (readVarUInt()) {
+    return when (val type = readVarUInt()) {
         1 -> GameRule(name, editable, readBoolean())
         2 -> GameRule(name, editable, readVarUInt())
         3 -> GameRule(name, editable, readFloatLE())
-        else -> TODO()
+        else -> error("No such gamerule type: $type (name: $name)")
     }
 }
 
@@ -63,7 +64,7 @@ fun PacketBuffer.writeGameRulePre440(value: GameRule<*>) {
             writeVarUInt(3)
             writeFloatLE(value.value)
         }
-        else -> TODO()
+        else -> error("Unsupported gamerule type: ${value.value!!::class.jvmName}")
     }
 }
 
@@ -83,6 +84,6 @@ fun PacketBuffer.writeGameRule(value: GameRule<*>) {
             writeVarUInt(3)
             writeFloatLE(value.value)
         }
-        else -> TODO()
+        else -> error("Unsupported gamerule type: ${value.value!!::class.jvmName}")
     }
 }

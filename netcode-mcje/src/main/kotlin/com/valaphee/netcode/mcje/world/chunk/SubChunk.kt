@@ -17,34 +17,19 @@
 package com.valaphee.netcode.mcje.world.chunk
 
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import it.unimi.dsi.fastutil.ints.IntArrayList
-import it.unimi.dsi.fastutil.ints.IntList
 
 /**
  * @author Kevin Ludwig
  */
 class SubChunk(
-    val blockPalette: IntList?,
-    val blocks: BitArray,
-    var blockCount: Int
+    var blockCount: Int,
+    val blocks: Storage,
+    val biomes: Storage?
 ) {
-    constructor(bitsPerBlock: Int) : this(IntArrayList(16).apply { add(0) }, BitArray(bitsPerBlock, BlockStorage.XZSize * YSize * BlockStorage.XZSize), 0)
-
-    operator fun get(x: Int, y: Int, z: Int): Int {
-        val indexOrValue = blocks[(y shl YShift) or (z shl ZShift) or x]
-        return blockPalette?.getInt(indexOrValue) ?: indexOrValue
-    }
+    operator fun get(x: Int, y: Int, z: Int) = blocks[(y shl YShift) or (z shl ZShift) or x]
 
     operator fun set(x: Int, y: Int, z: Int, value: Int) {
-        var indexOrValue = value
-        blockPalette?.let {
-            indexOrValue = it.getInt(value)
-            if (indexOrValue == -1) {
-                indexOrValue = it.size
-                it.add(indexOrValue)
-            }
-        }
-        blocks[(y shl YShift) or (z shl ZShift) or x] = indexOrValue
+        blocks[(y shl YShift) or (z shl ZShift) or x] = value
     }
 
     companion object {
@@ -54,13 +39,17 @@ class SubChunk(
     }
 }
 
-fun PacketBuffer.readSubChunk(): SubChunk {
-    val blockCount = readUnsignedShort()
-    val bitsPerBlock = readByte().toInt()
-    var blockPalette: IntArrayList? = null
-    if (bitsPerBlock <= 8) {
-        val blockPaletteSize = readVarInt()
-        blockPalette = IntArrayList(blockPaletteSize).apply { repeat(blockPaletteSize) { add(readVarInt()) } }
-    }
-    return SubChunk(blockPalette, BitArray(bitsPerBlock, LongArray(readVarInt()) { readLong() }), blockCount)
+fun PacketBuffer.readSubChunkPre758() = SubChunk(readUnsignedShort(), readStorage(), null)
+
+fun PacketBuffer.readSubChunk() = SubChunk(readUnsignedShort(), readStorage(), readStorage())
+
+fun PacketBuffer.writeSubChunkPre758(value: SubChunk) {
+    writeShort(value.blockCount)
+    writeStorage(value.blocks)
+}
+
+fun PacketBuffer.writeSubChunk(value: SubChunk) {
+    writeShort(value.blockCount)
+    writeStorage(value.blocks)
+    writeStorage(value.blocks)
 }

@@ -47,14 +47,14 @@ data class BrewingMixRecipe(
 
     object PotionSerializer : JsonSerializer<ItemStack>() {
         override fun serialize(value: ItemStack, generator: JsonGenerator, provider: SerializerProvider) {
-            generator.writeString(if (value.item == "minecraft:potion") "minecraft:potion_type:${checkNotNull(potionTypes[value.subId])}" else TODO("$value"))
+            generator.writeString(if (value.item == "minecraft:potion") "minecraft:potion_type:${checkNotNull(potionTypes[value.subId])}" else error("Unexpected item in brewing mix recipe: ${value.item}"))
         }
     }
 
     object PotionDeserializer : JsonDeserializer<ItemStack>() {
         override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
             val key = parser.readValueAs(String::class.java)
-            return if (key.startsWith("minecraft:potion_type:")) ItemStack("minecraft:potion", potionTypes.getId(key.removePrefix("minecraft:potion_type:"))) else TODO(key)
+            return if (key.startsWith("minecraft:potion_type:")) ItemStack("minecraft:potion", potionTypes.getId(key.removePrefix("minecraft:potion_type:"))) else error("Unexpected item in brewing mix recipe: $key")
         }
     }
 

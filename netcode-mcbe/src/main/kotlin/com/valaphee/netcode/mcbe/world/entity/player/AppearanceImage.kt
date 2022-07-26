@@ -40,7 +40,7 @@ data class AppearanceImage(
         if (width != null && height != null) {
             _width = width
             _height = height
-        } else if (data.size.countOneBits() > 1) error("")
+        } else if (data.size.countOneBits() > 1) error("Unable to auto-detect appearance image size")
         else {
             val sizePow = (data.size shr 2).countTrailingZeroBits()
             if (sizePow % 2 == 0) {

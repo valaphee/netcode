@@ -35,7 +35,7 @@ import java.util.BitSet
  */
 class ServerChunkPacket(
     val position: Int2,
-    val withSubChunks: Int,
+    val withSubChunks: Int?,
     val heightMap: Any?,
     val biomes: IntArray?,
     val data: ByteArray,
@@ -91,7 +91,7 @@ class ServerChunkPacket(
             }
         } else {
             buffer.writeBoolean(biomes != null)
-            buffer.writeVarInt(withSubChunks)
+            buffer.writeVarInt(withSubChunks!!)
             buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, heightMap)
             biomes?.let {
                 buffer.writeVarInt(it.size)
@@ -114,7 +114,7 @@ class ServerChunkPacket(
 object ServerChunkPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): ServerChunkPacket {
         val position = Int2(buffer.readInt(), buffer.readInt())
-        val withSubChunks: Int
+        val withSubChunks: Int?
         val heightMap: Any?
         val biomes: IntArray?
         val data: ByteArray
@@ -127,7 +127,7 @@ object ServerChunkPacketReader : PacketReader {
         val skyLight: Array<NibbleArray>?
         val blockLight: Array<NibbleArray>?
         if (version >= 758) {
-            withSubChunks = 0
+            withSubChunks = null
             heightMap = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
             biomes = null
             data = buffer.readByteArray()
@@ -140,8 +140,8 @@ object ServerChunkPacketReader : PacketReader {
             withBlockLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
             emptySkyLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
             emptyBlockLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
-            skyLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray(buffer.readVarInt())) }
-            blockLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray(buffer.readVarInt())) }
+            skyLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray()) }
+            blockLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray()) }
         } else {
             val withBiomes = buffer.readBoolean()
             withSubChunks = buffer.readVarInt()
