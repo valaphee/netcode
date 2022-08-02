@@ -24,7 +24,7 @@ import com.valaphee.netcode.mcje.network.PacketReader
 /**
  * @author Kevin Ludwig
  */
-class ClientTextPacket(
+class ClientPlayerChatPacket(
     val message: String,
     val time: Long,
     val salt: Long,
@@ -41,16 +41,16 @@ class ClientTextPacket(
         }
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.text(this)
+    override fun handle(handler: ClientPlayPacketHandler) = handler.playerChat(this)
 
-    override fun toString() = "ClientTextPacket(message='$message', time=$time, salt=$salt, signature=${signature.contentToString()}, preview=$preview)"
+    override fun toString() = "ClientPlayerChatPacket(message='$message', time=$time, salt=$salt, signature=${signature.contentToString()}, preview=$preview)"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ClientTextPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientTextPacket {
+object ClientPlayerChatPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int): ClientPlayerChatPacket {
         val message = buffer.readString(256)
         val time: Long
         val salt: Long
@@ -67,6 +67,6 @@ object ClientTextPacketReader : PacketReader {
             signature = null
             preview = false
         }
-        return ClientTextPacket(message, time, salt, signature, preview)
+        return ClientPlayerChatPacket(message, time, salt, signature, preview)
     }
 }

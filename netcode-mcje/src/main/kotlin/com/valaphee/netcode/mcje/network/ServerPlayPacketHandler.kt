@@ -91,9 +91,9 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerSoundStopPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSpawnPositionPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerStackTakePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTeamPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerTextPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerTextPreviewPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerTextSignedPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerSystemChatPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerChatPreviewPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerChatPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTimePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTitlePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTradePacket
@@ -138,9 +138,9 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun difficulty(packet: ServerDifficultyPacket) = other(packet)
 
-    fun text(packet: ServerTextPacket) = other(packet)
+    fun systemChat(packet: ServerSystemChatPacket) = other(packet)
 
-    fun textPreview(packet: ServerTextPreviewPacket) = other(packet)
+    fun textPreview(packet: ServerPlayerChatPreviewPacket) = other(packet)
 
     fun commandSuggest(packet: ServerCommandSuggestPacket) = other(packet)
 
@@ -204,7 +204,7 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun abilities(packet: ServerAbilitiesPacket) = other(packet)
 
-    fun textSigned(packet: ServerTextSignedPacket) = other(packet)
+    fun playerChat(packet: ServerPlayerChatPacket) = other(packet)
 
     fun playerCombatEvent(packet: ServerPlayerCombatEventPacket) = other(packet)
 

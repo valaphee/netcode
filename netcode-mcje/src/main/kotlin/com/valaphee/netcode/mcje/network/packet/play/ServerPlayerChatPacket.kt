@@ -26,10 +26,10 @@ import java.util.UUID
 /**
  * @author Kevin Ludwig
  */
-class ServerTextSignedPacket(
+class ServerPlayerChatPacket(
     val message: Component,
     val unsignedMessage: Component?,
-    val type: ServerTextPacket.Type,
+    val type: ServerSystemChatPacket.Type,
     val userId: UUID?,
     val userName: Component,
     val teamName: Component?,
@@ -55,14 +55,14 @@ class ServerTextSignedPacket(
         buffer.writeByteArray(signature)
     }
 
-    override fun handle(handler: ServerPlayPacketHandler) = handler.textSigned(this)
+    override fun handle(handler: ServerPlayPacketHandler) = handler.playerChat(this)
 
-    override fun toString() = "ServerTextSignedPacket(message=$message, unsignedMessage=$unsignedMessage, type=$type, userId=$userId, userName=$userName, teamName=$teamName, time=$time, salt=$salt, signature=${signature.contentToString()})"
+    override fun toString() = "ServerPlayerChatPacket(message=$message, unsignedMessage=$unsignedMessage, type=$type, userId=$userId, userName=$userName, teamName=$teamName, time=$time, salt=$salt, signature=${signature.contentToString()})"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ServerTextSignedPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTextSignedPacket(buffer.readComponent(), if (buffer.readBoolean()) buffer.readComponent() else null, ServerTextPacket.Type.values()[buffer.readVarInt()], buffer.readUuid(), buffer.readComponent(), if (buffer.readBoolean()) buffer.readComponent() else null, buffer.readLong(), buffer.readLong(), buffer.readByteArray())
+object ServerPlayerChatPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerChatPacket(buffer.readComponent(), if (buffer.readBoolean()) buffer.readComponent() else null, ServerSystemChatPacket.Type.values()[buffer.readVarInt()], buffer.readUuid(), buffer.readComponent(), if (buffer.readBoolean()) buffer.readComponent() else null, buffer.readLong(), buffer.readLong(), buffer.readByteArray())
 }

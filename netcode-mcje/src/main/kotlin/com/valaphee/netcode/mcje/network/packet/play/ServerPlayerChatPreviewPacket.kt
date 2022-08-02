@@ -16,31 +16,32 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
-import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import net.kyori.adventure.text.Component
 
 /**
  * @author Kevin Ludwig
  */
-class ClientTextPreviewPacket(
+class ServerPlayerChatPreviewPacket(
     val id: Int,
-    val message: String
-) : Packet<ClientPlayPacketHandler>() {
+    val message: Component
+) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt(id)
-        buffer.writeString(message)
+        buffer.writeComponent(message)
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.textPreview(this)
+    override fun handle(handler: ServerPlayPacketHandler) = handler.textPreview(this)
 
-    override fun toString() = "ClientTextPreviewPacket(id=$id, message=$message)"
+    override fun toString() = "ServerTextPreviewPacket(id=$id, message=$message)"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ClientTextPreviewPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientTextPreviewPacket(buffer.readInt(), buffer.readString(256))
+object ServerPlayerChatPreviewPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerChatPreviewPacket(buffer.readInt(), buffer.readComponent())
 }

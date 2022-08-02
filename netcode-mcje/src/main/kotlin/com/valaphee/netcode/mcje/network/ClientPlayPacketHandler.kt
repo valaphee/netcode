@@ -56,8 +56,8 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientSteerPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientStructureBlockUpdatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientSwingArmPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientTeleportConfirmPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientTextPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientTextPreviewPacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerChatPacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerChatPreviewPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientTradePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientVehicleLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientWindowClickButtonPacket
@@ -77,9 +77,9 @@ interface ClientPlayPacketHandler : PacketHandler {
 
     fun command(packet: ClientCommandPacket) = other(packet)
 
-    fun text(packet: ClientTextPacket) = other(packet)
+    fun playerChat(packet: ClientPlayerChatPacket) = other(packet)
 
-    fun textPreview(packet: ClientTextPreviewPacket) = other(packet)
+    fun playerChatPreview(packet: ClientPlayerChatPreviewPacket) = other(packet)
 
     fun status(packet: ClientStatusPacket) = other(packet)
 

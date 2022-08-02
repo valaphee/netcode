@@ -26,7 +26,7 @@ import java.util.UUID
 /**
  * @author Kevin Ludwig
  */
-class ServerTextPacket(
+class ServerSystemChatPacket(
     val message: Component,
     val type: Type,
     val userId: UUID? = null
@@ -41,14 +41,14 @@ class ServerTextPacket(
         if (version < 759) buffer.writeUuid(userId ?: UUID(0, 0))
     }
 
-    override fun handle(handler: ServerPlayPacketHandler) = handler.text(this)
+    override fun handle(handler: ServerPlayPacketHandler) = handler.systemChat(this)
 
-    override fun toString() = "ServerTextPacket(message=$message, type=$type, userId=$userId)"
+    override fun toString() = "ServerSystemChatPacket(message=$message, type=$type, userId=$userId)"
 }
 
 /**
  * @author Kevin Ludwig
  */
-object ServerTextPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTextPacket(buffer.readComponent(), ServerTextPacket.Type.values()[buffer.readByte().toInt()], if (version < 759) buffer.readUuid() else null)
+object ServerSystemChatPacketReader : PacketReader {
+    override fun read(buffer: PacketBuffer, version: Int) = ServerSystemChatPacket(buffer.readComponent(), ServerSystemChatPacket.Type.values()[buffer.readByte().toInt()], if (version < 759) buffer.readUuid() else null)
 }
