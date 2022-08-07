@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto
+package com.valaphee.netcode.mcbe.automation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * @author Kevin Ludwig
  */
-data class Error(
-    @get:JsonProperty("statusCode") val statusCode: Int,
-    @get:JsonProperty("statusMessage") val statusMessage: String
+data class Item(
+    @get:JsonProperty("namespace") val namespace: String,
+    @get:JsonProperty("id") val key: String,
+    @get:JsonProperty("aux") val aux: Int
 )

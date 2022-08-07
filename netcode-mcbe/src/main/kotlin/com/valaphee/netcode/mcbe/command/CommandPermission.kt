@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto.event
-
-import com.fasterxml.jackson.annotation.JsonProperty
+package com.valaphee.netcode.mcbe.command
 
 /**
  * @author Kevin Ludwig
  */
-data class Item(
-    @get:JsonProperty("namespace") val namespace: String,
-    @get:JsonProperty("id") val key: String,
-    @get:JsonProperty("aux") val aux: Int
-)
+enum class CommandPermission {
+    Normal, Operator, Host, Automation, Administrator
+}

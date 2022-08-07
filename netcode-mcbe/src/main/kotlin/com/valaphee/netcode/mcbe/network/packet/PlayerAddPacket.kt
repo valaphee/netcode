@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcbe.network.packet
 
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
-import com.valaphee.netcode.mcbe.command.Permission
+import com.valaphee.netcode.mcbe.command.CommandPermission
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
@@ -31,7 +31,7 @@ import com.valaphee.netcode.mcbe.world.entity.Link
 import com.valaphee.netcode.mcbe.world.entity.metadata.Metadata
 import com.valaphee.netcode.mcbe.world.entity.player.AbilityLayer
 import com.valaphee.netcode.mcbe.world.entity.player.PlayerFlag
-import com.valaphee.netcode.mcbe.world.entity.player.Rank
+import com.valaphee.netcode.mcbe.world.entity.player.PlayerPermission
 import com.valaphee.netcode.mcbe.world.entity.player.User
 import com.valaphee.netcode.mcbe.world.entity.player.readAbilityLayer
 import com.valaphee.netcode.mcbe.world.entity.player.writeAbilityLayer
@@ -65,9 +65,9 @@ class PlayerAddPacket(
     val gameMode: GameMode?,
     val metadata: Metadata,
     val playerFlags: Set<PlayerFlag>?,
-    val permission: Permission,
+    val commandPermission: CommandPermission,
     val worldFlags: Set<WorldFlag>?,
-    val rank: Rank,
+    val playerPermission: PlayerPermission,
     val customFlags: Int,
     val abilityLayers: List<AbilityLayer>?,
     val links: List<Link>,
@@ -91,17 +91,17 @@ class PlayerAddPacket(
         metadata.writeToBuffer(buffer)
         if (version >= 534) {
             buffer.writeLongLE(uniqueEntityId)
-            buffer.writeVarUInt(rank.ordinal)
-            buffer.writeVarUInt(permission.ordinal)
+            buffer.writeVarUInt(playerPermission.ordinal)
+            buffer.writeVarUInt(commandPermission.ordinal)
             abilityLayers!!.let {
                 buffer.writeVarUInt(it.size)
                 it.forEach { buffer.writeAbilityLayer(it) }
             }
         } else {
             buffer.writeVarUIntFlags(playerFlags!!)
-            buffer.writeVarUInt(permission.ordinal)
+            buffer.writeVarUInt(commandPermission.ordinal)
             buffer.writeVarUIntFlags(worldFlags!!)
-            buffer.writeVarUInt(rank.ordinal)
+            buffer.writeVarUInt(playerPermission.ordinal)
             buffer.writeVarUInt(customFlags)
             buffer.writeLongLE(uniqueEntityId)
         }
@@ -113,7 +113,7 @@ class PlayerAddPacket(
 
     override fun handle(handler: PacketHandler) = handler.playerAdd(this)
 
-    override fun toString() = "PlayerAddPacket(userId=$userId, userName='$userName', uniqueEntityId=$uniqueEntityId, runtimeEntityId=$runtimeEntityId, platformChatId='$platformChatId', position=$position, velocity=$velocity, rotation=$rotation, headRotationYaw=$headRotationYaw, stackInHand=$itemStackInHand, metadata=$metadata, playerFlags=$playerFlags, permission=$permission, worldFlags=$worldFlags, rank=$rank, customFlags=$customFlags, abilityLayers=$abilityLayers, links=$links, deviceId='$deviceId', operatingSystem=$operatingSystem)"
+    override fun toString() = "PlayerAddPacket(userId=$userId, userName='$userName', uniqueEntityId=$uniqueEntityId, runtimeEntityId=$runtimeEntityId, platformChatId='$platformChatId', position=$position, velocity=$velocity, rotation=$rotation, headRotationYaw=$headRotationYaw, stackInHand=$itemStackInHand, metadata=$metadata, playerFlags=$playerFlags, commandPermission=$commandPermission, worldFlags=$worldFlags, playerPermission$playerPermission, customFlags=$customFlags, abilityLayers=$abilityLayers, links=$links, deviceId='$deviceId', operatingSystem=$operatingSystem)"
 }
 
 /**
@@ -134,16 +134,16 @@ object PlayerAddPacketReader : PacketReader {
         val gameMode: GameMode? = if (version >= 503) GameMode.values()[buffer.readVarInt()] else null
         val metadata: Metadata = Metadata().apply { readFromBuffer(buffer) }
         val playerFlags: Set<PlayerFlag>?
-        val permission: Permission
+        val commandPermission: CommandPermission
         val worldFlags: Set<WorldFlag>?
-        val rank: Rank
+        val playerPermission: PlayerPermission
         val customFlags: Int
         val abilityLayers: List<AbilityLayer>?
         if (version >= 534) {
             playerFlags = buffer.readVarUIntFlags()
-            permission = Permission.values()[buffer.readVarUInt()]
+            commandPermission = CommandPermission.values()[buffer.readVarUInt()]
             worldFlags = buffer.readVarUIntFlags()
-            rank = Rank.values()[buffer.readVarUInt()]
+            playerPermission = PlayerPermission.values()[buffer.readVarUInt()]
             customFlags = buffer.readVarUInt()
             buffer.readLongLE()
             abilityLayers = null
@@ -151,14 +151,14 @@ object PlayerAddPacketReader : PacketReader {
             buffer.readLongLE()
             playerFlags = null
             worldFlags = null
-            rank = Rank.values()[buffer.readVarUInt()]
-            permission = Permission.values()[buffer.readVarUInt()]
+            playerPermission = PlayerPermission.values()[buffer.readVarUInt()]
+            commandPermission = CommandPermission.values()[buffer.readVarUInt()]
             customFlags = 0
             abilityLayers = safeList(buffer.readVarUInt()) { buffer.readAbilityLayer() }
         }
         val links: List<Link> = safeList(buffer.readVarUInt()) { if (version >= 407) buffer.readLink() else buffer.readLinkPre407() }
         val deviceId: String = buffer.readString()
         val operatingSystem: User.OperatingSystem = User.OperatingSystem.values()[buffer.readIntLE() + 1]
-        return PlayerAddPacket(userId, userName, uniqueEntityId, runtimeEntityId, platformChatId, position, velocity, rotation, headRotationYaw, itemStackInHand, gameMode, metadata, playerFlags, permission, worldFlags, rank, customFlags, abilityLayers, links, deviceId, operatingSystem)
+        return PlayerAddPacket(userId, userName, uniqueEntityId, runtimeEntityId, platformChatId, position, velocity, rotation, headRotationYaw, itemStackInHand, gameMode, metadata, playerFlags, commandPermission, worldFlags, playerPermission, customFlags, abilityLayers, links, deviceId, operatingSystem)
     }
 }

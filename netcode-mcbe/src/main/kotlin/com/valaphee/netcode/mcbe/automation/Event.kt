@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe
+package com.valaphee.netcode.mcbe.automation
 
-const val latestVersion = "1.19.10"
-const val latestProtocolVersion = 534
+import com.fasterxml.jackson.annotation.JsonProperty
+
+/**
+ * @author Kevin Ludwig
+ */
+abstract class Event
+
+/**
+ * @author Kevin Ludwig
+ */
+data class EventRequest(
+    @get:JsonProperty("eventName") val eventName: String
+)

@@ -16,7 +16,7 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mcbe.command.Permission
+import com.valaphee.netcode.mcbe.command.CommandPermission
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
@@ -27,25 +27,25 @@ import com.valaphee.netcode.mcbe.network.PacketReader
  */
 class PermissionsPacket(
     val uniqueEntityId: Long,
-    val permission: Permission,
+    val commandPermission: CommandPermission,
     val customPermissions: Int
 ) : Packet() {
     override val id get() = 0x00
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeLongLE(uniqueEntityId)
-        buffer.writeVarInt(permission.ordinal)
+        buffer.writeVarInt(commandPermission.ordinal)
         buffer.writeShortLE(customPermissions)
     }
 
     override fun handle(handler: PacketHandler) = handler.permissions(this)
 
-    override fun toString() = "PermissionsPacket(uniqueEntityId=$uniqueEntityId, permissions=$permission, customPermissions=$customPermissions)"
+    override fun toString() = "PermissionsPacket(uniqueEntityId=$uniqueEntityId, commandPermission=$commandPermission, customPermissions=$customPermissions)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object PermissionsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = PermissionsPacket(buffer.readLongLE(), Permission.values()[buffer.readVarInt()], buffer.readUnsignedShortLE())
+    override fun read(buffer: PacketBuffer, version: Int) = PermissionsPacket(buffer.readLongLE(), CommandPermission.values()[buffer.readVarInt()], buffer.readUnsignedShortLE())
 }

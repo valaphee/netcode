@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.command
+package com.valaphee.netcode.mcbe.automation.event
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.automation.Event
 
 /**
  * @author Kevin Ludwig
  */
-enum class Permission {
-    Normal, Operator, Host, Automation, Administrator
-}
+data class ItemUsedEvent(
+    @get:JsonProperty("player") val player: Entity,
+    @get:JsonProperty("item") val item: Item,
+    @get:JsonProperty("useMethod") val method: Int,
+    @get:JsonProperty("count") val count: Int
+) : Event()

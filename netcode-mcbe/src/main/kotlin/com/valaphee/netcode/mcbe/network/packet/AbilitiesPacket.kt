@@ -16,13 +16,13 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mcbe.command.Permission
+import com.valaphee.netcode.mcbe.command.CommandPermission
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.entity.player.AbilityLayer
-import com.valaphee.netcode.mcbe.world.entity.player.Rank
+import com.valaphee.netcode.mcbe.world.entity.player.PlayerPermission
 import com.valaphee.netcode.mcbe.world.entity.player.readAbilityLayer
 import com.valaphee.netcode.mcbe.world.entity.player.writeAbilityLayer
 import com.valaphee.netcode.util.safeList
@@ -32,8 +32,8 @@ import com.valaphee.netcode.util.safeList
  */
 class AbilitiesPacket(
     val uniqueEntityId: Long,
-    val rank: Rank,
-    val permission: Permission,
+    val playerPermission: PlayerPermission,
+    val commandPermission: CommandPermission,
     val abilityLayers: List<AbilityLayer>
 ) : Packet() {
     enum class Type {
@@ -44,20 +44,20 @@ class AbilitiesPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeLongLE(uniqueEntityId)
-        buffer.writeVarUInt(rank.ordinal)
-        buffer.writeVarUInt(permission.ordinal)
+        buffer.writeVarUInt(playerPermission.ordinal)
+        buffer.writeVarUInt(commandPermission.ordinal)
         buffer.writeVarUInt(abilityLayers.size)
         abilityLayers.forEach { buffer.writeAbilityLayer(it) }
     }
 
     override fun handle(handler: PacketHandler) = handler.abilities(this)
 
-    override fun toString() = "AbilitiesPacket(uniqueEntityId=$uniqueEntityId, rank=$rank, permission=$permission, abilityLayers=$abilityLayers)"
+    override fun toString() = "AbilitiesPacket(uniqueEntityId=$uniqueEntityId, playerPermission$playerPermission, commandPermission=$commandPermission, abilityLayers=$abilityLayers)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object AbilitiesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = AbilitiesPacket(buffer.readLongLE(), Rank.values()[buffer.readVarUInt()], Permission.values()[buffer.readVarUInt()], safeList(buffer.readVarUInt()) { buffer.readAbilityLayer() })
+    override fun read(buffer: PacketBuffer, version: Int) = AbilitiesPacket(buffer.readLongLE(), PlayerPermission.values()[buffer.readVarUInt()], CommandPermission.values()[buffer.readVarUInt()], safeList(buffer.readVarUInt()) { buffer.readAbilityLayer() })
 }

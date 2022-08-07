@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcje
+package com.valaphee.netcode.mcbe.automation
 
-const val latestVersion = "1.19.1"
-const val latestProtocolVersion = 760
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import kotlin.reflect.KClass
+
+/**
+ * @author Kevin Ludwig
+ */
+abstract class Command {
+    @get:JsonProperty("commandLine") abstract val commandLine: String
+
+    @get:JsonIgnore abstract val responseType: KClass<out CommandResponse>
+}
+
+abstract class CommandResponse

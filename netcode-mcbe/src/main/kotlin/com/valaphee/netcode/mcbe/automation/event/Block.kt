@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto
+package com.valaphee.netcode.mcbe.automation.event
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import kotlin.reflect.KClass
 
 /**
  * @author Kevin Ludwig
  */
-abstract class Command {
-    @get:JsonProperty("commandLine") abstract val commandLine: String
-
-    @get:JsonIgnore abstract val responseType: KClass<out CommandResponse>
-}
-
-abstract class CommandResponse
+data class Block(
+    @get:JsonProperty("namespace") val namespace: String,
+    @get:JsonProperty("id") val id: String,
+    @get:JsonProperty("aux") val aux: Int
+)

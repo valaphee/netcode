@@ -16,14 +16,10 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.netcode.mcbe.command.Permission
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.world.WorldFlag
-import com.valaphee.netcode.mcbe.world.entity.player.PlayerFlag
-import com.valaphee.netcode.mcbe.world.entity.player.Rank
 
 /**
  * @author Kevin Ludwig

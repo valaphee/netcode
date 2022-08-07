@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto.event
+package com.valaphee.netcode.mcbe.automation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.foundry.math.Float3
 
 /**
  * @author Kevin Ludwig
  */
-data class Entity(
-    @get:JsonProperty("id") val id: Long,
-    @get:JsonProperty("type") val type: String,
-    @get:JsonProperty("name") val name: String,
-    @get:JsonProperty("dimension") val dimension: Int,
-    @get:JsonProperty("position") val position: Float3,
-    @get:JsonProperty("yRot") val yRot: Float,
-    @get:JsonProperty("variant") val variant: Int,
-    @get:JsonProperty("color") val color: String
-)
+data class ItemStack(
+    @get:JsonProperty("namespace") val namespace: String,
+    @get:JsonProperty("id") val key: String,
+    @get:JsonProperty("aux") val aux: Int,
+    @get:JsonProperty("stackSize") val count: Int,
+    @get:JsonProperty("maxStackSize") val maximumCount: Int,
+    @get:JsonProperty("freeStackSize") val remainingCount: Int,
+    @get:JsonProperty("enchantments") val enchantments: List<Enchantment>
+) {
+    class Enchantment(
+        @get:JsonProperty("type") val id: Int,
+        @get:JsonProperty("name") val name: String,
+        @get:JsonProperty("level") val value: Int
+    )
+}

@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto.event
+package com.valaphee.netcode.mcbe.automation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.auto.Event
+import com.valaphee.netcode.mcbe.automation.Event
 
 /**
  * @author Kevin Ludwig
  */
-data class PlayerTransformEvent(
+data class PlayerTeleportedEvent(
     @get:JsonProperty("player") val player: Entity,
+    @get:JsonProperty("cause") val cause: Int,
+    @get:JsonProperty("itemType") val item: Int,
+    @get:JsonProperty("metersTravelled") val distance: Float
 ) : Event()

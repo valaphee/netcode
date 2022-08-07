@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto.command
+package com.valaphee.netcode.mcbe.automation.command
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.auto.Command
-import com.valaphee.netcode.mcbe.auto.CommandResponse
+import com.valaphee.netcode.mcbe.automation.Command
+import com.valaphee.netcode.mcbe.automation.CommandResponse
 
 /**
  * @author Kevin Ludwig

@@ -43,7 +43,7 @@ data class CustomForm(
     JsonSubTypes.Type(StepSlider::class, name = "step_slider"),
     JsonSubTypes.Type(Toggle::class, name = "toggle"),
 )
-interface Element {
+sealed interface Element {
     @get:JsonProperty("text") val text: String
 
     fun answer(answer: Any?): Any?

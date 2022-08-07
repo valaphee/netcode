@@ -37,7 +37,7 @@ class WorldEventPacket(
     enum class Event {
         Undefined,
 
-        // sound
+        // Sounds
         SoundClick,
         SoundClickFail,
         SoundLaunch,
@@ -74,7 +74,7 @@ class WorldEventPacket(
         SoundDyeUsed,
         SoundInkSaceUsed,
 
-        // particle
+        // Particles
         ParticleShoot,
         ParticleDestroyBlock,
         ParticlePotionSplash,
@@ -116,7 +116,7 @@ class WorldEventPacket(
         ParticleSculkChargePop,
         ParticleSonicExplosion,
 
-        // world
+        // World
         StartRaining,
         StartThunderstorm,
         StopRaining,
@@ -125,7 +125,7 @@ class WorldEventPacket(
         SimTimeStep,
         SimTimeScale,
 
-        // block
+        // Block
         ActivateBlock,
         CauldronExplode,
         CauldronDyeArmor,
@@ -153,7 +153,7 @@ class WorldEventPacket(
         JumpPrevented,
         SleepingPlayers,
 
-        // more particle
+        // More particle
         ParticleBubble,
         ParticleBubbleManual,
         ParticleCritical,

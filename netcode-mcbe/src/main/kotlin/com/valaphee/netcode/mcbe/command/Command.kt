@@ -23,8 +23,8 @@ data class Command(
     val name: String,
     val description: String,
     val flags: Set<Flag>,
-    val permission: Permission,
-    var aliases: Enumeration?, // needed for je-be protocol translation
+    val permission: CommandPermission,
+    val aliases: Enumeration?,
     val overloads: List<List<Parameter>>
 ) {
     enum class Flag {
@@ -35,7 +35,7 @@ data class Command(
         val name: String,
         val description: String,
         val flags: Set<Flag>,
-        val permission: Permission,
+        val permission: CommandPermission,
         val aliasesIndex: Int,
         val overloadStructures: List<List<Parameter.Builder>>
     )

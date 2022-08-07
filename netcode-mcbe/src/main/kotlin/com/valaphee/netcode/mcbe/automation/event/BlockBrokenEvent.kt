@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.world.entity.player
+package com.valaphee.netcode.mcbe.automation.event
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.automation.Event
 
 /**
  * @author Kevin Ludwig
  */
-enum class Rank {
-    Visitor, Member, Operator, Custom
-}
+data class BlockBrokenEvent(
+    @get:JsonProperty("player") val player: Entity,
+    @get:JsonProperty("block") val block: Block,
+    @get:JsonProperty("tool") val tool: ItemStack,
+    @get:JsonProperty("destructionMethod") val method: Int,
+    @get:JsonProperty("count") val count: Int,
+    @get:JsonProperty("variant") val variant: Int
+) : Event()

@@ -20,7 +20,7 @@ import com.valaphee.netcode.mcbe.command.Command
 import com.valaphee.netcode.mcbe.command.Enumeration
 import com.valaphee.netcode.mcbe.command.EnumerationConstraint
 import com.valaphee.netcode.mcbe.command.Parameter
-import com.valaphee.netcode.mcbe.command.Permission
+import com.valaphee.netcode.mcbe.command.CommandPermission
 import com.valaphee.netcode.mcbe.command.readEnumeration
 import com.valaphee.netcode.mcbe.command.readEnumerationConstraint
 import com.valaphee.netcode.mcbe.command.writeEnumeration
@@ -139,7 +139,7 @@ object CommandsPacketReader : PacketReader {
             val name = buffer.readString()
             val description = buffer.readString()
             val flags: Set<Command.Flag> = if (version >= 448) buffer.readShortLEFlags() else buffer.readByteFlags()
-            val permission = Permission.values()[buffer.readByte().toInt()]
+            val permission = CommandPermission.values()[buffer.readByte().toInt()]
             val aliasesIndex = buffer.readIntLE()
             val overloadBuilders = safeList(buffer.readVarUInt()) {
                 safeList(buffer.readVarUInt()) {

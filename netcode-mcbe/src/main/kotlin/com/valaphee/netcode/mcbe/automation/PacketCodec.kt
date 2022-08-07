@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto
+package com.valaphee.netcode.mcbe.automation
 
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -51,7 +51,7 @@ class PacketCodec(
     }
 
     companion object {
-        const val Name = "auto-codec"
+        const val Name = "automation-codec"
         private val objectMapper = jacksonObjectMapper()
     }
 }

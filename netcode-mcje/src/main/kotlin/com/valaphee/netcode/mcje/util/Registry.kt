@@ -24,7 +24,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 /**
  * @author Kevin Ludwig
  */
-
 open class Registry<T> : Cloneable {
     var idToValue: Int2ObjectMap<T> = Int2ObjectOpenHashMap()
         private set

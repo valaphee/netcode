@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto
+package com.valaphee.netcode.mcbe.automation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.automation.Event
 
 /**
  * @author Kevin Ludwig
  */
-abstract class Event
-
-/**
- * @author Kevin Ludwig
- */
-data class EventRequest(
-    @get:JsonProperty("eventName") val eventName: String
-)
+data class MobInteractedEvent(
+    @get:JsonProperty("player") val player: Entity,
+    @get:JsonProperty("mob") val mob: Entity,
+    @get:JsonProperty("interactionType") val method: Int
+) : Event() {
+    data class Mob(
+        @get:JsonProperty("color") val color: Int,
+        @get:JsonProperty("type") val type: Int,
+        @get:JsonProperty("variant") val variant: Int
+    )
+}

@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto.event
+package com.valaphee.netcode.mcbe.automation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.auto.Event
+import com.valaphee.netcode.mcbe.automation.Event
 
 /**
  * @author Kevin Ludwig
  */
-data class BlockBrokenEvent(
+data class ItemCraftedEvent(
     @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("block") val block: Block,
-    @get:JsonProperty("tool") val tool: ItemStack,
-    @get:JsonProperty("destructionMethod") val method: Int,
+    @get:JsonProperty("item") val item: ItemStack,
     @get:JsonProperty("count") val count: Int,
-    @get:JsonProperty("variant") val variant: Int
+    @get:JsonProperty("usedCraftingTable") val usedCraftingTable: Boolean,
+    @get:JsonProperty("usedSearchBar") val usedSearchBar: Boolean,
+    @get:JsonProperty("startingTabId") val startingTabId: Int,
+    @get:JsonProperty("endingTabId") val endingTabId: Int,
+    @get:JsonProperty("numberOfTabsChanged") val numberOfTabsChanged: Int,
+    @get:JsonProperty("recipeBookShown") val recipeBookOpen: Boolean,
+    @get:JsonProperty("hasCraftableFilterOn") val recipeBookFilterActive: Boolean,
+    @get:JsonProperty("craftedAutomatically") val auto: Boolean
 ) : Event()

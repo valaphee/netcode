@@ -23,8 +23,8 @@ import com.valaphee.netcode.util.safeList
  * @author Kevin Ludwig
  */
 data class Enumeration constructor(
-    var name: String, // needed for je-be protocol translation
-    val values: MutableSet<String>, // needed for je-be protocol translation
+    val name: String,
+    val values: Set<String>,
     val soft: Boolean = false
 )
 

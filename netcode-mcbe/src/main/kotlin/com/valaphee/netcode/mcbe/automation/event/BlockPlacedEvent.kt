@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.auto.event
+package com.valaphee.netcode.mcbe.automation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbe.automation.Event
 
 /**
  * @author Kevin Ludwig
  */
-data class Block(
-    @get:JsonProperty("namespace") val namespace: String,
-    @get:JsonProperty("id") val id: String,
-    @get:JsonProperty("aux") val aux: Int
-)
+data class BlockPlacedEvent(
+    @get:JsonProperty("player") val player: Entity,
+    @get:JsonProperty("block") val block: Block,
+    @get:JsonProperty("tool") val tool: ItemStack,
+    @get:JsonProperty("placementMethod") val method: Int,
+    @get:JsonProperty("count") val count: Int,
+    @get:JsonProperty("placedUnderWater") val underwater: Boolean,
+) : Event()
