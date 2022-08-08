@@ -23,6 +23,8 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_17_041
+import com.valaphee.netcode.mcbe.network.V1_18_010
 
 /**
  * @author Kevin Ludwig
@@ -41,7 +43,7 @@ class ChunkPacket(
         val (x, z) = position
         buffer.writeVarInt(x)
         buffer.writeVarInt(z)
-        if (!request || version < 471) buffer.writeVarUInt(subChunkCount) else if (subChunkCount < 0 || version < 486) buffer.writeVarUInt(-1) else {
+        if (!request || version < V1_17_041) buffer.writeVarUInt(subChunkCount) else if (subChunkCount < 0 || version < V1_18_010) buffer.writeVarUInt(-1) else {
             buffer.writeVarUInt(-2)
             buffer.writeShortLE(subChunkCount)
         }

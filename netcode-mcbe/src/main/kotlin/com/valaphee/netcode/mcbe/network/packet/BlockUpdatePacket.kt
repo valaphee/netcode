@@ -23,7 +23,6 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import java.util.EnumSet
 
 /**
  * @author Kevin Ludwig
@@ -36,12 +35,7 @@ class BlockUpdatePacket(
     val layer: Int
 ) : Packet() {
     enum class Flag {
-        Neighbors, Network, NonVisual, Priority;
-
-        companion object {
-            val All: EnumSet<Flag> = EnumSet.of(Neighbors, Network)
-            val AllPriority: EnumSet<Flag> = EnumSet.of(Neighbors, Network, Priority)
-        }
+        Neighbors, Network, NonVisual, Priority
     }
 
     override val id get() = 0x15

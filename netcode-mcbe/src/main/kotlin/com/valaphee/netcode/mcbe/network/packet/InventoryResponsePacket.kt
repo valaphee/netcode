@@ -21,6 +21,9 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_100
+import com.valaphee.netcode.mcbe.network.V1_16_201
+import com.valaphee.netcode.mcbe.network.V1_16_210
 
 /**
  * @author Kevin Ludwig
@@ -124,7 +127,7 @@ class InventoryResponsePacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarUInt(responses.size)
         responses.forEach {
-            if (version >= 419) buffer.writeByte(it.status.ordinal) else buffer.writeBoolean(
+            if (version >= V1_16_100) buffer.writeByte(it.status.ordinal) else buffer.writeBoolean(
                 when (it.status) {
                     ResponseStatus.Ok -> true
                     else -> false
@@ -141,9 +144,9 @@ class InventoryResponsePacket(
                         buffer.writeByte(it.hotbarSlot)
                         buffer.writeByte(it.count)
                         buffer.writeVarInt(it.netId)
-                        if (version >= 422) {
+                        if (version >= V1_16_201) {
                             buffer.writeString(it.name)
-                            if (version >= 428) buffer.writeVarInt(it.damage)
+                            if (version >= V1_16_210) buffer.writeVarInt(it.damage)
                         }
                     }
                 }

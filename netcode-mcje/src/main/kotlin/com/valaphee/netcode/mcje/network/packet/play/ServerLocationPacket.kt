@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_18_2
 
 /**
  * @author Kevin Ludwig
@@ -42,7 +43,7 @@ class ServerLocationPacket(
         buffer.writeFloat2(rotation)
         buffer.writeByteFlags(flags)
         buffer.writeVarInt(teleportId)
-        if (version >= 758) buffer.writeBoolean(dismountVehicle)
+        if (version >= V1_18_2) buffer.writeBoolean(dismountVehicle)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.location(this)
@@ -54,5 +55,5 @@ class ServerLocationPacket(
  * @author Kevin Ludwig
  */
 object ServerLocationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerLocationPacket(buffer.readDouble3(), buffer.readFloat2(), buffer.readByteFlags(), buffer.readVarInt(), if (version >= 758) buffer.readBoolean() else false)
+    override fun read(buffer: PacketBuffer, version: Int) = ServerLocationPacket(buffer.readDouble3(), buffer.readFloat2(), buffer.readByteFlags(), buffer.readVarInt(), if (version >= V1_18_2) buffer.readBoolean() else false)
 }

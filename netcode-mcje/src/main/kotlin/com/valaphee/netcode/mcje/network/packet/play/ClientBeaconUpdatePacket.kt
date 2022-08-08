@@ -20,32 +20,27 @@ import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
-import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
  * @author Kevin Ludwig
  */
 class ClientBeaconUpdatePacket(
-    val primaryEffect: NamespacedKey?,
-    val secondaryEffect: NamespacedKey?
+    val primaryEffectId: Int,
+    val secondaryEffectId: Int
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(primaryEffect?.let { buffer.registries.effects.getId(it) } ?: 0)
-        buffer.writeVarInt(secondaryEffect?.let { buffer.registries.effects.getId(it) } ?: 0)
+        buffer.writeVarInt(primaryEffectId)
+        buffer.writeVarInt(secondaryEffectId)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.beaconUpdate(this)
 
-    override fun toString() = "ClientBeaconUpdatePacket(primaryEffect=$primaryEffect, secondaryEffect=$secondaryEffect)"
+    override fun toString() = "ClientBeaconUpdatePacket(primaryEffectId=$primaryEffectId, secondaryEffectId=$secondaryEffectId)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientBeaconUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientBeaconUpdatePacket {
-        val primaryEffect = buffer.readVarInt()
-        val secondaryEffect = buffer.readVarInt()
-        return ClientBeaconUpdatePacket(if (primaryEffect == 0) null else checkNotNull(buffer.registries.effects[primaryEffect]), if (secondaryEffect == 0) null else checkNotNull(buffer.registries.effects[secondaryEffect]))
-    }
+    override fun read(buffer: PacketBuffer, version: Int) = ClientBeaconUpdatePacket(buffer.readVarInt(), buffer.readVarInt())
 }

@@ -24,9 +24,7 @@ import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.GameRule
 import com.valaphee.netcode.mcbe.world.readGameRule
-import com.valaphee.netcode.mcbe.world.readGameRulePre440
 import com.valaphee.netcode.mcbe.world.writeGameRule
-import com.valaphee.netcode.mcbe.world.writeGameRulePre440
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -40,7 +38,7 @@ class GameRulesPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarUInt(gameRules.size)
-        if (version >= 440) gameRules.forEach(buffer::writeGameRule) else gameRules.forEach(buffer::writeGameRulePre440)
+        gameRules.forEach { buffer.writeGameRule(it, version) }
     }
 
     override fun handle(handler: PacketHandler) = handler.gameRules(this)
@@ -52,5 +50,5 @@ class GameRulesPacket(
  * @author Kevin Ludwig
  */
 object GameRulesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = GameRulesPacket(if (version >= 440) safeList(buffer.readVarUInt()) { buffer.readGameRule() } else safeList(buffer.readVarUInt()) { buffer.readGameRulePre440() })
+    override fun read(buffer: PacketBuffer, version: Int) = GameRulesPacket(safeList(buffer.readVarUInt()) { buffer.readGameRule(version) })
 }

@@ -21,6 +21,7 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.network.V1_19_000
 
 /**
  * @author Kevin Ludwig
@@ -71,7 +72,7 @@ class PlayerActionPacket(
         buffer.writeVarULong(runtimeEntityId)
         buffer.writeVarInt(action.ordinal)
         buffer.writeInt3UnsignedY(blockPosition)
-        if (version >= 527) buffer.writeInt3UnsignedY(resultPosition)
+        if (version >= V1_19_000) buffer.writeInt3UnsignedY(resultPosition)
         buffer.writeVarUInt(data)
     }
 
@@ -84,5 +85,5 @@ class PlayerActionPacket(
  * @author Kevin Ludwig
  */
 object PlayerActionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = PlayerActionPacket(buffer.readVarULong(), PlayerActionPacket.Action.values()[buffer.readVarInt()], buffer.readInt3UnsignedY(), if (version >= 527) buffer.readInt3UnsignedY() else Int3.Zero, buffer.readVarInt())
+    override fun read(buffer: PacketBuffer, version: Int) = PlayerActionPacket(buffer.readVarULong(), PlayerActionPacket.Action.values()[buffer.readVarInt()], buffer.readInt3UnsignedY(), if (version >= V1_19_000) buffer.readInt3UnsignedY() else Int3.Zero, buffer.readVarInt())
 }

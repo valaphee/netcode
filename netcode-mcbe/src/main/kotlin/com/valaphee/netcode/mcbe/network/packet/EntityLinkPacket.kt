@@ -24,9 +24,7 @@ import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.entity.Link
 import com.valaphee.netcode.mcbe.world.entity.readLink
-import com.valaphee.netcode.mcbe.world.entity.readLinkPre407
 import com.valaphee.netcode.mcbe.world.entity.writeLink
-import com.valaphee.netcode.mcbe.world.entity.writeLinkPre407
 
 /**
  * @author Kevin Ludwig
@@ -38,7 +36,7 @@ class EntityLinkPacket(
     override val id get() = 0x29
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        if (version >= 407) buffer.writeLink(link) else buffer.writeLinkPre407(link)
+        buffer.writeLink(link, version)
     }
 
     override fun handle(handler: PacketHandler) = handler.entityLink(this)
@@ -50,5 +48,5 @@ class EntityLinkPacket(
  * @author Kevin Ludwig
  */
 object EntityLinkPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityLinkPacket(if (version >= 407) buffer.readLink() else buffer.readLinkPre407())
+    override fun read(buffer: PacketBuffer, version: Int) = EntityLinkPacket(buffer.readLink(version))
 }

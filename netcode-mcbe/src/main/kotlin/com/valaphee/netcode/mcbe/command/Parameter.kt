@@ -16,13 +16,16 @@
 
 package com.valaphee.netcode.mcbe.command
 
+import com.valaphee.netcode.mcbe.network.V1_16_100
+import com.valaphee.netcode.mcbe.network.V1_18_030
+import com.valaphee.netcode.mcbe.network.V1_19_000
 import com.valaphee.netcode.mcbe.util.Registry
 
 /**
  * @author Kevin Ludwig
  */
 data class Parameter(
-    var name: String, // needed for je-be protocol translation
+    val name: String,
     val optional: Boolean,
     val options: Set<Option>,
     val enumeration: Enumeration?,
@@ -46,7 +49,7 @@ data class Parameter(
         BlockStates;
 
         companion object {
-            private val registryPre419 = Registry<Type>().apply {
+            private val registryPreV1_16_100 = Registry<Type>().apply {
                 this[0x01] = Integer
                 this[0x02] = Float
                 this[0x03] = Float1
@@ -63,7 +66,7 @@ data class Parameter(
                 this[0x2F] = Json
                 /*this[0x36] =*/
             }
-            private val registryPre503 = Registry<Type>().apply {
+            private val registryPreV1_18_030 = Registry<Type>().apply {
                 this[0x01] = Integer
                 this[0x03] = Float
                 this[0x04] = Float1
@@ -81,7 +84,7 @@ data class Parameter(
                 this[0x3C] = BlockStates
                 /*this[0x3F] =*/
             }
-            private val registryPre527 = Registry<Type>().apply {
+            private val registryPreV1_19_000 = Registry<Type>().apply {
                 this[0x01] = Integer
                 this[0x03] = Float
                 this[0x04] = Float1
@@ -114,7 +117,7 @@ data class Parameter(
                 this[0x39] = Json
             }
 
-            fun registryByVersion(version: Int) = if (version >= 527) registry else if (version >= 503) registryPre527 else if (version >= 419) registryPre503 else registryPre419
+            fun registryByVersion(version: Int) = if (version >= V1_19_000) registry else if (version >= V1_18_030) registryPreV1_19_000 else if (version >= V1_16_100) registryPreV1_18_030 else registryPreV1_16_100
         }
     }
 

@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_17_011
 
 /**
  * @author Kevin Ludwig
@@ -33,8 +34,8 @@ class TitlePacket(
     val fadeInTime: Int,
     val stayTime: Int,
     val fadeOutTime: Int,
-    val xboxUserId: String?,
-    val platformChatId: String?
+    val xboxUserId: String,
+    val platformChatId: String
 ) : Packet() {
     enum class Action {
         Clear, Reset, SetTitle, SetSubTitle, ActionBar, SetTimings
@@ -48,9 +49,9 @@ class TitlePacket(
         buffer.writeVarInt(fadeInTime)
         buffer.writeVarInt(stayTime)
         buffer.writeVarInt(fadeOutTime)
-        if (version >= 448) {
-            buffer.writeString(xboxUserId!!)
-            buffer.writeString(platformChatId!!)
+        if (version >= V1_17_011) {
+            buffer.writeString(xboxUserId)
+            buffer.writeString(platformChatId)
         }
     }
 
@@ -69,14 +70,14 @@ object TitlePacketReader : PacketReader {
         val fadeInTime = buffer.readVarInt()
         val stayTime = buffer.readVarInt()
         val fadeOutTime = buffer.readVarInt()
-        val xboxUserId: String?
-        val platformChatId: String?
-        if (version >= 448) {
+        val xboxUserId: String
+        val platformChatId: String
+        if (version >= V1_17_011) {
             xboxUserId = buffer.readString()
             platformChatId = buffer.readString()
         } else {
-            xboxUserId = null
-            platformChatId = null
+            xboxUserId = ""
+            platformChatId = ""
         }
         return TitlePacket(action, text, fadeInTime, stayTime, fadeOutTime, xboxUserId, platformChatId)
     }

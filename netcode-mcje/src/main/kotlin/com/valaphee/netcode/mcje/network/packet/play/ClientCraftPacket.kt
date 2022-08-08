@@ -20,6 +20,8 @@ import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.V1_12_0
+import com.valaphee.netcode.mcje.network.V1_13_0
 import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
@@ -27,23 +29,23 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
  */
 class ClientCraftPacket(
     val windowId: Int,
-    val recipeId: NamespacedKey,
+    val recipe: Pair<Int, NamespacedKey?>,
     val all: Boolean
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
-        buffer.writeNamespacedKey(recipeId)
+        if (version in V1_12_0 until V1_13_0) buffer.writeVarInt(recipe.first) else buffer.writeNamespacedKey(recipe.second!!)
         buffer.writeBoolean(all)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.craft(this)
 
-    override fun toString() = "ClientCraftPacket(windowId=$windowId, recipeId=$recipeId, all=$all)"
+    override fun toString() = "ClientCraftPacket(windowId=$windowId, recipe=$recipe, all=$all)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientCraftPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientCraftPacket(buffer.readByte().toInt(), buffer.readNamespacedKey(), buffer.readBoolean())
+    override fun read(buffer: PacketBuffer, version: Int) = ClientCraftPacket(buffer.readUnsignedByte().toInt(), if (version in V1_12_0 until V1_13_0) buffer.readVarInt() to null else 0 to buffer.readNamespacedKey(), buffer.readBoolean())
 }

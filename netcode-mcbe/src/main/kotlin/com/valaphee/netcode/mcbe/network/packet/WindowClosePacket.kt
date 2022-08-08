@@ -20,6 +20,7 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.network.V1_16_100
 
 /**
  * @author Kevin Ludwig
@@ -32,7 +33,7 @@ class WindowClosePacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
-        if (version >= 419) buffer.writeBoolean(serverside)
+        if (version >= V1_16_100) buffer.writeBoolean(serverside)
     }
 
     override fun handle(handler: PacketHandler) = handler.windowClose(this)
@@ -44,5 +45,5 @@ class WindowClosePacket(
  * @author Kevin Ludwig
  */
 object WindowClosePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = WindowClosePacket(buffer.readByte().toInt(), if (version >= 419) buffer.readBoolean() else false)
+    override fun read(buffer: PacketBuffer, version: Int) = WindowClosePacket(buffer.readByte().toInt(), if (version >= V1_16_100) buffer.readBoolean() else false)
 }

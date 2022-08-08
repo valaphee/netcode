@@ -22,13 +22,15 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_010
+import com.valaphee.netcode.mcbe.network.V1_16_221
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readItemStack
-import com.valaphee.netcode.mcbe.world.item.readItemStackPre431
-import com.valaphee.netcode.mcbe.world.item.readItemStackWithNetIdPre431
+import com.valaphee.netcode.mcbe.world.item.readItemStackPreV1_16_221
+import com.valaphee.netcode.mcbe.world.item.readItemStackWithNetIdPreV1_16_221
 import com.valaphee.netcode.mcbe.world.item.writeItemStack
-import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
-import com.valaphee.netcode.mcbe.world.item.writeItemStackWithNetIdPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStackPreV1_16_221
+import com.valaphee.netcode.mcbe.world.item.writeItemStackWithNetIdPreV1_16_221
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -44,7 +46,7 @@ class InventoryContentPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarUInt(windowId)
         buffer.writeVarUInt(content.size)
-        if (version >= 431) content.forEach(buffer::writeItemStack) else if (version >= 407) content.forEach(buffer::writeItemStackWithNetIdPre431) else content.forEach(buffer::writeItemStackPre431)
+        if (version >= V1_16_221) content.forEach(buffer::writeItemStack) else if (version >= V1_16_010) content.forEach(buffer::writeItemStackWithNetIdPreV1_16_221) else content.forEach(buffer::writeItemStackPreV1_16_221)
     }
 
     override fun handle(handler: PacketHandler) = handler.inventoryContent(this)
@@ -56,5 +58,5 @@ class InventoryContentPacket(
  * @author Kevin Ludwig
  */
 object InventoryContentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = InventoryContentPacket(buffer.readVarUInt(), safeList(buffer.readVarUInt()) { if (version >= 431) buffer.readItemStack() else if (version >= 407) buffer.readItemStackWithNetIdPre431() else buffer.readItemStackPre431() })
+    override fun read(buffer: PacketBuffer, version: Int) = InventoryContentPacket(buffer.readVarUInt(), safeList(buffer.readVarUInt()) { if (version >= V1_16_221) buffer.readItemStack() else if (version >= V1_16_010) buffer.readItemStackWithNetIdPreV1_16_221() else buffer.readItemStackPreV1_16_221() })
 }

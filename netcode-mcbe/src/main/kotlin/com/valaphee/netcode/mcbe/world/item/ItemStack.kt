@@ -130,7 +130,7 @@ data class ItemStack(
     }
 }
 
-fun PacketBuffer.readItemStackPre431(): ItemStack? {
+fun PacketBuffer.readItemStackPreV1_16_221(): ItemStack? {
     val id = readVarInt()
     if (id == 0) return null
     val item = registries.items[id] ?: "minecraft:unknown"
@@ -152,9 +152,9 @@ fun PacketBuffer.readItemStackPre431(): ItemStack? {
     )
 }
 
-fun PacketBuffer.readItemStackWithNetIdPre431(): ItemStack? {
+fun PacketBuffer.readItemStackWithNetIdPreV1_16_221(): ItemStack? {
     val netId = readVarInt()
-    val stack = readItemStackPre431()
+    val stack = readItemStackPreV1_16_221()
     stack?.let { it.netId = netId }
     return stack
 }
@@ -220,7 +220,7 @@ fun PacketBuffer.readIngredient(): ItemStack? {
     return ItemStack(registries.items[id] ?: "minecraft:unknown", readVarInt().let { if (it == Short.MAX_VALUE.toInt()) -1 else it }, readVarInt())
 }
 
-fun PacketBuffer.writeItemStackPre431(value: ItemStack?) {
+fun PacketBuffer.writeItemStackPreV1_16_221(value: ItemStack?) {
     value?.let {
         val item = registries.items.getId(it.item)
         writeVarInt(item)
@@ -244,9 +244,9 @@ fun PacketBuffer.writeItemStackPre431(value: ItemStack?) {
     } ?: writeVarInt(0)
 }
 
-fun PacketBuffer.writeItemStackWithNetIdPre431(value: ItemStack?) {
+fun PacketBuffer.writeItemStackWithNetIdPreV1_16_221(value: ItemStack?) {
     writeVarInt(value?.netId ?: 0)
-    writeItemStackPre431(value)
+    writeItemStackPreV1_16_221(value)
 }
 
 fun PacketBuffer.writeItemStack(value: ItemStack?) {

@@ -20,6 +20,8 @@ import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.V1_17_0
+import com.valaphee.netcode.mcje.network.V1_17_1
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
 import com.valaphee.netcode.mcje.world.item.writeItemStack
@@ -29,7 +31,7 @@ import com.valaphee.netcode.mcje.world.item.writeItemStack
  */
 class ClientWindowClickPacket(
     val windowId: Int,
-    var confirmOrStateId: Int, // needed for je-be protocol translation
+    var confirmOrStateId: Int,
     val slotId: Int,
     val buttonSpecifier: Int,
     val button: Button,
@@ -42,17 +44,19 @@ class ClientWindowClickPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
-        if (version >= 758) buffer.writeVarInt(confirmOrStateId)
+        if (version >= V1_17_1) buffer.writeVarInt(confirmOrStateId)
         buffer.writeShort(slotId)
         buffer.writeByte(buttonSpecifier)
-        if (version < 758) buffer.writeShort(confirmOrStateId)
-        buffer.writeVarInt(button.ordinal)
-        if (version >= 758) {
+        if (version >= V1_17_0) {
+            buffer.writeVarInt(button.ordinal)
             buffer.writeVarInt(slots.size)
             slots.forEach {
                 buffer.writeShort(it.key)
                 buffer.writeItemStack(it.value)
             }
+        } else {
+            buffer.writeShort(confirmOrStateId)
+            buffer.writeVarInt(button.ordinal)
         }
         buffer.writeItemStack(clickedSlot)
     }
@@ -68,20 +72,20 @@ class ClientWindowClickPacket(
 object ClientWindowClickPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): ClientWindowClickPacket {
         val windowId = buffer.readByte().toInt()
-        val confirmOrStateId: Int
-        val slotId: Int
-        val buttonSpecifier: Int
-        if (version >= 758) {
-            confirmOrStateId = buffer.readVarInt()
-            slotId = buffer.readShort().toInt()
-            buttonSpecifier = buffer.readByte().toInt()
+        var confirmOrStateId = 0
+        if (version >= V1_17_1) confirmOrStateId = buffer.readVarInt()
+        val slotId = buffer.readShort().toInt()
+        val buttonSpecifier = buffer.readByte().toInt()
+        val button: ClientWindowClickPacket.Button
+        val slots: Map<Int, ItemStack?>
+        if (version >= V1_17_0) {
+            button = ClientWindowClickPacket.Button.values()[buffer.readVarInt()]
+            slots = mutableMapOf<Int, ItemStack?>().apply { repeat(buffer.readVarInt()) { this[buffer.readShort().toInt()] = buffer.readItemStack() } }
         } else {
-            slotId = buffer.readShort().toInt()
-            buttonSpecifier = buffer.readByte().toInt()
-            confirmOrStateId = buffer.readShort().toInt()
+            confirmOrStateId = buffer.readUnsignedShort()
+            button = ClientWindowClickPacket.Button.values()[buffer.readVarInt()]
+            slots = emptyMap()
         }
-        val button = ClientWindowClickPacket.Button.values()[buffer.readVarInt()]
-        val slots = if (version >= 758) mutableMapOf<Int, ItemStack?>().apply { repeat(buffer.readVarInt()) { this[buffer.readShort().toInt()] = buffer.readItemStack() } } else emptyMap()
         val clickedSlot = buffer.readItemStack()
         return ClientWindowClickPacket(windowId, confirmOrStateId, slotId, buttonSpecifier, button, slots, clickedSlot)
     }

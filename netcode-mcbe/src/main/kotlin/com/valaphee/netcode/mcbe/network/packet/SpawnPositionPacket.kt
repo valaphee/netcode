@@ -23,6 +23,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_010
 
 /**
  * @author Kevin Ludwig
@@ -43,12 +44,12 @@ class SpawnPositionPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(type.ordinal)
-        if (version >= 407) {
+        if (version >= V1_16_010) {
             buffer.writeInt3UnsignedY(blockPosition)
             buffer.writeVarUInt(dimensionId)
         }
         buffer.writeInt3UnsignedY(position)
-        if (version < 407) buffer.writeBoolean(forced)
+        if (version < V1_16_010) buffer.writeBoolean(forced)
     }
 
     override fun handle(handler: PacketHandler) = handler.spawnPosition(this)
@@ -64,7 +65,7 @@ object SpawnPositionPacketReader : PacketReader {
         val type = SpawnPositionPacket.Type.values()[buffer.readVarInt()]
         val blockPosition: Int3
         val dimensionId: Int
-        if (version >= 407) {
+        if (version >= V1_16_010) {
             blockPosition = buffer.readInt3UnsignedY()
             dimensionId = buffer.readVarUInt()
         } else {
@@ -72,7 +73,7 @@ object SpawnPositionPacketReader : PacketReader {
             dimensionId = 0
         }
         val position = buffer.readInt3UnsignedY()
-        val forced = if (version < 407) buffer.readBoolean() else false
+        val forced = if (version < V1_16_010) buffer.readBoolean() else false
         return SpawnPositionPacket(type, blockPosition, dimensionId, position, forced)
     }
 }

@@ -20,6 +20,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_18_2
 import net.kyori.adventure.text.Component
 
 /**
@@ -34,7 +35,7 @@ class ServerResourcePackPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(url)
         buffer.writeString(hash)
-        if (version >= 758) {
+        if (version >= V1_18_2) {
             buffer.writeBoolean(forced)
             message?.let {
                 buffer.writeBoolean(true)
@@ -57,7 +58,7 @@ object ServerResourcePackPacketReader : PacketReader {
         val hash = buffer.readString(40)
         val forced: Boolean
         val message: Component?
-        if (version >= 758) {
+        if (version >= V1_18_2) {
             forced = buffer.readBoolean()
             message = buffer.readComponent()
         } else {

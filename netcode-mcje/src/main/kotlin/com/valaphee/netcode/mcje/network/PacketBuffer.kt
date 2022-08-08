@@ -41,15 +41,8 @@ import java.util.UUID
  */
 class PacketBuffer(
     buffer: ByteBuf,
-    val nbtObjectMapper: ObjectMapper,
-    registries: Registries?
+    val nbtObjectMapper: ObjectMapper
 ) : ByteBufWrapper(buffer) {
-    lateinit var registries: Registries
-
-    init {
-        registries?.let { this.registries = it }
-    }
-
     inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
         val flagsValue = readByte().toInt()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1 shl it.ordinal)) != 0 }.forEach { add(it) } }

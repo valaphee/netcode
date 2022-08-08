@@ -21,6 +21,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_19_0
 
 /**
  * @author Kevin Ludwig
@@ -37,7 +38,7 @@ class ServerActionConfirmPacket(
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        if (version >= 759) buffer.writeVarInt(confirmId) else {
+        if (version >= V1_19_0) buffer.writeVarInt(confirmId) else {
             buffer.writeInt3UnsignedY(position!!)
             buffer.writeVarInt(blockStateId)
             buffer.writeVarInt(action!!.ordinal)
@@ -60,7 +61,7 @@ object ServerActionConfirmPacketReader : PacketReader {
         val action: ServerActionConfirmPacket.Action?
         val succeed: Boolean
         val confirmId: Int
-        if (version >= 759) {
+        if (version >= V1_19_0) {
             position = null
             blockStateId = 0
             action = null

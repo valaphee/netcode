@@ -24,6 +24,8 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_201
+import com.valaphee.netcode.mcbe.network.V1_19_000
 import com.valaphee.netcode.mcbe.world.entity.player.User
 
 /**
@@ -110,13 +112,13 @@ class InputPacket(
         buffer.writeVarULongFlags(input)
         buffer.writeVarUInt(inputMode.ordinal)
         buffer.writeVarUInt(playMode.ordinal)
-        if (version >= 527) buffer.writeVarUInt(inputInteractionModel.ordinal)
+        if (version >= V1_19_000) buffer.writeVarUInt(inputInteractionModel.ordinal)
         if (playMode == PlayMode.VirtualReality) buffer.writeFloat3(virtualRealityGazeDirection!!)
-        if (version >= 419) {
+        if (version >= V1_16_201) {
             buffer.writeVarULong(tick)
             buffer.writeFloat3(positionDelta)
         }
-        /*if (version >= 428) {
+        /*if (version >= V1_16_210) {
             if (input.equals(Input.PerformItemInteraction)) {
             }
             if (input.equals(Input.PerformInventoryRequest)) {
@@ -143,18 +145,18 @@ object InputPacketReader : PacketReader {
         val input = buffer.readVarULongFlags<InputPacket.Input>()
         val inputMode = User.InputMode.values()[buffer.readVarUInt()]
         val playMode = InputPacket.PlayMode.values()[buffer.readVarUInt()]
-        val inputInteractionModel = if (version >= 527) InputPacket.InputInteractionModel.values()[buffer.readVarUInt()] else InputPacket.InputInteractionModel.Classic
+        val inputInteractionModel = if (version >= V1_19_000) InputPacket.InputInteractionModel.values()[buffer.readVarUInt()] else InputPacket.InputInteractionModel.Classic
         val virtualRealityGazeDirection = if (playMode == InputPacket.PlayMode.VirtualReality) buffer.readFloat3() else null
         val tick: Long
         val positionDelta: Float3
-        if (version >= 419) {
+        if (version >= V1_16_201) {
             tick = buffer.readVarULong()
             positionDelta = buffer.readFloat3()
         } else {
             tick = 0L
             positionDelta = Float3.Zero
         }
-        /*if (version >= 428) {
+        /*if (version >= V1_16_210) {
             if (input.equals(InputPacket.Input.PerformItemInteraction)) {
             }
             if (input.equals(InputPacket.Input.PerformInventoryRequest)) {

@@ -21,6 +21,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_18_2
 
 /**
  * @author Kevin Ludwig
@@ -49,7 +50,7 @@ class ServerBorderPacket(
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        if (version < 758) buffer.writeVarInt(action.ordinal)
+        if (version < V1_18_2) buffer.writeVarInt(action.ordinal)
         when (action) {
             Action.SetSize -> buffer.writeDouble(diameter)
             Action.LerpSize -> {

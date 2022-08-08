@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.network.V1_16_100
 
 /**
  * @author Kevin Ludwig
@@ -60,7 +61,7 @@ class PlayerLocationPacket(
             buffer.writeIntLE(teleportationCause.ordinal)
             buffer.writeIntLE(entityTypeId)
         }
-        if (version >= 419) buffer.writeVarULong(tick)
+        if (version >= V1_16_100) buffer.writeVarULong(tick)
     }
 
     override fun handle(handler: PacketHandler) = handler.playerLocation(this)
@@ -89,7 +90,7 @@ object PlayerLocationPacketReader : PacketReader {
             teleportationCause = PlayerLocationPacket.TeleportationCause.Unknown
             entityTypeId = 0
         }
-        val tick = if (version >= 419) buffer.readVarULong() else 0
+        val tick = if (version >= V1_16_100) buffer.readVarULong() else 0
         return PlayerLocationPacket(runtimeEntityId, position, rotation, headRotationYaw, mode, onGround, drivingRuntimeEntityId, teleportationCause, entityTypeId, tick)
     }
 }

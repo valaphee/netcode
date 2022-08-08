@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_201
 import com.valaphee.netcode.mcbe.world.entity.metadata.Metadata
 
 /**
@@ -38,7 +39,7 @@ class EntityMetadataPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarULong(runtimeEntityId)
         metadata.writeToBuffer(buffer)
-        if (version >= 419) buffer.writeVarULong(tick)
+        if (version >= V1_16_201) buffer.writeVarULong(tick)
     }
 
     override fun handle(handler: PacketHandler) = handler.entityMetadata(this)
@@ -50,5 +51,5 @@ class EntityMetadataPacket(
  * @author Kevin Ludwig
  */
 object EntityMetadataPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityMetadataPacket(buffer.readVarULong(), Metadata().apply { readFromBuffer(buffer) }, if (version >= 419) buffer.readVarULong() else 0)
+    override fun read(buffer: PacketBuffer, version: Int) = EntityMetadataPacket(buffer.readVarULong(), Metadata().apply { readFromBuffer(buffer) }, if (version >= V1_16_201) buffer.readVarULong() else 0)
 }

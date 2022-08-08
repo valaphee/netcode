@@ -23,7 +23,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.util.NamespacedKey
+import com.valaphee.netcode.mcje.network.V1_19_0
 import java.util.UUID
 
 /**
@@ -32,7 +32,7 @@ import java.util.UUID
 class ServerEntityAddPacket(
     val entityId: Int,
     val entityUid: UUID?,
-    val typeKey: NamespacedKey,
+    val entityTypeId: Int,
     val position: Double3,
     val rotation: Float2,
     val headRotationYaw: Float,
@@ -42,11 +42,11 @@ class ServerEntityAddPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeUuid(entityUid!!)
-        buffer.writeVarInt(buffer.registries.entityTypes.getId(typeKey))
+        buffer.writeVarInt(entityTypeId)
         buffer.writeDouble3(position)
         buffer.writeAngle2(rotation)
         buffer.writeAngle(headRotationYaw)
-        if (version >= 759) buffer.writeVarInt(data)
+        if (version >= V1_19_0) buffer.writeVarInt(data)
         val (velocityX, velocityY, velocityZ) = velocity.toMutableDouble3().scale(8000.0).toInt3()
         buffer.writeShort(velocityX)
         buffer.writeShort(velocityY)
@@ -55,12 +55,12 @@ class ServerEntityAddPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityAdd(this)
 
-    override fun toString() = "ServerEntityAddPacket(entityId=$entityId, entityUid=$entityUid, typeKey=$typeKey, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, motion=$velocity)"
+    override fun toString() = "ServerEntityAddPacket(entityId=$entityId, entityUid=$entityUid, entityTypeId=$entityTypeId, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, motion=$velocity)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerEntityAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAddPacket(buffer.readVarInt(), buffer.readUuid(), checkNotNull(buffer.registries.entityTypes[buffer.readVarInt()]), buffer.readDouble3(), buffer.readAngle2(), buffer.readAngle(), if (version >= 759) buffer.readVarInt() else 0, MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAddPacket(buffer.readVarInt(), buffer.readUuid(), buffer.readVarInt(), buffer.readDouble3(), buffer.readAngle2(), buffer.readAngle(), if (version >= V1_19_0) buffer.readVarInt() else 0, MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
 }

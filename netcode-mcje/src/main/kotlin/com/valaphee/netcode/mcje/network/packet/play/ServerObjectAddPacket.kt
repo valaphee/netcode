@@ -23,7 +23,6 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.util.NamespacedKey
 import java.util.UUID
 
 /**
@@ -31,8 +30,8 @@ import java.util.UUID
  */
 class ServerObjectAddPacket(
     val entityId: Int,
-    val entityUid: UUID?,
-    val typeKey: NamespacedKey,
+    val entityUid: UUID,
+    val type: Int,
     val position: Double3,
     val rotation: Float2,
     val data: Int,
@@ -40,8 +39,8 @@ class ServerObjectAddPacket(
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        buffer.writeUuid(entityUid!!)
-        buffer.writeVarInt(buffer.registries.entityTypes.getId(typeKey))
+        buffer.writeUuid(entityUid)
+        buffer.writeVarInt(type)
         buffer.writeDouble3(position)
         buffer.writeAngle2(rotation)
         buffer.writeInt(data)
@@ -53,12 +52,12 @@ class ServerObjectAddPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.objectAdd(this)
 
-    override fun toString() = "ServerObjectAddPacket(entityId=$entityId, entityUid=$entityUid, typeKey=$typeKey, position=$position, rotation=$rotation, data=$data, velocity=$velocity)"
+    override fun toString() = "ServerObjectAddPacket(id=$entityId, uuid=$entityUid, type=$type, position=$position, rotation=$rotation, data=$data, velocity=$velocity)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerObjectAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerObjectAddPacket(buffer.readVarInt(), buffer.readUuid(), checkNotNull(buffer.registries.entityTypes[buffer.readVarInt()]), buffer.readDouble3(), buffer.readAngle2(), buffer.readInt(), MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
+    override fun read(buffer: PacketBuffer, version: Int) = ServerObjectAddPacket(buffer.readVarInt(), buffer.readUuid(), buffer.readVarInt(), buffer.readDouble3(), buffer.readAngle2(), buffer.readInt(), MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
 }

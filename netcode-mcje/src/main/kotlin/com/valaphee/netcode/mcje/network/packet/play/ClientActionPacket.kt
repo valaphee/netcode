@@ -21,6 +21,7 @@ import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.V1_19_0
 import com.valaphee.netcode.mcje.util.Direction
 
 /**
@@ -40,7 +41,7 @@ class ClientActionPacket(
         buffer.writeVarInt(action.ordinal)
         buffer.writeInt3UnsignedY(blockPosition)
         buffer.writeDirection(blockFace)
-        if (version >= 759) buffer.writeVarInt(confirmId)
+        if (version >= V1_19_0) buffer.writeVarInt(confirmId)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.action(this)
@@ -52,5 +53,5 @@ class ClientActionPacket(
  * @author Kevin Ludwig
  */
 object ClientActionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientActionPacket(ClientActionPacket.Action.values()[buffer.readVarInt()], buffer.readInt3UnsignedY(), buffer.readDirection(), if (version >= 759) buffer.readVarInt() else 0)
+    override fun read(buffer: PacketBuffer, version: Int) = ClientActionPacket(ClientActionPacket.Action.values()[buffer.readVarInt()], buffer.readInt3UnsignedY(), buffer.readDirection(), if (version >= V1_19_0) buffer.readVarInt() else 0)
 }

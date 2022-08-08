@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_17_034
 
 /**
  * @author Kevin Ludwig
@@ -37,7 +38,7 @@ class ArmorDamagePacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         if (version >= 407) buffer.writeVarInt(cause)
         buffer.writeVarInt(damage)
-        if (version >= 465) buffer.writeVarULong(armorSlots)
+        if (version >= V1_17_034) buffer.writeVarULong(armorSlots)
     }
 
     override fun handle(handler: PacketHandler) = handler.armorDamage(this)
@@ -49,5 +50,5 @@ class ArmorDamagePacket(
  * @author Kevin Ludwig
  */
 object ArmorDamagePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ArmorDamagePacket(if (version >= 407) buffer.readVarInt() else 0, buffer.readVarInt(), if (version >= 465) buffer.readVarULong() else 0)
+    override fun read(buffer: PacketBuffer, version: Int) = ArmorDamagePacket(if (version >= 407) buffer.readVarInt() else 0, buffer.readVarInt(), if (version >= V1_17_034) buffer.readVarULong() else 0)
 }

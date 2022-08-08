@@ -156,8 +156,8 @@ interface MetadataType<T> {
             }
         }
 
-        val OptionalBlockState = object : MetadataType<NamespacedKey?> {
-            override fun read(buffer: PacketBuffer): NamespacedKey? {
+        val OptionalBlockState = object : MetadataType<Int?> {
+            override fun read(buffer: PacketBuffer): Int? {
                 val blockStateId = buffer.readVarInt()
                 return if (blockStateId == 0) null else checkNotNull(buffer.registries.blockStates[blockStateId])
             }

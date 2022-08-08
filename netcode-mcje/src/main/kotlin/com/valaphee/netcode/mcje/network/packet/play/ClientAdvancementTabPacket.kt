@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
  */
 class ClientAdvancementTabPacket(
     val action: Action,
-    val tabId: NamespacedKey,
+    val tabKey: NamespacedKey?,
 ) : Packet<ClientPlayPacketHandler>() {
     enum class Action {
         Opened, Closed
@@ -35,17 +35,21 @@ class ClientAdvancementTabPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(action.ordinal)
-        buffer.writeNamespacedKey(tabId)
+        if (action == Action.Opened) buffer.writeNamespacedKey(tabKey!!)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.advancementTab(this)
 
-    override fun toString() = "ClientAdvancementTabPacket(action=$action, tabId=$tabId)"
+    override fun toString() = "ClientAdvancementTabPacket(action=$action, tabKey=$tabKey)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ClientAdvancementTabPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientAdvancementTabPacket(ClientAdvancementTabPacket.Action.values()[buffer.readVarInt()], buffer.readNamespacedKey())
+    override fun read(buffer: PacketBuffer, version: Int): ClientAdvancementTabPacket {
+        val action = ClientAdvancementTabPacket.Action.values()[buffer.readVarInt()];
+        val tabKey = if (action == ClientAdvancementTabPacket.Action.Opened) buffer.readNamespacedKey() else null
+        return ClientAdvancementTabPacket(action, tabKey)
+    }
 }

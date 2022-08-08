@@ -23,6 +23,16 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_010
+import com.valaphee.netcode.mcbe.network.V1_16_210
+import com.valaphee.netcode.mcbe.network.V1_16_221
+import com.valaphee.netcode.mcbe.network.V1_17_002
+import com.valaphee.netcode.mcbe.network.V1_17_011
+import com.valaphee.netcode.mcbe.network.V1_17_034
+import com.valaphee.netcode.mcbe.network.V1_17_041
+import com.valaphee.netcode.mcbe.network.V1_18_002
+import com.valaphee.netcode.mcbe.network.V1_18_030
+import com.valaphee.netcode.mcbe.network.V1_19_000
 import com.valaphee.netcode.mcbe.util.Registry
 
 /**
@@ -245,7 +255,7 @@ class WorldEventPacket(
             private const val worldOffset = 3000
             private const val blockOffset = 3500
             private const val particleLegacyOffset = 0x4000
-            private val registryPre407 = Registry<Event>().apply {
+            private val registryPreV1_16_010 = Registry<Event>().apply {
                 default = Undefined
                 this[soundOffset + 0] = SoundClick
                 this[soundOffset + 1] = SoundClickFail
@@ -394,7 +404,7 @@ class WorldEventPacket(
                 this[particleLegacyOffset + 66] = ParticleRisingDragonsBreath
                 this[particleLegacyOffset + 67] = ParticleDragonsBreath
             }
-            private val registryPre428 = registryPre407.clone().apply {
+            private val registryPreV1_16_210 = registryPreV1_16_010.clone().apply {
                 this[soundOffset + 50] = SoundCamera
                 this[blockOffset + 100] = BlockStartBreak
                 this[blockOffset + 101] = BlockStopBreak
@@ -405,12 +415,12 @@ class WorldEventPacket(
                 this[particleLegacyOffset + 69] = ParticleSoul
                 this[particleLegacyOffset + 70] = ParticleObsidianTear
             }
-            private val registryPre431 = registryPre428.clone().apply {
+            private val registryPreV1_16_221 = registryPreV1_16_210.clone().apply {
                 this[particleOffset + 27] = ParticleVibrationSignal
                 this[blockOffset + 14] = CauldronFillPowderSnow
                 this[blockOffset + 15] = CauldronTakePowderSnow
             }
-            private val registryPre440 = registryPre431.clone().apply {
+            private val registryPreV1_17_002 = registryPreV1_16_221.clone().apply {
                 this[soundOffset + 64] = SoundPointedDripstoneLand
                 this[soundOffset + 65] = SoundDyeUsed
                 this[soundOffset + 66] = SoundInkSaceUsed
@@ -465,7 +475,7 @@ class WorldEventPacket(
                 this[particleLegacyOffset + 71] = ParticleSoul
                 this[particleLegacyOffset + 72] = ParticleObsidianTear
             }
-            private val registryPre448 = registryPre440.clone().apply {
+            private val registryPreV1_17_011 = registryPreV1_17_002.clone().apply {
                 this[particleLegacyOffset + 73] = ParticlePortalReverse
                 this[particleLegacyOffset + 74] = ParticleSnowflake
                 this[particleLegacyOffset + 75] = ParticleVibrationSignal
@@ -475,7 +485,7 @@ class WorldEventPacket(
                 this[particleLegacyOffset + 79] = ParticleWax
                 this[particleLegacyOffset + 80] = ParticleElectricSpark
             }
-            private val registryPre465 = registryPre448.clone().apply {
+            private val registryPreV1_17_034 = registryPreV1_17_011.clone().apply {
                 this[particleLegacyOffset + 9] = ParticleCandleFlame
                 this[particleLegacyOffset + 10] = ParticleLava
                 this[particleLegacyOffset + 11] = ParticleLargeSmoke
@@ -550,39 +560,39 @@ class WorldEventPacket(
                 this[particleLegacyOffset + 80] = ParticleWax
                 this[particleLegacyOffset + 81] = ParticleElectricSpark
             }
-            private val registryPre471 = registryPre465.clone().apply {
+            private val registryPreV1_17_041 = registryPreV1_17_034.clone().apply {
                 this[particleOffset + 34] = ParticleTurtleEgg
                 this[particleOffset + 35] = ParticleSculkShriek
                 this[particleLegacyOffset + 82] = ParticleShriek
             }
-            private val registryPre475 = registryPre465.clone().apply {
+            private val registryPreV1_18_002 = registryPreV1_17_034.clone().apply {
                 this[particleOffset + 36] = ParticleSculkCatalystBloom
                 this[particleLegacyOffset + 83] = ParticleSculkSoul
             }
-            private val registryPre503 = registryPre475.clone().apply {
+            private val registryPreV1_18_030 = registryPreV1_18_002.clone().apply {
                 this[9801] = SleepingPlayers
             }
-            private val registryPre527 = registryPre503.clone().apply {
+            private val registryPreV1_19_000 = registryPreV1_18_030.clone().apply {
                 this[particleOffset + 37] = ParticleSculkCharge
                 this[particleOffset + 38] = ParticleSculkChargePop
             }
-            private val registry = registryPre527.clone().apply {
+            private val registry = registryPreV1_19_000.clone().apply {
                 this[particleOffset + 39] = ParticleSonicExplosion
                 this[particleLegacyOffset + 84] = ParticleSonicExplosion2
             }
 
             fun registryByVersion(version: Int) =
-                if (version >= 527) registry
-                else if (version >= 503) registryPre527
-                else if (version >= 475) registryPre503
-                else if (version >= 471) registryPre475
-                else if (version >= 465) registryPre471
-                else if (version >= 448) registryPre465
-                else if (version >= 440) registryPre448
-                else if (version >= 431) registryPre440
-                else if (version >= 428) registryPre431
-                else if (version >= 407) registryPre428
-                else registryPre407
+                if (version >= V1_19_000) registry
+                else if (version >= V1_18_030) registryPreV1_19_000
+                else if (version >= V1_18_002) registryPreV1_18_030
+                else if (version >= V1_17_041) registryPreV1_18_002
+                else if (version >= V1_17_034) registryPreV1_17_041
+                else if (version >= V1_17_011) registryPreV1_17_034
+                else if (version >= V1_17_002) registryPreV1_17_011
+                else if (version >= V1_16_221) registryPreV1_17_002
+                else if (version >= V1_16_210) registryPreV1_16_221
+                else if (version >= V1_16_010) registryPreV1_16_210
+                else registryPreV1_16_010
         }
     }
 

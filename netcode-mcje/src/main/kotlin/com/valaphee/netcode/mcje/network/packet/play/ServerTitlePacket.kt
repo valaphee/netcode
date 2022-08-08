@@ -20,6 +20,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_18_2
 import net.kyori.adventure.text.Component
 
 /**
@@ -46,7 +47,7 @@ class ServerTitlePacket(
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        if (version < 758) buffer.writeVarInt(action.ordinal)
+        if (version < V1_18_2) buffer.writeVarInt(action.ordinal)
         when (action) {
             Action.SetTitle, Action.SetSubTitle, Action.ActionBar -> buffer.writeComponent(text!!)
             Action.SetTimings -> {

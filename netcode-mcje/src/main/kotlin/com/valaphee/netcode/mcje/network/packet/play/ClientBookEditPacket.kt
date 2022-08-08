@@ -20,6 +20,7 @@ import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.mcje.world.entity.player.Hand
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
@@ -36,7 +37,7 @@ class ClientBookEditPacket(
     val title: String?
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        if (version >= 758) {
+        if (version >= V1_18_2) {
             buffer.writeVarInt(hand.ordinal)
             pages!!.let {
                 buffer.writeVarInt(it.size)
@@ -68,7 +69,7 @@ object ClientBookEditPacketReader : PacketReader {
         val hand: Hand
         val pages: List<String>?
         val title: String?
-        if (version >= 758) {
+        if (version >= V1_18_2) {
             itemStack = null
             sign = false
             hand = Hand.values()[buffer.readVarInt()]

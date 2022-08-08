@@ -20,6 +20,8 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_18_2
+import com.valaphee.netcode.mcje.network.V1_19_0
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
 import com.valaphee.netcode.mcje.world.item.writeItemStack
@@ -36,10 +38,10 @@ class ServerInventoryContentPacket(
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
-        if (version >= 758) buffer.writeVarInt(stateId)
-        if (version >= 759) buffer.writeVarInt(content.size) else buffer.writeShort(content.size)
+        if (version >= V1_18_2) buffer.writeVarInt(stateId)
+        if (version >= V1_19_0) buffer.writeVarInt(content.size) else buffer.writeShort(content.size)
         content.forEach { buffer.writeItemStack(it) }
-        if (version >= 759) buffer.writeItemStack(itemStackInHand)
+        if (version >= V1_19_0) buffer.writeItemStack(itemStackInHand)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.inventoryContent(this)
@@ -51,5 +53,5 @@ class ServerInventoryContentPacket(
  * @author Kevin Ludwig
  */
 object ServerInventoryContentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerInventoryContentPacket(buffer.readUnsignedByte().toInt(), if (version >= 758) buffer.readVarInt() else 0, safeList(if (version >= 759) buffer.readVarInt() else buffer.readShort().toInt()) { buffer.readItemStack() }, if (version >= 759) buffer.readItemStack() else null)
+    override fun read(buffer: PacketBuffer, version: Int) = ServerInventoryContentPacket(buffer.readUnsignedByte().toInt(), if (version >= V1_18_2) buffer.readVarInt() else 0, safeList(if (version >= V1_19_0) buffer.readVarInt() else buffer.readShort().toInt()) { buffer.readItemStack() }, if (version >= V1_19_0) buffer.readItemStack() else null)
 }

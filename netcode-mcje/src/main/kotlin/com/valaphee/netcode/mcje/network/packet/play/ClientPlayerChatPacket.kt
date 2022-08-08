@@ -20,6 +20,7 @@ import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.V1_19_0
 
 /**
  * @author Kevin Ludwig
@@ -33,7 +34,7 @@ class ClientPlayerChatPacket(
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(message)
-        if (version >= 759) {
+        if (version >= V1_19_0) {
             buffer.writeLong(time)
             buffer.writeLong(salt)
             buffer.writeByteArray(signature!!)
@@ -56,7 +57,7 @@ object ClientPlayerChatPacketReader : PacketReader {
         val salt: Long
         val signature: ByteArray?
         val preview: Boolean
-        if (version >= 759) {
+        if (version >= V1_19_0) {
             time = buffer.readLong()
             salt = buffer.readLong()
             signature = buffer.readByteArray()

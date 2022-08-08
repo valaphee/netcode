@@ -28,14 +28,14 @@ import com.valaphee.netcode.mcje.world.SoundCategory
  * @author Kevin Ludwig
  */
 class ServerSoundPacket(
-    val soundKey: NamespacedKey,
+    val soundId: Int,
     val category: SoundCategory,
     val position: Float3,
     val volume: Float,
     val pitch: Float
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(buffer.registries.sounds.getId(soundKey))
+        buffer.writeVarInt(soundId)
         buffer.writeVarInt(category.ordinal)
         buffer.writeInt3(position.toMutableFloat3().scale(8.0f).toInt3())
         buffer.writeFloatLE(volume)
@@ -44,12 +44,12 @@ class ServerSoundPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.sound(this)
 
-    override fun toString() = "ServerSoundPacket(soundKey=$soundKey, category=$category, position=$position, volume=$volume, pitch=$pitch)"
+    override fun toString() = "ServerSoundPacket(soundId=$soundId, category=$category, position=$position, volume=$volume, pitch=$pitch)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerSoundPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerSoundPacket(checkNotNull(buffer.registries.sounds[buffer.readVarInt()]), SoundCategory.values()[buffer.readVarInt()], buffer.readInt3().toMutableFloat3().scale(1 / 8.0f), buffer.readFloat(), buffer.readFloat())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerSoundPacket(buffer.readVarInt(), SoundCategory.values()[buffer.readVarInt()], buffer.readInt3().toMutableFloat3().scale(1 / 8.0f), buffer.readFloat(), buffer.readFloat())
 }

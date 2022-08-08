@@ -22,6 +22,8 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_201
+import com.valaphee.netcode.mcbe.network.V1_17_011
 import com.valaphee.netcode.util.safeList
 import java.util.UUID
 
@@ -52,7 +54,7 @@ class PacksPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeBoolean(forcedToAccept)
         buffer.writeBoolean(scriptingEnabled)
-        if (version >= 448) buffer.writeBoolean(forcingServerPacksEnabled)
+        if (version >= V1_17_011) buffer.writeBoolean(forcingServerPacksEnabled)
         buffer.writeShortLE(behaviorPacks.size)
         behaviorPacks.forEach {
             buffer.writeString(it.id.toString())
@@ -72,7 +74,7 @@ class PacksPacket(
             buffer.writeString(it.subPackName)
             buffer.writeString(it.contentId)
             buffer.writeBoolean(it.scripting)
-            if (version >= 422) buffer.writeBoolean(it.raytracingCapable)
+            if (version >= V1_16_201) buffer.writeBoolean(it.raytracingCapable)
         }
     }
 
@@ -88,8 +90,8 @@ object PacksPacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int) = PacksPacket(
         buffer.readBoolean(),
         buffer.readBoolean(),
-        if (version >= 448) buffer.readBoolean() else false,
+        if (version >= V1_17_011) buffer.readBoolean() else false,
         safeList(buffer.readUnsignedShortLE()) { PacksPacket.Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readLongLE(), buffer.readString(), buffer.readString(), buffer.readString(), buffer.readBoolean()) },
-        safeList(buffer.readUnsignedShortLE()) { PacksPacket.Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readLongLE(), buffer.readString(), buffer.readString(), buffer.readString(), buffer.readBoolean(), if (version >= 422) buffer.readBoolean() else false) }
+        safeList(buffer.readUnsignedShortLE()) { PacksPacket.Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readLongLE(), buffer.readString(), buffer.readString(), buffer.readString(), buffer.readBoolean(), if (version >= V1_16_201) buffer.readBoolean() else false) }
     )
 }

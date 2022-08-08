@@ -20,14 +20,13 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
  * @author Kevin Ludwig
  */
 class ServerEntityEffectApplyPacket(
     val entityId: Int,
-    val effect: NamespacedKey,
+    val effectId: Int,
     val amplifier: Int,
     val duration: Int,
     val flags: Set<Flag>
@@ -38,7 +37,7 @@ class ServerEntityEffectApplyPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        buffer.writeByte(buffer.registries.effects.getId(effect))
+        buffer.writeByte(effectId)
         buffer.writeByte(amplifier)
         buffer.writeVarInt(duration)
         buffer.writeByteFlags(flags)
@@ -46,12 +45,12 @@ class ServerEntityEffectApplyPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityEffectApply(this)
 
-    override fun toString() = "ServerEntityEffectApplyPacket(entityId=$entityId, effect=$effect, amplifier=$amplifier, duration=$duration, flags=$flags)"
+    override fun toString() = "ServerEntityEffectApplyPacket(entityId=$entityId, effectId=$effectId, amplifier=$amplifier, duration=$duration, flags=$flags)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerEntityEffectApplyPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectApplyPacket(buffer.readVarInt(), buffer.registries.effects[buffer.readUnsignedByte().toInt()]!!, buffer.readUnsignedByte().toInt(), buffer.readVarInt(), buffer.readByteFlags())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectApplyPacket(buffer.readVarInt(), buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readVarInt(), buffer.readByteFlags())
 }

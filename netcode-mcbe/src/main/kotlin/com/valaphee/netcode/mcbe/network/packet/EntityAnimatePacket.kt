@@ -20,6 +20,7 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.network.V1_17_034
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -39,7 +40,7 @@ class EntityAnimatePacket(
         buffer.writeString(animation)
         buffer.writeString(nextState)
         buffer.writeString(stopExpression)
-        if (version >= 465) buffer.writeInt(0)
+        if (version >= V1_17_034) buffer.writeInt(0)
         buffer.writeString(controller)
         buffer.writeFloatLE(blendOutTime)
         buffer.writeVarUInt(runtimeEntityIds.size)

@@ -39,7 +39,7 @@ import java.io.OutputStream
 @JsonSerialize(using = ItemStack.Serializer::class)
 @JsonDeserialize(using = ItemStack.Deserializer::class)
 data class ItemStack(
-    val item: NamespacedKey,
+    val item: Pair<Int, NamespacedKey?>,
     val count: Int = 1,
     val data: Any? = null,
 ) {
@@ -58,7 +58,7 @@ data class ItemStack(
     object Serializer : JsonSerializer<ItemStack>() {
         override fun serialize(value: ItemStack, generator: JsonGenerator, provider: SerializerProvider) {
             generator.writeStartObject()
-            generator.writeStringField("id", value.item.key)
+            generator.writeStringField("id", value.item.second!!.toString())
             generator.writeNumberField("Count", value.count)
             value.data?.let { generator.writeObjectField("tag", value.data) }
             generator.writeEndObject()
@@ -68,17 +68,31 @@ data class ItemStack(
     object Deserializer : JsonDeserializer<ItemStack>() {
         override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
             val node = parser.readValueAsTree<JsonNode>()
-            return ItemStack(minecraftKey(node["id"].textValue()), node["Count"]?.intValue() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
+            return ItemStack(0 to minecraftKey(node["id"].textValue()), node["Count"]?.intValue() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
         }
     }
 }
 
-fun PacketBuffer.readItemStack() = if (readBoolean()) ItemStack(registries.items[readVarInt()]!!, readByte().toInt(), nbtObjectMapper.readValue(ByteBufInputStream(buffer))) else null
+fun PacketBuffer.readItemStackPre393(): ItemStack? {
+    val itemId = readShort()
+    return if (itemId >= 0) ItemStack(itemId.toInt() to null, readByte().toInt(), readShort().let { nbtObjectMapper.readValue(ByteBufInputStream(buffer)) }) else null
+}
+
+fun PacketBuffer.readItemStack() = if (readBoolean()) ItemStack(readVarInt() to null, readByte().toInt(), nbtObjectMapper.readValue(ByteBufInputStream(buffer))) else null
+
+fun PacketBuffer.writeItemStackPre393(value: ItemStack?) {
+    value?.let {
+        writeShort(it.item.first)
+        writeByte(it.count)
+        //writeShort()
+        nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
+    } ?: writeShort(-1)
+}
 
 fun PacketBuffer.writeItemStack(value: ItemStack?) {
     value?.let {
         writeBoolean(true)
-        writeVarInt(registries.items.getId(it.item))
+        writeVarInt(it.item.first)
         writeByte(it.count)
         nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
     } ?: writeBoolean(false)

@@ -29,11 +29,11 @@ import com.valaphee.netcode.mcje.world.item.writeItemStack
  * @author Kevin Ludwig
  */
 open class ParticleData(
-    val type: NamespacedKey
+    val typeId: Int
 ) {
     open fun writeToBuffer(buffer: PacketBuffer) = Unit
 
-    override fun toString() = "ParticleData(type=$type)"
+    override fun toString() = "ParticleData(type=$typeId)"
 
     companion object {
         val blockType = minecraftKey("block")
@@ -46,7 +46,7 @@ open class ParticleData(
     }
 }
 
-fun PacketBuffer.readParticleData(type: NamespacedKey) = when (type) {
+fun PacketBuffer.readParticleData(typeId: Int) = when (typeId) {
     ParticleData.blockType, ParticleData.blockMarkerType, ParticleData.fallingDustType -> BlockParticleData(type, checkNotNull(registries.blockStates[readVarInt()]))
     ParticleData.dustType -> DustParticleData(type, readFloat3(), readFloat())
     ParticleData.dustColorTransitionType -> DustColorTransitionParticleData(type, readFloat3(), readFloat(), readFloat3())

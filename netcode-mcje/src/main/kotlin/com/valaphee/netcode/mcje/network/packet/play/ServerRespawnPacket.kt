@@ -21,6 +21,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_19_0
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.world.Dimension
 import com.valaphee.netcode.mcje.world.GameMode
@@ -45,7 +46,7 @@ class ServerRespawnPacket(
     val deathLocation: DeathLocation?
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        if (version >= 759) buffer.writeNamespacedKey(dimensionName!!) else buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension!!)
+        if (version >= V1_19_0) buffer.writeNamespacedKey(dimensionName!!) else buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, dimension!!)
         buffer.writeNamespacedKey(worldName)
         buffer.writeLong(hashedSeed)
         buffer.writeByte(gameMode.id)
@@ -53,7 +54,7 @@ class ServerRespawnPacket(
         buffer.writeBoolean(debugGenerator)
         buffer.writeBoolean(flatGenerator)
         buffer.writeBoolean(keepMetadata)
-        if (version >= 759) deathLocation?.let {
+        if (version >= V1_19_0) deathLocation?.let {
             buffer.writeBoolean(true)
             buffer.writeNamespacedKey(it.dimension)
             buffer.writeInt3UnsignedY(it.position)
@@ -69,5 +70,5 @@ class ServerRespawnPacket(
  * @author Kevin Ludwig
  */
 object ServerRespawnPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerRespawnPacket(if (version >= 759) buffer.readNamespacedKey() else null, if (version < 759) buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)) else null, buffer.readNamespacedKey(), buffer.readLong(), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), if (version >= 759 && buffer.readBoolean()) DeathLocation(buffer.readNamespacedKey(), buffer.readInt3UnsignedY()) else null)
+    override fun read(buffer: PacketBuffer, version: Int) = ServerRespawnPacket(if (version >= V1_19_0) buffer.readNamespacedKey() else null, if (version < V1_19_0) buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)) else null, buffer.readNamespacedKey(), buffer.readLong(), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), if (version >= V1_19_0 && buffer.readBoolean()) DeathLocation(buffer.readNamespacedKey(), buffer.readInt3UnsignedY()) else null)
 }

@@ -17,33 +17,39 @@
 package com.valaphee.netcode.mcje.chat
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import net.kyori.adventure.text.format.Style
 
 /**
  * @author Kevin Ludwig
  */
 class ChatType(
-    @get:JsonProperty("chat") val chat: Chat?,
-    @get:JsonProperty("narration") val narration: Chat?
+    @get:JsonProperty("chat") val chat: Text?,
+    @get:JsonProperty("overlay") val overlay: Text?,
+    @get:JsonProperty("narration") val narration: Narration?
 ) {
-    class Chat(
+    class Text(
         @get:JsonProperty("decoration") val decoration: Decoration?,
-        @get:JsonProperty("priority") val priority: String?
-    ) {
-        class Decoration(
-            @get:JsonProperty("translation_key") val translationKey: String,
-            @get:JsonProperty("style") val style: Style,
-            @get:JsonProperty("parameters") val parameters: List<Parameter>
-        ) {
-            class Style(
-                @get:JsonProperty("color") val color: String?,
-                @get:JsonProperty("italic") val italic: Boolean?
-            )
+    )
 
-            enum class Parameter {
-                @JsonProperty("team_name") TeamName,
-                @JsonProperty("sender") Sender,
-                @JsonProperty("content") Content
-            }
+    class Narration(
+        @get:JsonProperty("decoration") val decoration: Decoration?,
+        @get:JsonProperty("priority") val priority: Priority?
+    ) {
+        enum class Priority {
+            @JsonProperty("chat") Chat,
+            @JsonProperty("system") System,
+        }
+    }
+
+    class Decoration(
+        @get:JsonProperty("translation_key") val translationKey: String,
+        @get:JsonProperty("parameters") val parameters: List<Parameter>,
+        @get:JsonProperty("style") val style: Style,
+    ) {
+        enum class Parameter {
+            @JsonProperty("team_name") TeamName,
+            @JsonProperty("sender") Sender,
+            @JsonProperty("content") Content
         }
     }
 }

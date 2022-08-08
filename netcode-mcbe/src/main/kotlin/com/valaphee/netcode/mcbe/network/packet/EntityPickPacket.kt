@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_17_034
 
 /**
  * @author Kevin Ludwig
@@ -37,7 +38,7 @@ class EntityPickPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeLongLE(runtimeEntityId)
         buffer.writeByte(hotbarSlot)
-        if (version >= 465) buffer.writeBoolean(withMetadata)
+        if (version >= V1_17_034) buffer.writeBoolean(withMetadata)
     }
 
     override fun handle(handler: PacketHandler) = handler.entityPick(this)
@@ -49,5 +50,5 @@ class EntityPickPacket(
  * @author Kevin Ludwig
  */
 object EntityPickPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityPickPacket(buffer.readLongLE(), buffer.readByte().toInt(), if (version >= 465) buffer.readBoolean() else false)
+    override fun read(buffer: PacketBuffer, version: Int) = EntityPickPacket(buffer.readLongLE(), buffer.readByte().toInt(), if (version >= V1_17_034) buffer.readBoolean() else false)
 }

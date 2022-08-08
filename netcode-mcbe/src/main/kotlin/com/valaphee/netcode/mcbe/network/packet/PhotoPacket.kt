@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_17_034
 
 /**
  * @author Kevin Ludwig
@@ -46,7 +47,7 @@ class PhotoPacket(
         buffer.writeString(name)
         buffer.writeByteArray(data)
         buffer.writeString(bookId)
-        if (version >= 465) {
+        if (version >= V1_17_034) {
             buffer.writeByte(type!!.ordinal)
             buffer.writeByte(sourceType!!.ordinal)
             buffer.writeLongLE(ownerId)
@@ -71,7 +72,7 @@ object PhotoPacketReader : PacketReader {
         val sourceType: PhotoPacket.Type?
         val ownerId: Long
         val newName: String?
-        if (version >= 465) {
+        if (version >= V1_17_034) {
             type = PhotoPacket.Type.values()[buffer.readByte().toInt()]
             sourceType = PhotoPacket.Type.values()[buffer.readByte().toInt()]
             ownerId = buffer.readLongLE()

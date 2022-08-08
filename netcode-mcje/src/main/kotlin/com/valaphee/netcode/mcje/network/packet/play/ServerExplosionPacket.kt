@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -36,7 +37,7 @@ class ServerExplosionPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeFloat3(position)
         buffer.writeFloat(radius)
-        if (version >= 758) buffer.writeVarInt(affectedBlocks.size) else buffer.writeInt(affectedBlocks.size)
+        if (version >= V1_18_2) buffer.writeVarInt(affectedBlocks.size) else buffer.writeInt(affectedBlocks.size)
         affectedBlocks.forEach { (x, y, z) ->
             buffer.writeByte(x)
             buffer.writeByte(y)
@@ -54,5 +55,5 @@ class ServerExplosionPacket(
  * @author Kevin Ludwig
  */
 object ServerExplosionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerExplosionPacket(buffer.readFloat3(), buffer.readFloat(), safeList(if (version >= 758) buffer.readVarInt() else buffer.readInt()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) }, buffer.readFloat3())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerExplosionPacket(buffer.readFloat3(), buffer.readFloat(), safeList(if (version >= V1_18_2) buffer.readVarInt() else buffer.readInt()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) }, buffer.readFloat3())
 }

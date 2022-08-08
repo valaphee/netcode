@@ -66,12 +66,12 @@ class EncryptionInitializer(
 
     override fun initChannel(channel: Channel) {
         channel.pipeline()
-            .addBefore(PacketCodec.Name, "auto-encryptor", Encryptor())
-            .addBefore("auto-encryptor", "auto-decryptor", Decryptor())
+            .addBefore(PacketCodec.Name, "automation-encryptor", Encryptor())
+            .addBefore("automation-encryptor", "automation-decryptor", Decryptor())
     }
 
     private inner class Encryptor : ChannelOutboundHandlerAdapter() {
-        private val aes = Cipher.getInstance("AES/CFB8/NoPadding").apply { init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(this@EncryptionInitializer.iv)) }
+        private val aes = Cipher.getInstance("AES/CFB8/NoPadding").apply { init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(iv)) }
 
         override fun write(context: ChannelHandlerContext, message: Any, promise: ChannelPromise) {
             if (message is TextWebSocketFrame) {
@@ -94,7 +94,7 @@ class EncryptionInitializer(
     }
 
     private inner class Decryptor : ChannelInboundHandlerAdapter() {
-        private val aes = Cipher.getInstance("AES/CFB8/NoPadding").apply { init(Cipher.DECRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(this@EncryptionInitializer.iv)) }
+        private val aes = Cipher.getInstance("AES/CFB8/NoPadding").apply { init(Cipher.DECRYPT_MODE, SecretKeySpec(key, "AES"), IvParameterSpec(iv)) }
 
         override fun channelRead(context: ChannelHandlerContext, message: Any) {
             if (message is BinaryWebSocketFrame) {

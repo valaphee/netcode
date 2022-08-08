@@ -22,18 +22,11 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_14_060
 import com.valaphee.netcode.mcbe.world.entity.player.Appearance
 import com.valaphee.netcode.mcbe.world.entity.player.User
 import com.valaphee.netcode.mcbe.world.entity.player.readAppearance
-import com.valaphee.netcode.mcbe.world.entity.player.readAppearancePre390
-import com.valaphee.netcode.mcbe.world.entity.player.readAppearancePre419
-import com.valaphee.netcode.mcbe.world.entity.player.readAppearancePre428
-import com.valaphee.netcode.mcbe.world.entity.player.readAppearancePre465
 import com.valaphee.netcode.mcbe.world.entity.player.writeAppearance
-import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre390
-import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre419
-import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre428
-import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre465
 import com.valaphee.netcode.util.safeList
 import java.util.UUID
 
@@ -78,12 +71,12 @@ class PlayerListPacket(
                 buffer.writeString(it.xboxUserId!!)
                 buffer.writeString(it.platformChatId!!)
                 buffer.writeIntLE(if (it.operatingSystem == User.OperatingSystem.Unknown) -1 else it.operatingSystem!!.ordinal)
-                if (version >= 465) buffer.writeAppearance(it.appearance!!) else if (version >= 428) buffer.writeAppearancePre465(it.appearance!!) else if (version >= 419) buffer.writeAppearancePre428(it.appearance!!) else if (version >= 390) buffer.writeAppearancePre419(it.appearance!!) else buffer.writeAppearancePre390(it.appearance!!)
+                buffer.writeAppearance(it.appearance!!, version)
                 buffer.writeBoolean(it.teacher)
                 buffer.writeBoolean(it.host)
             }
         }
-        if (version >= 390 && action == Action.Add) entries.forEach { buffer.writeBoolean(it.appearance!!.trusted) }
+        if (version >= V1_14_060 && action == Action.Add) entries.forEach { buffer.writeBoolean(it.appearance!!.trusted) }
     }
 
     override fun handle(handler: PacketHandler) = handler.playerList(this)
@@ -106,7 +99,7 @@ object PlayerListPacketReader : PacketReader {
                     buffer.readString(),
                     buffer.readString(),
                     User.OperatingSystem.values().getOrElse(buffer.readIntLE()) { User.OperatingSystem.Unknown },
-                    if (version >= 465) buffer.readAppearance() else if (version >= 428) buffer.readAppearancePre465() else if (version >= 419) buffer.readAppearancePre428() else if (version >= 390) buffer.readAppearancePre419() else buffer.readAppearancePre390(),
+                    buffer.readAppearance(version),
                     buffer.readBoolean(),
                     buffer.readBoolean()
                 )

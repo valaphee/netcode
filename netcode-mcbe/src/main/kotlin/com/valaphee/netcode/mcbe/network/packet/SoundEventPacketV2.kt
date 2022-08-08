@@ -21,6 +21,7 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.network.V1_16_010
 import com.valaphee.netcode.mcbe.world.SoundEvent
 
 /**
@@ -37,7 +38,7 @@ class SoundEventPacketV2(
     override val id get() = 0x78
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        if (version >= 407) buffer.writeVarUInt(soundEvent.ordinal) else buffer.writeByte(soundEvent.ordinal)
+        if (version >= V1_16_010) buffer.writeVarUInt(soundEvent.ordinal) else buffer.writeByte(soundEvent.ordinal)
         buffer.writeFloat3(position)
         buffer.writeVarInt(extraData)
         buffer.writeString(entityTypeKey)
@@ -54,5 +55,5 @@ class SoundEventPacketV2(
  * @author Kevin Ludwig
  */
 object SoundEventPacketV2Reader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = SoundEventPacketV2(SoundEvent.values()[if (version >= 407) buffer.readVarUInt() else buffer.readUnsignedByte().toInt()], buffer.readFloat3(), buffer.readVarInt(), buffer.readString(), buffer.readBoolean(), buffer.readBoolean())
+    override fun read(buffer: PacketBuffer, version: Int) = SoundEventPacketV2(SoundEvent.values()[if (version >= V1_16_010) buffer.readVarUInt() else buffer.readUnsignedByte().toInt()], buffer.readFloat3(), buffer.readVarInt(), buffer.readString(), buffer.readBoolean(), buffer.readBoolean())
 }

@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_100
 import com.valaphee.netcode.mcbe.world.Experiment
 import com.valaphee.netcode.mcbe.world.readExperiment
 import com.valaphee.netcode.mcbe.world.writeExperiment
@@ -63,9 +64,9 @@ class PacksStackPacket(
             buffer.writeString(it.version)
             buffer.writeString(it.subPackName)
         }
-        if (version < 419) buffer.writeBoolean(experimental)
+        if (version < V1_16_100) buffer.writeBoolean(experimental)
         buffer.writeString(this.version)
-        if (version >= 419) {
+        if (version >= V1_16_100) {
             buffer.writeIntLE(experiments.size)
             experiments.forEach { buffer.writeExperiment(it) }
             buffer.writeBoolean(experimentsPreviouslyToggled)
@@ -85,9 +86,9 @@ object PacksStackPacketReader : PacketReader {
         buffer.readBoolean(),
         safeList(buffer.readVarUInt()) { PacksStackPacket.Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readString()) },
         safeList(buffer.readVarUInt()) { PacksStackPacket.Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readString()) },
-        if (version < 419) buffer.readBoolean() else false,
+        if (version < V1_16_100) buffer.readBoolean() else false,
         buffer.readString(),
-        if (version >= 419) safeList(buffer.readIntLE()) { buffer.readExperiment() } else emptyList(),
-        if (version >= 419) buffer.readBoolean() else false
+        if (version >= V1_16_100) safeList(buffer.readIntLE()) { buffer.readExperiment() } else emptyList(),
+        if (version >= V1_16_100) buffer.readBoolean() else false
     )
 }

@@ -20,11 +20,12 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.network.V1_16_221
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readItemStack
-import com.valaphee.netcode.mcbe.world.item.readItemStackPre431
+import com.valaphee.netcode.mcbe.world.item.readItemStackPreV1_16_221
 import com.valaphee.netcode.mcbe.world.item.writeItemStack
-import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStackPreV1_16_221
 
 /**
  * @author Kevin Ludwig
@@ -40,10 +41,17 @@ class EntityArmorPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarULong(runtimeEntityId)
-        if (version >= 431) buffer.writeItemStack(head) else buffer.writeItemStackPre431(head)
-        if (version >= 431) buffer.writeItemStack(torso) else buffer.writeItemStackPre431(torso)
-        if (version >= 431) buffer.writeItemStack(legs) else buffer.writeItemStackPre431(legs)
-        if (version >= 431) buffer.writeItemStack(feet) else buffer.writeItemStackPre431(feet)
+        if (version >= V1_16_221) {
+            buffer.writeItemStack(head)
+            buffer.writeItemStack(torso)
+            buffer.writeItemStack(legs)
+            buffer.writeItemStack(feet)
+        } else {
+            buffer.writeItemStackPreV1_16_221(head)
+            buffer.writeItemStackPreV1_16_221(torso)
+            buffer.writeItemStackPreV1_16_221(legs)
+            buffer.writeItemStackPreV1_16_221(feet)
+        }
     }
 
     override fun handle(handler: PacketHandler) = handler.entityArmor(this)
@@ -55,11 +63,23 @@ class EntityArmorPacket(
  * @author Kevin Ludwig
  */
 object EntityArmorPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityArmorPacket(
-        buffer.readVarULong(),
-        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431(),
-        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431(),
-        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431(),
-        if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431()
-    )
+    override fun read(buffer: PacketBuffer, version: Int): EntityArmorPacket {
+        val runtimeEntityId = buffer.readVarULong()
+        val head: ItemStack?
+        val torso: ItemStack?
+        val legs: ItemStack?
+        val feet: ItemStack?
+        if (version >= V1_16_221) {
+            head = buffer.readItemStack()
+            torso = buffer.readItemStack()
+            legs = buffer.readItemStack()
+            feet = buffer.readItemStack()
+        } else {
+            head = buffer.readItemStackPreV1_16_221()
+            torso = buffer.readItemStackPreV1_16_221()
+            legs = buffer.readItemStackPreV1_16_221()
+            feet = buffer.readItemStackPreV1_16_221()
+        }
+        return EntityArmorPacket(runtimeEntityId, head, torso, legs, feet)
+    }
 }

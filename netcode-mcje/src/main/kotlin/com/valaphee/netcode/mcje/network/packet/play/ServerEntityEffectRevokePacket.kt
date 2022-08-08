@@ -20,28 +20,27 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
  * @author Kevin Ludwig
  */
 class ServerEntityEffectRevokePacket(
     val entityId: Int,
-    val effect: NamespacedKey
+    val effectId: Int
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        buffer.writeByte(buffer.registries.effects.getId(effect))
+        buffer.writeByte(effectId)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityEffectRevoke(this)
 
-    override fun toString() = "ServerEntityEffectRevokePacket(entityId=$entityId, effect=$effect)"
+    override fun toString() = "ServerEntityEffectRevokePacket(entityId=$entityId, effectId=$effectId)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerEntityEffectRevokePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectRevokePacket(buffer.readVarInt(), buffer.registries.effects[buffer.readByte().toInt()]!!)
+    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectRevokePacket(buffer.readVarInt(), buffer.readByte().toInt())
 }

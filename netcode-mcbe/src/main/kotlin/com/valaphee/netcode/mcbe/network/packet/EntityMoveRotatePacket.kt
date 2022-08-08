@@ -23,6 +23,7 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.network.V1_16_201
 
 /**
  * @author Kevin Ludwig
@@ -46,7 +47,7 @@ class EntityMoveRotatePacket(
         var flagsValue = 0
         val (rawX, rawY, rawZ) = positionDelta
         val (x, y, z) = position
-        if (version >= 419) {
+        if (version >= V1_16_201) {
             if (!x.isNaN()) {
                 buffer.writeFloatLE(x)
                 flagsValue = flagsValue or flagHasX
@@ -118,7 +119,7 @@ object EntityMoveRotatePacketReader : PacketReader {
         val flagsValue = buffer.readShortLE().toInt()
         val position: Float3
         val positionDelta: Int3
-        if (version >= 419) {
+        if (version >= V1_16_201) {
             position = Float3(
                 if (flagsValue and EntityMoveRotatePacket.flagHasX != 0) buffer.readFloatLE() else Float.NaN,
                 if (flagsValue and EntityMoveRotatePacket.flagHasY != 0) buffer.readFloatLE() else Float.NaN,

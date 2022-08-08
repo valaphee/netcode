@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.mcje.util.NibbleArray
 import com.valaphee.netcode.mcje.world.chunk.BlockStorage
 import com.valaphee.netcode.mcje.world.chunk.SubChunk
@@ -50,7 +51,7 @@ class ServerChunkLightPacket(
         buffer.writeVarInt(position.x)
         buffer.writeVarInt(position.y)
         buffer.writeBoolean(trustEdges)
-        if (version >= 758) {
+        if (version >= V1_18_2) {
             val withSkyLight = withSkyLight.toLongArray()
             buffer.writeVarInt(withSkyLight.size)
             withSkyLight.forEach { buffer.writeLong(it) }
@@ -99,7 +100,7 @@ object ServerChunkLightPacketReader : PacketReader {
         val emptyBlockLight: BitSet?
         val skyLight: Array<NibbleArray?>?
         val blockLight: Array<NibbleArray?>?
-        if (version >= 758) {
+        if (version >= V1_18_2) {
             withSkyLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
             withBlockLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
             emptySkyLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })

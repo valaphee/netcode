@@ -35,7 +35,7 @@ class EmotesPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarULong(runtimeEntityId)
         buffer.writeVarUInt(pieceIds.size)
-        pieceIds.forEach { buffer.writeUuid(it) }
+        pieceIds.forEach(buffer::writeUuid)
     }
 
     override fun handle(handler: PacketHandler) = handler.emotes(this)

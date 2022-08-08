@@ -24,10 +24,8 @@ import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.StructureSettings
-import com.valaphee.netcode.mcbe.world.readStructureSettingsPre440
-import com.valaphee.netcode.mcbe.world.readStructureSettingsPre503
-import com.valaphee.netcode.mcbe.world.writeStructureSettingsPre440
-import com.valaphee.netcode.mcbe.world.writeStructureSettingsPre503
+import com.valaphee.netcode.mcbe.world.readStructureSettings
+import com.valaphee.netcode.mcbe.world.writeStructureSettings
 
 /**
  * @author Kevin Ludwig
@@ -48,7 +46,7 @@ class StructureTemplateDataExportRequestPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(name)
         buffer.writeInt3UnsignedY(position)
-        if (version >= 440) buffer.writeStructureSettingsPre503(settings) else buffer.writeStructureSettingsPre440(settings)
+        buffer.writeStructureSettings(settings, version)
         buffer.writeByte(operation.ordinal)
     }
 
@@ -61,10 +59,5 @@ class StructureTemplateDataExportRequestPacket(
  * @author Kevin Ludwig
  */
 object StructureTemplateDataExportRequestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = StructureTemplateDataExportRequestPacket(
-        buffer.readString(),
-        buffer.readInt3UnsignedY(),
-        if (version >= 440) buffer.readStructureSettingsPre503() else buffer.readStructureSettingsPre440(),
-        StructureTemplateDataExportRequestPacket.Operation.values()[buffer.readByte().toInt()]
-    )
+    override fun read(buffer: PacketBuffer, version: Int) = StructureTemplateDataExportRequestPacket(buffer.readString(), buffer.readInt3UnsignedY(), buffer.readStructureSettings(version), StructureTemplateDataExportRequestPacket.Operation.values()[buffer.readByte().toInt()])
 }

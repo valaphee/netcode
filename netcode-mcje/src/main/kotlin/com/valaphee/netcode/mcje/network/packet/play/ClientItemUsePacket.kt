@@ -20,6 +20,7 @@ import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.V1_19_0
 import com.valaphee.netcode.mcje.world.entity.player.Hand
 
 /**
@@ -31,7 +32,7 @@ class ClientItemUsePacket(
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(hand.ordinal)
-        if (version >= 759) buffer.writeVarInt(confirmId)
+        if (version >= V1_19_0) buffer.writeVarInt(confirmId)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.itemUse(this)
@@ -43,5 +44,5 @@ class ClientItemUsePacket(
  * @author Kevin Ludwig
  */
 object ClientItemUsePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientItemUsePacket(Hand.values()[buffer.readVarInt()], if (version >= 759) buffer.readVarInt() else 0)
+    override fun read(buffer: PacketBuffer, version: Int) = ClientItemUsePacket(Hand.values()[buffer.readVarInt()], if (version >= V1_19_0) buffer.readVarInt() else 0)
 }

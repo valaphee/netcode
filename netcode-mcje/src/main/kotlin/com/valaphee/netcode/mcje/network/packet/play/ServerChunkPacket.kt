@@ -23,6 +23,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.mcje.util.NibbleArray
 import com.valaphee.netcode.util.safeList
 import io.netty.buffer.ByteBufInputStream
@@ -57,7 +58,7 @@ class ServerChunkPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt(position.x)
         buffer.writeInt(position.y)
-        if (version >= 758) {
+        if (version >= V1_18_2) {
             buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, heightMap)
             buffer.writeByteArray(data)
             buffer.writeVarInt(blockEntities.size)
@@ -126,7 +127,7 @@ object ServerChunkPacketReader : PacketReader {
         val emptyBlockLight: BitSet?
         val skyLight: Array<NibbleArray>?
         val blockLight: Array<NibbleArray>?
-        if (version >= 758) {
+        if (version >= V1_18_2) {
             withSubChunks = null
             heightMap = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
             biomes = null

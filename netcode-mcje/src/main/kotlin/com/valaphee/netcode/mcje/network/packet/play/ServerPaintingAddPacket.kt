@@ -22,7 +22,6 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.Direction
-import com.valaphee.netcode.mcje.util.NamespacedKey
 import java.util.UUID
 
 /**
@@ -31,26 +30,26 @@ import java.util.UUID
 class ServerPaintingAddPacket(
     val entityId: Int,
     val entityUid: UUID,
-    val typeKey: NamespacedKey,
+    val entityTypeId: Int,
     val position: Int3,
     val direction: Direction
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
         buffer.writeUuid(entityUid)
-        buffer.writeVarInt(buffer.registries.motive.getId(typeKey))
+        buffer.writeVarInt(entityTypeId)
         buffer.writeInt3UnsignedY(position)
         buffer.writeByte(direction.horizontalIndex)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.paintingAdd(this)
 
-    override fun toString() = "ServerPaintingAddPacket(entityId=$entityId, entityUid=$entityUid, typeKey=$typeKey, position=$position, direction=$direction)"
+    override fun toString() = "ServerPaintingAddPacket(entityId=$entityId, entityUid=$entityUid, entityTypeId=$entityTypeId, position=$position, direction=$direction)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerPaintingAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerPaintingAddPacket(buffer.readVarInt(), buffer.readUuid(), checkNotNull(buffer.registries.motive[buffer.readVarInt()]), buffer.readInt3UnsignedY(), Direction.horizontals[buffer.readByte().toInt()])
+    override fun read(buffer: PacketBuffer, version: Int) = ServerPaintingAddPacket(buffer.readVarInt(), buffer.readUuid(), buffer.readVarInt(), buffer.readInt3UnsignedY(), Direction.horizontals[buffer.readByte().toInt()])
 }

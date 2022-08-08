@@ -20,7 +20,6 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.util.NamespacedKey
 import net.kyori.adventure.text.Component
 
 /**
@@ -28,23 +27,23 @@ import net.kyori.adventure.text.Component
  */
 class ServerWindowOpenPacket(
     val windowId: Int,
-    val typeKey: NamespacedKey,
+    val windowTypeId: Int,
     val title: Component
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(windowId)
-        buffer.writeVarInt(buffer.registries.windowTypes.getId(typeKey))
+        buffer.writeVarInt(windowTypeId)
         buffer.writeComponent(title)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.windowOpen(this)
 
-    override fun toString() = "ServerWindowOpenPacket(windowId=$windowId, typeKey=$typeKey, title=$title)"
+    override fun toString() = "ServerWindowOpenPacket(windowId=$windowId, windowTypeId=$windowTypeId, title=$title)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerWindowOpenPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowOpenPacket(buffer.readVarInt(), checkNotNull(buffer.registries.windowTypes[buffer.readVarInt()]), buffer.readComponent())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowOpenPacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readComponent())
 }

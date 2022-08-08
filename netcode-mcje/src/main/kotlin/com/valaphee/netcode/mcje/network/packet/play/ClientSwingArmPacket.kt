@@ -20,16 +20,17 @@ import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.V1_09_0
 import com.valaphee.netcode.mcje.world.entity.player.Hand
 
 /**
  * @author Kevin Ludwig
  */
 class ClientSwingArmPacket(
-    val hand: Hand
+    val hand: Hand?
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(hand.ordinal)
+        if (version >= V1_09_0) buffer.writeVarInt(hand!!.ordinal)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.swingArm(this)
@@ -41,5 +42,5 @@ class ClientSwingArmPacket(
  * @author Kevin Ludwig
  */
 object ClientSwingArmPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientSwingArmPacket(Hand.values()[buffer.readVarInt()])
+    override fun read(buffer: PacketBuffer, version: Int) = ClientSwingArmPacket(if (version >= V1_09_0) Hand.values()[buffer.readVarInt()] else null)
 }

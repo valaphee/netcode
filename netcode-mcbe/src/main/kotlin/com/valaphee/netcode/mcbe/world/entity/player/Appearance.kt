@@ -21,6 +21,9 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.network.V1_16_100
+import com.valaphee.netcode.mcbe.network.V1_16_210
+import com.valaphee.netcode.mcbe.network.V1_17_034
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -125,108 +128,62 @@ data class Appearance(
     ) : this(skinId, playFabId, skinResourcePatch, AppearanceImage(skinWidth, skinHeight, skinData), animations, AppearanceImage(capeWidth, capeHeight, capeData), geometryData, geometryDataEngineVersion, animationData, capeId, null, armSize, skinColor, personaPieces, personaPieceTints, premiumSkin, personaSkin, capeOnClassicSkin, false, false)
 }
 
-fun PacketBuffer.readAppearancePre390(): Appearance {
+fun PacketBuffer.readAppearance(version: Int): Appearance {
     val skinId = readString()
+    val playFabId = if (version >= V1_16_210) readString() else ""
     val skinResourcePatch = readByteArray()
     val skinImage = readAppearanceImage()
-    val animations = mutableListOf<Appearance.Animation>().apply { repeat(readIntLE()) { add(Appearance.Animation(readAppearanceImage(), Appearance.Animation.Type.values()[readIntLE()], buffer.readFloatLE())) } }
+    val animations = mutableListOf<Appearance.Animation>().apply { repeat(readIntLE()) { add(Appearance.Animation(readAppearanceImage(), Appearance.Animation.Type.values()[readIntLE()], buffer.readFloatLE(), if (version >= V1_16_210) Appearance.Animation.Expression.values()[buffer.readIntLE()] else Appearance.Animation.Expression.Linear)) } }
     val capeImage = readAppearanceImage()
     val geometryData = readByteArray()
+    val geometryDataEngineVersion = if (version >= V1_17_034) readString() else ""
     val animationData = readByteArray()
-    val premiumSkin = readBoolean()
-    val personaSkin = readBoolean()
-    val capeOnClassicSkin = readBoolean()
-    val capeId = readString()
-    val id = readString()
-    return Appearance(skinId, "", skinResourcePatch, skinImage, animations, capeImage, geometryData, "", animationData, capeId, id, "", "", emptyList(), emptyList(), premiumSkin, personaSkin, capeOnClassicSkin, false, false)
+    val capeId: String
+    val id: String
+    val armSize: String
+    val skinColor: String
+    val personaPieces: List<Appearance.PersonaPiece>
+    val personaPieceTints: List<Appearance.PersonaPieceTint>
+    val premiumSkin: Boolean
+    val personaSkin: Boolean
+    val capeOnClassicSkin: Boolean
+    val primaryUser: Boolean
+    if (version >= V1_17_034) {
+        capeId = readString()
+        id = readString()
+        armSize = readString()
+        skinColor = readString()
+        personaPieces = mutableListOf<Appearance.PersonaPiece>().apply { repeat(readIntLE()) { add(Appearance.PersonaPiece(readString(), readString(), readString(), readBoolean(), readString())) } }
+        personaPieceTints = mutableListOf<Appearance.PersonaPieceTint>().apply { repeat(readIntLE()) { add(Appearance.PersonaPieceTint(readString(), safeList(readIntLE()) { readString() })) } }
+        premiumSkin = readBoolean()
+        personaSkin = readBoolean()
+        capeOnClassicSkin = readBoolean()
+        primaryUser = readBoolean()
+    } else {
+        premiumSkin = readBoolean()
+        personaSkin = readBoolean()
+        capeOnClassicSkin = readBoolean()
+        primaryUser = readBoolean()
+        capeId = readString()
+        id = readString()
+        if (version >= V1_16_100) {
+            armSize = readString()
+            skinColor = readString()
+            personaPieces = mutableListOf<Appearance.PersonaPiece>().apply { repeat(readIntLE()) { add(Appearance.PersonaPiece(readString(), readString(), readString(), readBoolean(), readString())) } }
+            personaPieceTints = mutableListOf<Appearance.PersonaPieceTint>().apply { repeat(readIntLE()) { add(Appearance.PersonaPieceTint(readString(), safeList(readIntLE()) { readString() })) } }
+        } else {
+            armSize = ""
+            skinColor = ""
+            personaPieces = emptyList()
+            personaPieceTints = emptyList()
+        }
+    }
+    return Appearance(skinId, playFabId, skinResourcePatch, skinImage, animations, capeImage, geometryData, geometryDataEngineVersion, animationData, capeId, id, armSize, skinColor, personaPieces, personaPieceTints, premiumSkin, personaSkin, capeOnClassicSkin, primaryUser, false)
 }
 
-fun PacketBuffer.readAppearancePre419(): Appearance {
-    val skinId = readString()
-    val skinResourcePatch = readByteArray()
-    val skinImage = readAppearanceImage()
-    val animations = mutableListOf<Appearance.Animation>().apply { repeat(readIntLE()) { add(Appearance.Animation(readAppearanceImage(), Appearance.Animation.Type.values()[buffer.readIntLE()], buffer.readFloatLE())) } }
-    val capeImage = readAppearanceImage()
-    val geometryData = readByteArray()
-    val animationData = readByteArray()
-    val premiumSkin = readBoolean()
-    val personaSkin = readBoolean()
-    val capeOnClassicSkin = readBoolean()
-    val capeId = readString()
-    val id = readString()
-    val armSize = readString()
-    val skinColor = readString()
-    val personaPieces = mutableListOf<Appearance.PersonaPiece>().apply { repeat(readIntLE()) { add(Appearance.PersonaPiece(readString(), readString(), readString(), readBoolean(), readString())) } }
-    val personaPieceTints = mutableListOf<Appearance.PersonaPieceTint>().apply { repeat(readIntLE()) { add(Appearance.PersonaPieceTint(readString(), safeList(readIntLE()) { readString() })) } }
-    return Appearance(skinId, "", skinResourcePatch, skinImage, animations, capeImage, geometryData, "", animationData, capeId, id, armSize, skinColor, personaPieces, personaPieceTints, premiumSkin, personaSkin, capeOnClassicSkin, false, false)
-}
-
-fun PacketBuffer.readAppearancePre428(): Appearance {
-    val skinId = readString()
-    val skinResourcePatch = readByteArray()
-    val skinImage = readAppearanceImage()
-    val animations = mutableListOf<Appearance.Animation>().apply { repeat(readIntLE()) { add(Appearance.Animation(readAppearanceImage(), Appearance.Animation.Type.values()[buffer.readIntLE()], buffer.readFloatLE(), Appearance.Animation.Expression.values()[buffer.readIntLE()])) } }
-    val capeImage = readAppearanceImage()
-    val geometryData = readByteArray()
-    val animationData = readByteArray()
-    val premiumSkin = readBoolean()
-    val personaSkin = readBoolean()
-    val capeOnClassicSkin = readBoolean()
-    val capeId = readString()
-    val id = readString()
-    val armSize = readString()
-    val skinColor = readString()
-    val personaPieces = mutableListOf<Appearance.PersonaPiece>().apply { repeat(readIntLE()) { add(Appearance.PersonaPiece(readString(), readString(), readString(), readBoolean(), readString())) } }
-    val personaPieceTints = mutableListOf<Appearance.PersonaPieceTint>().apply { repeat(readIntLE()) { add(Appearance.PersonaPieceTint(readString(), safeList(readIntLE()) { readString() })) } }
-    return Appearance(skinId, "", skinResourcePatch, skinImage, animations, capeImage, geometryData, "", animationData, capeId, id, armSize, skinColor, personaPieces, personaPieceTints, premiumSkin, personaSkin, capeOnClassicSkin, false, false)
-}
-
-fun PacketBuffer.readAppearancePre465(): Appearance {
-    val skinId = readString()
-    val playFabId = readString()
-    val skinResourcePatch = readByteArray()
-    val skinImage = readAppearanceImage()
-    val animations = mutableListOf<Appearance.Animation>().apply { repeat(readIntLE()) { add(Appearance.Animation(readAppearanceImage(), Appearance.Animation.Type.values()[buffer.readIntLE()], buffer.readFloatLE(), Appearance.Animation.Expression.values()[buffer.readIntLE()])) } }
-    val capeImage = readAppearanceImage()
-    val geometryData = readByteArray()
-    val animationData = readByteArray()
-    val premiumSkin = readBoolean()
-    val personaSkin = readBoolean()
-    val capeOnClassicSkin = readBoolean()
-    val capeId = readString()
-    val id = readString()
-    val armSize = readString()
-    val skinColor = readString()
-    val personaPieces = mutableListOf<Appearance.PersonaPiece>().apply { repeat(readIntLE()) { add(Appearance.PersonaPiece(readString(), readString(), readString(), readBoolean(), readString())) } }
-    val personaPieceTints = mutableListOf<Appearance.PersonaPieceTint>().apply { repeat(readIntLE()) { add(Appearance.PersonaPieceTint(readString(), safeList(readIntLE()) { readString() })) } }
-    return Appearance(skinId, playFabId, skinResourcePatch, skinImage, animations, capeImage, geometryData, "", animationData, capeId, id, armSize, skinColor, personaPieces, personaPieceTints, premiumSkin, personaSkin, capeOnClassicSkin, false, false)
-}
-
-fun PacketBuffer.readAppearance() = Appearance(
-    readString(),
-    readString(),
-    readByteArray(),
-    readAppearanceImage(),
-    mutableListOf<Appearance.Animation>().apply { repeat(readIntLE()) { add(Appearance.Animation(readAppearanceImage(), Appearance.Animation.Type.values()[buffer.readIntLE()], buffer.readFloatLE(), Appearance.Animation.Expression.values()[buffer.readIntLE()])) } },
-    readAppearanceImage(),
-    readByteArray(),
-    readString(),
-    readByteArray(),
-    readString(),
-    readString(),
-    readString(),
-    readString(),
-    mutableListOf<Appearance.PersonaPiece>().apply { repeat(readIntLE()) { add(Appearance.PersonaPiece(readString(), readString(), readString(), readBoolean(), readString())) } },
-    mutableListOf<Appearance.PersonaPieceTint>().apply { repeat(readIntLE()) { add(Appearance.PersonaPieceTint(readString(), safeList(readIntLE()) { readString() })) } },
-    readBoolean(),
-    readBoolean(),
-    readBoolean(),
-    readBoolean(),
-    false
-)
-
-fun PacketBuffer.writeAppearancePre390(value: Appearance) {
+fun PacketBuffer.writeAppearance(value: Appearance, version: Int) {
     writeString(value.skinId)
+    if (version >= V1_16_210) writeString(value.playFabId ?: "")
     writeByteArray(value.skinResourcePatch)
     writeAppearanceImage(value.skinImage)
     writeIntLE(value.animations.size)
@@ -234,152 +191,60 @@ fun PacketBuffer.writeAppearancePre390(value: Appearance) {
         writeAppearanceImage(it.image)
         writeIntLE(it.type.ordinal)
         writeFloatLE(it.frames)
+        if (version >= V1_16_210) writeIntLE(it.expression.ordinal)
     }
     writeAppearanceImage(value.capeImage)
     writeByteArray(value.geometryData)
+    if (version >= V1_17_034) writeString(value.geometryDataEngineVersion ?: "")
     writeByteArray(value.animationData)
-    writeBoolean(value.premiumSkin)
-    writeBoolean(value.personaSkin)
-    writeBoolean(value.capeOnClassicSkin)
-    writeString(value.capeId)
-    writeString(value.id!!)
-}
-
-fun PacketBuffer.writeAppearancePre419(value: Appearance) {
-    writeAppearancePre390(value)
-    writeString(value.armSize)
-    writeString(value.skinColor)
-    writeIntLE(value.personaPieces.size)
-    value.personaPieces.forEach {
-        writeString(it.id)
-        writeString(it.type)
-        writeString(it.packId)
-        writeBoolean(it.default)
-        writeString(it.productId)
+    if (version >= V1_17_034) {
+        writeString(value.capeId)
+        writeString(value.id!!)
+        writeString(value.armSize)
+        writeString(value.skinColor)
+        writeIntLE(value.personaPieces.size)
+        value.personaPieces.forEach {
+            writeString(it.id)
+            writeString(it.type)
+            writeString(it.packId)
+            writeBoolean(it.default)
+            writeString(it.productId)
+        }
+        writeIntLE(value.personaPieceTints.size)
+        value.personaPieceTints.forEach {
+            writeString(it.type)
+            val personaPieceTintColors = it.colors
+            writeIntLE(personaPieceTintColors.size)
+            personaPieceTintColors.forEach { writeString(it) }
+        }
+        writeBoolean(value.premiumSkin)
+        writeBoolean(value.personaSkin)
+        writeBoolean(value.capeOnClassicSkin)
+        writeBoolean(value.primaryUser)
+    } else {
+        writeBoolean(value.premiumSkin)
+        writeBoolean(value.personaSkin)
+        writeBoolean(value.capeOnClassicSkin)
+        writeString(value.capeId)
+        writeString(value.id!!)
+        if (version >= V1_16_100) {
+            writeString(value.armSize)
+            writeString(value.skinColor)
+            writeIntLE(value.personaPieces.size)
+            value.personaPieces.forEach {
+                writeString(it.id)
+                writeString(it.type)
+                writeString(it.packId)
+                writeBoolean(it.default)
+                writeString(it.productId)
+            }
+            writeIntLE(value.personaPieceTints.size)
+            value.personaPieceTints.forEach {
+                writeString(it.type)
+                val personaPieceTintColors = it.colors
+                writeIntLE(personaPieceTintColors.size)
+                personaPieceTintColors.forEach { writeString(it) }
+            }
+        }
     }
-    writeIntLE(value.personaPieceTints.size)
-    value.personaPieceTints.forEach {
-        writeString(it.type)
-        val personaPieceTintColors = it.colors
-        writeIntLE(personaPieceTintColors.size)
-        personaPieceTintColors.forEach { writeString(it) }
-    }
-}
-
-fun PacketBuffer.writeAppearancePre428(value: Appearance) {
-    writeString(value.skinId)
-    writeByteArray(value.skinResourcePatch)
-    writeAppearanceImage(value.skinImage)
-    writeIntLE(value.animations.size)
-    value.animations.forEach {
-        writeAppearanceImage(it.image)
-        writeIntLE(it.type.ordinal)
-        writeFloatLE(it.frames)
-        writeIntLE(it.expression.ordinal)
-    }
-    writeAppearanceImage(value.capeImage)
-    writeByteArray(value.geometryData)
-    writeByteArray(value.animationData)
-    writeBoolean(value.premiumSkin)
-    writeBoolean(value.personaSkin)
-    writeBoolean(value.capeOnClassicSkin)
-    writeString(value.capeId)
-    writeString(value.id!!)
-    writeString(value.armSize)
-    writeString(value.skinColor)
-    writeIntLE(value.personaPieces.size)
-    value.personaPieces.forEach {
-        writeString(it.id)
-        writeString(it.type)
-        writeString(it.packId)
-        writeBoolean(it.default)
-        writeString(it.productId)
-    }
-    writeIntLE(value.personaPieceTints.size)
-    value.personaPieceTints.forEach {
-        writeString(it.type)
-        val personaPieceTintColors = it.colors
-        writeIntLE(personaPieceTintColors.size)
-        personaPieceTintColors.forEach { writeString(it) }
-    }
-}
-
-fun PacketBuffer.writeAppearancePre465(value: Appearance) {
-    writeString(value.skinId)
-    writeString(value.playFabId ?: "")
-    writeByteArray(value.skinResourcePatch)
-    writeAppearanceImage(value.skinImage)
-    writeIntLE(value.animations.size)
-    value.animations.forEach {
-        writeAppearanceImage(it.image)
-        writeIntLE(it.type.ordinal)
-        writeFloatLE(it.frames)
-        writeIntLE(it.expression.ordinal)
-    }
-    writeAppearanceImage(value.capeImage)
-    writeByteArray(value.geometryData)
-    writeByteArray(value.animationData)
-    writeBoolean(value.premiumSkin)
-    writeBoolean(value.personaSkin)
-    writeBoolean(value.capeOnClassicSkin)
-    writeString(value.capeId)
-    writeString(value.id!!)
-    writeString(value.armSize)
-    writeString(value.skinColor)
-    writeIntLE(value.personaPieces.size)
-    value.personaPieces.forEach {
-        writeString(it.id)
-        writeString(it.type)
-        writeString(it.packId)
-        writeBoolean(it.default)
-        writeString(it.productId)
-    }
-    writeIntLE(value.personaPieceTints.size)
-    value.personaPieceTints.forEach {
-        writeString(it.type)
-        val personaPieceTintColors = it.colors
-        writeIntLE(personaPieceTintColors.size)
-        personaPieceTintColors.forEach { writeString(it) }
-    }
-}
-
-fun PacketBuffer.writeAppearance(value: Appearance) {
-    writeString(value.skinId)
-    writeString(value.playFabId ?: "")
-    writeByteArray(value.skinResourcePatch)
-    writeAppearanceImage(value.skinImage)
-    writeIntLE(value.animations.size)
-    value.animations.forEach {
-        writeAppearanceImage(it.image)
-        writeIntLE(it.type.ordinal)
-        writeFloatLE(it.frames)
-        writeIntLE(it.expression.ordinal)
-    }
-    writeAppearanceImage(value.capeImage)
-    writeByteArray(value.geometryData)
-    writeString(value.geometryDataEngineVersion ?: "")
-    writeByteArray(value.animationData)
-    writeString(value.capeId)
-    writeString(value.id!!)
-    writeString(value.armSize)
-    writeString(value.skinColor)
-    writeIntLE(value.personaPieces.size)
-    value.personaPieces.forEach {
-        writeString(it.id)
-        writeString(it.type)
-        writeString(it.packId)
-        writeBoolean(it.default)
-        writeString(it.productId)
-    }
-    writeIntLE(value.personaPieceTints.size)
-    value.personaPieceTints.forEach {
-        writeString(it.type)
-        val personaPieceTintColors = it.colors
-        writeIntLE(personaPieceTintColors.size)
-        personaPieceTintColors.forEach { writeString(it) }
-    }
-    writeBoolean(value.premiumSkin)
-    writeBoolean(value.personaSkin)
-    writeBoolean(value.capeOnClassicSkin)
-    writeBoolean(value.primaryUser)
 }

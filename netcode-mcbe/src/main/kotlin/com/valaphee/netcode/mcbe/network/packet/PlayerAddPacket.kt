@@ -25,6 +25,8 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_221
+import com.valaphee.netcode.mcbe.network.V1_18_030
 import com.valaphee.netcode.mcbe.world.GameMode
 import com.valaphee.netcode.mcbe.world.WorldFlag
 import com.valaphee.netcode.mcbe.world.entity.Link
@@ -36,14 +38,12 @@ import com.valaphee.netcode.mcbe.world.entity.player.User
 import com.valaphee.netcode.mcbe.world.entity.player.readAbilityLayer
 import com.valaphee.netcode.mcbe.world.entity.player.writeAbilityLayer
 import com.valaphee.netcode.mcbe.world.entity.readLink
-import com.valaphee.netcode.mcbe.world.entity.readLinkPre407
 import com.valaphee.netcode.mcbe.world.entity.writeLink
-import com.valaphee.netcode.mcbe.world.entity.writeLinkPre407
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readItemStack
-import com.valaphee.netcode.mcbe.world.item.readItemStackPre431
+import com.valaphee.netcode.mcbe.world.item.readItemStackPreV1_16_221
 import com.valaphee.netcode.mcbe.world.item.writeItemStack
-import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStackPreV1_16_221
 import com.valaphee.netcode.util.safeList
 import java.util.UUID
 
@@ -86,8 +86,8 @@ class PlayerAddPacket(
         buffer.writeFloat3(velocity)
         buffer.writeFloat2(rotation)
         buffer.writeFloatLE(headRotationYaw)
-        if (version >= 431) buffer.writeItemStack(itemStackInHand) else buffer.writeItemStackPre431(itemStackInHand)
-        if (version >= 503) buffer.writeVarInt(gameMode!!.ordinal)
+        if (version >= V1_16_221) buffer.writeItemStack(itemStackInHand) else buffer.writeItemStackPreV1_16_221(itemStackInHand)
+        if (version >= V1_18_030) buffer.writeVarInt(gameMode!!.ordinal)
         metadata.writeToBuffer(buffer)
         if (version >= 534) {
             buffer.writeLongLE(uniqueEntityId)
@@ -106,7 +106,7 @@ class PlayerAddPacket(
             buffer.writeLongLE(uniqueEntityId)
         }
         buffer.writeVarUInt(links.size)
-        if (version >= 407) links.forEach(buffer::writeLink) else links.forEach(buffer::writeLinkPre407)
+        links.forEach { buffer.writeLink(it, version) }
         buffer.writeString(deviceId)
         buffer.writeIntLE(operatingSystem.ordinal - 1)
     }
@@ -130,8 +130,8 @@ object PlayerAddPacketReader : PacketReader {
         val velocity: Float3 = buffer.readFloat3()
         val rotation: Float2 = buffer.readFloat2()
         val headRotationYaw: Float = buffer.readFloatLE()
-        val itemStackInHand: ItemStack? = if (version >= 431) buffer.readItemStack() else buffer.readItemStackPre431()
-        val gameMode: GameMode? = if (version >= 503) GameMode.values()[buffer.readVarInt()] else null
+        val itemStackInHand: ItemStack? = if (version >= V1_16_221) buffer.readItemStack() else buffer.readItemStackPreV1_16_221()
+        val gameMode: GameMode? = if (version >= V1_18_030) GameMode.values()[buffer.readVarInt()] else null
         val metadata: Metadata = Metadata().apply { readFromBuffer(buffer) }
         val playerFlags: Set<PlayerFlag>?
         val commandPermission: CommandPermission
@@ -156,7 +156,7 @@ object PlayerAddPacketReader : PacketReader {
             customFlags = 0
             abilityLayers = safeList(buffer.readVarUInt()) { buffer.readAbilityLayer() }
         }
-        val links: List<Link> = safeList(buffer.readVarUInt()) { if (version >= 407) buffer.readLink() else buffer.readLinkPre407() }
+        val links: List<Link> = safeList(buffer.readVarUInt()) { buffer.readLink(version) }
         val deviceId: String = buffer.readString()
         val operatingSystem: User.OperatingSystem = User.OperatingSystem.values()[buffer.readIntLE() + 1]
         return PlayerAddPacket(userId, userName, uniqueEntityId, runtimeEntityId, platformChatId, position, velocity, rotation, headRotationYaw, itemStackInHand, gameMode, metadata, playerFlags, commandPermission, worldFlags, playerPermission, customFlags, abilityLayers, links, deviceId, operatingSystem)

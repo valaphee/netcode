@@ -20,17 +20,10 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.network.V1_14_060
 import com.valaphee.netcode.mcbe.world.entity.player.Appearance
 import com.valaphee.netcode.mcbe.world.entity.player.readAppearance
-import com.valaphee.netcode.mcbe.world.entity.player.readAppearancePre390
-import com.valaphee.netcode.mcbe.world.entity.player.readAppearancePre419
-import com.valaphee.netcode.mcbe.world.entity.player.readAppearancePre428
-import com.valaphee.netcode.mcbe.world.entity.player.readAppearancePre465
 import com.valaphee.netcode.mcbe.world.entity.player.writeAppearance
-import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre390
-import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre419
-import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre428
-import com.valaphee.netcode.mcbe.world.entity.player.writeAppearancePre465
 import java.util.UUID
 
 /**
@@ -46,10 +39,10 @@ class AppearancePacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeUuid(userId)
-        if (version >= 465) buffer.writeAppearance(appearance) else if (version >= 428) buffer.writeAppearancePre465(appearance) else if (version >= 419) buffer.writeAppearancePre428(appearance) else if (version >= 390) buffer.writeAppearancePre419(appearance) else buffer.writeAppearancePre390(appearance)
+        buffer.writeAppearance(appearance, version)
         buffer.writeString(newName)
         buffer.writeString(oldName)
-        if (version >= 390) buffer.writeBoolean(appearance.trusted)
+        if (version >= V1_14_060) buffer.writeBoolean(appearance.trusted)
     }
 
     override fun handle(handler: PacketHandler) = handler.appearance(this)
@@ -61,10 +54,5 @@ class AppearancePacket(
  * @author Kevin Ludwig
  */
 object AppearancePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = AppearancePacket(
-        buffer.readUuid(),
-        if (version >= 465) buffer.readAppearance() else if (version >= 428) buffer.readAppearancePre465() else if (version >= 419) buffer.readAppearancePre428() else if (version >= 390) buffer.readAppearancePre419() else buffer.readAppearancePre390(),
-        buffer.readString(),
-        buffer.readString()
-    ).also { if (version >= 390) it.appearance.trusted = buffer.readBoolean() }
+    override fun read(buffer: PacketBuffer, version: Int) = AppearancePacket(buffer.readUuid(), buffer.readAppearance(version), buffer.readString(), buffer.readString()).also { if (version >= V1_14_060) it.appearance.trusted = buffer.readBoolean() }
 }

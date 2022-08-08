@@ -37,7 +37,7 @@ class ServerParticlePacket(
     val count: Int
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt(buffer.registries.particleTypes.getId(data.type))
+        buffer.writeInt(data.typeId)
         buffer.writeBoolean(longDistance)
         buffer.writeDouble3(position)
         buffer.writeFloat3(offset)
@@ -56,13 +56,13 @@ class ServerParticlePacket(
  */
 object ServerParticlePacketReader : PacketReader {
     override fun read(buffer: PacketBuffer, version: Int): ServerParticlePacket {
-        val type = checkNotNull(buffer.registries.particleTypes[buffer.readInt()])
+        val typeId = buffer.readInt()
         val longDistance = buffer.readBoolean()
         val position = buffer.readDouble3()
         val offset = buffer.readFloat3()
         val speed = buffer.readFloat()
         val count = buffer.readInt()
-        val data = buffer.readParticleData(type)
+        val data = buffer.readParticleData(typeId)
         return ServerParticlePacket(data, longDistance, position, offset, speed, count)
     }
 }

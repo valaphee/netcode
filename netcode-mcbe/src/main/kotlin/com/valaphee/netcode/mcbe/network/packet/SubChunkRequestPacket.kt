@@ -23,6 +23,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_18_010
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -39,7 +40,7 @@ class SubChunkRequestPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(dimension)
         buffer.writeInt3(position)
-        if (version >= 486) {
+        if (version >= V1_18_010) {
             buffer.writeIntLE(requests.size)
             requests.forEach {
                 buffer.writeByte(it.x)
@@ -58,5 +59,5 @@ class SubChunkRequestPacket(
  * @author Kevin Ludwig
  */
 object SubChunkRequestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = SubChunkRequestPacket(buffer.readVarInt(), buffer.readInt3(), if (version >= 486) safeList(buffer.readIntLE()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) } else listOf(Int3.Zero))
+    override fun read(buffer: PacketBuffer, version: Int) = SubChunkRequestPacket(buffer.readVarInt(), buffer.readInt3(), if (version >= V1_18_010) safeList(buffer.readIntLE()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) } else listOf(Int3.Zero))
 }

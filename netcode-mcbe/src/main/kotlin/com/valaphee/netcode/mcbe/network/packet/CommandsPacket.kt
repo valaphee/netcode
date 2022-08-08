@@ -17,10 +17,10 @@
 package com.valaphee.netcode.mcbe.network.packet
 
 import com.valaphee.netcode.mcbe.command.Command
+import com.valaphee.netcode.mcbe.command.CommandPermission
 import com.valaphee.netcode.mcbe.command.Enumeration
 import com.valaphee.netcode.mcbe.command.EnumerationConstraint
 import com.valaphee.netcode.mcbe.command.Parameter
-import com.valaphee.netcode.mcbe.command.CommandPermission
 import com.valaphee.netcode.mcbe.command.readEnumeration
 import com.valaphee.netcode.mcbe.command.readEnumerationConstraint
 import com.valaphee.netcode.mcbe.command.writeEnumeration
@@ -31,6 +31,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_17_011
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -84,7 +85,7 @@ class CommandsPacket(
         commands.forEach { command ->
             buffer.writeString(command.name)
             buffer.writeString(command.description)
-            if (version >= 448) buffer.writeShortLEFlags(command.flags) else buffer.writeByteFlags(command.flags)
+            if (version >= V1_17_011) buffer.writeShortLEFlags(command.flags) else buffer.writeByteFlags(command.flags)
             buffer.writeByte(command.permission.ordinal)
             buffer.writeIntLE(enumerationsMap.values.indexOf(command.aliases))
             buffer.writeVarUInt(command.overloads.size)
@@ -138,7 +139,7 @@ object CommandsPacketReader : PacketReader {
         val commandBuilders = safeList(buffer.readVarUInt()) {
             val name = buffer.readString()
             val description = buffer.readString()
-            val flags: Set<Command.Flag> = if (version >= 448) buffer.readShortLEFlags() else buffer.readByteFlags()
+            val flags: Set<Command.Flag> = if (version >= V1_17_011) buffer.readShortLEFlags() else buffer.readByteFlags()
             val permission = CommandPermission.values()[buffer.readByte().toInt()]
             val aliasesIndex = buffer.readIntLE()
             val overloadBuilders = safeList(buffer.readVarUInt()) {

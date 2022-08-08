@@ -26,18 +26,18 @@ import com.valaphee.netcode.mcje.network.PacketReader
  */
 class ClientWindowConfirmPacket(
     val windowId: Int,
-    val id: Int,
+    val confirmId: Int,
     val accepted: Boolean
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
-        buffer.writeShort(id)
+        buffer.writeShort(confirmId)
         buffer.writeBoolean(accepted)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.windowConfirm(this)
 
-    override fun toString() = "ClientWindowConfirmPacket(windowId=$windowId, id=$id, accepted=$accepted)"
+    override fun toString() = "ClientWindowConfirmPacket(windowId=$windowId, confirmId=$confirmId, accepted=$accepted)"
 }
 
 /**

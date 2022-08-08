@@ -20,28 +20,27 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
  * @author Kevin Ludwig
  */
 class ServerItemCooldownPacket(
-    val itemKey: NamespacedKey,
+    val itemId: Int,
     val cooldown: Int
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(buffer.registries.items.getId(itemKey))
+        buffer.writeVarInt(itemId)
         buffer.writeVarInt(cooldown)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.itemCooldown(this)
 
-    override fun toString() = "ServerItemCooldownPacket(itemKey=$itemKey, cooldown=$cooldown)"
+    override fun toString() = "ServerItemCooldownPacket(itemId=$itemId, cooldown=$cooldown)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ServerItemCooldownPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerItemCooldownPacket(checkNotNull(buffer.registries.items[buffer.readVarInt()]), buffer.readVarInt())
+    override fun read(buffer: PacketBuffer, version: Int) = ServerItemCooldownPacket(buffer.readVarInt(), buffer.readVarInt())
 }

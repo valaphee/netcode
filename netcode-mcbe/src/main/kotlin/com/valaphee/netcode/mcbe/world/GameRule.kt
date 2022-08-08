@@ -17,6 +17,7 @@
 package com.valaphee.netcode.mcbe.world
 
 import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.network.V1_17_002
 import kotlin.reflect.jvm.jvmName
 
 /**
@@ -28,19 +29,9 @@ data class GameRule<T>(
     val value: T
 )
 
-fun PacketBuffer.readGameRulePre440(): GameRule<*> {
+fun PacketBuffer.readGameRule(version: Int): GameRule<*> {
     val name = readString()
-    return when (val type = readVarUInt()) {
-        1 -> GameRule(name, true, readBoolean())
-        2 -> GameRule(name, true, readVarUInt())
-        3 -> GameRule(name, true, readFloatLE())
-        else -> error("No such gamerule type: $type (name: $name)")
-    }
-}
-
-fun PacketBuffer.readGameRule(): GameRule<*> {
-    val name = readString()
-    val editable = readBoolean()
+    val editable = if (version >= V1_17_002) readBoolean() else true
     return when (val type = readVarUInt()) {
         1 -> GameRule(name, editable, readBoolean())
         2 -> GameRule(name, editable, readVarUInt())
@@ -49,28 +40,9 @@ fun PacketBuffer.readGameRule(): GameRule<*> {
     }
 }
 
-fun PacketBuffer.writeGameRulePre440(value: GameRule<*>) {
+fun PacketBuffer.writeGameRule(value: GameRule<*>, version: Int) {
     writeString(value.name)
-    when (value.value) {
-        is Boolean -> {
-            writeVarUInt(1)
-            writeBoolean(value.value)
-        }
-        is Int -> {
-            writeVarUInt(2)
-            writeVarUInt(value.value)
-        }
-        is Float -> {
-            writeVarUInt(3)
-            writeFloatLE(value.value)
-        }
-        else -> error("Unsupported gamerule type: ${value.value!!::class.jvmName}")
-    }
-}
-
-fun PacketBuffer.writeGameRule(value: GameRule<*>) {
-    writeString(value.name)
-    writeBoolean(value.editable)
+    if (version >= V1_17_002) writeBoolean(value.editable)
     when (value.value) {
         is Boolean -> {
             writeVarUInt(1)

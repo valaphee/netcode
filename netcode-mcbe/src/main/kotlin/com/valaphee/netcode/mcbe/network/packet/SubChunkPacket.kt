@@ -23,6 +23,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_18_010
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -86,7 +87,7 @@ class SubChunkPacket(
     override val id get() = 0xAE
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        if (version >= 486) {
+        if (version >= V1_18_010) {
             buffer.writeBoolean(cache)
             buffer.writeVarInt(dimension)
             buffer.writeInt3(position)
@@ -125,7 +126,7 @@ class SubChunkPacket(
  * @author Kevin Ludwig
  */
 object SubChunkPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = if (version >= 486) {
+    override fun read(buffer: PacketBuffer, version: Int) = if (version >= V1_18_010) {
         val cache = buffer.readBoolean()
         val dimension = buffer.readVarInt()
         val position = buffer.readInt3()

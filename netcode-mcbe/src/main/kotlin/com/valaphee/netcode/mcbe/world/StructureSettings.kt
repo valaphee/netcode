@@ -19,6 +19,8 @@ package com.valaphee.netcode.mcbe.world
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.network.V1_17_002
+import com.valaphee.netcode.mcbe.network.V1_18_030
 
 /**
  * @author Kevin Ludwig
@@ -52,54 +54,22 @@ data class StructureSettings(
     }
 }
 
-fun PacketBuffer.readStructureSettingsPre440() = StructureSettings(readString(), readBoolean(), readBoolean(), true, readInt3UnsignedY(), readInt3UnsignedY(), readVarLong(), StructureSettings.Rotation.values()[readUnsignedByte().toInt()], StructureSettings.Mirror.values()[readUnsignedByte().toInt()], StructureSettings.AnimationMode.None, 0.0f, readFloatLE(), readIntLE(), readFloat3())
+fun PacketBuffer.readStructureSettings(version: Int) = StructureSettings(readString(), readBoolean(), readBoolean(), if (version >= V1_18_030) readBoolean() else false, readInt3UnsignedY(), readInt3UnsignedY(), readVarLong(), StructureSettings.Rotation.values()[readUnsignedByte().toInt()], StructureSettings.Mirror.values()[readUnsignedByte().toInt()], if (version >= V1_17_002) StructureSettings.AnimationMode.values()[readUnsignedByte().toInt()] else StructureSettings.AnimationMode.None, if (version >= V1_17_002) readFloatLE() else 0.0f, readFloatLE(), readIntLE(), readFloat3())
 
-fun PacketBuffer.readStructureSettingsPre503() = StructureSettings(readString(), readBoolean(), readBoolean(), true, readInt3UnsignedY(), readInt3UnsignedY(), readVarLong(), StructureSettings.Rotation.values()[readUnsignedByte().toInt()], StructureSettings.Mirror.values()[readUnsignedByte().toInt()], StructureSettings.AnimationMode.values()[readUnsignedByte().toInt()], readFloatLE(), readFloatLE(), readIntLE(), readFloat3())
-
-fun PacketBuffer.readStructureSettings() = StructureSettings(readString(), readBoolean(), readBoolean(), readBoolean(), readInt3UnsignedY(), readInt3UnsignedY(), readVarLong(), StructureSettings.Rotation.values()[readUnsignedByte().toInt()], StructureSettings.Mirror.values()[readUnsignedByte().toInt()], StructureSettings.AnimationMode.values()[readUnsignedByte().toInt()], readFloatLE(), readFloatLE(), readIntLE(), readFloat3())
-
-fun PacketBuffer.writeStructureSettingsPre440(value: StructureSettings) {
+fun PacketBuffer.writeStructureSettings(value: StructureSettings, version: Int) {
     writeString(value.paletteName)
     writeBoolean(value.ignoringEntities)
     writeBoolean(value.ignoringBlocks)
+    if (version >= V1_18_030) writeBoolean(value.disableTicking)
     writeInt3UnsignedY(value.size)
     writeInt3UnsignedY(value.offset)
     writeVarLong(value.lastEditedByEntityId)
     writeByte(value.rotation.ordinal)
     writeByte(value.mirror.ordinal)
-    writeFloatLE(value.integrityValue)
-    writeIntLE(value.integritySeed)
-    writeFloat3(value.pivot)
-}
-
-fun PacketBuffer.writeStructureSettingsPre503(value: StructureSettings) {
-    writeString(value.paletteName)
-    writeBoolean(value.ignoringEntities)
-    writeBoolean(value.ignoringBlocks)
-    writeInt3UnsignedY(value.size)
-    writeInt3UnsignedY(value.offset)
-    writeVarLong(value.lastEditedByEntityId)
-    writeByte(value.rotation.ordinal)
-    writeByte(value.mirror.ordinal)
-    writeByte(value.animationMode.ordinal)
-    writeFloatLE(value.animationTime)
-    writeFloatLE(value.integrityValue)
-    writeIntLE(value.integritySeed)
-    writeFloat3(value.pivot)
-}
-
-fun PacketBuffer.writeStructureSettings(value: StructureSettings) {
-    writeString(value.paletteName)
-    writeBoolean(value.ignoringEntities)
-    writeBoolean(value.ignoringBlocks)
-    writeBoolean(value.disableTicking)
-    writeInt3UnsignedY(value.size)
-    writeInt3UnsignedY(value.offset)
-    writeVarLong(value.lastEditedByEntityId)
-    writeByte(value.rotation.ordinal)
-    writeByte(value.mirror.ordinal)
-    writeByte(value.animationMode.ordinal)
-    writeFloatLE(value.animationTime)
+    if (version >= V1_17_002) {
+        writeByte(value.animationMode.ordinal)
+        writeFloatLE(value.animationTime)
+    }
     writeFloatLE(value.integrityValue)
     writeIntLE(value.integritySeed)
     writeFloat3(value.pivot)

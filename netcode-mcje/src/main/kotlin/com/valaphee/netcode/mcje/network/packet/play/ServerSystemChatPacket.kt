@@ -20,6 +20,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_19_0
 import net.kyori.adventure.text.Component
 import java.util.UUID
 
@@ -38,7 +39,7 @@ class ServerSystemChatPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeComponent(message)
         buffer.writeByte(type.ordinal)
-        if (version < 759) buffer.writeUuid(userId ?: UUID(0, 0))
+        if (version < V1_19_0) buffer.writeUuid(userId ?: UUID(0, 0))
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.systemChat(this)
@@ -50,5 +51,5 @@ class ServerSystemChatPacket(
  * @author Kevin Ludwig
  */
 object ServerSystemChatPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerSystemChatPacket(buffer.readComponent(), ServerSystemChatPacket.Type.values()[buffer.readByte().toInt()], if (version < 759) buffer.readUuid() else null)
+    override fun read(buffer: PacketBuffer, version: Int) = ServerSystemChatPacket(buffer.readComponent(), ServerSystemChatPacket.Type.values()[buffer.readByte().toInt()], if (version < V1_19_0) buffer.readUuid() else null)
 }

@@ -38,10 +38,10 @@ import com.valaphee.netcode.mcbe.world.entity.player.PlayerPermission
 import com.valaphee.netcode.mcbe.world.item.Item
 import com.valaphee.netcode.mcbe.world.readExperiment
 import com.valaphee.netcode.mcbe.world.readGameRule
-import com.valaphee.netcode.mcbe.world.readGameRulePre440
+import com.valaphee.netcode.mcbe.world.readGameRulePreV1_17_002
 import com.valaphee.netcode.mcbe.world.writeExperiment
 import com.valaphee.netcode.mcbe.world.writeGameRule
-import com.valaphee.netcode.mcbe.world.writeGameRulePre440
+import com.valaphee.netcode.mcbe.world.writeGameRulePreV1_17_002
 import com.valaphee.netcode.util.safeList
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
@@ -150,7 +150,7 @@ class WorldPacket(
         buffer.writeVarInt(gameMode.ordinal)
         buffer.writeFloat3(position)
         buffer.writeFloat2(rotation)
-        if (version >= 503) buffer.writeLongLE(seed) else buffer.writeVarInt(seed.toInt())
+        if (version >= V1_18_030) buffer.writeLongLE(seed) else buffer.writeVarInt(seed.toInt())
         if (version >= 407) {
             buffer.writeShortLE(biomeType.ordinal)
             buffer.writeString(biomeName)
@@ -182,8 +182,8 @@ class WorldPacket(
         buffer.writeBoolean(commandsEnabled)
         buffer.writeBoolean(resourcePacksRequired)
         buffer.writeVarUInt(gameRules.size)
-        if (version >= 440) gameRules.forEach(buffer::writeGameRule) else gameRules.forEach(buffer::writeGameRulePre440)
-        if (version >= 419) {
+        if (version >= V1_17_002) gameRules.forEach(buffer::writeGameRule) else gameRules.forEach(buffer::writeGameRulePreV1_17_002)
+        if (version >= V1_16_100) {
             experiments.let {
                 buffer.writeIntLE(it.size)
                 it.forEach(buffer::writeExperiment)
@@ -205,26 +205,26 @@ class WorldPacket(
         if (version >= 407) {
             buffer.writeIntLE(limitedWorldRadius)
             buffer.writeIntLE(limitedWorldHeight)
-            if (version >= 465) {
+            if (version >= V1_17_034) {
                 buffer.writeString("")
                 buffer.writeString("")
             }
             buffer.writeBoolean(v2Nether)
             buffer.writeBoolean(experimentalGameplay)
-            if (version >= 419 && experimentalGameplay) buffer.writeBoolean(true)
+            if (version >= V1_16_100 && experimentalGameplay) buffer.writeBoolean(true)
         }
         buffer.writeString(worldId)
         buffer.writeString(worldName)
         buffer.writeString(premiumWorldTemplateId)
         buffer.writeBoolean(trial)
-        if (version >= 419) buffer.writeVarInt(movementAuthoritative.ordinal) else buffer.writeBoolean(movementAuthoritative == AuthoritativeMovement.Server)
-        if (version >= 428) {
+        if (version >= V1_16_100) buffer.writeVarInt(movementAuthoritative.ordinal) else buffer.writeBoolean(movementAuthoritative == AuthoritativeMovement.Server)
+        if (version >= V1_16_210) {
             buffer.writeVarInt(movementRewindHistory)
             buffer.writeBoolean(blockBreakingServerAuthoritative)
         }
         buffer.writeLongLE(tick)
         buffer.writeVarInt(enchantmentSeed)
-        if (version >= 419) {
+        if (version >= V1_16_100) {
             buffer.writeVarUInt(blocks!!.size)
             val nbtObjectWriter = buffer.nbtVarIntObjectMapper.writerFor(Block::class.java).withAttribute("version", version)
             blocks.forEach {
@@ -236,13 +236,13 @@ class WorldPacket(
         items.forEach { (id, item) ->
             buffer.writeString(item.key)
             buffer.writeShortLE(id)
-            if (version >= 419) buffer.writeBoolean(item.componentBased)
+            if (version >= V1_16_100) buffer.writeBoolean(item.componentBased)
         }
         buffer.writeString(multiplayerCorrelationId)
         if (version >= 407) buffer.writeBoolean(inventoriesServerAuthoritative)
-        if (version >= 440) buffer.writeString(engineVersion)
+        if (version >= V1_17_002) buffer.writeString(engineVersion)
         if (version >= 475) buffer.writeLongLE(blocksChecksum)
-        if (version >= 527) {
+        if (version >= V1_19_000) {
             buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, null)
             buffer.writeUuid(worldTemplateId)
         }
@@ -263,7 +263,7 @@ object WorldPacketReader : PacketReader {
         val gameMode = GameMode.values()[buffer.readVarInt()]
         val position = buffer.readFloat3()
         val rotation = buffer.readFloat2()
-        val seed = if (version >= 503) buffer.readLongLE() else buffer.readVarInt().toLong()
+        val seed = if (version >= V1_18_030) buffer.readLongLE() else buffer.readVarInt().toLong()
         val biomeType: WorldPacket.BiomeType
         val biomeName: String
         if (version >= 407) {
@@ -305,10 +305,10 @@ object WorldPacketReader : PacketReader {
         val platformBroadcastMode = GamePublishMode.values()[buffer.readVarInt()]
         val commandsEnabled = buffer.readBoolean()
         val resourcePacksRequired = buffer.readBoolean()
-        val gameRules = if (version >= 440) safeList(buffer.readVarUInt()) { buffer.readGameRule() } else safeList(buffer.readVarUInt()) { buffer.readGameRulePre440() }
+        val gameRules = if (version >= V1_17_002) safeList(buffer.readVarUInt()) { buffer.readGameRule() } else safeList(buffer.readVarUInt()) { buffer.readGameRulePreV1_17_002() }
         val experiments: List<Experiment>
         val experimentsPreviouslyToggled: Boolean
-        if (version >= 419) {
+        if (version >= V1_16_100) {
             experiments = safeList(buffer.readIntLE()) { buffer.readExperiment() }
             experimentsPreviouslyToggled = buffer.readBoolean()
         } else {
@@ -335,11 +335,11 @@ object WorldPacketReader : PacketReader {
             limitedWorldRadius = buffer.readIntLE()
             limitedWorldHeight = buffer.readIntLE()
             v2Nether = buffer.readBoolean()
-            if (version >= 465) {
+            if (version >= V1_17_034) {
                 buffer.readString()
                 buffer.readString()
             }
-            experimentalGameplay = if (version >= 419) if (buffer.readBoolean()) buffer.readBoolean() else false else buffer.readBoolean()
+            experimentalGameplay = if (version >= V1_16_100) if (buffer.readBoolean()) buffer.readBoolean() else false else buffer.readBoolean()
         } else {
             limitedWorldRadius = 0
             limitedWorldHeight = 0
@@ -351,13 +351,13 @@ object WorldPacketReader : PacketReader {
         val premiumWorldTemplateId = buffer.readString()
         val trial = buffer.readBoolean()
         val movementAuthoritative = when {
-            version >= 419 -> WorldPacket.AuthoritativeMovement.values()[buffer.readVarInt()]
+            version >= V1_16_100 -> WorldPacket.AuthoritativeMovement.values()[buffer.readVarInt()]
             buffer.readBoolean() -> WorldPacket.AuthoritativeMovement.Server
             else -> WorldPacket.AuthoritativeMovement.Client
         }
         val movementRewindHistory: Int
         val blockBreakingServerAuthoritative: Boolean
-        if (version >= 428) {
+        if (version >= V1_16_210) {
             movementRewindHistory = buffer.readVarInt()
             blockBreakingServerAuthoritative = buffer.readBoolean()
         } else {
@@ -368,7 +368,7 @@ object WorldPacketReader : PacketReader {
         val enchantmentSeed = buffer.readVarInt()
         val blocksData: Any?
         val blocks: List<Block>?
-        if (version >= 419) {
+        if (version >= V1_16_100) {
             blocksData = null
             val nbtObjectReader = buffer.nbtVarIntObjectMapper/*.readerFor(Block::class.java).withAttribute("version", version)*/
             blocks = safeList(buffer.readVarUInt()) {
@@ -385,15 +385,15 @@ object WorldPacketReader : PacketReader {
             repeat(buffer.readVarUInt()) {
                 val key = buffer.readString()
                 val id = buffer.readShortLE()
-                this[id.toInt()] = Item(key, version >= 419 && buffer.readBoolean())
+                this[id.toInt()] = Item(key, version >= V1_16_100 && buffer.readBoolean())
             }
         }
         val multiplayerCorrelationId = buffer.readString()
         val inventoriesServerAuthoritative = buffer.readBoolean()
-        val engineVersion = if (version >= 440) buffer.readString() else ""
+        val engineVersion = if (version >= V1_17_002) buffer.readString() else ""
         val blocksChecksum = if (version >= 475) buffer.readLongLE() else 0
         val worldTemplateId: UUID
-        if (version >= 527) {
+        if (version >= V1_19_000) {
             buffer.nbtVarIntObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
             worldTemplateId = buffer.readUuid()
         } else {

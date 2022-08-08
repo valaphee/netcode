@@ -24,13 +24,12 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_19_010
 import com.valaphee.netcode.mcbe.world.entity.Link
 import com.valaphee.netcode.mcbe.world.entity.attribute.Attributes
 import com.valaphee.netcode.mcbe.world.entity.metadata.Metadata
 import com.valaphee.netcode.mcbe.world.entity.readLink
-import com.valaphee.netcode.mcbe.world.entity.readLinkPre407
 import com.valaphee.netcode.mcbe.world.entity.writeLink
-import com.valaphee.netcode.mcbe.world.entity.writeLinkPre407
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -60,11 +59,11 @@ class EntityAddPacket(
         buffer.writeFloat3(velocity)
         buffer.writeFloat2(rotation)
         buffer.writeFloatLE(headRotationYaw)
-        if (version >= 534) buffer.writeFloatLE(bodyRotation)
+        if (version >= V1_19_010) buffer.writeFloatLE(bodyRotation)
         attributes.writeToBuffer(buffer, false)
         metadata.writeToBuffer(buffer)
         buffer.writeVarUInt(links.size)
-        if (version >= 407) links.forEach(buffer::writeLink) else links.forEach(buffer::writeLinkPre407)
+        links.forEach { buffer.writeLink(it, version) }
     }
 
     override fun handle(handler: PacketHandler) = handler.entityAdd(this)
@@ -84,9 +83,9 @@ object EntityAddPacketReader : PacketReader {
         buffer.readFloat3(),
         buffer.readFloat2(),
         buffer.readFloatLE(),
-        if (version >= 534) buffer.readFloatLE() else 0.0f,
+        if (version >= V1_19_010) buffer.readFloatLE() else 0.0f,
         Attributes().apply { readFromBuffer(buffer, false) },
         Metadata().apply { readFromBuffer(buffer) },
-        safeList(buffer.readVarUInt()) { if (version >= 407) buffer.readLink() else buffer.readLinkPre407() }
+        safeList(buffer.readVarUInt()) { buffer.readLink(version) }
     )
 }

@@ -20,6 +20,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_19_0
 import com.valaphee.netcode.mcje.world.GameMode
 import com.valaphee.netcode.mcje.world.entity.player.GameProfile
 import com.valaphee.netcode.util.safeList
@@ -73,7 +74,7 @@ class ServerPlayerListPacket(
                         buffer.writeBoolean(true)
                         buffer.writeComponent(it)
                     } ?: buffer.writeBoolean(false)
-                    if (version >= 759) it.signature?.let {
+                    if (version >= V1_19_0) it.signature?.let {
                         buffer.writeBoolean(true)
                         buffer.writeLong(it.time)
                         buffer.writeByteArray(it.publicKey)
@@ -106,7 +107,7 @@ object ServerPlayerListPacketReader : PacketReader {
         val action = ServerPlayerListPacket.Action.values()[buffer.readVarInt()]
         val entries = safeList(buffer.readVarInt()) {
             when (action) {
-                ServerPlayerListPacket.Action.Add -> ServerPlayerListPacket.Entry(GameProfile(buffer.readUuid(), buffer.readString(16), safeList(buffer.readVarInt()) { GameProfile.Property(buffer.readString(), buffer.readString(), if (buffer.readBoolean()) buffer.readString() else null) }), checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())), buffer.readVarInt(), if (buffer.readBoolean()) buffer.readComponent() else null, if (version >= 759 && buffer.readBoolean()) ServerPlayerListPacket.Entry.Signature(buffer.readLong(), buffer.readByteArray(), buffer.readByteArray()) else null)
+                ServerPlayerListPacket.Action.Add -> ServerPlayerListPacket.Entry(GameProfile(buffer.readUuid(), buffer.readString(16), safeList(buffer.readVarInt()) { GameProfile.Property(buffer.readString(), buffer.readString(), if (buffer.readBoolean()) buffer.readString() else null) }), checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())), buffer.readVarInt(), if (buffer.readBoolean()) buffer.readComponent() else null, if (version >= V1_19_0 && buffer.readBoolean()) ServerPlayerListPacket.Entry.Signature(buffer.readLong(), buffer.readByteArray(), buffer.readByteArray()) else null)
                 ServerPlayerListPacket.Action.UpdateGameMode -> ServerPlayerListPacket.Entry(GameProfile(buffer.readUuid(), null), gameMode = checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())))
                 ServerPlayerListPacket.Action.UpdateLatency -> ServerPlayerListPacket.Entry(GameProfile(buffer.readUuid(), null), latency = buffer.readVarInt())
                 ServerPlayerListPacket.Action.UpdateCustomName -> ServerPlayerListPacket.Entry(GameProfile(buffer.readUuid(), null), customName = if (buffer.readBoolean()) buffer.readComponent() else null)

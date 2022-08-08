@@ -21,11 +21,16 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_201
+import com.valaphee.netcode.mcbe.network.V1_16_210
+import com.valaphee.netcode.mcbe.network.V1_16_221
+import com.valaphee.netcode.mcbe.network.V1_17_011
+import com.valaphee.netcode.mcbe.network.V1_17_041
 import com.valaphee.netcode.mcbe.util.Registry
 import com.valaphee.netcode.mcbe.world.inventory.WindowSlotType
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.writeItemStackInstance
-import com.valaphee.netcode.mcbe.world.item.writeItemStackPre431
+import com.valaphee.netcode.mcbe.world.item.writeItemStackPreV1_16_221
 
 /**
  * @author Kevin Ludwig
@@ -39,7 +44,7 @@ class InventoryRequestPacket(
             Move, Place, Swap, Drop, Destroy, Consume, Create, LabTableCombine, BeaconPayment, MineBlock, CraftRecipe, CraftRecipeAuto, CraftCreative, CraftRecipeOptional, CraftRepairAndDisenchant, CraftLoom, CraftNonImplementedDeprecated, CraftResultsDeprecated;
 
             companion object {
-                internal val registryPre422 = Registry<Type>().apply {
+                internal val registryPreV1_16_201 = Registry<Type>().apply {
                     this[0] = Move
                     this[1] = Place
                     this[2] = Swap
@@ -55,7 +60,7 @@ class InventoryRequestPacket(
                     this[12] = CraftNonImplementedDeprecated
                     this[13] = CraftResultsDeprecated
                 }
-                internal val registryPre428 = Registry<Type>().apply {
+                internal val registryPreV1_16_210 = Registry<Type>().apply {
                     this[0] = Move
                     this[1] = Place
                     this[2] = Swap
@@ -72,7 +77,7 @@ class InventoryRequestPacket(
                     this[13] = CraftNonImplementedDeprecated
                     this[14] = CraftResultsDeprecated
                 }
-                internal val registryPre471 = Registry<Type>().apply {
+                internal val registryPreV1_17_041 = Registry<Type>().apply {
                     this[0] = Move
                     this[1] = Place
                     this[2] = Swap
@@ -256,7 +261,7 @@ class InventoryRequestPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarUInt(requests.size)
-        val actionTypes = if (version >= 471) Action.Type.registry else if (version >= 428) Action.Type.registryPre471 else if (version >= 422) Action.Type.registryPre428 else Action.Type.registryPre422
+        val actionTypes = if (version >= V1_17_041) Action.Type.registry else if (version >= V1_16_210) Action.Type.registryPreV1_17_041 else if (version >= V1_16_201) Action.Type.registryPreV1_16_210 else Action.Type.registryPreV1_16_201
         requests.forEach {
             buffer.writeVarInt(it.requestId)
             buffer.writeVarUInt(it.actions.size)
@@ -323,7 +328,7 @@ class InventoryRequestPacket(
                     }
                     is CraftRecipeAutoAction -> {
                         buffer.writeVarUInt(it.recipeNetId)
-                        if (version >= 448) buffer.writeByte(it.count)
+                        if (version >= V1_17_011) buffer.writeByte(it.count)
                     }
                     is CraftCreativeAction -> buffer.writeVarUInt(it.netId)
                     is CraftRecipeOptionalAction -> {
@@ -337,12 +342,12 @@ class InventoryRequestPacket(
                     is CraftLoomAction -> buffer.writeString(it.patternId)
                     is CraftResultsDeprecatedAction -> {
                         buffer.writeVarUInt(it.result.size)
-                        it.result.forEach { if (version >= 431) buffer.writeItemStackInstance(it) else buffer.writeItemStackPre431(it) }
+                        it.result.forEach { if (version >= V1_16_221) buffer.writeItemStackInstance(it) else buffer.writeItemStackPreV1_16_221(it) }
                         buffer.writeByte(it.count)
                     }
                 }
             }
-            if (version >= 422) {
+            if (version >= V1_16_201) {
                 buffer.writeVarUInt(it.filteredTexts.size)
                 it.filteredTexts.forEach { buffer.writeString(it) }
             }

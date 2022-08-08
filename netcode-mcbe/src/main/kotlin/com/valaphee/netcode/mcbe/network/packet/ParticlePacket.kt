@@ -24,6 +24,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_18_030
 import com.valaphee.netcode.mcbe.world.Dimension
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
@@ -51,7 +52,7 @@ class ParticlePacket(
         buffer.writeVarLong(uniqueEntityId)
         buffer.writeFloat3(position)
         buffer.writeString(particleName)
-        if (version >= 503) if (data != null) {
+        if (version >= V1_18_030) if (data != null) {
             buffer.writeBoolean(true)
             buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
         } else buffer.writeBoolean(false)
@@ -71,6 +72,6 @@ object ParticlePacketReader : PacketReader {
         buffer.readVarLong(),
         buffer.readFloat3(),
         buffer.readString(),
-        if (version >= 503 && buffer.readBoolean()) buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)) else null
+        if (version >= V1_18_030 && buffer.readBoolean()) buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)) else null
     )
 }

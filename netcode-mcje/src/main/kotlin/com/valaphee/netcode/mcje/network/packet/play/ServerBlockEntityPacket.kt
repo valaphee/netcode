@@ -22,6 +22,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_18_2
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -75,7 +76,7 @@ class ServerBlockEntityPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
-        if (version >= 758) buffer.writeVarInt(type.ordinal) else buffer.writeByte(type.ordinal)
+        if (version >= V1_18_2) buffer.writeVarInt(type.ordinal) else buffer.writeByte(type.ordinal)
         buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
