@@ -61,7 +61,7 @@ class ServerWorldPacket(
     data class Registries(
         @get:JsonProperty("minecraft:dimension_type") val dimensions: Registry<Dimension>,
         @get:JsonProperty("minecraft:worldgen/biome") val biomes: Registry<Biome>,
-        @get:JsonProperty("minecraft:chat_type") val chatTypes: Registry<ChatType>
+        @get:JsonProperty("minecraft:chat_type") val chatTypes: Registry<ChatType>?
     ) {
         data class Registry<T>(
             @get:JsonProperty("type") val key: String,

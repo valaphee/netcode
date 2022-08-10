@@ -21,6 +21,7 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.util.Direction
+import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.util.Registry
 import com.valaphee.netcode.mcje.world.ParticleData
 import com.valaphee.netcode.mcje.world.item.ItemStack
@@ -226,6 +227,16 @@ interface MetadataType<T> {
             }
         }
 
+        val DimensionAndInt3UnsignedY = object : MetadataType<Pair<NamespacedKey, Int3>> {
+            override fun read(buffer: PacketBuffer) = buffer.readNamespacedKey() to buffer.readInt3UnsignedY()
+
+            override fun write(buffer: PacketBuffer, value: Any?) {
+                val (dimension, position) = value as Pair<NamespacedKey, Int3>
+                buffer.writeNamespacedKey(dimension)
+                buffer.writeInt3UnsignedY(position)
+            }
+        }
+
         val PaintingVariant = object : MetadataType<Int> {
             override fun read(buffer: PacketBuffer) = buffer.readVarInt()
 
@@ -266,7 +277,8 @@ interface MetadataType<T> {
             this[18] = Pose
             this[19] = CatVariant
             this[20] = FrogVariant
-            this[21] = PaintingVariant
+            this[21] = DimensionAndInt3UnsignedY
+            this[22] = PaintingVariant
         }
     }
 }
