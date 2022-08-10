@@ -16,6 +16,7 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
+import com.valaphee.foundry.math.Int2
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
@@ -23,6 +24,8 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_19_020
+import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig
@@ -30,23 +33,31 @@ import com.valaphee.netcode.mcbe.network.Restriction
 @Restrict(Restriction.ToClient)
 class ChunkPublishPacket(
     val position: Int3,
-    val radius: Int
+    val radius: Int,
+    val chunks: List<Int2>
 ) : Packet() {
     override val id get() = 0x79
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3(position)
         buffer.writeVarUInt(radius)
+        if (version >= V1_19_020) {
+            buffer.writeIntLE(chunks.size)
+            chunks.forEach {
+                buffer.writeVarInt(it.x)
+                buffer.writeVarInt(it.y)
+            }
+        }
     }
 
     override fun handle(handler: PacketHandler) = handler.chunkPublish(this)
 
-    override fun toString() = "ChunkPublishPacket(position=$position, radius=$radius)"
+    override fun toString() = "ChunkPublishPacket(position=$position, radius=$radius, chunks=$chunks)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object ChunkPublishPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ChunkPublishPacket(buffer.readInt3(), buffer.readVarUInt())
+    override fun read(buffer: PacketBuffer, version: Int) = ChunkPublishPacket(buffer.readInt3(), buffer.readVarUInt(), if (version >= V1_19_020) safeList(buffer.readIntLE()) { Int2(buffer.readVarInt(), buffer.readVarInt()) } else emptyList())
 }

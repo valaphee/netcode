@@ -16,7 +16,6 @@
 
 package com.valaphee.netcode.mcbe.network
 
-import com.valaphee.netcode.mcbe.latestProtocolVersion
 import com.valaphee.netcode.mcbe.network.packet.AbilitiesPacketReader
 import com.valaphee.netcode.mcbe.network.packet.AbilityPacketReader
 import com.valaphee.netcode.mcbe.network.packet.AdventureSettingsPacketReader
@@ -202,7 +201,7 @@ import kotlin.reflect.full.findAnnotation
 class PacketCodec(
     var wrapBuffer: (ByteBuf) -> PacketBuffer,
     private val client: Boolean,
-    var version: Int = latestProtocolVersion
+    var version: Int
 ) : ByteToMessageCodec<Packet>() {
     public override fun encode(context: ChannelHandlerContext?, message: Packet, out: ByteBuf) {
         wrapBuffer(out).apply {

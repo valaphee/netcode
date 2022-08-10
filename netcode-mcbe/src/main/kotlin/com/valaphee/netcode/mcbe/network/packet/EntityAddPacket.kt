@@ -60,7 +60,7 @@ class EntityAddPacket(
         buffer.writeFloat2(rotation)
         buffer.writeFloatLE(headRotationYaw)
         if (version >= V1_19_010) buffer.writeFloatLE(bodyRotation)
-        attributes.writeToBuffer(buffer, false)
+        attributes.writeToBuffer(buffer, version, true)
         metadata.writeToBuffer(buffer)
         buffer.writeVarUInt(links.size)
         links.forEach { buffer.writeLink(it, version) }
@@ -84,7 +84,7 @@ object EntityAddPacketReader : PacketReader {
         buffer.readFloat2(),
         buffer.readFloatLE(),
         if (version >= V1_19_010) buffer.readFloatLE() else 0.0f,
-        Attributes().apply { readFromBuffer(buffer, false) },
+        Attributes().apply { readFromBuffer(buffer, version, true) },
         Metadata().apply { readFromBuffer(buffer) },
         safeList(buffer.readVarUInt()) { buffer.readLink(version) }
     )

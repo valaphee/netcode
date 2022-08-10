@@ -38,7 +38,7 @@ class EntityAttributesPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarULong(runtimeEntityId)
-        attributes.writeToBuffer(buffer, true)
+        attributes.writeToBuffer(buffer, version, false)
         if (version >= V1_16_201) buffer.writeVarULong(tick)
     }
 
@@ -51,5 +51,5 @@ class EntityAttributesPacket(
  * @author Kevin Ludwig
  */
 object EntityAttributesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityAttributesPacket(buffer.readVarULong(), Attributes().apply { readFromBuffer(buffer, true) }, if (version >= V1_16_201) buffer.readVarULong() else 0)
+    override fun read(buffer: PacketBuffer, version: Int) = EntityAttributesPacket(buffer.readVarULong(), Attributes().apply { readFromBuffer(buffer, version, false) }, if (version >= V1_16_201) buffer.readVarULong() else 0)
 }

@@ -17,6 +17,8 @@
 package com.valaphee.netcode.mcbe.world.entity.attribute
 
 import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.mcbe.network.V1_19_020
+import com.valaphee.netcode.util.safeList
 import java.util.EnumMap
 
 /**
@@ -35,40 +37,52 @@ class Attributes(
 
     val modified get() = attributes.values.any { it.modified }
 
-    fun readFromBuffer(buffer: PacketBuffer, withDefault: Boolean) {
+    fun readFromBuffer(buffer: PacketBuffer, version: Int, initial: Boolean) {
         repeat(buffer.readVarUInt()) {
-            if (withDefault) {
+            if (initial) {
+                val field = AttributeField.byKey(buffer.readString())
+                val minimum = buffer.readFloatLE()
+                val value = buffer.readFloatLE()
+                val maximum = buffer.readFloatLE()
+                attributes[field] = AttributeValue(field, minimum, maximum, value, emptyList())
+            } else {
                 val minimum = buffer.readFloatLE()
                 val maximum = buffer.readFloatLE()
                 val value = buffer.readFloatLE()
                 val defaultValue = buffer.readFloatLE()
                 val field = AttributeField.byKey(buffer.readString())
-                attributes[field] = AttributeValue(field, minimum, maximum, defaultValue, value)
-            } else {
-                val field = AttributeField.byKey(buffer.readString())
-                val minimum = buffer.readFloatLE()
-                val value = buffer.readFloatLE()
-                val maximum = buffer.readFloatLE()
-                attributes[field] = AttributeValue(field, minimum, maximum, value)
+                val modifiers = if (version >= V1_19_020) safeList(buffer.readVarUInt()) { AttributeValueModifier(buffer.readString(), buffer.readString(), buffer.readFloatLE(), AttributeValueModifier.Operation.values()[buffer.readIntLE()], buffer.readIntLE(), buffer.readBoolean()) } else emptyList()
+                attributes[field] = AttributeValue(field, minimum, maximum, defaultValue, modifiers, value)
             }
         }
     }
 
-    fun writeToBuffer(buffer: PacketBuffer, withDefault: Boolean) {
+    fun writeToBuffer(buffer: PacketBuffer, version: Int, initial: Boolean) {
         val modifiedAttributes = attributes.filter { it.value.modified }
         buffer.writeVarUInt(modifiedAttributes.count())
         modifiedAttributes.forEach { (field, value) ->
-            if (withDefault) {
+            if (initial) {
+                buffer.writeString(field.key)
+                buffer.writeFloatLE(value.minimum)
+                buffer.writeFloatLE(value.value)
+                buffer.writeFloatLE(value.maximum)
+            } else {
                 buffer.writeFloatLE(value.minimum)
                 buffer.writeFloatLE(value.maximum)
                 buffer.writeFloatLE(value.value)
                 buffer.writeFloatLE(value.defaultValue)
                 buffer.writeString(field.key)
-            } else {
-                buffer.writeString(field.key)
-                buffer.writeFloatLE(value.minimum)
-                buffer.writeFloatLE(value.value)
-                buffer.writeFloatLE(value.maximum)
+                if (version >= V1_19_020) {
+                    buffer.writeVarUInt(value.modifiers.size)
+                    value.modifiers.forEach {
+                        buffer.writeString(it.id)
+                        buffer.writeString(it.name)
+                        buffer.writeFloatLE(it.value)
+                        buffer.writeIntLE(it.operation.ordinal)
+                        buffer.writeIntLE(it.operand)
+                        buffer.writeBoolean(it.serializable)
+                    }
+                }
             }
             value.flagAsSaved()
         }

@@ -21,29 +21,45 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
+import com.valaphee.netcode.mcbe.network.V1_19_020
 
 /**
  * @author Kevin Ludwig
  */
 class FormResponsePacket(
     val formId: Int,
-    val data: Any?
+    val formData: Any?,
+    val cancelReason: CancelReason?
 ) : Packet() {
+    enum class CancelReason {
+        UserClosed,
+        UserBusy
+    }
+
     override val id get() = 0x65
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarUInt(formId)
-        buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(data))
+        if (version >= V1_19_020) {
+            formData?.let {
+                buffer.writeBoolean(true)
+                buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(formData))
+            } ?: buffer.writeBoolean(false)
+            cancelReason?.let {
+                buffer.writeBoolean(true)
+                buffer.writeByte(cancelReason.ordinal)
+            } ?: buffer.writeBoolean(false)
+        } else buffer.writeString(buffer.jsonObjectMapper.writeValueAsString(formData))
     }
 
     override fun handle(handler: PacketHandler) = handler.formResponse(this)
 
-    override fun toString() = "FormResponsePacket(formId=$formId, data=$data)"
+    override fun toString() = "FormResponsePacket(formId=$formId, formData=$formData, cancelReason=$cancelReason)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object FormResponsePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = FormResponsePacket(buffer.readVarUInt(), buffer.jsonObjectMapper.readValue(buffer.readString()))
+    override fun read(buffer: PacketBuffer, version: Int) = FormResponsePacket(buffer.readVarUInt(), if (version < V1_19_020 || buffer.readBoolean()) buffer.jsonObjectMapper.readValue<Any>(buffer.readString()) else null, if (version >= V1_19_020 && buffer.readBoolean()) FormResponsePacket.CancelReason.values()[buffer.readUnsignedByte().toInt()] else null)
 }

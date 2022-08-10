@@ -16,11 +16,13 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
+import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_19_020
 import com.valaphee.netcode.mcbe.world.Dimension
 import com.valaphee.netcode.mcbe.world.map.Decoration
 import com.valaphee.netcode.mcbe.world.map.TrackedObject
@@ -33,6 +35,7 @@ class MapPacket(
     val mapId: Long,
     val dimension: Dimension,
     val locked: Boolean,
+    val origin: Int3,
     val trackedUniqueEntityIds: LongArray?,
     val scale: Int = 0,
     val trackedObjects: List<TrackedObject>?,
@@ -51,6 +54,7 @@ class MapPacket(
         buffer.writeVarUInt(flagsValue)
         buffer.writeByte(dimension.ordinal)
         buffer.writeBoolean(locked)
+        if (version >= V1_19_020) buffer.writeInt3UnsignedY(origin)
         trackedUniqueEntityIds?.let {
             if (it.isNotEmpty()) {
                 buffer.writeVarUInt(it.size)
@@ -94,7 +98,7 @@ class MapPacket(
 
     override fun handle(handler: PacketHandler) = handler.map(this)
 
-    override fun toString() = "MapPacket(mapId=$mapId, dimension=$dimension, locked=$locked, trackedUniqueEntityIds=${trackedUniqueEntityIds?.contentToString()}, scale=$scale, trackedObjects=$trackedObjects, decorations=$decorations, width=$width, height=$height, offsetX=$offsetX, offsetY=$offsetY, data=<omitted>)"
+    override fun toString() = "MapPacket(mapId=$mapId, dimension=$dimension, locked=$locked, origin=$origin trackedUniqueEntityIds=${trackedUniqueEntityIds?.contentToString()}, scale=$scale, trackedObjects=$trackedObjects, decorations=$decorations, width=$width, height=$height, offsetX=$offsetX, offsetY=$offsetY, data=<omitted>)"
 
     companion object {
         internal const val flagHasColor = 1 shl 1

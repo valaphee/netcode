@@ -24,7 +24,8 @@ class AttributeValue internal constructor(
     minimum: Float,
     maximum: Float,
     defaultValue: Float,
-    value: Float = defaultValue
+    modifiers: List<AttributeValueModifier>,
+    value: Float = defaultValue,
 ) {
     var minimum = minimum
         set(value) {
@@ -37,6 +38,11 @@ class AttributeValue internal constructor(
             modified = true
         }
     var defaultValue = defaultValue
+        set(value) {
+            field = value
+            modified = true
+        }
+    var modifiers = modifiers
         set(value) {
             field = value
             modified = true

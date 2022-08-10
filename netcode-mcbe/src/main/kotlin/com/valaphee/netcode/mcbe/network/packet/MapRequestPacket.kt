@@ -22,28 +22,39 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_19_020
+import com.valaphee.netcode.util.safeList
 
 /**
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToServer)
 class MapRequestPacket(
-    val mapId: Long
+    val mapId: Long,
+    val pixels: List<Pair<Int, Int>>
 ) : Packet() {
     override val id get() = 0x44
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarLong(mapId)
+
+        if (version >= V1_19_020) {
+            buffer.writeIntLE(pixels.size)
+            pixels.forEach {
+                buffer.writeIntLE(it.first)
+                buffer.writeShortLE(it.second)
+            }
+        }
     }
 
     override fun handle(handler: PacketHandler) = handler.mapRequest(this)
 
-    override fun toString() = "MapRequestPacket(mapId=$mapId)"
+    override fun toString() = "MapRequestPacket(mapId=$mapId, pixels=$pixels)"
 }
 
 /**
  * @author Kevin Ludwig
  */
 object MapRequestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = MapRequestPacket(buffer.readVarLong())
+    override fun read(buffer: PacketBuffer, version: Int) = MapRequestPacket(buffer.readVarLong(), if (version >= V1_19_020) safeList(buffer.readIntLE()) { buffer.readIntLE() to buffer.readUnsignedShortLE() } else emptyList())
 }

@@ -28,6 +28,16 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_010
+import com.valaphee.netcode.mcbe.network.V1_16_100
+import com.valaphee.netcode.mcbe.network.V1_16_210
+import com.valaphee.netcode.mcbe.network.V1_17_002
+import com.valaphee.netcode.mcbe.network.V1_17_034
+import com.valaphee.netcode.mcbe.network.V1_18_002
+import com.valaphee.netcode.mcbe.network.V1_18_030
+import com.valaphee.netcode.mcbe.network.V1_19_000
+import com.valaphee.netcode.mcbe.network.V1_19_010
+import com.valaphee.netcode.mcbe.network.V1_19_020
 import com.valaphee.netcode.mcbe.world.Difficulty
 import com.valaphee.netcode.mcbe.world.Dimension
 import com.valaphee.netcode.mcbe.world.Experiment
@@ -38,10 +48,7 @@ import com.valaphee.netcode.mcbe.world.entity.player.PlayerPermission
 import com.valaphee.netcode.mcbe.world.item.Item
 import com.valaphee.netcode.mcbe.world.readExperiment
 import com.valaphee.netcode.mcbe.world.readGameRule
-import com.valaphee.netcode.mcbe.world.readGameRulePreV1_17_002
 import com.valaphee.netcode.mcbe.world.writeExperiment
-import com.valaphee.netcode.mcbe.world.writeGameRule
-import com.valaphee.netcode.mcbe.world.writeGameRulePreV1_17_002
 import com.valaphee.netcode.util.safeList
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
@@ -104,6 +111,8 @@ class WorldPacket(
     val limitedWorldHeight: Int,
     val v2Nether: Boolean,
     val experimentalGameplay: Boolean,
+    val chatRestrictionLevel: ChatRestrictionLevel,
+    val disablePlayerInteraction: Boolean,
     val worldId: String,
     val worldName: String,
     val premiumWorldTemplateId: String,
@@ -120,7 +129,7 @@ class WorldPacket(
     val inventoriesServerAuthoritative: Boolean,
     val engineVersion: String,
     val blocksChecksum: Long,
-    val worldTemplateId: UUID
+    val worldTemplateId: UUID?
 ) : Packet() {
     enum class BiomeType {
         Default, UserDefined
@@ -138,6 +147,10 @@ class WorldPacket(
         None, EverywhereExceptChina, China
     }
 
+    enum class ChatRestrictionLevel {
+        None, Dropped, Disabled
+    }
+
     enum class AuthoritativeMovement {
         Client, Server, ServerWithRewind
     }
@@ -151,7 +164,7 @@ class WorldPacket(
         buffer.writeFloat3(position)
         buffer.writeFloat2(rotation)
         if (version >= V1_18_030) buffer.writeLongLE(seed) else buffer.writeVarInt(seed.toInt())
-        if (version >= 407) {
+        if (version >= V1_16_010) {
             buffer.writeShortLE(biomeType.ordinal)
             buffer.writeString(biomeName)
         }
@@ -161,11 +174,11 @@ class WorldPacket(
         buffer.writeVarInt(difficulty.ordinal)
         buffer.writeInt3UnsignedY(defaultSpawn)
         buffer.writeBoolean(achievementsDisabled)
-        if (version >= 534) buffer.writeBoolean(worldEditor)
+        if (version >= V1_19_010) buffer.writeBoolean(worldEditor)
         buffer.writeVarInt(time)
-        if (version >= 407) {
+        if (version >= V1_16_010) {
             buffer.writeVarInt(educationEditionOffer.ordinal)
-            if (version < 419) buffer.writeByte(educationModeId)
+            if (version < V1_16_100) buffer.writeByte(educationModeId)
             buffer.writeBoolean(educationFeaturesEnabled)
             buffer.writeString(educationProductId)
         } else {
@@ -182,7 +195,7 @@ class WorldPacket(
         buffer.writeBoolean(commandsEnabled)
         buffer.writeBoolean(resourcePacksRequired)
         buffer.writeVarUInt(gameRules.size)
-        if (version >= V1_17_002) gameRules.forEach(buffer::writeGameRule) else gameRules.forEach(buffer::writeGameRulePreV1_17_002)
+        gameRules.forEach { buffer.readGameRule(version) }
         if (version >= V1_16_100) {
             experiments.let {
                 buffer.writeIntLE(it.size)
@@ -202,16 +215,22 @@ class WorldPacket(
         buffer.writeBoolean(worldTemplateOptionLocked)
         buffer.writeBoolean(onlySpawningV1Villagers)
         buffer.writeString(this.version)
-        if (version >= 407) {
+        if (version >= V1_16_010) {
             buffer.writeIntLE(limitedWorldRadius)
             buffer.writeIntLE(limitedWorldHeight)
-            if (version >= V1_17_034) {
-                buffer.writeString("")
-                buffer.writeString("")
-            }
             buffer.writeBoolean(v2Nether)
+        }
+        if (version >= V1_17_034) {
+            buffer.writeString("")
+            buffer.writeString("")
+        }
+        if (version >= V1_16_010) {
             buffer.writeBoolean(experimentalGameplay)
             if (version >= V1_16_100 && experimentalGameplay) buffer.writeBoolean(true)
+        }
+        if (version >= V1_19_020) {
+            buffer.writeByte(chatRestrictionLevel.ordinal)
+            buffer.writeBoolean(disablePlayerInteraction)
         }
         buffer.writeString(worldId)
         buffer.writeString(worldName)
@@ -239,12 +258,12 @@ class WorldPacket(
             if (version >= V1_16_100) buffer.writeBoolean(item.componentBased)
         }
         buffer.writeString(multiplayerCorrelationId)
-        if (version >= 407) buffer.writeBoolean(inventoriesServerAuthoritative)
+        if (version >= V1_16_010) buffer.writeBoolean(inventoriesServerAuthoritative)
         if (version >= V1_17_002) buffer.writeString(engineVersion)
-        if (version >= 475) buffer.writeLongLE(blocksChecksum)
+        if (version >= V1_18_002) buffer.writeLongLE(blocksChecksum)
         if (version >= V1_19_000) {
             buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, null)
-            buffer.writeUuid(worldTemplateId)
+            buffer.writeUuid(worldTemplateId!!)
         }
     }
 
@@ -266,7 +285,7 @@ object WorldPacketReader : PacketReader {
         val seed = if (version >= V1_18_030) buffer.readLongLE() else buffer.readVarInt().toLong()
         val biomeType: WorldPacket.BiomeType
         val biomeName: String
-        if (version >= 407) {
+        if (version >= V1_16_010) {
             biomeType = WorldPacket.BiomeType.values()[buffer.readShortLE().toInt()]
             biomeName = buffer.readString()
         } else {
@@ -285,9 +304,9 @@ object WorldPacketReader : PacketReader {
         val educationModeId: Int
         val educationFeaturesEnabled: Boolean
         val educationProductId: String?
-        if (version >= 407) {
+        if (version >= V1_16_010) {
             educationEditionOffer = WorldPacket.EducationEditionOffer.values()[buffer.readVarInt()]
-            educationModeId = if (version < 419) buffer.readByte().toInt() else 0
+            educationModeId = if (version < V1_16_100) buffer.readByte().toInt() else 0
             educationFeaturesEnabled = buffer.readBoolean()
             educationProductId = buffer.readString()
         } else {
@@ -305,7 +324,7 @@ object WorldPacketReader : PacketReader {
         val platformBroadcastMode = GamePublishMode.values()[buffer.readVarInt()]
         val commandsEnabled = buffer.readBoolean()
         val resourcePacksRequired = buffer.readBoolean()
-        val gameRules = if (version >= V1_17_002) safeList(buffer.readVarUInt()) { buffer.readGameRule() } else safeList(buffer.readVarUInt()) { buffer.readGameRulePreV1_17_002() }
+        val gameRules = safeList(buffer.readVarUInt()) { buffer.readGameRule(version) }
         val experiments: List<Experiment>
         val experimentsPreviouslyToggled: Boolean
         if (version >= V1_16_100) {
@@ -330,23 +349,30 @@ object WorldPacketReader : PacketReader {
         val limitedWorldRadius: Int
         val limitedWorldHeight: Int
         val v2Nether: Boolean
-        val experimentalGameplay: Boolean
-        if (version >= 407) {
+        if (version >= V1_16_010) {
             limitedWorldRadius = buffer.readIntLE()
             limitedWorldHeight = buffer.readIntLE()
             v2Nether = buffer.readBoolean()
-            if (version >= V1_17_034) {
-                buffer.readString()
-                buffer.readString()
-            }
-            experimentalGameplay = if (version >= V1_16_100) if (buffer.readBoolean()) buffer.readBoolean() else false else buffer.readBoolean()
         } else {
             limitedWorldRadius = 0
             limitedWorldHeight = 0
             v2Nether = false
-            experimentalGameplay = false
         }
-        val levelId = buffer.readString()
+        if (version >= V1_17_034) {
+            buffer.readString()
+            buffer.readString()
+        }
+        val experimentalGameplay = if (version >= V1_16_010) if (version >= V1_16_100) if (buffer.readBoolean()) buffer.readBoolean() else false else buffer.readBoolean() else false
+        val chatRestrictionLevel: WorldPacket.ChatRestrictionLevel
+        val disablePlayerInteraction: Boolean
+        if (version >= V1_19_020) {
+            chatRestrictionLevel = WorldPacket.ChatRestrictionLevel.values()[buffer.readUnsignedByte().toInt()]
+            disablePlayerInteraction = buffer.readBoolean()
+        } else {
+            chatRestrictionLevel = WorldPacket.ChatRestrictionLevel.None
+            disablePlayerInteraction = false
+        }
+        val worldId = buffer.readString()
         val worldName = buffer.readString()
         val premiumWorldTemplateId = buffer.readString()
         val trial = buffer.readBoolean()
@@ -391,15 +417,14 @@ object WorldPacketReader : PacketReader {
         val multiplayerCorrelationId = buffer.readString()
         val inventoriesServerAuthoritative = buffer.readBoolean()
         val engineVersion = if (version >= V1_17_002) buffer.readString() else ""
-        val blocksChecksum = if (version >= 475) buffer.readLongLE() else 0
-        val worldTemplateId: UUID
+        val blocksChecksum = if (version >= V1_18_002) buffer.readLongLE() else 0
+        val worldTemplateId: UUID?
         if (version >= V1_19_000) {
             buffer.nbtVarIntObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
             worldTemplateId = buffer.readUuid()
         } else {
-
-            worldTemplateId = UUID.randomUUID()
+            worldTemplateId = null
         }
-        return WorldPacket(uniqueEntityId, runtimeEntityId, gameMode, position, rotation, seed, biomeType, biomeName, dimension, generatorId, defaultGameMode, difficulty, defaultSpawn, achievementsDisabled, worldEditor, time, educationEditionOffer, educationModeId, educationFeaturesEnabled, educationProductId, rainLevel, thunderLevel, platformLockedContentConfirmed, multiplayerGame, broadcastingToLan, xboxLiveBroadcastMode, platformBroadcastMode, commandsEnabled, resourcePacksRequired, gameRules, experiments, experimentsPreviouslyToggled, bonusChestEnabled, startingWithMap, defaultPlayerPermission, serverChunkTickRange, behaviorPackLocked, resourcePackLocked, fromLockedWorldTemplate, usingMsaGamertagsOnly, fromWorldTemplate, worldTemplateOptionLocked, onlySpawningV1Villagers, version0, limitedWorldRadius, limitedWorldHeight, v2Nether, experimentalGameplay, levelId, worldName, premiumWorldTemplateId, trial, movementAuthoritative, movementRewindHistory, blockBreakingServerAuthoritative, tick, enchantmentSeed, blocksData, blocks, items, multiplayerCorrelationId, inventoriesServerAuthoritative, engineVersion, blocksChecksum, worldTemplateId)
+        return WorldPacket(uniqueEntityId, runtimeEntityId, gameMode, position, rotation, seed, biomeType, biomeName, dimension, generatorId, defaultGameMode, difficulty, defaultSpawn, achievementsDisabled, worldEditor, time, educationEditionOffer, educationModeId, educationFeaturesEnabled, educationProductId, rainLevel, thunderLevel, platformLockedContentConfirmed, multiplayerGame, broadcastingToLan, xboxLiveBroadcastMode, platformBroadcastMode, commandsEnabled, resourcePacksRequired, gameRules, experiments, experimentsPreviouslyToggled, bonusChestEnabled, startingWithMap, defaultPlayerPermission, serverChunkTickRange, behaviorPackLocked, resourcePackLocked, fromLockedWorldTemplate, usingMsaGamertagsOnly, fromWorldTemplate, worldTemplateOptionLocked, onlySpawningV1Villagers, version0, limitedWorldRadius, limitedWorldHeight, v2Nether, experimentalGameplay, chatRestrictionLevel, disablePlayerInteraction, worldId, worldName, premiumWorldTemplateId, trial, movementAuthoritative, movementRewindHistory, blockBreakingServerAuthoritative, tick, enchantmentSeed, blocksData, blocks, items, multiplayerCorrelationId, inventoriesServerAuthoritative, engineVersion, blocksChecksum, worldTemplateId)
     }
 }

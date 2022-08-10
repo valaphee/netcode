@@ -16,9 +16,6 @@
 
 package com.valaphee.netcode.mcbe.world.entity.attribute
 
-import kotlin.math.max
-import kotlin.math.min
-
 /**
  * @author Kevin Ludwig
  */
@@ -45,7 +42,7 @@ enum class AttributeField(
     PlayerExperience("minecraft:player.experience", 0.0f, 1.0f, 0.0f)/*,
     ZombieSpawnReinforcements("minecraft:zombie.spawn.reinforcements")*/;
 
-    fun attributeValue() = AttributeValue(this, minimum, maximum, defaultValue)
+    fun attributeValue() = AttributeValue(this, minimum, maximum, defaultValue, emptyList())
 
     fun inBounds(value: Float) = if (value < minimum) minimum else if (value > maximum) maximum else value
 

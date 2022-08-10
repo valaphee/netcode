@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.network
+package com.valaphee.netcode.mcbe.world.entity.attribute
 
-const val V1_14_060 = 390
-const val V1_16_010 = 407
-const val V1_16_100 = 419
-const val V1_16_201 = 422
-const val V1_16_210 = 428
-const val V1_16_221 = 431
-const val V1_17_002 = 440
-const val V1_17_011 = 448
-const val V1_17_034 = 465
-const val V1_17_041 = 471
-const val V1_18_002 = 475
-const val V1_18_010 = 486
-const val V1_18_030 = 503
-const val V1_19_000 = 527
-const val V1_19_010 = 534
-const val V1_19_020 = 544
+/**
+ * @author Kevin Ludwig
+ */
+data class AttributeValueModifier(
+    val id: String,
+    val name: String,
+    val value: Float,
+    val operation: Operation,
+    val operand: Int,
+    val serializable: Boolean
+) {
+    enum class Operation {
+        Absolute, Percent, PercentBase, Cap
+    }
+}
