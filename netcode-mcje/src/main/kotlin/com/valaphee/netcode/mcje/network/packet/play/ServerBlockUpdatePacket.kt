@@ -27,16 +27,16 @@ import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
  */
 class ServerBlockUpdatePacket(
     val position: Int3,
-    val id: Int,
+    val blockStateId: Int,
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeInt3UnsignedY(position)
-        buffer.writeVarInt(id)
+        buffer.writeVarInt(blockStateId)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.blockUpdate(this)
 
-    override fun toString() = "ServerBlockUpdatePacket(position=$position, id=$id)"
+    override fun toString() = "ServerBlockUpdatePacket(position=$position, id=$blockStateId)"
 }
 
 /**

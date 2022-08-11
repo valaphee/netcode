@@ -21,7 +21,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_16_201
@@ -131,39 +130,36 @@ class InputPacket(
     override fun handle(handler: PacketHandler) = handler.input(this)
 
     override fun toString() = "InputPacket(rotation=$rotation, position=$position, move=$move, headRotationYaw=$headRotationYaw, input=$input, inputMode=$inputMode, playMode=$playMode, virtualRealityGazeDirection=$virtualRealityGazeDirection, tick=$tick, positionDelta=$positionDelta)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object InputPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): InputPacket {
-        val rotation = buffer.readFloat2()
-        val position = buffer.readFloat3()
-        val move = buffer.readFloat2()
-        val headRotationYaw = buffer.readFloatLE()
-        val input = buffer.readVarULongFlags<InputPacket.Input>()
-        val inputMode = User.InputMode.values()[buffer.readVarUInt()]
-        val playMode = InputPacket.PlayMode.values()[buffer.readVarUInt()]
-        val inputInteractionModel = if (version >= V1_19_000) InputPacket.InputInteractionModel.values()[buffer.readVarUInt()] else InputPacket.InputInteractionModel.Classic
-        val virtualRealityGazeDirection = if (playMode == InputPacket.PlayMode.VirtualReality) buffer.readFloat3() else null
-        val tick: Long
-        val positionDelta: Float3
-        if (version >= V1_16_201) {
-            tick = buffer.readVarULong()
-            positionDelta = buffer.readFloat3()
-        } else {
-            tick = 0L
-            positionDelta = Float3.Zero
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): InputPacket {
+            val rotation = buffer.readFloat2()
+            val position = buffer.readFloat3()
+            val move = buffer.readFloat2()
+            val headRotationYaw = buffer.readFloatLE()
+            val input = buffer.readVarULongFlags<InputPacket.Input>()
+            val inputMode = User.InputMode.values()[buffer.readVarUInt()]
+            val playMode = InputPacket.PlayMode.values()[buffer.readVarUInt()]
+            val inputInteractionModel = if (version >= V1_19_000) InputPacket.InputInteractionModel.values()[buffer.readVarUInt()] else InputPacket.InputInteractionModel.Classic
+            val virtualRealityGazeDirection = if (playMode == InputPacket.PlayMode.VirtualReality) buffer.readFloat3() else null
+            val tick: Long
+            val positionDelta: Float3
+            if (version >= V1_16_201) {
+                tick = buffer.readVarULong()
+                positionDelta = buffer.readFloat3()
+            } else {
+                tick = 0L
+                positionDelta = Float3.Zero
+            }
+            /*if (version >= V1_16_210) {
+                if (input.equals(InputPacket.Input.PerformItemInteraction)) {
+                }
+                if (input.equals(InputPacket.Input.PerformInventoryRequest)) {
+                }
+                if (input.equals(InputPacket.Input.PerformBlockActions)) {
+                }
+            }*/
+            return InputPacket(rotation, position, move, headRotationYaw, input, inputMode, playMode, inputInteractionModel, virtualRealityGazeDirection, tick, positionDelta)
         }
-        /*if (version >= V1_16_210) {
-            if (input.equals(InputPacket.Input.PerformItemInteraction)) {
-            }
-            if (input.equals(InputPacket.Input.PerformInventoryRequest)) {
-            }
-            if (input.equals(InputPacket.Input.PerformBlockActions)) {
-            }
-        }*/
-        return InputPacket(rotation, position, move, headRotationYaw, input, inputMode, playMode, inputInteractionModel, virtualRealityGazeDirection, tick, positionDelta)
     }
 }

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -27,25 +26,22 @@ import com.valaphee.netcode.mcbe.network.Restriction
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
-class StackTakePacket(
+class ItemTakePacket(
     val runtimeEntityId: Long,
-    val stackRuntimeEntityId: Long
+    val otherRuntimeEntityId: Long
 ) : Packet() {
     override val id get() = 0x11
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarULong(stackRuntimeEntityId)
         buffer.writeVarULong(runtimeEntityId)
+        buffer.writeVarULong(otherRuntimeEntityId)
     }
 
-    override fun handle(handler: PacketHandler) = handler.stackTake(this)
+    override fun handle(handler: PacketHandler) = handler.itemTake(this)
 
-    override fun toString() = "StackTakePacket(runtimeEntityId=$runtimeEntityId, stackRuntimeEntityId=$stackRuntimeEntityId)"
-}
+    override fun toString() = "ItemTakePacket(runtimeEntityId=$runtimeEntityId, otherRuntimeEntityId=$otherRuntimeEntityId)"
 
-/**
- * @author Kevin Ludwig
- */
-object StackTakePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = StackTakePacket(buffer.readVarULong(), buffer.readVarULong())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ItemTakePacket(buffer.readVarULong(), buffer.readVarULong())
+    }
 }

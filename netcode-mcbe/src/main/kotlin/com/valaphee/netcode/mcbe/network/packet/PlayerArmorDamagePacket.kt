@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -52,16 +51,13 @@ class PlayerArmorDamagePacket(
     override fun handle(handler: PacketHandler) = handler.playerArmorDamage(this)
 
     override fun toString() = "PlayerArmorDamagePacket(damages=${damages.contentToString()})"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object PlayerArmorDamagePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): PlayerArmorDamagePacket {
-        val flagsValue = buffer.readByte().toInt()
-        val damages = arrayOfNulls<Int>(4)
-        repeat(4) { damages[it] = if ((flagsValue and (1 shl it)) != 0) buffer.readVarInt() else null }
-        return PlayerArmorDamagePacket(damages)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): PlayerArmorDamagePacket {
+            val flagsValue = buffer.readByte().toInt()
+            val damages = arrayOfNulls<Int>(4)
+            repeat(4) { damages[it] = if ((flagsValue and (1 shl it)) != 0) buffer.readVarInt() else null }
+            return PlayerArmorDamagePacket(damages)
+        }
     }
 }

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -51,17 +50,8 @@ class NpcRequestPacket(
     override fun handle(handler: PacketHandler) = handler.npcRequest(this)
 
     override fun toString() = "NpcRequestPacket(runtimeEntityId=$runtimeEntityId, type=$type, command='$command', actionType=$actionType, scene='$scene')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object NpcRequestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = NpcRequestPacket(
-        buffer.readVarULong(),
-        NpcRequestPacket.Type.values()[buffer.readUnsignedByte().toInt()],
-        buffer.readString(),
-        buffer.readUnsignedByte().toInt(),
-        buffer.readString()
-    )
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = NpcRequestPacket(buffer.readVarULong(), Type.values()[buffer.readUnsignedByte().toInt()], buffer.readString(), buffer.readUnsignedByte().toInt(), buffer.readString())
+    }
 }

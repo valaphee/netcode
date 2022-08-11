@@ -21,7 +21,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.inventory.WindowType
@@ -85,22 +84,8 @@ class TradePacket(
     override fun handle(handler: PacketHandler) = handler.trade(this)
 
     override fun toString() = "TradePacket(windowId=$windowId, type=$type, experience=$experience, level=$level, uniqueEntityId=$uniqueEntityId, playerUniqueEntityId=$playerUniqueEntityId, title='$title', v2=$v2, restock=$restock, data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object TradePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = TradePacket(
-        buffer.readByte().toInt(),
-        WindowType.byId(buffer.readByte().toInt()),
-        buffer.readVarInt(),
-        buffer.readVarInt(),
-        buffer.readVarLong(),
-        buffer.readVarLong(),
-        buffer.readString(),
-        buffer.readBoolean(),
-        buffer.readBoolean(),
-        buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer))
-    )
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = TradePacket(buffer.readByte().toInt(), WindowType.byId(buffer.readByte().toInt()), buffer.readVarInt(), buffer.readVarInt(), buffer.readVarLong(), buffer.readVarLong(), buffer.readString(), buffer.readBoolean(), buffer.readBoolean(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
+    }
 }

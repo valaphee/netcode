@@ -55,10 +55,10 @@ import com.valaphee.netcode.mcbe.network.packet.CreativeInventoryPacket
 import com.valaphee.netcode.mcbe.network.packet.CustomEventPacket
 import com.valaphee.netcode.mcbe.network.packet.DeathPacket
 import com.valaphee.netcode.mcbe.network.packet.DebugPacket
-import com.valaphee.netcode.mcbe.network.packet.DebugRendererPacket
+import com.valaphee.netcode.mcbe.network.packet.DebugOverlayPacket
 import com.valaphee.netcode.mcbe.network.packet.DefaultGameModePacket
 import com.valaphee.netcode.mcbe.network.packet.DifficultyPacket
-import com.valaphee.netcode.mcbe.network.packet.DimensionDataPacket
+import com.valaphee.netcode.mcbe.network.packet.DimensionsPacket
 import com.valaphee.netcode.mcbe.network.packet.DimensionPacket
 import com.valaphee.netcode.mcbe.network.packet.DisconnectPacket
 import com.valaphee.netcode.mcbe.network.packet.EducationUriResourcePacket
@@ -163,8 +163,8 @@ import com.valaphee.netcode.mcbe.network.packet.SoundEventPacketV2
 import com.valaphee.netcode.mcbe.network.packet.SoundPacket
 import com.valaphee.netcode.mcbe.network.packet.SoundStopPacket
 import com.valaphee.netcode.mcbe.network.packet.SpawnPositionPacket
-import com.valaphee.netcode.mcbe.network.packet.StackAddPacket
-import com.valaphee.netcode.mcbe.network.packet.StackTakePacket
+import com.valaphee.netcode.mcbe.network.packet.ItemAddPacket
+import com.valaphee.netcode.mcbe.network.packet.ItemTakePacket
 import com.valaphee.netcode.mcbe.network.packet.StatusPacket
 import com.valaphee.netcode.mcbe.network.packet.SteerPacket
 import com.valaphee.netcode.mcbe.network.packet.StructureBlockUpdatePacket
@@ -227,9 +227,9 @@ interface PacketHandler : ProtocolHandler {
 
     fun entityRemove(packet: EntityRemovePacket) = other(packet)
 
-    fun stackAdd(packet: StackAddPacket) = other(packet)
+    fun itemAdd(packet: ItemAddPacket) = other(packet)
 
-    fun stackTake(packet: StackTakePacket) = other(packet)
+    fun itemTake(packet: ItemTakePacket) = other(packet)
 
     fun entityTeleport(packet: EntityTeleportPacket) = other(packet)
 
@@ -511,7 +511,7 @@ interface PacketHandler : ProtocolHandler {
 
     fun filter(packet: FilterPacket) = other(packet)
 
-    fun debugRenderer(packet: DebugRendererPacket) = other(packet)
+    fun debugOverlay(packet: DebugOverlayPacket) = other(packet)
 
     fun entityProperties(packet: EntityPropertiesPacket) = other(packet)
 
@@ -531,7 +531,7 @@ interface PacketHandler : ProtocolHandler {
 
     fun subChunkRequest(packet: SubChunkRequestPacket) = other(packet)
 
-    fun dimensionData(packet: DimensionDataPacket) = other(packet)
+    fun dimensions(packet: DimensionsPacket) = other(packet)
 
     fun entityProperty(packet: EntityPropertyPacket) = other(packet)
 

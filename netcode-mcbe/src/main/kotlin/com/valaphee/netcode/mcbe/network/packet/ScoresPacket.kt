@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.scoreboard.Score
@@ -60,24 +59,21 @@ class ScoresPacket(
     override fun handle(handler: PacketHandler) = handler.scores(this)
 
     override fun toString() = "ScoresPacket(action=$action, scores=$scores)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ScoresPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ScoresPacket {
-        val action = ScoresPacket.Action.values()[buffer.readUnsignedByte().toInt()]
-        val entries = safeList(buffer.readVarUInt()) {
-            val scoreboardId = buffer.readVarLong()
-            val objectiveId = buffer.readString()
-            val score = buffer.readIntLE()
-            if (action == ScoresPacket.Action.Set) when (val scorerType = Score.ScorerType.values()[buffer.readUnsignedByte().toInt()]) {
-                Score.ScorerType.None -> Score(scoreboardId, objectiveId, score)
-                Score.ScorerType.Entity, Score.ScorerType.Player -> Score(scoreboardId, objectiveId, score, scorerType, buffer.readVarLong())
-                Score.ScorerType.Fake -> Score(scoreboardId, objectiveId, score, buffer.readString())
-            } else Score(scoreboardId, objectiveId, score)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ScoresPacket {
+            val action = Action.values()[buffer.readUnsignedByte().toInt()]
+            val entries = safeList(buffer.readVarUInt()) {
+                val scoreboardId = buffer.readVarLong()
+                val objectiveId = buffer.readString()
+                val score = buffer.readIntLE()
+                if (action == Action.Set) when (val scorerType = Score.ScorerType.values()[buffer.readUnsignedByte().toInt()]) {
+                    Score.ScorerType.None -> Score(scoreboardId, objectiveId, score)
+                    Score.ScorerType.Entity, Score.ScorerType.Player -> Score(scoreboardId, objectiveId, score, scorerType, buffer.readVarLong())
+                    Score.ScorerType.Fake -> Score(scoreboardId, objectiveId, score, buffer.readString())
+                } else Score(scoreboardId, objectiveId, score)
+            }
+            return ScoresPacket(action, entries)
         }
-        return ScoresPacket(action, entries)
     }
 }

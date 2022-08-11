@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -39,11 +38,8 @@ class AutomationPacket(
     override fun handle(handler: PacketHandler) = handler.webSocket(this)
 
     override fun toString() = "AutomationPacket(url='$url')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object AutomationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = AutomationPacket(buffer.readString())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = AutomationPacket(buffer.readString())
+    }
 }

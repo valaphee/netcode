@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import java.util.UUID
@@ -65,22 +64,19 @@ class PackDataPacket(
     override fun handle(handler: PacketHandler) = handler.packData(this)
 
     override fun toString() = "PackDataPacket(packId=$packId, packVersion=$packVersion, maximumChunkSize=$maximumChunkSize, chunkCount=$chunkCount, compressedPackSize=$compressedPackSize, hash=${hash.contentToString()}, premium=$premium, type=$type)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object PackDataPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): PackDataPacket {
-        val pack = buffer.readString().split("_".toRegex(), 2).toTypedArray()
-        val packId = UUID.fromString(pack[0])
-        val packVersion = if (pack.size == 2) pack[1] else null
-        val maximumChunkSize = buffer.readUnsignedIntLE()
-        val chunkCount = buffer.readUnsignedIntLE()
-        val compressedPackSize = buffer.readLongLE()
-        val hash = buffer.readByteArray()
-        val premium = buffer.readBoolean()
-        val type = PackDataPacket.Type.values()[buffer.readUnsignedByte().toInt()]
-        return PackDataPacket(packId, packVersion, maximumChunkSize, chunkCount, compressedPackSize, hash, premium, type)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): PackDataPacket {
+            val pack = buffer.readString().split("_".toRegex(), 2).toTypedArray()
+            val packId = UUID.fromString(pack[0])
+            val packVersion = if (pack.size == 2) pack[1] else null
+            val maximumChunkSize = buffer.readUnsignedIntLE()
+            val chunkCount = buffer.readUnsignedIntLE()
+            val compressedPackSize = buffer.readLongLE()
+            val hash = buffer.readByteArray()
+            val premium = buffer.readBoolean()
+            val type = Type.values()[buffer.readUnsignedByte().toInt()]
+            return PackDataPacket(packId, packVersion, maximumChunkSize, chunkCount, compressedPackSize, hash, premium, type)
+        }
     }
 }

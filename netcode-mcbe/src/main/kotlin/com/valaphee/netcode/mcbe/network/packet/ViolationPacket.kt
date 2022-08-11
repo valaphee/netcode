@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -50,11 +49,8 @@ class ViolationPacket(
     override fun handle(handler: PacketHandler) = handler.violation(this)
 
     override fun toString() = "ViolationPacket(type=$type, severity=$severity, packetId=$packetId, context='$context')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ViolationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ViolationPacket(ViolationPacket.Type.values()[buffer.readVarInt() + 1], ViolationPacket.Severity.values()[buffer.readVarInt()], buffer.readVarInt(), buffer.readString())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ViolationPacket(Type.values()[buffer.readVarInt() + 1], Severity.values()[buffer.readVarInt()], buffer.readVarInt(), buffer.readString())
+    }
 }

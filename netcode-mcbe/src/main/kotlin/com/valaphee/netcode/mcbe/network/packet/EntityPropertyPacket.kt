@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -46,11 +45,8 @@ class EntityPropertyPacket(
     override fun handle(handler: PacketHandler) = handler.entityProperty(this)
 
     override fun toString() = "EntityPropertyPacket(uniqueEntityId=$uniqueEntityId, key='$key', boolValue=$boolValue, stringValue='$stringValue', intValue=$intValue, floatValue=$floatValue)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EntityPropertyPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityPropertyPacket(buffer.readVarLong(), buffer.readString(), buffer.readBoolean(), buffer.readString(), buffer.readVarInt(), buffer.readFloatLE())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EntityPropertyPacket(buffer.readVarLong(), buffer.readString(), buffer.readBoolean(), buffer.readString(), buffer.readVarInt(), buffer.readFloatLE())
+    }
 }

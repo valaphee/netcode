@@ -52,6 +52,7 @@ class PacketCodec(
 
     companion object {
         const val Name = "automation-codec"
+
         private val objectMapper = jacksonObjectMapper()
     }
 }

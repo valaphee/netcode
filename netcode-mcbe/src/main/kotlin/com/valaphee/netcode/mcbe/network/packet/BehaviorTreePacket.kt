@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -40,11 +39,8 @@ class BehaviorTreePacket(
     override fun handle(handler: PacketHandler) = handler.behaviorTree(this)
 
     override fun toString() = "BehaviorTreePacket(data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object BehaviorTreePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BehaviorTreePacket(buffer.jsonObjectMapper.readValue(buffer.readString()))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = BehaviorTreePacket(buffer.jsonObjectMapper.readValue(buffer.readString()))
+    }
 }

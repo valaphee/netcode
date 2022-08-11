@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.Difficulty
 
 /**
@@ -37,11 +36,8 @@ class DifficultyPacket(
     override fun handle(handler: PacketHandler) = handler.difficulty(this)
 
     override fun toString() = "DifficultyPacket(difficulty=$difficulty)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object DifficultyPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = DifficultyPacket(Difficulty.values()[buffer.readVarUInt()])
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = DifficultyPacket(Difficulty.values()[buffer.readVarUInt()])
+    }
 }

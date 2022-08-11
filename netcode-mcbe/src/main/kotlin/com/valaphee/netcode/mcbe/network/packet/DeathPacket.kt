@@ -19,9 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.network.Restrict
-import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -42,11 +39,8 @@ class DeathPacket(
     override fun handle(handler: PacketHandler) = handler.death(this)
 
     override fun toString() = "DeathPacket(cause='$cause', messages=$messages)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object DeathPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = DeathPacket(buffer.readString(), safeList(buffer.readVarUInt()) { buffer.readString() })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = DeathPacket(buffer.readString(), safeList(buffer.readVarUInt()) { buffer.readString() })
+    }
 }

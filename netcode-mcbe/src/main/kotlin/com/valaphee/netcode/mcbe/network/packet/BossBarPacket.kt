@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -28,7 +27,7 @@ class BossBarPacket(
     val uniqueEntityId: Long,
     val action: Action,
     val title: String?,
-    val playerUniqueEntityId: Long,
+    val uniquePlayerId: Long,
     val percentage: Float,
     val flags: Int,
     val color: Color?,
@@ -59,7 +58,7 @@ class BossBarPacket(
                 buffer.writeVarUInt(color!!.ordinal)
                 buffer.writeVarUInt(overlay!!.ordinal)
             }
-            Action.RegisterPlayer, Action.UnregisterPlayer, Action.Query -> buffer.writeVarLong(playerUniqueEntityId)
+            Action.RegisterPlayer, Action.UnregisterPlayer, Action.Query -> buffer.writeVarLong(uniquePlayerId)
             Action.Hide -> Unit
             Action.SetPercentage -> buffer.writeFloatLE(percentage)
             Action.SetTitle -> buffer.writeString(title!!)
@@ -77,80 +76,77 @@ class BossBarPacket(
 
     override fun handle(handler: PacketHandler) = handler.bossBar(this)
 
-    override fun toString() = "BossBarPacket(uniqueEntityId=$uniqueEntityId, action=$action, title=$title, playerUniqueEntityId=$playerUniqueEntityId, percentage=$percentage, flags=$flags, color=$color, overlay=$overlay)"
-}
+    override fun toString() = "BossBarPacket(uniqueEntityId=$uniqueEntityId, action=$action, title=$title, uniquePlayerId=$uniquePlayerId, percentage=$percentage, flags=$flags, color=$color, overlay=$overlay)"
 
-/**
- * @author Kevin Ludwig
- */
-object BossBarPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): BossBarPacket {
-        val uniqueEntityId = buffer.readVarLong()
-        val action = BossBarPacket.Action.values()[buffer.readVarUInt()]
-        val title: String?
-        val percentage: Float
-        val flags: Int
-        val color: BossBarPacket.Color?
-        val overlay: BossBarPacket.Overlay?
-        val playerUniqueEntityId: Long
-        when (action) {
-            BossBarPacket.Action.Show -> {
-                title = buffer.readString()
-                percentage = buffer.readFloatLE()
-                flags = buffer.readUnsignedShortLE()
-                color = BossBarPacket.Color.values()[buffer.readVarUInt()]
-                overlay = BossBarPacket.Overlay.values()[buffer.readVarUInt()]
-                playerUniqueEntityId = 0
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): BossBarPacket {
+            val uniqueBossId = buffer.readVarLong()
+            val action = Action.values()[buffer.readVarUInt()]
+            val title: String?
+            val percentage: Float
+            val flags: Int
+            val color: Color?
+            val overlay: Overlay?
+            val uniquePlayerId: Long
+            when (action) {
+                Action.Show -> {
+                    title = buffer.readString()
+                    percentage = buffer.readFloatLE()
+                    flags = buffer.readUnsignedShortLE()
+                    color = Color.values()[buffer.readVarUInt()]
+                    overlay = Overlay.values()[buffer.readVarUInt()]
+                    uniquePlayerId = 0
+                }
+                Action.Hide -> {
+                    title = null
+                    percentage = 0.0f
+                    flags = 0
+                    color = null
+                    overlay = null
+                    uniquePlayerId = 0
+                }
+                Action.RegisterPlayer, Action.UnregisterPlayer, Action.Query -> {
+                    title = null
+                    percentage = 0.0f
+                    flags = 0
+                    color = null
+                    overlay = null
+                    uniquePlayerId = buffer.readVarLong()
+                }
+                Action.SetPercentage -> {
+                    title = null
+                    percentage = buffer.readFloatLE()
+                    flags = 0
+                    color = null
+                    overlay = null
+                    uniquePlayerId = buffer.readVarLong()
+                }
+                Action.SetTitle -> {
+                    title = buffer.readString()
+                    percentage = 0.0f
+                    flags = 0
+                    color = null
+                    overlay = null
+                    uniquePlayerId = buffer.readVarLong()
+                }
+                Action.SetFlags -> {
+                    title = null
+                    percentage = 0.0f
+                    flags = buffer.readUnsignedShortLE()
+                    color = Color.values()[buffer.readVarUInt()]
+                    overlay = Overlay.values()[buffer.readVarUInt()]
+                    uniquePlayerId = 0
+                }
+                Action.SetStyle -> {
+                    title = null
+                    percentage = 0.0f
+                    flags = 0
+                    color = Color.values()[buffer.readVarUInt()]
+                    overlay = Overlay.values()[buffer.readVarUInt()]
+                    uniquePlayerId = 0
+                }
             }
-            BossBarPacket.Action.Hide -> {
-                title = null
-                percentage = 0.0f
-                flags = 0
-                color = null
-                overlay = null
-                playerUniqueEntityId = 0
-            }
-            BossBarPacket.Action.RegisterPlayer, BossBarPacket.Action.UnregisterPlayer, BossBarPacket.Action.Query -> {
-                title = null
-                percentage = 0.0f
-                flags = 0
-                color = null
-                overlay = null
-                playerUniqueEntityId = buffer.readVarLong()
-            }
-            BossBarPacket.Action.SetPercentage -> {
-                title = null
-                percentage = buffer.readFloatLE()
-                flags = 0
-                color = null
-                overlay = null
-                playerUniqueEntityId = buffer.readVarLong()
-            }
-            BossBarPacket.Action.SetTitle -> {
-                title = buffer.readString()
-                percentage = 0.0f
-                flags = 0
-                color = null
-                overlay = null
-                playerUniqueEntityId = buffer.readVarLong()
-            }
-            BossBarPacket.Action.SetFlags -> {
-                title = null
-                percentage = 0.0f
-                flags = buffer.readUnsignedShortLE()
-                color = BossBarPacket.Color.values()[buffer.readVarUInt()]
-                overlay = BossBarPacket.Overlay.values()[buffer.readVarUInt()]
-                playerUniqueEntityId = 0
-            }
-            BossBarPacket.Action.SetStyle -> {
-                title = null
-                percentage = 0.0f
-                flags = 0
-                color = BossBarPacket.Color.values()[buffer.readVarUInt()]
-                overlay = BossBarPacket.Overlay.values()[buffer.readVarUInt()]
-                playerUniqueEntityId = 0
-            }
+            return BossBarPacket(uniqueBossId, action, title, uniquePlayerId, percentage, flags, color, overlay)
         }
-        return BossBarPacket(uniqueEntityId, action, title, playerUniqueEntityId, percentage, flags, color, overlay)
     }
 }

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -36,11 +35,8 @@ class ViewDistanceRequestPacket(
     override fun handle(handler: PacketHandler) = handler.viewDistanceRequest(this)
 
     override fun toString() = "ViewDistanceRequestPacket(distance=$distance)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ViewDistanceRequestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ViewDistanceRequestPacket(buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ViewDistanceRequestPacket(buffer.readVarInt())
+    }
 }

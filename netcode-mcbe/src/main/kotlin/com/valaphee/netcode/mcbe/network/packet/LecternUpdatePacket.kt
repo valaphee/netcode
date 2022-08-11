@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -39,18 +38,15 @@ class LecternUpdatePacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(page)
         buffer.writeByte(totalPages)
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         buffer.writeBoolean(droppingBook)
     }
 
     override fun handle(handler: PacketHandler) = handler.lecternUpdate(this)
 
     override fun toString() = "LecternUpdatePacket(page=$page, totalPages=$totalPages, position=$position, droppingBook=$droppingBook)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object LecternUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = LecternUpdatePacket(buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readInt3UnsignedY(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = LecternUpdatePacket(buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readBlockPosition(), buffer.readBoolean())
+    }
 }

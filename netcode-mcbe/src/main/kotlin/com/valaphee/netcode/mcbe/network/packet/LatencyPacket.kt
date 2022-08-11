@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -38,11 +37,8 @@ class LatencyPacket(
     override fun handle(handler: PacketHandler) = handler.latency(this)
 
     override fun toString() = "LatencyPacket(timestamp=$timestamp, fromServer=$fromServer)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object LatencyPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = LatencyPacket(buffer.readLongLE(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = LatencyPacket(buffer.readLongLE(), buffer.readBoolean())
+    }
 }

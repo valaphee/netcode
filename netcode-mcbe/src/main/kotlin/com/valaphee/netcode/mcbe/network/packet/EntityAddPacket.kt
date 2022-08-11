@@ -21,7 +21,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_19_010
@@ -69,23 +68,20 @@ class EntityAddPacket(
     override fun handle(handler: PacketHandler) = handler.entityAdd(this)
 
     override fun toString() = "EntityAddPacket(uniqueEntityId=$uniqueEntityId, runtimeEntityId=$runtimeEntityId, type='$type', position=$position, velocity=$velocity, rotation=$rotation, headRotationYaw=$headRotationYaw, bodyRotation=$bodyRotation, attributes=$attributes, metadata=$metadata, links=$links)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EntityAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityAddPacket(
-        buffer.readVarLong(),
-        buffer.readVarULong(),
-        buffer.readString(),
-        buffer.readFloat3(),
-        buffer.readFloat3(),
-        buffer.readFloat2(),
-        buffer.readFloatLE(),
-        if (version >= V1_19_010) buffer.readFloatLE() else 0.0f,
-        Attributes().apply { readFromBuffer(buffer, version, true) },
-        Metadata().apply { readFromBuffer(buffer) },
-        safeList(buffer.readVarUInt()) { buffer.readLink(version) }
-    )
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EntityAddPacket(
+            buffer.readVarLong(),
+            buffer.readVarULong(),
+            buffer.readString(),
+            buffer.readFloat3(),
+            buffer.readFloat3(),
+            buffer.readFloat2(),
+            buffer.readFloatLE(),
+            if (version >= V1_19_010) buffer.readFloatLE() else 0.0f,
+            Attributes().apply { readFromBuffer(buffer, version, true) },
+            Metadata().apply { readFromBuffer(buffer) },
+            safeList(buffer.readVarUInt()) { buffer.readLink(version) }
+        )
+    }
 }

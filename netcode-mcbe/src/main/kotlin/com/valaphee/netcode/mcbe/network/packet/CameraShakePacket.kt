@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_16_100
@@ -55,11 +54,8 @@ class CameraShakePacket(
     override fun handle(handler: PacketHandler) = handler.cameraShake(this)
 
     override fun toString() = "CameraShakePacket(intensity=$intensity, duration=$duration, type=$type, action=$action)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object CameraShakePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = CameraShakePacket(buffer.readFloatLE(), buffer.readFloatLE(), if (version >= V1_16_100) CameraShakePacket.Type.values()[buffer.readByte().toInt()] else CameraShakePacket.Type.Positional, if (version >= V1_16_210) CameraShakePacket.Action.values()[buffer.readByte().toInt()] else CameraShakePacket.Action.Stop)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = CameraShakePacket(buffer.readFloatLE(), buffer.readFloatLE(), if (version >= V1_16_100) Type.values()[buffer.readByte().toInt()] else Type.Positional, if (version >= V1_16_210) CameraShakePacket.Action.values()[buffer.readByte().toInt()] else Action.Stop)
+    }
 }

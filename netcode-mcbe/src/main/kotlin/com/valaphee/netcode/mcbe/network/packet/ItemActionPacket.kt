@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -58,11 +57,8 @@ class ItemActionPacket(
     override fun handle(handler: PacketHandler) = handler.itemAction(this)
 
     override fun toString() = "ItemActionPacket(itemId=$itemId, action=$action)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ItemActionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ItemActionPacket(buffer.readShortLE(), ItemActionPacket.Action.values()[buffer.readIntLE() + 1])
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ItemActionPacket(buffer.readShortLE(), ItemActionPacket.Action.values()[buffer.readIntLE() + 1])
+    }
 }

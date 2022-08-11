@@ -54,7 +54,7 @@ class MapPacket(
         buffer.writeVarUInt(flagsValue)
         buffer.writeByte(dimension.ordinal)
         buffer.writeBoolean(locked)
-        if (version >= V1_19_020) buffer.writeInt3UnsignedY(origin)
+        if (version >= V1_19_020) buffer.writeBlockPosition(origin)
         trackedUniqueEntityIds?.let {
             if (it.isNotEmpty()) {
                 buffer.writeVarUInt(it.size)
@@ -70,7 +70,7 @@ class MapPacket(
                     buffer.writeIntLE(it.type.ordinal)
                     when (it.type) {
                         TrackedObject.Type.Entity -> buffer.writeVarLong(it.uniqueEntityId!!)
-                        TrackedObject.Type.Block -> buffer.writeInt3UnsignedY(it.blockPosition!!)
+                        TrackedObject.Type.Block -> buffer.writeBlockPosition(it.blockPosition!!)
                     }
                 }
             } ?: buffer.writeVarUInt(0)
@@ -101,9 +101,9 @@ class MapPacket(
     override fun toString() = "MapPacket(mapId=$mapId, dimension=$dimension, locked=$locked, origin=$origin trackedUniqueEntityIds=${trackedUniqueEntityIds?.contentToString()}, scale=$scale, trackedObjects=$trackedObjects, decorations=$decorations, width=$width, height=$height, offsetX=$offsetX, offsetY=$offsetY, data=<omitted>)"
 
     companion object {
-        internal const val flagHasColor = 1 shl 1
-        internal const val flagHasDecorationAndTrackedObjects = 1 shl 2
-        internal const val flagHasTrackedEntities = 1 shl 3
-        internal const val flagHasAll = flagHasColor or flagHasDecorationAndTrackedObjects or flagHasTrackedEntities
+        private const val flagHasColor                       = 1 shl 1
+        private const val flagHasDecorationAndTrackedObjects = 1 shl 2
+        private const val flagHasTrackedEntities             = 1 shl 3
+        private const val flagHasAll                         = flagHasColor or flagHasDecorationAndTrackedObjects or flagHasTrackedEntities
     }
 }

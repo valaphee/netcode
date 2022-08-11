@@ -56,6 +56,8 @@ data class AppearanceImage(
 
     companion object {
         val Empty = AppearanceImage(0, 0, ByteArray(0))
+
+        internal val colorModel = ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), intArrayOf(8, 8, 8, 8), true, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -83,7 +85,7 @@ data class AppearanceImage(
     }
 }
 
-fun BufferedImage.toAppearanceImage() = AppearanceImage(width, height, (BufferedImage(com.valaphee.netcode.mcbe.world.entity.player.colorModel, com.valaphee.netcode.mcbe.world.entity.player.colorModel.createCompatibleWritableRaster(width, height), false, null).apply {
+fun BufferedImage.toAppearanceImage() = AppearanceImage(width, height, (BufferedImage(AppearanceImage.colorModel, AppearanceImage.colorModel.createCompatibleWritableRaster(width, height), false, null).apply {
     createGraphics().apply {
         drawImage(this@toAppearanceImage, 0, 0, null)
         dispose()
@@ -101,5 +103,3 @@ fun PacketBuffer.writeAppearanceImage(value: AppearanceImage) {
     writeIntLE(value._height)
     writeByteArray(value.data)
 }
-
-private val colorModel = ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), intArrayOf(8, 8, 8, 8), true, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE)

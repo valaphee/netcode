@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import io.netty.buffer.ByteBufInputStream
@@ -43,11 +42,8 @@ class BiomeDefinitionsPacket(
     override fun handle(handler: PacketHandler) = handler.biomeDefinitions(this)
 
     override fun toString() = "BiomeDefinitionsPacket(data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object BiomeDefinitionsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BiomeDefinitionsPacket(buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = BiomeDefinitionsPacket(buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
+    }
 }

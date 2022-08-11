@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -39,11 +38,8 @@ class EntityRemovePacket(
     override fun handle(handler: PacketHandler) = handler.entityRemove(this)
 
     override fun toString() = "EntityRemovePacket(uniqueEntityId=$uniqueEntityId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EntityRemovePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityRemovePacket(buffer.readVarLong())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EntityRemovePacket(buffer.readVarLong())
+    }
 }

@@ -19,8 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.util.Registry
 
 /**
  * @author Kevin Ludwig
@@ -123,11 +121,8 @@ class EntityEventPacket(
     override fun handle(handler: PacketHandler) = handler.entityEvent(this)
 
     override fun toString() = "EntityEventPacket(runtimeEntityId=$runtimeEntityId, event=$event, data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EntityEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityEventPacket(buffer.readVarULong(), EntityEventPacket.Event.values()[buffer.readUnsignedByte().toInt()], buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EntityEventPacket(buffer.readVarULong(), Event.values()[buffer.readUnsignedByte().toInt()], buffer.readVarInt())
+    }
 }

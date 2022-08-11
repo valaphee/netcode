@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -27,28 +26,22 @@ import com.valaphee.netcode.mcbe.network.PacketReader
 class EmotePacket(
     val runtimeEntityId: Long,
     val emoteId: String,
-    val flags: Set<Flag>
+    val fromServer: Boolean
 ) : Packet() {
-    enum class Flag {
-        Serverside
-    }
 
     override val id get() = 0x8A
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarULong(runtimeEntityId)
         buffer.writeString(emoteId)
-        buffer.writeByteFlags(flags)
+        buffer.writeBoolean(fromServer)
     }
 
     override fun handle(handler: PacketHandler) = handler.emote(this)
 
-    override fun toString() = "EmotePacket(runtimeEntityId=$runtimeEntityId, emoteId='$emoteId', flags=$flags)"
-}
+    override fun toString() = "EmotePacket(runtimeEntityId=$runtimeEntityId, emoteId='$emoteId', fromServer=$fromServer)"
 
-/**
- * @author Kevin Ludwig
- */
-object EmotePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EmotePacket(buffer.readVarULong(), buffer.readString(), buffer.readByteFlags())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EmotePacket(buffer.readVarULong(), buffer.readString(), buffer.readBoolean())
+    }
 }

@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -39,11 +38,8 @@ class CustomEventPacket(
     override fun handle(handler: PacketHandler) = handler.customEvent(this)
 
     override fun toString() = "CustomEventPacket(eventName='$eventName', data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object CustomEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = CustomEventPacket(buffer.readString(), buffer.jsonObjectMapper.readValue(buffer.readString()))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = CustomEventPacket(buffer.readString(), buffer.jsonObjectMapper.readValue(buffer.readString()))
+    }
 }

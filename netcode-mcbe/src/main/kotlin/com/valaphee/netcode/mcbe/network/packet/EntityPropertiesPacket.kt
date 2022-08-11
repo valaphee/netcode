@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -40,11 +39,8 @@ class EntityPropertiesPacket(
     override fun handle(handler: PacketHandler) = handler.entityProperties(this)
 
     override fun toString() = "EntityPropertiesPacket(data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EntityPropertiesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityPropertiesPacket(buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EntityPropertiesPacket(buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
+    }
 }

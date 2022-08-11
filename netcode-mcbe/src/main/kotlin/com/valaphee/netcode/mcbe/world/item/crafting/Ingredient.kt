@@ -31,7 +31,7 @@ import com.valaphee.netcode.mcbe.world.item.ItemStack
 object IngredientSerializer : JsonSerializer<ItemStack>() {
     override fun serialize(value: ItemStack, generator: JsonGenerator, provider: SerializerProvider) {
         generator.writeStartObject()
-        generator.writeStringField("item", value.item)
+        generator.writeStringField("item", value.itemKey)
         if (value.subId != -1) generator.writeNumberField("data", value.subId)
         generator.writeNumberField("count", value.count)
         generator.writeEndObject()
@@ -43,7 +43,7 @@ object IngredientSerializer : JsonSerializer<ItemStack>() {
  */
 object SingleIngredientSerializer : JsonSerializer<ItemStack>() {
     override fun serialize(value: ItemStack, generator: JsonGenerator, provider: SerializerProvider) {
-        generator.writeString("${value.item}${if (value.subId != -1) ":${value.subId}" else ""}")
+        generator.writeString("${value.itemKey}${if (value.subId != -1) ":${value.subId}" else ""}")
     }
 }
 
@@ -52,7 +52,7 @@ object SingleIngredientSerializer : JsonSerializer<ItemStack>() {
  */
 object SingleItemSerializer : JsonSerializer<ItemStack>() {
     override fun serialize(value: ItemStack, generator: JsonGenerator, provider: SerializerProvider) {
-        generator.writeString("${value.item}${if (value.subId != 0) ":${value.subId}" else ""}")
+        generator.writeString("${value.itemKey}${if (value.subId != 0) ":${value.subId}" else ""}")
     }
 }
 

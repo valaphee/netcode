@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.Effect
@@ -33,7 +32,7 @@ class EntityEffectPacket(
     val action: Action,
     val effect: Effect,
     val amplifier: Int,
-    val particles: Boolean,
+    val showParticle: Boolean,
     val duration: Int
 ) : Packet() {
     enum class Action {
@@ -49,25 +48,22 @@ class EntityEffectPacket(
         buffer.writeByte(action.ordinal + 1)
         buffer.writeVarInt(effect.ordinal + 1)
         buffer.writeVarInt(amplifier)
-        buffer.writeBoolean(particles)
+        buffer.writeBoolean(showParticle)
         buffer.writeVarInt(duration)
     }
 
     override fun handle(handler: PacketHandler) = handler.entityEffect(this)
 
-    override fun toString() = "EntityEffectPacket(runtimeEntityId=$runtimeEntityId, action=$action, effect=$effect, amplifier=$amplifier, particles=$particles, duration=$duration)"
-}
+    override fun toString() = "EntityEffectPacket(runtimeEntityId=$runtimeEntityId, action=$action, effect=$effect, amplifier=$amplifier, showParticle=$showParticle, duration=$duration)"
 
-/**
- * @author Kevin Ludwig
- */
-object EntityEffectPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityEffectPacket(
-        buffer.readVarULong(),
-        EntityEffectPacket.Action.values()[buffer.readByte().toInt() - 1],
-        Effect.values()[buffer.readVarInt() - 1],
-        buffer.readVarInt(),
-        buffer.readBoolean(),
-        buffer.readVarInt()
-    )
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EntityEffectPacket(
+            buffer.readVarULong(),
+            EntityEffectPacket.Action.values()[buffer.readByte().toInt() - 1],
+            Effect.values()[buffer.readVarInt() - 1],
+            buffer.readVarInt(),
+            buffer.readBoolean(),
+            buffer.readVarInt()
+        )
+    }
 }

@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -44,11 +43,8 @@ class BlockPickPacket(
     override fun handle(handler: PacketHandler) = handler.blockPick(this)
 
     override fun toString() = "BlockPickPacket(position=$position, withEntity=$withEntity, hotbarSlot=$hotbarSlot)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object BlockPickPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BlockPickPacket(buffer.readInt3(), buffer.readBoolean(), buffer.readByte().toInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = BlockPickPacket(buffer.readInt3(), buffer.readBoolean(), buffer.readByte().toInt())
+    }
 }

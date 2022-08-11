@@ -20,18 +20,15 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.mcbe.world.Sound
 
 /**
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
 class SoundPacket(
-    val sound: Sound? = null,
-    val soundKey: String? = null,
+    val soundKey: String,
     val position: Float3,
     val volume: Float,
     val pitch: Float
@@ -39,27 +36,23 @@ class SoundPacket(
     override val id get() = 0x56
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(sound?.key ?: soundKey!!)
-        buffer.writeInt3UnsignedY(position.toMutableFloat3().scale(8.0f).toInt3())
+        buffer.writeString(soundKey)
+        buffer.writeBlockPosition(position.toMutableFloat3().scale(8.0f).toInt3())
         buffer.writeFloatLE(volume)
         buffer.writeFloatLE(pitch)
     }
 
     override fun handle(handler: PacketHandler) = handler.sound(this)
 
-    override fun toString() = "SoundPacket(sound=$sound, soundKey=$soundKey, position=$position, volume=$volume, pitch=$pitch)"
-}
+    override fun toString() = "SoundPacket(soundKey=$soundKey, position=$position, volume=$volume, pitch=$pitch)"
 
-/**
- * @author Kevin Ludwig
- */
-object SoundPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): SoundPacket {
-        val soundKey = buffer.readString()
-        val sound = Sound.byKeyOrNull(soundKey)
-        val position = buffer.readInt3UnsignedY().toMutableFloat3().scale(1 / 8.0f)
-        val volume = buffer.readFloatLE()
-        val pitch = buffer.readFloatLE()
-        return SoundPacket(sound, soundKey, position, volume, pitch)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): SoundPacket {
+            val soundKey = buffer.readString()
+            val position = buffer.readBlockPosition().toMutableFloat3().scale(1 / 8.0f)
+            val volume = buffer.readFloatLE()
+            val pitch = buffer.readFloatLE()
+            return SoundPacket(soundKey, position, volume, pitch)
+        }
     }
 }

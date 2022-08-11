@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -45,16 +44,13 @@ class RespawnPacket(
     override fun handle(handler: PacketHandler) = handler.respawn(this)
 
     override fun toString() = "RespawnPacket(runtimeEntityId=$runtimeEntityId, state=$state, position=$position)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object RespawnPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): RespawnPacket {
-        val position = buffer.readFloat3()
-        val state = RespawnPacket.State.values()[buffer.readByte().toInt()]
-        val runtimeEntityId = buffer.readVarULong()
-        return RespawnPacket(runtimeEntityId, state, position)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): RespawnPacket {
+            val position = buffer.readFloat3()
+            val state = State.values()[buffer.readByte().toInt()]
+            val runtimeEntityId = buffer.readVarULong()
+            return RespawnPacket(runtimeEntityId, state, position)
+        }
     }
 }

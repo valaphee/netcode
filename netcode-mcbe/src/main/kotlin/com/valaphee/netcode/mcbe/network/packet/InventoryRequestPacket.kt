@@ -21,16 +21,15 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_16_010
 import com.valaphee.netcode.mcbe.network.V1_16_201
 import com.valaphee.netcode.mcbe.network.V1_16_210
-import com.valaphee.netcode.mcbe.network.V1_16_221
 import com.valaphee.netcode.mcbe.network.V1_17_011
 import com.valaphee.netcode.mcbe.network.V1_17_041
-import com.valaphee.netcode.mcbe.util.Registry
 import com.valaphee.netcode.mcbe.world.inventory.WindowSlotType
 import com.valaphee.netcode.mcbe.world.item.ItemStack
-import com.valaphee.netcode.mcbe.world.item.writeItemStackInstance
-import com.valaphee.netcode.mcbe.world.item.writeItemStackPreV1_16_221
+import com.valaphee.netcode.mcbe.world.item.writeItemStack
+import com.valaphee.netcode.util.Int2ObjectOpenHashBiMapVersioned
 
 /**
  * @author Kevin Ludwig
@@ -43,78 +42,31 @@ class InventoryRequestPacket(
         enum class Type {
             Move, Place, Swap, Drop, Destroy, Consume, Create, LabTableCombine, BeaconPayment, MineBlock, CraftRecipe, CraftRecipeAuto, CraftCreative, CraftRecipeOptional, CraftRepairAndDisenchant, CraftLoom, CraftNonImplementedDeprecated, CraftResultsDeprecated;
 
+            fun getId(version: Int) = registry.getLastInt(version, this)
+
             companion object {
-                internal val registryPreV1_16_201 = Registry<Type>().apply {
-                    this[0] = Move
-                    this[1] = Place
-                    this[2] = Swap
-                    this[3] = Drop
-                    this[4] = Destroy
-                    this[5] = Consume
-                    this[6] = Create
-                    this[7] = LabTableCombine
-                    this[8] = BeaconPayment
-                    this[9] = CraftRecipe
-                    this[10] = CraftRecipeAuto
-                    this[11] = CraftCreative
-                    this[12] = CraftNonImplementedDeprecated
-                    this[13] = CraftResultsDeprecated
+                val registry = Int2ObjectOpenHashBiMapVersioned<Type>().apply {
+                    put(Move                         , V1_16_010 to  0                                                   )
+                    put(Place                        , V1_16_010 to  1                                                   )
+                    put(Swap                         , V1_16_010 to  2                                                   )
+                    put(Drop                         , V1_16_010 to  3                                                   )
+                    put(Destroy                      , V1_16_010 to  4                                                   )
+                    put(Consume                      , V1_16_010 to  5                                                   )
+                    put(Create                       , V1_16_010 to  6                                                   )
+                    put(LabTableCombine              , V1_16_010 to  7                                                   )
+                    put(BeaconPayment                , V1_16_010 to  8                                                   )
+                    put(MineBlock                    ,                                   V1_16_210 to  9                 )
+                    put(CraftRecipe                  , V1_16_010 to  9                 , V1_16_210 to 10                 )
+                    put(CraftRecipeAuto              , V1_16_010 to 10                 , V1_16_210 to 11                 )
+                    put(CraftCreative                , V1_16_010 to 11                 , V1_16_210 to 12                 )
+                    put(CraftRecipeOptional          ,                  V1_16_201 to 12, V1_16_210 to 13                 )
+                    put(CraftRepairAndDisenchant     ,                                                    V1_17_041 to 14)
+                    put(CraftLoom                    ,                                                    V1_17_041 to 15)
+                    put(CraftNonImplementedDeprecated, V1_16_010 to 12, V1_16_201 to 13, V1_16_210 to 14, V1_17_041 to 16)
+                    put(CraftResultsDeprecated       , V1_16_010 to 13, V1_16_201 to 14, V1_16_210 to 15, V1_17_041 to 17)
                 }
-                internal val registryPreV1_16_210 = Registry<Type>().apply {
-                    this[0] = Move
-                    this[1] = Place
-                    this[2] = Swap
-                    this[3] = Drop
-                    this[4] = Destroy
-                    this[5] = Consume
-                    this[6] = Create
-                    this[7] = LabTableCombine
-                    this[8] = BeaconPayment
-                    this[9] = CraftRecipe
-                    this[10] = CraftRecipeAuto
-                    this[11] = CraftCreative
-                    this[12] = CraftRecipeOptional
-                    this[13] = CraftNonImplementedDeprecated
-                    this[14] = CraftResultsDeprecated
-                }
-                internal val registryPreV1_17_041 = Registry<Type>().apply {
-                    this[0] = Move
-                    this[1] = Place
-                    this[2] = Swap
-                    this[3] = Drop
-                    this[4] = Destroy
-                    this[5] = Consume
-                    this[6] = Create
-                    this[7] = LabTableCombine
-                    this[8] = BeaconPayment
-                    this[9] = MineBlock
-                    this[10] = CraftRecipe
-                    this[11] = CraftRecipeAuto
-                    this[12] = CraftCreative
-                    this[13] = CraftRecipeOptional
-                    this[14] = CraftNonImplementedDeprecated
-                    this[15] = CraftResultsDeprecated
-                }
-                internal val registry = Registry<Type>().apply {
-                    this[0] = Move
-                    this[1] = Place
-                    this[2] = Swap
-                    this[3] = Drop
-                    this[4] = Destroy
-                    this[5] = Consume
-                    this[6] = Create
-                    this[7] = LabTableCombine
-                    this[8] = BeaconPayment
-                    this[9] = MineBlock
-                    this[10] = CraftRecipe
-                    this[11] = CraftRecipeAuto
-                    this[12] = CraftCreative
-                    this[13] = CraftRecipeOptional
-                    this[14] = CraftRepairAndDisenchant
-                    this[15] = CraftLoom
-                    this[16] = CraftNonImplementedDeprecated
-                    this[17] = CraftResultsDeprecated
-                }
+
+                operator fun get(version: Int, id: Int) = registry.getLast(version, id)
             }
         }
 
@@ -261,12 +213,11 @@ class InventoryRequestPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarUInt(requests.size)
-        val actionTypes = if (version >= V1_17_041) Action.Type.registry else if (version >= V1_16_210) Action.Type.registryPreV1_17_041 else if (version >= V1_16_201) Action.Type.registryPreV1_16_210 else Action.Type.registryPreV1_16_201
         requests.forEach {
             buffer.writeVarInt(it.requestId)
             buffer.writeVarUInt(it.actions.size)
             it.actions.forEach {
-                buffer.writeByte(actionTypes.getId(it.type))
+                buffer.writeByte(it.type.getId(version))
                 when (it) {
                     is MoveAction -> {
                         buffer.writeByte(it.count)
@@ -342,7 +293,7 @@ class InventoryRequestPacket(
                     is CraftLoomAction -> buffer.writeString(it.patternId)
                     is CraftResultsDeprecatedAction -> {
                         buffer.writeVarUInt(it.result.size)
-                        it.result.forEach { if (version >= V1_16_221) buffer.writeItemStackInstance(it) else buffer.writeItemStackPreV1_16_221(it) }
+                        it.result.forEach { buffer.writeItemStack(it, version, false) }
                         buffer.writeByte(it.count)
                     }
                 }

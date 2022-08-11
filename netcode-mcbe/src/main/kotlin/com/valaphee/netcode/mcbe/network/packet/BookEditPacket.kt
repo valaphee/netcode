@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -69,60 +68,57 @@ class BookEditPacket(
     override fun handle(handler: PacketHandler) = handler.bookEdit(this)
 
     override fun toString() = "BookEditPacket(action=$action, slotId=$slotId, pageNumber=$pageNumber, text=$text, otherPageNumber=$otherPageNumber, title=$title, photoName=$photoName, author=$author, xboxUserId=$xboxUserId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object BookEditPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): BookEditPacket {
-        val action = BookEditPacket.Action.values()[buffer.readUnsignedByte().toInt()]
-        val slotId = buffer.readUnsignedByte().toInt()
-        val pageNumber: Int
-        val text: String?
-        val otherPageNumber: Int
-        val title: String?
-        val photoName: String?
-        val author: String?
-        val xboxUserId: String?
-        when (action) {
-            BookEditPacket.Action.ReplacePage, BookEditPacket.Action.AddPage -> {
-                pageNumber = buffer.readUnsignedByte().toInt()
-                text = buffer.readString()
-                otherPageNumber = 0
-                title = null
-                photoName = buffer.readString()
-                author = null
-                xboxUserId = null
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): BookEditPacket {
+            val action = BookEditPacket.Action.values()[buffer.readUnsignedByte().toInt()]
+            val slotId = buffer.readUnsignedByte().toInt()
+            val pageNumber: Int
+            val text: String?
+            val otherPageNumber: Int
+            val title: String?
+            val photoName: String?
+            val author: String?
+            val xboxUserId: String?
+            when (action) {
+                Action.ReplacePage, Action.AddPage -> {
+                    pageNumber = buffer.readUnsignedByte().toInt()
+                    text = buffer.readString()
+                    otherPageNumber = 0
+                    title = null
+                    photoName = buffer.readString()
+                    author = null
+                    xboxUserId = null
+                }
+                Action.DeletePage -> {
+                    pageNumber = buffer.readUnsignedByte().toInt()
+                    text = null
+                    otherPageNumber = 0
+                    title = null
+                    photoName = null
+                    author = null
+                    xboxUserId = null
+                }
+                Action.SwapPages -> {
+                    pageNumber = buffer.readUnsignedByte().toInt()
+                    text = null
+                    otherPageNumber = buffer.readUnsignedByte().toInt()
+                    title = null
+                    photoName = null
+                    author = null
+                    xboxUserId = null
+                }
+                Action.SignBook -> {
+                    pageNumber = 0
+                    text = null
+                    otherPageNumber = 0
+                    title = buffer.readString()
+                    photoName = null
+                    author = buffer.readString()
+                    xboxUserId = buffer.readString()
+                }
             }
-            BookEditPacket.Action.DeletePage -> {
-                pageNumber = buffer.readUnsignedByte().toInt()
-                text = null
-                otherPageNumber = 0
-                title = null
-                photoName = null
-                author = null
-                xboxUserId = null
-            }
-            BookEditPacket.Action.SwapPages -> {
-                pageNumber = buffer.readUnsignedByte().toInt()
-                text = null
-                otherPageNumber = buffer.readUnsignedByte().toInt()
-                title = null
-                photoName = null
-                author = null
-                xboxUserId = null
-            }
-            BookEditPacket.Action.SignBook -> {
-                pageNumber = 0
-                text = null
-                otherPageNumber = 0
-                title = buffer.readString()
-                photoName = null
-                author = buffer.readString()
-                xboxUserId = buffer.readString()
-            }
+            return BookEditPacket(action, slotId, pageNumber, text, otherPageNumber, title, photoName, author, xboxUserId)
         }
-        return BookEditPacket(action, slotId, pageNumber, text, otherPageNumber, title, photoName, author, xboxUserId)
     }
 }

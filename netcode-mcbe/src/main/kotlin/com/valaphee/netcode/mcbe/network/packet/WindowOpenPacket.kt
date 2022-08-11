@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.inventory.WindowType
@@ -40,18 +39,15 @@ class WindowOpenPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
         buffer.writeByte(type.id)
-        buffer.writeInt3UnsignedY(blockPosition)
+        buffer.writeBlockPosition(blockPosition)
         buffer.writeVarLong(uniqueEntityId)
     }
 
     override fun handle(handler: PacketHandler) = handler.windowOpen(this)
 
     override fun toString() = "WindowOpenPacket(windowId=$windowId, type=$type, blockPosition=$blockPosition, uniqueEntityId=$uniqueEntityId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object WindowOpenPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = WindowOpenPacket(buffer.readByte().toInt(), WindowType.byId(buffer.readByte().toInt()), buffer.readInt3UnsignedY(), buffer.readVarLong())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = WindowOpenPacket(buffer.readByte().toInt(), WindowType.byId(buffer.readByte().toInt()), buffer.readBlockPosition(), buffer.readVarLong())
+    }
 }

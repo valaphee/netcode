@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -38,11 +37,8 @@ class FilterPacket(
     override fun handle(handler: PacketHandler) = handler.filter(this)
 
     override fun toString() = "FilterPacket(message='$message', fromServer=$fromServer)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object FilterPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = FilterPacket(buffer.readString(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = FilterPacket(buffer.readString(), buffer.readBoolean())
+    }
 }

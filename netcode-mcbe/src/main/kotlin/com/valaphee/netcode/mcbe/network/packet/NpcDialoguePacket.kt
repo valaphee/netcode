@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -51,11 +50,8 @@ class NpcDialoguePacket(
     override fun handle(handler: PacketHandler) = handler.npcDialogue(this)
 
     override fun toString() = "NpcDialoguePacket(uniqueEntityId=$uniqueEntityId, action=$action, dialogue='$dialogue', sceneName='$sceneName', npcName='$npcName', actionJson='$actionJson')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object NpcDialoguePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = NpcDialoguePacket(buffer.readLongLE(), NpcDialoguePacket.Action.values()[buffer.readVarInt()], buffer.readString(), buffer.readString(), buffer.readString(), buffer.readString())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = NpcDialoguePacket(buffer.readLongLE(), Action.values()[buffer.readVarInt()], buffer.readString(), buffer.readString(), buffer.readString(), buffer.readString())
+    }
 }

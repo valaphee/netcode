@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -35,11 +34,8 @@ object ClientToServerHandshakePacket : Packet() {
     override fun handle(handler: PacketHandler) = handler.clientToServerHandshake(this)
 
     override fun toString() = "ClientToServerHandshakePacket()"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientToServerHandshakePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientToServerHandshakePacket
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientToServerHandshakePacket
+    }
 }

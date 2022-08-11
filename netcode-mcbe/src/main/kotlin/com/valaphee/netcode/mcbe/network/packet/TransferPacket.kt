@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -41,11 +40,8 @@ class TransferPacket(
     override fun handle(handler: PacketHandler) = handler.transfer(this)
 
     override fun toString() = "TransferPacket(host='$host', port=$port)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object TransferPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = TransferPacket(buffer.readString(), buffer.readShortLE().toInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = TransferPacket(buffer.readString(), buffer.readShortLE().toInt())
+    }
 }

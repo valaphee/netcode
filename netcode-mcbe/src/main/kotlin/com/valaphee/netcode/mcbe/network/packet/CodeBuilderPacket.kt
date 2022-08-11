@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -38,11 +37,8 @@ class CodeBuilderPacket(
     override fun handle(handler: PacketHandler) = handler.codeBuilder(this)
 
     override fun toString() = "CodeBuilderPacket(url=$url)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object CodeBuilderPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = CodeBuilderPacket(buffer.readString(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = CodeBuilderPacket(buffer.readString(), buffer.readBoolean())
+    }
 }

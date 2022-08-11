@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.SoundEvent
 
 /**
@@ -48,11 +47,8 @@ class SoundEventPacket(
     override fun handle(handler: PacketHandler) = handler.soundEvent(this)
 
     override fun toString() = "SoundEventPacket(soundEvent=$soundEvent, position=$position, extraData=$extraData, entityKey='$entityTypeKey', babySound=$babySound, relativeVolumeDisabled=$relativeVolumeDisabled)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object SoundEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = SoundEventPacket(SoundEvent.values()[buffer.readVarUInt()], buffer.readFloat3(), buffer.readVarInt(), buffer.readString(), buffer.readBoolean(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = SoundEventPacket(SoundEvent.values()[buffer.readVarUInt()], buffer.readFloat3(), buffer.readVarInt(), buffer.readString(), buffer.readBoolean(), buffer.readBoolean())
+    }
 }

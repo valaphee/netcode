@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.GameRule
@@ -44,11 +43,8 @@ class GameRulesPacket(
     override fun handle(handler: PacketHandler) = handler.gameRules(this)
 
     override fun toString() = "GameRulesPacket(gameRules=$gameRules)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object GameRulesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = GameRulesPacket(safeList(buffer.readVarUInt()) { buffer.readGameRule(version) })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = GameRulesPacket(safeList(buffer.readVarUInt()) { buffer.readGameRule(version) })
+    }
 }

@@ -16,6 +16,8 @@
 
 package com.valaphee.netcode.mcbe.world.item
 
+import com.valaphee.netcode.util.Int2ObjectOpenHashBiMapVersioned
+
 /**
  * @author Kevin Ludwig
  */
@@ -23,5 +25,15 @@ data class Item(
     val key: String,
     val componentBased: Boolean
 ) {
+    fun getId(version: Int) = registry.getLastInt(version, key)
+
     override fun toString() = key
+
+    companion object {
+        val registry = Int2ObjectOpenHashBiMapVersioned<String>()
+
+        operator fun get(version: Int, id: Int) = registry.getLast(version, id)
+
+        operator fun get(version: Int, key: String) = registry.getLastInt(version, key)
+    }
 }

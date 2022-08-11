@@ -21,7 +21,7 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.util.Registry
+import com.valaphee.netcode.mcje.util.Int2ObjectOpenHashBiMap
 
 /**
  * @author Kevin Ludwig
@@ -99,7 +99,7 @@ class ServerWorldEventPacket(
         CopperScrapeOxidation;
 
         companion object {
-            val registry = Registry<Event>().apply {
+            val registry = Int2ObjectOpenHashBiMap<Event>().apply {
                 this[1000] = SoundClick
                 this[1001] = SoundClickFail
                 this[1002] = SoundShoot

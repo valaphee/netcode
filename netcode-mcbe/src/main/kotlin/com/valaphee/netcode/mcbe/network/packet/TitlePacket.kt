@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_17_011
@@ -58,27 +57,24 @@ class TitlePacket(
     override fun handle(handler: PacketHandler) = handler.title(this)
 
     override fun toString() = "TitlePacket(action=$action, text='$text', fadeInTime=$fadeInTime, stayTime=$stayTime, fadeOutTime=$fadeOutTime, xboxUserId=$xboxUserId, platformChatId=$platformChatId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object TitlePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): TitlePacket {
-        val action = TitlePacket.Action.values()[buffer.readVarInt()]
-        val text = buffer.readString()
-        val fadeInTime = buffer.readVarInt()
-        val stayTime = buffer.readVarInt()
-        val fadeOutTime = buffer.readVarInt()
-        val xboxUserId: String
-        val platformChatId: String
-        if (version >= V1_17_011) {
-            xboxUserId = buffer.readString()
-            platformChatId = buffer.readString()
-        } else {
-            xboxUserId = ""
-            platformChatId = ""
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): TitlePacket {
+            val action = TitlePacket.Action.values()[buffer.readVarInt()]
+            val text = buffer.readString()
+            val fadeInTime = buffer.readVarInt()
+            val stayTime = buffer.readVarInt()
+            val fadeOutTime = buffer.readVarInt()
+            val xboxUserId: String
+            val platformChatId: String
+            if (version >= V1_17_011) {
+                xboxUserId = buffer.readString()
+                platformChatId = buffer.readString()
+            } else {
+                xboxUserId = ""
+                platformChatId = ""
+            }
+            return TitlePacket(action, text, fadeInTime, stayTime, fadeOutTime, xboxUserId, platformChatId)
         }
-        return TitlePacket(action, text, fadeInTime, stayTime, fadeOutTime, xboxUserId, platformChatId)
     }
 }

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -38,11 +37,8 @@ class EducationUriResourcePacket(
     override fun handle(handler: PacketHandler) = handler.educationUriResource(this)
 
     override fun toString() = "EducationUriResourcePacket(name=$name, uri=$uri)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EducationUriResourcePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EducationUriResourcePacket(buffer.readString(), buffer.readString())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EducationUriResourcePacket(buffer.readString(), buffer.readString())
+    }
 }

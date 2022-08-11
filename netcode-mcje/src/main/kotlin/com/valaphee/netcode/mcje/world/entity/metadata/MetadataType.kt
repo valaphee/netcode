@@ -22,7 +22,7 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.util.Direction
 import com.valaphee.netcode.mcje.util.NamespacedKey
-import com.valaphee.netcode.mcje.util.Registry
+import com.valaphee.netcode.mcje.util.Int2ObjectOpenHashBiMap
 import com.valaphee.netcode.mcje.world.ParticleData
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
@@ -254,7 +254,7 @@ interface MetadataType<T> {
             }
         }
 
-        val registry = Registry<MetadataType<*>>().apply {
+        val registry = Int2ObjectOpenHashBiMap<MetadataType<*>>().apply {
             this[0] = Flags
             this[0] = Byte
             this[1] = Int

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -41,11 +40,8 @@ class ShowStoreOfferPacket(
     override fun handle(handler: PacketHandler) = handler.showStoreOffer(this)
 
     override fun toString() = "ShowStoreOfferPacket(offerId='$offerId', shownToAll=$shownToAll)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ShowStoreOfferPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ShowStoreOfferPacket(buffer.readString(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ShowStoreOfferPacket(buffer.readString(), buffer.readBoolean())
+    }
 }

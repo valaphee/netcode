@@ -19,13 +19,9 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.network.V1_16_221
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readItemStack
-import com.valaphee.netcode.mcbe.world.item.readItemStackPreV1_16_221
 import com.valaphee.netcode.mcbe.world.item.writeItemStack
-import com.valaphee.netcode.mcbe.world.item.writeItemStackPreV1_16_221
 
 /**
  * @author Kevin Ludwig
@@ -41,7 +37,7 @@ class EntityEquipmentPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarULong(runtimeEntityId)
-        if (version >= V1_16_221) buffer.writeItemStack(itemStack) else buffer.writeItemStackPreV1_16_221(itemStack)
+        buffer.writeItemStack(itemStack, version)
         buffer.writeByte(slotId)
         buffer.writeByte(hotbarSlot)
         buffer.writeByte(windowId)
@@ -50,17 +46,8 @@ class EntityEquipmentPacket(
     override fun handle(handler: PacketHandler) = handler.entityEquipment(this)
 
     override fun toString() = "EntityEquipmentPacket(runtimeEntityId=$runtimeEntityId, stack=$itemStack, slotId=$slotId, hotbarSlot=$hotbarSlot, windowId=$windowId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EntityEquipmentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityEquipmentPacket(
-        buffer.readVarULong(),
-        if (version >= V1_16_221) buffer.readItemStack() else buffer.readItemStackPreV1_16_221(),
-        buffer.readUnsignedByte().toInt(),
-        buffer.readUnsignedByte().toInt(),
-        buffer.readByte().toInt()
-    )
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EntityEquipmentPacket(buffer.readVarULong(), buffer.readItemStack(version), buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readByte().toInt())
+    }
 }

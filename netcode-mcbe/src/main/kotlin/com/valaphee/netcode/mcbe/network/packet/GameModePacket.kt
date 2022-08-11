@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.GameMode
 
 /**
@@ -37,11 +36,8 @@ class GameModePacket(
     override fun handle(handler: PacketHandler) = handler.gameMode(this)
 
     override fun toString() = "GameModePacket(gameMode=$gameMode)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object GameModePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = GameModePacket(GameMode.values()[buffer.readVarInt()])
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = GameModePacket(GameMode.values()[buffer.readVarInt()])
+    }
 }

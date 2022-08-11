@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -44,11 +43,8 @@ class SteerPacket(
     override fun handle(handler: PacketHandler) = handler.steer(this)
 
     override fun toString() = "SteerPacket(move=$move, jumping=$jumping, sneaking=$sneaking)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object SteerPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = SteerPacket(buffer.readFloat2(), buffer.readBoolean(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = SteerPacket(buffer.readFloat2(), buffer.readBoolean(), buffer.readBoolean())
+    }
 }

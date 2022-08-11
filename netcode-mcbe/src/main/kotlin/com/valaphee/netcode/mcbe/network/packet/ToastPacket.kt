@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -42,11 +41,8 @@ class ToastPacket(
     override fun handle(handler: PacketHandler) = handler.toast(this)
 
     override fun toString() = "ToastPacket(title='$title', content='$content')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ToastPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ToastPacket(buffer.readString(), buffer.readString())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ToastPacket(buffer.readString(), buffer.readString())
+    }
 }

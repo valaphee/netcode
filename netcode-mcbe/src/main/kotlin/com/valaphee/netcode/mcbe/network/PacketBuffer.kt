@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
-import com.valaphee.netcode.mcbe.util.Registries
 import com.valaphee.netcode.network.ByteBufWrapper
 import io.netty.buffer.ByteBuf
 import io.netty.util.AsciiString
@@ -37,14 +36,7 @@ class PacketBuffer(
     val nbtObjectMapper: ObjectMapper,
     val nbtVarIntObjectMapper: ObjectMapper,
     val nbtVarIntNoWrapObjectMapper: ObjectMapper,
-    registries: Registries? = null
 ) : ByteBufWrapper(buffer) {
-    lateinit var registries: Registries
-
-    init {
-        registries?.let { this.registries = it }
-    }
-
     inline fun <reified T : Enum<T>> readByteFlags(): Set<T> {
         val flagsValue = readByte().toInt()
         return EnumSet.noneOf(T::class.java).apply { enumValues<T>().filter { (flagsValue and (1 shl it.ordinal)) != 0 }.forEach { add(it) } }
@@ -236,9 +228,9 @@ class PacketBuffer(
         writeVarInt(value.z)
     }
 
-    fun readInt3UnsignedY() = Int3(readVarInt(), readVarUInt(), readVarInt())
+    fun readBlockPosition() = Int3(readVarInt(), readVarUInt(), readVarInt())
 
-    fun writeInt3UnsignedY(value: Int3) {
+    fun writeBlockPosition(value: Int3) {
         writeVarInt(value.x)
         writeVarUInt(value.y)
         writeVarInt(value.z)

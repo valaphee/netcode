@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.network
+package com.valaphee.netcode.mcbe.world.chunk
 
 /**
  * @author Kevin Ludwig
  */
-interface PacketReader {
-    fun read(buffer: PacketBuffer, version: Int): Packet
+object Chunk {
+    const val XZSize = 16
+    const val YShift = 4
+    const val YMask = 15
 }

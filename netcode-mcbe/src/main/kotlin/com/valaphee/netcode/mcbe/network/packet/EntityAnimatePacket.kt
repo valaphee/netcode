@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.V1_17_034
 import com.valaphee.netcode.util.safeList
 
@@ -50,18 +49,8 @@ class EntityAnimatePacket(
     override fun handle(handler: PacketHandler) = handler.entityAnimate(this)
 
     override fun toString() = "EntityAnimatePacket(animation='$animation', nextState='$nextState', stopExpression='$stopExpression', controller='$controller', blendOutTime=$blendOutTime, runtimeEntityIds=$runtimeEntityIds)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EntityAnimatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityAnimatePacket(
-        buffer.readString(),
-        buffer.readString(),
-        buffer.readString(),
-        buffer.readString(),
-        buffer.readFloatLE(),
-        safeList(buffer.readVarUInt()) { buffer.readVarULong() },
-    )
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EntityAnimatePacket(buffer.readString(), buffer.readString(), buffer.readString(), buffer.readString(), buffer.readFloatLE(), safeList(buffer.readVarUInt()) { buffer.readVarULong() },)
+    }
 }

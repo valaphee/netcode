@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.PacketBuffer
-import com.valaphee.netcode.mcbe.util.Registry
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -120,20 +119,6 @@ interface MetadataType<T> {
             override fun write(buffer: PacketBuffer, value: Set<Flag2>) {
                 buffer.writeVarLongFlags(value)
             }
-        }
-
-        val registry = Registry<MetadataType<*>>().apply {
-            this[0] = Byte
-            this[1] = Short
-            this[2] = Int
-            this[3] = Float
-            this[4] = String
-            this[5] = Nbt
-            this[6] = Int3
-            this[7] = Flags
-            this[7] = Flags2
-            this[7] = Long
-            this[8] = Float3
         }
     }
 }

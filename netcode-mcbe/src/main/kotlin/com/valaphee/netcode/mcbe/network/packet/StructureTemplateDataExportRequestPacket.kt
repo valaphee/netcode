@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.StructureSettings
@@ -45,7 +44,7 @@ class StructureTemplateDataExportRequestPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(name)
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         buffer.writeStructureSettings(settings, version)
         buffer.writeByte(operation.ordinal)
     }
@@ -53,11 +52,8 @@ class StructureTemplateDataExportRequestPacket(
     override fun handle(handler: PacketHandler) = handler.structureTemplateDataExportRequest(this)
 
     override fun toString() = "StructureTemplateDataExportRequestPacket(name='$name', position=$position, settings=$settings, operation=$operation)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object StructureTemplateDataExportRequestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = StructureTemplateDataExportRequestPacket(buffer.readString(), buffer.readInt3UnsignedY(), buffer.readStructureSettings(version), StructureTemplateDataExportRequestPacket.Operation.values()[buffer.readByte().toInt()])
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = StructureTemplateDataExportRequestPacket(buffer.readString(), buffer.readBlockPosition(), buffer.readStructureSettings(version), Operation.values()[buffer.readByte().toInt()])
+    }
 }

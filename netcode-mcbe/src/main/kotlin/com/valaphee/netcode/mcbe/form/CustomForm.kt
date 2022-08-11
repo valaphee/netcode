@@ -27,7 +27,7 @@ data class CustomForm(
     override val title: String,
     @get:JsonProperty("content") val elements: List<Element>
 ) : Form<Map<String, Any?>>() {
-    override fun getResponse(response: Any?) = (response as List<*>).mapIndexed { i, answer -> Pair(elements[i].text, elements[i].answer(answer)) }.toMap()
+    override fun parseResponse(response: Any?) = (response as List<*>).mapIndexed { i, answer -> Pair(elements[i].text, elements[i].parseResponse(answer)) }.toMap()
 }
 
 @JsonTypeInfo(
@@ -46,13 +46,13 @@ data class CustomForm(
 sealed interface Element {
     @get:JsonProperty("text") val text: String
 
-    fun answer(answer: Any?): Any?
+    fun parseResponse(answer: Any?): Any?
 }
 
 data class Label(
     override val text: String
 ) : Element {
-    override fun answer(answer: Any?): Any? = null
+    override fun parseResponse(answer: Any?): Any? = null
 }
 
 data class Dropdown(
@@ -60,7 +60,7 @@ data class Dropdown(
     @get:JsonProperty("options") val values: List<String>,
     @get:JsonProperty("default") var valueIndex: Int = 0
 ) : Element {
-    override fun answer(answer: Any?): Any {
+    override fun parseResponse(answer: Any?): Any {
         valueIndex = answer as Int
         return values[valueIndex]
     }
@@ -71,7 +71,7 @@ data class Input(
     @get:JsonProperty("placeholder") val placeholder: String,
     @get:JsonProperty("default") var value: String = ""
 ) : Element {
-    override fun answer(answer: Any?): Any {
+    override fun parseResponse(answer: Any?): Any {
         value = answer as String
         return value
     }
@@ -84,7 +84,7 @@ data class Slider(
     @get:JsonProperty("step") val step: Number,
     @get:JsonProperty("default") var value: Number
 ) : Element {
-    override fun answer(answer: Any?): Any {
+    override fun parseResponse(answer: Any?): Any {
         value = answer as Number
         return value
     }
@@ -95,7 +95,7 @@ data class StepSlider(
     @get:JsonProperty("steps") val values: List<String>,
     @get:JsonProperty("default") var valueIndex: Int = 0
 ) : Element {
-    override fun answer(answer: Any?): Any {
+    override fun parseResponse(answer: Any?): Any {
         valueIndex = answer as Int
         return values[valueIndex]
     }
@@ -105,7 +105,7 @@ data class Toggle(
     override val text: String,
     @get:JsonProperty("default") var value: Boolean = false
 ) : Element {
-    override fun answer(answer: Any?): Any {
+    override fun parseResponse(answer: Any?): Any {
         value = answer as Boolean
         return value
     }

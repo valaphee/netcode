@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -51,11 +50,8 @@ class VideoStreamPacket(
     override fun handle(handler: PacketHandler) = handler.videoStream(this)
 
     override fun toString() = "VideoStreamPacket(url='$url', screenshotFrequency=$screenshotFrequency, action=$action, width=$width, height=$height)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object VideoStreamPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = VideoStreamPacket(buffer.readString(), buffer.readFloatLE(), VideoStreamPacket.Action.values()[buffer.readByte().toInt()], buffer.readIntLE(), buffer.readIntLE())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = VideoStreamPacket(buffer.readString(), buffer.readFloatLE(), VideoStreamPacket.Action.values()[buffer.readByte().toInt()], buffer.readIntLE(), buffer.readIntLE())
+    }
 }

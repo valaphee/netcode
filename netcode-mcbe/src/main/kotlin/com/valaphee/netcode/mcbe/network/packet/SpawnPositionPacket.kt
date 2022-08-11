@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_16_010
@@ -45,35 +44,32 @@ class SpawnPositionPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(type.ordinal)
         if (version >= V1_16_010) {
-            buffer.writeInt3UnsignedY(blockPosition)
+            buffer.writeBlockPosition(blockPosition)
             buffer.writeVarUInt(dimensionId)
         }
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         if (version < V1_16_010) buffer.writeBoolean(forced)
     }
 
     override fun handle(handler: PacketHandler) = handler.spawnPosition(this)
 
     override fun toString() = "SpawnPositionPacket(type=$type, blockPosition=$blockPosition, dimensionId=$dimensionId, position=$position, forced=$forced)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object SpawnPositionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): SpawnPositionPacket {
-        val type = SpawnPositionPacket.Type.values()[buffer.readVarInt()]
-        val blockPosition: Int3
-        val dimensionId: Int
-        if (version >= V1_16_010) {
-            blockPosition = buffer.readInt3UnsignedY()
-            dimensionId = buffer.readVarUInt()
-        } else {
-            blockPosition = Int3.Zero
-            dimensionId = 0
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): SpawnPositionPacket {
+            val type = Type.values()[buffer.readVarInt()]
+            val blockPosition: Int3
+            val dimensionId: Int
+            if (version >= V1_16_010) {
+                blockPosition = buffer.readBlockPosition()
+                dimensionId = buffer.readVarUInt()
+            } else {
+                blockPosition = Int3.Zero
+                dimensionId = 0
+            }
+            val position = buffer.readBlockPosition()
+            val forced = if (version < V1_16_010) buffer.readBoolean() else false
+            return SpawnPositionPacket(type, blockPosition, dimensionId, position, forced)
         }
-        val position = buffer.readInt3UnsignedY()
-        val forced = if (version < V1_16_010) buffer.readBoolean() else false
-        return SpawnPositionPacket(type, blockPosition, dimensionId, position, forced)
     }
 }

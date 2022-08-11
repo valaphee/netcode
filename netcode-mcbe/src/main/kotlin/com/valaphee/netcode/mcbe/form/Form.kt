@@ -36,5 +36,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 sealed class Form<T> {
     @get:JsonProperty("title") abstract val title: String
 
-    abstract fun getResponse(response: Any?): T?
+    abstract fun parseResponse(response: Any?): T?
 }

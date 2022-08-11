@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.V1_16_010
 import com.valaphee.netcode.mcbe.world.SoundEvent
 
@@ -49,11 +48,8 @@ class SoundEventPacketV2(
     override fun handle(handler: PacketHandler) = handler.soundEventV2(this)
 
     override fun toString() = "SoundEventPacketV2(soundEvent=$soundEvent, position=$position, extraData=$extraData, entityTypeKey='$entityTypeKey', babySound=$babySound, relativeVolumeDisabled=$relativeVolumeDisabled)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object SoundEventPacketV2Reader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = SoundEventPacketV2(SoundEvent.values()[if (version >= V1_16_010) buffer.readVarUInt() else buffer.readUnsignedByte().toInt()], buffer.readFloat3(), buffer.readVarInt(), buffer.readString(), buffer.readBoolean(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = SoundEventPacketV2(SoundEvent.values()[if (version >= V1_16_010) buffer.readVarUInt() else buffer.readUnsignedByte().toInt()], buffer.readFloat3(), buffer.readVarInt(), buffer.readString(), buffer.readBoolean(), buffer.readBoolean())
+    }
 }

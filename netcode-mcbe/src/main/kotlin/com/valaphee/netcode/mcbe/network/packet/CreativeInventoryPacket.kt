@@ -19,15 +19,12 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_16_221
 import com.valaphee.netcode.mcbe.world.item.ItemStack
-import com.valaphee.netcode.mcbe.world.item.readItemStackInstance
-import com.valaphee.netcode.mcbe.world.item.readItemStackWithNetIdPreV1_16_221
-import com.valaphee.netcode.mcbe.world.item.writeItemStackInstance
-import com.valaphee.netcode.mcbe.world.item.writeItemStackWithNetIdPreV1_16_221
+import com.valaphee.netcode.mcbe.world.item.readItemStack
+import com.valaphee.netcode.mcbe.world.item.writeItemStack
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -42,26 +39,21 @@ class CreativeInventoryPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarUInt(content.size)
         content.forEach {
-            if (version >= V1_16_221) {
-                buffer.writeVarUInt(it?.netId ?: 0)
-                buffer.writeItemStackInstance(it)
-            } else buffer.writeItemStackWithNetIdPreV1_16_221(it)
+            if (version >= V1_16_221) buffer.writeVarUInt(it?.netId ?: 0)
+            buffer.writeItemStack(it, version, false)
         }
     }
 
     override fun handle(handler: PacketHandler) = handler.creativeInventory(this)
 
     override fun toString() = "CreativeInventoryPacket(content=$content)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object CreativeInventoryPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = CreativeInventoryPacket(safeList(buffer.readVarUInt()) {
-        if (version >= V1_16_221) {
-            val netId = buffer.readVarUInt()
-            buffer.readItemStackInstance().also { it?.let { it.netId = netId } }
-        } else buffer.readItemStackWithNetIdPreV1_16_221()
-    })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = CreativeInventoryPacket(safeList(buffer.readVarUInt()) {
+            if (version >= V1_16_221) {
+                val netId = buffer.readVarUInt()
+                buffer.readItemStack(version, false)?.apply { this.netId = netId }
+            } else buffer.readItemStack(version, false)
+        })
+    }
 }

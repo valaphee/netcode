@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap
@@ -45,14 +44,11 @@ class CacheBlobsPacket(
     override fun handle(handler: PacketHandler) = handler.cacheBlobs(this)
 
     override fun toString() = "CacheBlobsPacket(blobs=${blobs.values})"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object CacheBlobsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): CacheBlobsPacket {
-        val blobCount = buffer.readVarUInt()
-        return CacheBlobsPacket(Long2ObjectOpenHashMap<ByteArray>(blobCount).apply { repeat(blobCount) { this[buffer.readLongLE()] = buffer.readByteArray() } })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): CacheBlobsPacket {
+            val blobCount = buffer.readVarUInt()
+            return CacheBlobsPacket(Long2ObjectOpenHashMap<ByteArray>(blobCount).apply { repeat(blobCount) { this[buffer.readLongLE()] = buffer.readByteArray() } })
+        }
     }
 }

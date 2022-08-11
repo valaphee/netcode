@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_16_100
@@ -76,19 +75,16 @@ class PacksStackPacket(
     override fun handle(handler: PacketHandler) = handler.packsStack(this)
 
     override fun toString() = "PacksStackPacket(forcedToAccept=$forcedToAccept, behaviorPacks=$behaviorPacks, resourcePacks=$resourcePacks, experimental=$experimental, version='$version', experiments=$experiments, experimentsPreviouslyToggled=$experimentsPreviouslyToggled)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object PacksStackPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = PacksStackPacket(
-        buffer.readBoolean(),
-        safeList(buffer.readVarUInt()) { PacksStackPacket.Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readString()) },
-        safeList(buffer.readVarUInt()) { PacksStackPacket.Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readString()) },
-        if (version < V1_16_100) buffer.readBoolean() else false,
-        buffer.readString(),
-        if (version >= V1_16_100) safeList(buffer.readIntLE()) { buffer.readExperiment() } else emptyList(),
-        if (version >= V1_16_100) buffer.readBoolean() else false
-    )
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = PacksStackPacket(
+            buffer.readBoolean(),
+            safeList(buffer.readVarUInt()) { Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readString()) },
+            safeList(buffer.readVarUInt()) { Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readString()) },
+            if (version < V1_16_100) buffer.readBoolean() else false,
+            buffer.readString(),
+            if (version >= V1_16_100) safeList(buffer.readIntLE()) { buffer.readExperiment() } else emptyList(),
+            if (version >= V1_16_100) buffer.readBoolean() else false
+        )
+    }
 }

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.util.safeList
 
 /**
@@ -64,31 +63,28 @@ class TextPacket(
     override fun handle(handler: PacketHandler) = handler.text(this)
 
     override fun toString() = "TextPacket(type=$type, needsTranslation=$needsTranslation, sourceName=$sourceName, message='$message', arguments=$arguments, xboxUserId='$xboxUserId', platformChatId='$platformChatId')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object TextPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): TextPacket {
-        val type = TextPacket.Type.values()[buffer.readUnsignedByte().toInt()]
-        val needsTranslation = buffer.readBoolean()
-        var sourceName: String? = null
-        val message: String
-        var arguments: List<String>? = null
-        when (type) {
-            TextPacket.Type.Chat, TextPacket.Type.Whisper, TextPacket.Type.Announcement -> {
-                sourceName = buffer.readString()
-                message = buffer.readString()
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): TextPacket {
+            val type = Type.values()[buffer.readUnsignedByte().toInt()]
+            val needsTranslation = buffer.readBoolean()
+            var sourceName: String? = null
+            val message: String
+            var arguments: List<String>? = null
+            when (type) {
+                Type.Chat, Type.Whisper, Type.Announcement -> {
+                    sourceName = buffer.readString()
+                    message = buffer.readString()
+                }
+                Type.Raw, Type.Tip, Type.System, Type.Object, Type.ObjectWhisper -> message = buffer.readString()
+                Type.Translation, Type.PopUp, Type.JukeboxPopUp -> {
+                    message = buffer.readString()
+                    arguments = safeList(buffer.readVarUInt()) { buffer.readString() }
+                }
             }
-            TextPacket.Type.Raw, TextPacket.Type.Tip, TextPacket.Type.System, TextPacket.Type.Object, TextPacket.Type.ObjectWhisper -> message = buffer.readString()
-            TextPacket.Type.Translation, TextPacket.Type.PopUp, TextPacket.Type.JukeboxPopUp -> {
-                message = buffer.readString()
-                arguments = safeList(buffer.readVarUInt()) { buffer.readString() }
-            }
+            val xboxUserId = buffer.readString()
+            val platformChatId = buffer.readString()
+            return TextPacket(type, needsTranslation, sourceName, message, arguments, xboxUserId, platformChatId)
         }
-        val xboxUserId = buffer.readString()
-        val platformChatId = buffer.readString()
-        return TextPacket(type, needsTranslation, sourceName, message, arguments, xboxUserId, platformChatId)
     }
 }

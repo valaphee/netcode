@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.util.safeList
@@ -36,30 +35,28 @@ class BlockUpdatesSyncedPacket(
 ) : Packet() {
     data class Update(
         val position: Int3,
-        val runtimeId: Int,
+        val blockStateId: Int,
         val flags: Set<BlockUpdatePacket.Flag>,
         val runtimeEntityId: Long,
         val type: BlockUpdateSyncedPacket.Type
-    ) {
-        constructor(position: Int3, runtimeId: Int, flags: Set<BlockUpdatePacket.Flag>) : this(position, runtimeId, flags, -1, BlockUpdateSyncedPacket.Type.None)
-    }
+    )
 
     override val id get() = 0xAC
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(basePosition)
+        buffer.writeBlockPosition(basePosition)
         buffer.writeVarUInt(updates1.size)
         updates1.forEach {
-            buffer.writeInt3UnsignedY(it.position)
-            buffer.writeVarUInt(it.runtimeId)
+            buffer.writeBlockPosition(it.position)
+            buffer.writeVarUInt(it.blockStateId)
             buffer.writeVarUIntFlags(it.flags)
             buffer.writeVarULong(it.runtimeEntityId)
             buffer.writeVarULong(it.type.ordinal.toLong())
         }
         buffer.writeVarUInt(updates2.size)
         updates2.forEach {
-            buffer.writeInt3UnsignedY(it.position)
-            buffer.writeVarUInt(it.runtimeId)
+            buffer.writeBlockPosition(it.position)
+            buffer.writeVarUInt(it.blockStateId)
             buffer.writeVarUIntFlags(it.flags)
             buffer.writeVarULong(it.runtimeEntityId)
             buffer.writeVarULong(it.type.ordinal.toLong())
@@ -69,15 +66,12 @@ class BlockUpdatesSyncedPacket(
     override fun handle(handler: PacketHandler) = handler.blockUpdatesSynced(this)
 
     override fun toString() = "BlockUpdatesSyncedPacket(basePosition=$basePosition, updates1=$updates1, updates2=$updates2)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object BlockUpdatesSyncedPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BlockUpdatesSyncedPacket(
-        buffer.readInt3UnsignedY(),
-        safeList(buffer.readVarUInt()) { BlockUpdatesSyncedPacket.Update(buffer.readInt3UnsignedY(), buffer.readVarUInt(), buffer.readVarUIntFlags(), buffer.readVarULong(), BlockUpdateSyncedPacket.Type.values()[buffer.readVarULong().toInt()]) },
-        safeList(buffer.readVarUInt()) { BlockUpdatesSyncedPacket.Update(buffer.readInt3UnsignedY(), buffer.readVarUInt(), buffer.readVarUIntFlags(), buffer.readVarULong(), BlockUpdateSyncedPacket.Type.values()[buffer.readVarULong().toInt()]) }
-    )
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = BlockUpdatesSyncedPacket(
+            buffer.readBlockPosition(),
+            safeList(buffer.readVarUInt()) { Update(buffer.readBlockPosition(), buffer.readVarUInt(), buffer.readVarUIntFlags(), buffer.readVarULong(), BlockUpdateSyncedPacket.Type.values()[buffer.readVarULong().toInt()]) },
+            safeList(buffer.readVarUInt()) { Update(buffer.readBlockPosition(), buffer.readVarUInt(), buffer.readVarUIntFlags(), buffer.readVarULong(), BlockUpdateSyncedPacket.Type.values()[buffer.readVarULong().toInt()]) }
+        )
+    }
 }

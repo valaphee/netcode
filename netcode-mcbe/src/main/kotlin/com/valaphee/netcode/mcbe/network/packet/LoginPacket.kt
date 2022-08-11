@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import io.netty.util.AsciiString
@@ -47,22 +46,19 @@ class LoginPacket(
     override fun handle(handler: PacketHandler) = handler.login(this)
 
     override fun toString() = "LoginPacket(protocolVersion=$protocolVersion, authJws=$authJws, userJws=$userJws)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object LoginPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): LoginPacket {
-        val readerIndex = buffer.readerIndex()
-        var protocolVersion = buffer.readInt()
-        if (protocolVersion == 0) {
-            buffer.readerIndex(readerIndex + 2)
-            protocolVersion = buffer.readInt()
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): LoginPacket {
+            val readerIndex = buffer.readerIndex()
+            var protocolVersion = buffer.readInt()
+            if (protocolVersion == 0) {
+                buffer.readerIndex(readerIndex + 2)
+                protocolVersion = buffer.readInt()
+            }
+            buffer.readVarUInt()
+            val authJws = buffer.readAsciiStringLe().toString()
+            val userJws = buffer.readAsciiStringLe().toString()
+            return LoginPacket(protocolVersion, authJws, userJws)
         }
-        buffer.readVarUInt()
-        val authJws = buffer.readAsciiStringLe().toString()
-        val userJws = buffer.readAsciiStringLe().toString()
-        return LoginPacket(protocolVersion, authJws, userJws)
     }
 }

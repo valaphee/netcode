@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -51,11 +50,8 @@ class ObjectiveSetPacket(
     override fun handle(handler: PacketHandler) = handler.objectiveSet(this)
 
     override fun toString() = "ObjectiveSetPacket(displaySlot='$displaySlot', name='$name', displayName='$displayName', criteria='$criteria', sortOrder=$sortOrder)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ObjectiveSetPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ObjectiveSetPacket(buffer.readString(), buffer.readString(), buffer.readString(), buffer.readString(), ObjectiveSetPacket.SortOrder.values()[buffer.readVarInt()])
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ObjectiveSetPacket(buffer.readString(), buffer.readString(), buffer.readString(), buffer.readString(), ObjectiveSetPacket.SortOrder.values()[buffer.readVarInt()])
+    }
 }

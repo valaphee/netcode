@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -40,11 +39,8 @@ class MultiplayerSettingsPacket(
     override fun handle(handler: PacketHandler) = handler.multiplayerSettings(this)
 
     override fun toString() = "MultiplayerSettingsPacket(mode=$mode)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object MultiplayerSettingsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = MultiplayerSettingsPacket(MultiplayerSettingsPacket.Mode.values()[buffer.readVarInt()])
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = MultiplayerSettingsPacket(Mode.values()[buffer.readVarInt()])
+    }
 }

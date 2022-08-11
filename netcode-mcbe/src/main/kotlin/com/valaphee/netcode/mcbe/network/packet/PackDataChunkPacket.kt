@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import io.netty.buffer.ByteBuf
@@ -49,19 +48,16 @@ class PackDataChunkPacket(
     override fun handle(handler: PacketHandler) = handler.packDataChunk(this)
 
     override fun toString() = "PackDataChunkPacket(packId=$packId, packVersion=$packVersion, chunkIndex=$chunkIndex, progress=$progress, data=<omitted>)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object PackDataChunkPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): PackDataChunkPacket {
-        val pack = buffer.readString().split("_".toRegex(), 2).toTypedArray()
-        val packId = UUID.fromString(pack[0])
-        val packVersion = if (pack.size == 2) pack[1] else null
-        val chunkIndex = buffer.readUnsignedIntLE()
-        val progress = buffer.readLongLE()
-        val data = buffer.readRetainedSlice(buffer.readVarUInt())
-        return PackDataChunkPacket(packId, packVersion, chunkIndex, progress, data)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): PackDataChunkPacket {
+            val pack = buffer.readString().split("_".toRegex(), 2).toTypedArray()
+            val packId = UUID.fromString(pack[0])
+            val packVersion = if (pack.size == 2) pack[1] else null
+            val chunkIndex = buffer.readUnsignedIntLE()
+            val progress = buffer.readLongLE()
+            val data = buffer.readRetainedSlice(buffer.readVarUInt())
+            return PackDataChunkPacket(packId, packVersion, chunkIndex, progress, data)
+        }
     }
 }

@@ -20,34 +20,26 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
  */
 class AnvilDamagePacket(
-    val position: Int3,
-    val damage: Int
+    val damage: Int,
+    val position: Int3
 ) : Packet() {
     override val id get() = 0x8D
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(damage)
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
     }
 
     override fun handle(handler: PacketHandler) = handler.anvilDamage(this)
 
-    override fun toString() = "AnvilDamagePacket(position=$position, damage=$damage)"
-}
+    override fun toString() = "AnvilDamagePacket(damage=$damage, position=$position)"
 
-/**
- * @author Kevin Ludwig
- */
-object AnvilDamagePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): AnvilDamagePacket {
-        val damage = buffer.readByte().toInt()
-        val position = buffer.readInt3UnsignedY()
-        return AnvilDamagePacket(position, damage)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = AnvilDamagePacket(buffer.readByte().toInt(), buffer.readBlockPosition())
     }
 }

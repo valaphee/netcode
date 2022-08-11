@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -39,11 +38,8 @@ class EntityVelocityPacket(
     override fun handle(handler: PacketHandler) = handler.entityVelocity(this)
 
     override fun toString() = "EntityVelocityPacket(runtimeEntityId=$runtimeEntityId, velocity=$velocity)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EntityVelocityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityVelocityPacket(buffer.readVarULong(), buffer.readFloat3())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EntityVelocityPacket(buffer.readVarULong(), buffer.readFloat3())
+    }
 }

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_14_060
@@ -82,30 +81,28 @@ class PlayerListPacket(
     override fun handle(handler: PacketHandler) = handler.playerList(this)
 
     override fun toString() = "PlayerListPacket(action=$action, entries=$entries)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object PlayerListPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): PlayerListPacket {
-        val action = PlayerListPacket.Action.values()[buffer.readUnsignedByte().toInt()]
-        val entries = safeList(buffer.readVarUInt()) {
-            when (action) {
-                PlayerListPacket.Action.Add -> PlayerListPacket.Entry(
-                    buffer.readUuid(),
-                    buffer.readVarLong(),
-                    buffer.readString(),
-                    buffer.readString(),
-                    buffer.readString(),
-                    User.OperatingSystem.values().getOrElse(buffer.readIntLE()) { User.OperatingSystem.Unknown },
-                    buffer.readAppearance(version),
-                    buffer.readBoolean(),
-                    buffer.readBoolean()
-                )
-                else -> PlayerListPacket.Entry(buffer.readUuid())
-            }
-        }.apply { if (version > 389 && action == PlayerListPacket.Action.Add) forEach { it.appearance!!.trusted = buffer.readBoolean() } }
-        return PlayerListPacket(action, entries)
+
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): PlayerListPacket {
+            val action = Action.values()[buffer.readUnsignedByte().toInt()]
+            val entries = safeList(buffer.readVarUInt()) {
+                when (action) {
+                    Action.Add -> Entry(
+                        buffer.readUuid(),
+                        buffer.readVarLong(),
+                        buffer.readString(),
+                        buffer.readString(),
+                        buffer.readString(),
+                        User.OperatingSystem.values().getOrElse(buffer.readIntLE()) { User.OperatingSystem.Unknown },
+                        buffer.readAppearance(version),
+                        buffer.readBoolean(),
+                        buffer.readBoolean()
+                    )
+                    else -> Entry(buffer.readUuid())
+                }
+            }.apply { if (version >= V1_14_060 && action == Action.Add) forEach { it.appearance!!.trusted = buffer.readBoolean() } }
+            return PlayerListPacket(action, entries)
+        }
     }
 }

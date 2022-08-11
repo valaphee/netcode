@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -42,11 +41,8 @@ class ExperienceOrbAddPacket(
     override fun handle(handler: PacketHandler) = handler.experienceOrbAdd(this)
 
     override fun toString() = "ExperienceOrbAddPacket(position=$position, amount=$amount)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ExperienceOrbAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ExperienceOrbAddPacket(buffer.readFloat3(), buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ExperienceOrbAddPacket(buffer.readFloat3(), buffer.readVarInt())
+    }
 }

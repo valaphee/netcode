@@ -28,7 +28,6 @@ import com.valaphee.netcode.mcbe.command.writeEnumerationConstraint
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_17_011
@@ -93,7 +92,7 @@ class CommandsPacket(
                 buffer.writeVarUInt(overload.size)
                 overload.forEach { parameter ->
                     buffer.writeString(parameter.name)
-                    buffer.writeIntLE(parameter.postfix?.let { postfixes.indexOf(it) or parameterFlagPostfix } ?: parameter.enumeration?.let { (if (it.soft) softEnumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagSoftEnumeration else enumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagEnumeration) or parameterFlagValid } ?: parameter.type?.let { Parameter.Type.registryByVersion(version).getId(it) or parameterFlagValid } ?: error("No such command parameter type: ${parameter.name}"))
+                    buffer.writeIntLE(parameter.postfix?.let { postfixes.indexOf(it) or parameterFlagPostfix } ?: parameter.enumeration?.let { (if (it.soft) softEnumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagSoftEnumeration else enumerationsMap.values.indexOf(parameter.enumeration) or parameterFlagEnumeration) or parameterFlagValid } ?: parameter.type?.let { it.getId(version) or parameterFlagValid } ?: error("No such command parameter type: ${parameter.name}"))
                     buffer.writeBoolean(parameter.optional)
                     buffer.writeByteFlags(parameter.options)
                 }
@@ -109,76 +108,78 @@ class CommandsPacket(
 
     override fun toString() = "CommandsPacket(commands=$commands, constraints=$enumerationConstraints)"
 
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): CommandsPacket {
+            val values = safeList(buffer.readVarUInt()) { buffer.readString() }
+            val postfixes = safeList(buffer.readVarUInt()) { buffer.readString() }
+            val indexReader: () -> Int = when {
+                values.size <= 0xFF -> {
+                    { buffer.readUnsignedByte().toInt() }
+                }
+                values.size <= 0xFFFF -> {
+                    { buffer.readUnsignedShortLE() }
+                }
+                else -> {
+                    { buffer.readIntLE() }
+                }
+            }
+            val enumerations = safeList(buffer.readVarUInt()) { Enumeration(buffer.readString(), safeList(buffer.readVarUInt()) { values[indexReader()] }.toMutableSet(), false) }
+            val commandHelpers = safeList(buffer.readVarUInt()) {
+                CommandData(buffer.readString(), buffer.readString(), if (version >= V1_17_011) buffer.readShortLEFlags() else buffer.readByteFlags(), CommandPermission.values()[buffer.readByte().toInt()], buffer.readIntLE(), safeList(buffer.readVarUInt()) {
+                    safeList(buffer.readVarUInt()) {
+                        val name = buffer.readString()
+                        val type = buffer.readIntLE()
+                        val optional = buffer.readBoolean()
+                        val options = buffer.readByteFlags<Parameter.Option>()
+                        ParameterData(name, type and parameterFlagEnumeration != 0, type and parameterFlagSoftEnumeration != 0, type and parameterFlagPostfix != 0, type and 0xFFFF, optional, options)
+                    }
+                })
+            }
+            val softEnumerations = safeList(buffer.readVarUInt()) { buffer.readEnumeration(true) }
+            val constraints = safeList(buffer.readVarUInt()) { buffer.readEnumerationConstraint(values, enumerations) }
+            return CommandsPacket(commandHelpers.map {
+                val aliasesIndex = it.aliasesIndex
+                Command(it.name, it.description, it.flags, it.permission, if (aliasesIndex == -1) null else enumerations[aliasesIndex], it.overloadStructures.map {
+                    it.map {
+                        var postfix: String? = null
+                        var enumeration: Enumeration? = null
+                        var type: Parameter.Type? = null
+                        when {
+                            it.postfix -> postfix = postfixes[it.index]
+                            it.enumeration -> enumeration = enumerations[it.index]
+                            it.softEnumeration -> enumeration = softEnumerations[it.index]
+                            else -> type = Parameter.Type[version, it.index] ?: error("No such command parameter type: ${it.index} (version: $version)")
+                        }
+                        Parameter(it.name, it.optional, it.options, enumeration, postfix, type)
+                    }
+                })
+            }, constraints)
+        }
+
+        private class CommandData(
+            val name: String,
+            val description: String,
+            val flags: Set<Command.Flag>,
+            val permission: CommandPermission,
+            val aliasesIndex: Int,
+            val overloadStructures: List<List<ParameterData>>
+        )
+
+        private class ParameterData(
+            var name: String,
+            var enumeration: Boolean,
+            var softEnumeration: Boolean,
+            var postfix: Boolean,
+            var index: Int,
+            var optional: Boolean,
+            var options: Set<Parameter.Option>
+        )
+    }
+
     companion object {
         internal const val parameterFlagValid = 1 shl 20
         internal const val parameterFlagEnumeration = 1 shl 21
         internal const val parameterFlagPostfix = 1 shl 24
         internal const val parameterFlagSoftEnumeration = 1 shl 26
-    }
-}
-
-/**
- * @author Kevin Ludwig
- */
-object CommandsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): CommandsPacket {
-        val values = safeList(buffer.readVarUInt()) { buffer.readString() }
-        val postfixes = safeList(buffer.readVarUInt()) { buffer.readString() }
-        val indexReader: () -> Int = when {
-            values.size <= 0xFF -> {
-                { buffer.readUnsignedByte().toInt() }
-            }
-            values.size <= 0xFFFF -> {
-                { buffer.readUnsignedShortLE() }
-            }
-            else -> {
-                { buffer.readIntLE() }
-            }
-        }
-        val enumerations = safeList(buffer.readVarUInt()) { Enumeration(buffer.readString(), safeList(buffer.readVarUInt()) { values[indexReader()] }.toMutableSet(), false) }
-        val commandBuilders = safeList(buffer.readVarUInt()) {
-            val name = buffer.readString()
-            val description = buffer.readString()
-            val flags: Set<Command.Flag> = if (version >= V1_17_011) buffer.readShortLEFlags() else buffer.readByteFlags()
-            val permission = CommandPermission.values()[buffer.readByte().toInt()]
-            val aliasesIndex = buffer.readIntLE()
-            val overloadBuilders = safeList(buffer.readVarUInt()) {
-                safeList(buffer.readVarUInt()) {
-                    val parameterName = buffer.readString()
-                    val type = buffer.readIntLE()
-                    val optional = buffer.readBoolean()
-                    val options = buffer.readByteFlags<Parameter.Option>()
-                    Parameter.Builder(
-                        parameterName,
-                        optional,
-                        options,
-                        type and CommandsPacket.parameterFlagEnumeration != 0,
-                        type and CommandsPacket.parameterFlagSoftEnumeration != 0,
-                        type and CommandsPacket.parameterFlagPostfix != 0,
-                        type and 0xFFFF
-                    )
-                }
-            }
-            Command.Builder(name, description, flags, permission, aliasesIndex, overloadBuilders)
-        }
-        val softEnumerations = safeList(buffer.readVarUInt()) { buffer.readEnumeration(true) }
-        val constraints = safeList(buffer.readVarUInt()) { buffer.readEnumerationConstraint(values, enumerations) }
-        return CommandsPacket(commandBuilders.map {
-            val aliasesIndex = it.aliasesIndex
-            Command(it.name, it.description, it.flags, it.permission, if (aliasesIndex == -1) null else enumerations[aliasesIndex], it.overloadStructures.map {
-                it.map {
-                    var postfix: String? = null
-                    var enumeration: Enumeration? = null
-                    var type: Parameter.Type? = null
-                    when {
-                        it.postfix -> postfix = postfixes[it.index]
-                        it.enumeration -> enumeration = enumerations[it.index]
-                        it.softEnumeration -> enumeration = softEnumerations[it.index]
-                        else -> type = Parameter.Type.registryByVersion(version)[it.index]
-                    }
-                    Parameter(it.name, it.optional, it.options, enumeration, postfix, type)
-                }
-            })
-        }, constraints)
     }
 }

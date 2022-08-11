@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -31,7 +30,7 @@ import com.valaphee.netcode.mcbe.network.Restriction
 class CommandBlockUpdatePacket(
     val block: Boolean,
     val blockPosition: Int3?,
-    val minecartRuntimeEntityId: Long,
+    val runtimeEntityId: Long,
     val name: String,
     val command: String,
     val lastOutput: String,
@@ -51,11 +50,11 @@ class CommandBlockUpdatePacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeBoolean(block)
         if (block) {
-            buffer.writeInt3UnsignedY(blockPosition!!)
+            buffer.writeBlockPosition(blockPosition!!)
             buffer.writeVarUInt(mode!!.ordinal)
             buffer.writeBoolean(powered)
             buffer.writeBoolean(conditionMet)
-        } else buffer.writeVarULong(minecartRuntimeEntityId)
+        } else buffer.writeVarULong(runtimeEntityId)
         buffer.writeString(command)
         buffer.writeString(lastOutput)
         buffer.writeString(name)
@@ -66,39 +65,36 @@ class CommandBlockUpdatePacket(
 
     override fun handle(handler: PacketHandler) = handler.commandBlockUpdate(this)
 
-    override fun toString() = "CommandBlockUpdatePacket(block=$block, blockPosition=$blockPosition, minecartRuntimeEntityId=$minecartRuntimeEntityId, name='$name', command='$command', lastOutput='$lastOutput', mode=$mode, powered=$powered, conditionMet=$conditionMet, outputTracked=$outputTracked, executeOnFirstTick=$executeOnFirstTick, tickDelay=$tickDelay)"
-}
+    override fun toString() = "CommandBlockUpdatePacket(block=$block, blockPosition=$blockPosition, runtimeEntityId=$runtimeEntityId, name='$name', command='$command', lastOutput='$lastOutput', mode=$mode, powered=$powered, conditionMet=$conditionMet, outputTracked=$outputTracked, executeOnFirstTick=$executeOnFirstTick, tickDelay=$tickDelay)"
 
-/**
- * @author Kevin Ludwig
- */
-object CommandBlockUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): CommandBlockUpdatePacket {
-        val block = buffer.readBoolean()
-        val blockPosition: Int3?
-        val minecartRuntimeEntityId: Long
-        val mode: CommandBlockUpdatePacket.Mode?
-        val powered: Boolean
-        val conditionMet: Boolean
-        if (block) {
-            blockPosition = buffer.readInt3UnsignedY()
-            minecartRuntimeEntityId = 0L
-            mode = CommandBlockUpdatePacket.Mode.values()[buffer.readVarUInt()]
-            powered = buffer.readBoolean()
-            conditionMet = buffer.readBoolean()
-        } else {
-            blockPosition = null
-            minecartRuntimeEntityId = buffer.readVarULong()
-            mode = null
-            powered = false
-            conditionMet = false
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): CommandBlockUpdatePacket {
+            val block = buffer.readBoolean()
+            val blockPosition: Int3?
+            val runtimeEntityId: Long
+            val mode: Mode?
+            val powered: Boolean
+            val conditionMet: Boolean
+            if (block) {
+                blockPosition = buffer.readBlockPosition()
+                runtimeEntityId = 0L
+                mode = Mode.values()[buffer.readVarUInt()]
+                powered = buffer.readBoolean()
+                conditionMet = buffer.readBoolean()
+            } else {
+                blockPosition = null
+                runtimeEntityId = buffer.readVarULong()
+                mode = null
+                powered = false
+                conditionMet = false
+            }
+            val command = buffer.readString()
+            val lastOutput = buffer.readString()
+            val name = buffer.readString()
+            val outputTracked = buffer.readBoolean()
+            val tickDelay = buffer.readUnsignedIntLE()
+            val executeOnFirstTick = buffer.readBoolean()
+            return CommandBlockUpdatePacket(block, blockPosition, runtimeEntityId, name, command, lastOutput, mode, powered, conditionMet, outputTracked, executeOnFirstTick, tickDelay)
         }
-        val command = buffer.readString()
-        val lastOutput = buffer.readString()
-        val name = buffer.readString()
-        val outputTracked = buffer.readBoolean()
-        val tickDelay = buffer.readUnsignedIntLE()
-        val executeOnFirstTick = buffer.readBoolean()
-        return CommandBlockUpdatePacket(block, blockPosition, minecartRuntimeEntityId, name, command, lastOutput, mode, powered, conditionMet, outputTracked, executeOnFirstTick, tickDelay)
     }
 }

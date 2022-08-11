@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -39,11 +38,8 @@ class LocalPlayerAsInitializedPacket(
     override fun handle(handler: PacketHandler) = handler.localPlayerAsInitialized(this)
 
     override fun toString() = "LocalPlayerAsInitializedPacket(runtimeEntityId=$runtimeEntityId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object LocalPlayerAsInitializedPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = LocalPlayerAsInitializedPacket(buffer.readVarULong())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = LocalPlayerAsInitializedPacket(buffer.readVarULong())
+    }
 }

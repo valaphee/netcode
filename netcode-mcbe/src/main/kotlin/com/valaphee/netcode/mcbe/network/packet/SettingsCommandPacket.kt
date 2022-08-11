@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -41,11 +40,8 @@ class SettingsCommandPacket(
     override fun handle(handler: PacketHandler) = handler.settingsCommand(this)
 
     override fun toString() = "SettingsCommandPacket(command='$command', suppressingOutput=$suppressingOutput)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object SettingsCommandPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = SettingsCommandPacket(buffer.readString(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = SettingsCommandPacket(buffer.readString(), buffer.readBoolean())
+    }
 }

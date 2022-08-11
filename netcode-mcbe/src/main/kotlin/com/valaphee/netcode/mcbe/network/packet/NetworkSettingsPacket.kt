@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -36,11 +35,8 @@ class NetworkSettingsPacket(
     override fun handle(handler: PacketHandler) = handler.networkSettings(this)
 
     override fun toString() = "NetworkSettingsPacket(compressionThreshold=$compressionThreshold)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object NetworkSettingsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = NetworkSettingsPacket(buffer.readUnsignedShortLE())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = NetworkSettingsPacket(buffer.readUnsignedShortLE())
+    }
 }

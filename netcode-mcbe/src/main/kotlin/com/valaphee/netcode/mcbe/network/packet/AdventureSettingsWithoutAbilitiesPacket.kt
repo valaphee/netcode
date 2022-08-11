@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -44,11 +43,8 @@ class AdventureSettingsWithoutAbilitiesPacket(
     override fun handle(handler: PacketHandler) = handler.adventureSettingsWithoutAbilities(this)
 
     override fun toString() = "AdventureSettingsWithoutAbilitiesPacket(noPvM=$noPvM, noMvP=$noMvP, immutableWorld=$immutableWorld, showNameTags=$showNameTags, autoJump=$autoJump)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object AdventureSettingsWithoutAbilitiesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = AdventureSettingsWithoutAbilitiesPacket(buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = AdventureSettingsWithoutAbilitiesPacket(buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean())
+    }
 }

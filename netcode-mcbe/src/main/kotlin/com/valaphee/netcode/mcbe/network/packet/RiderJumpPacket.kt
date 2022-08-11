@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -39,11 +38,8 @@ class RiderJumpPacket(
     override fun handle(handler: PacketHandler) = handler.riderJump(this)
 
     override fun toString() = "RiderJumpPacket(jumpStrength=$jumpStrength)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object RiderJumpPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = RiderJumpPacket(buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = RiderJumpPacket(buffer.readVarInt())
+    }
 }

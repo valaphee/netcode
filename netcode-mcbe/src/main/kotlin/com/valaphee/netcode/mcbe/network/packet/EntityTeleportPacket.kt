@@ -21,7 +21,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -50,24 +49,21 @@ class EntityTeleportPacket(
 
     override fun toString() = "EntityTeleportPacket(runtimeEntityId=$runtimeEntityId, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, onGround=$onGround, immediate=$immediate)"
 
-    companion object {
-        internal const val flagOnGround = 1 shl 0
-        internal const val flagImmediate = 1 shl 1
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): EntityTeleportPacket {
+            val runtimeEntityId = buffer.readVarULong()
+            val flagsValue = buffer.readUnsignedByte().toInt()
+            val onGround = flagsValue and flagOnGround != 0
+            val immediate = flagsValue and flagImmediate != 0
+            val position = buffer.readFloat3()
+            val rotation = buffer.readAngle2()
+            val headRotationYaw = buffer.readAngle()
+            return EntityTeleportPacket(runtimeEntityId, position, rotation, headRotationYaw, onGround, immediate)
+        }
     }
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EntityTeleportPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): EntityTeleportPacket {
-        val runtimeEntityId = buffer.readVarULong()
-        val flagsValue = buffer.readUnsignedByte().toInt()
-        val onGround = flagsValue and EntityTeleportPacket.flagOnGround != 0
-        val immediate = flagsValue and EntityTeleportPacket.flagImmediate != 0
-        val position = buffer.readFloat3()
-        val rotation = buffer.readAngle2()
-        val headRotationYaw = buffer.readAngle()
-        return EntityTeleportPacket(runtimeEntityId, position, rotation, headRotationYaw, onGround, immediate)
+    companion object {
+        private const val flagOnGround  = 1 shl 0
+        private const val flagImmediate = 1 shl 1
     }
 }

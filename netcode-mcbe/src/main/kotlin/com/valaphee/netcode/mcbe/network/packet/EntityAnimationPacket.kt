@@ -19,8 +19,8 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.util.Registry
+import com.valaphee.netcode.mcbe.network.V1_14_060
+import com.valaphee.netcode.util.Int2ObjectOpenHashBiMapVersioned
 
 /**
  * @author Kevin Ludwig
@@ -33,23 +33,27 @@ class EntityAnimationPacket(
     enum class Animation {
         NoAction, SwingArm, WakeUp, CriticalHit, MagicCriticalHit, RowRight, RowLeft;
 
+        fun getId(version: Int) = registry.getLastInt(version, this)
+
         companion object {
-            val registry = Registry<Animation>().apply {
-                this[0x00] = NoAction
-                this[0x01] = SwingArm
-                this[0x03] = WakeUp
-                this[0x04] = CriticalHit
-                this[0x05] = MagicCriticalHit
-                this[0x80] = RowRight
-                this[0x81] = RowLeft
+            val registry = Int2ObjectOpenHashBiMapVersioned<Animation>().apply {
+                put(NoAction        , V1_14_060 to 0x00)
+                put(SwingArm        , V1_14_060 to 0x01)
+                put(WakeUp          , V1_14_060 to 0x03)
+                put(CriticalHit     , V1_14_060 to 0x04)
+                put(MagicCriticalHit, V1_14_060 to 0x05)
+                put(RowRight        , V1_14_060 to 0x80)
+                put(RowLeft         , V1_14_060 to 0x81)
             }
+
+            operator fun get(version: Int, id: Int) = registry.getLast(version, id)
         }
     }
 
     override val id get() = 0x2C
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(Animation.registry.getId(animation))
+        buffer.writeVarInt(animation.getId(version))
         buffer.writeVarULong(runtimeEntityId)
         if (animation == Animation.RowRight || animation == Animation.RowLeft) buffer.writeFloatLE(rowingTime)
     }
@@ -57,16 +61,13 @@ class EntityAnimationPacket(
     override fun handle(handler: PacketHandler) = handler.entityAnimation(this)
 
     override fun toString() = "EntityAnimationPacket(animation=$animation, runtimeEntityId=$runtimeEntityId, rowingTime=$rowingTime)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EntityAnimationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): EntityAnimationPacket {
-        val animation = checkNotNull(EntityAnimationPacket.Animation.registry[buffer.readVarInt()])
-        val runtimeEntityId = buffer.readVarULong()
-        val rowingTime = if (animation == EntityAnimationPacket.Animation.RowRight || animation == EntityAnimationPacket.Animation.RowLeft) buffer.readFloatLE() else 0.0f
-        return EntityAnimationPacket(animation, runtimeEntityId, rowingTime)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): EntityAnimationPacket {
+            val animation = checkNotNull(Animation[version, buffer.readVarInt()])
+            val runtimeEntityId = buffer.readVarULong()
+            val rowingTime = if (animation == Animation.RowRight || animation == Animation.RowLeft) buffer.readFloatLE() else 0.0f
+            return EntityAnimationPacket(animation, runtimeEntityId, rowingTime)
+        }
     }
 }

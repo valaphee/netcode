@@ -66,8 +66,8 @@ class EncryptionInitializer(
 
     override fun initChannel(channel: Channel) {
         channel.pipeline()
-            .addBefore(PacketCodec.Name, "automation-encryptor", Encryptor())
-            .addBefore("automation-encryptor", "automation-decryptor", Decryptor())
+            .addBefore(PacketCodec.Name, EncryptorName, Encryptor())
+            .addBefore(EncryptorName, DecryptorName, Decryptor())
     }
 
     private inner class Encryptor : ChannelOutboundHandlerAdapter() {
@@ -117,6 +117,9 @@ class EncryptionInitializer(
     }
 
     companion object {
+        const val EncryptorName = "automation-encryptor"
+        const val DecryptorName = "automation-decryptor"
+
         private val heapInLocal = ThreadLocal.withInitial { ByteArray(0) }
         private val heapOutLocal = ThreadLocal.withInitial { ByteArray(0) }
         private val sha256Local = ThreadLocal.withInitial { MessageDigest.getInstance("SHA-256") }

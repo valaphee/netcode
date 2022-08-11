@@ -15,8 +15,9 @@
  */
 
 dependencies {
-    api("io.netty:netty-all:4.1.77.Final")
-    api("org.apache.logging.log4j:log4j-api:2.17.2")
+    api("io.netty:netty-all:4.1.79.Final")
+    api("it.unimi.dsi:fastutil:8.5.8")
+    api("org.apache.logging.log4j:log4j-api:2.18.0")
 }
 
 publishing {

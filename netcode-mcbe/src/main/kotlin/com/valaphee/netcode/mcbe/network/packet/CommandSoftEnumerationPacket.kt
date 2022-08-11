@@ -22,7 +22,6 @@ import com.valaphee.netcode.mcbe.command.writeEnumeration
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -48,15 +47,12 @@ class CommandSoftEnumerationPacket(
     override fun handle(handler: PacketHandler) = handler.commandSoftEnumeration(this)
 
     override fun toString() = "CommandSoftEnumerationPacket(action=$action, softEnumeration=$softEnumeration)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object CommandSoftEnumerationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): CommandSoftEnumerationPacket {
-        val softEnumeration = buffer.readEnumeration(true)
-        val action = CommandSoftEnumerationPacket.Action.values()[buffer.readUnsignedByte().toInt()]
-        return CommandSoftEnumerationPacket(action, softEnumeration)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): CommandSoftEnumerationPacket {
+            val softEnumeration = buffer.readEnumeration(true)
+            val action = Action.values()[buffer.readUnsignedByte().toInt()]
+            return CommandSoftEnumerationPacket(action, softEnumeration)
+        }
     }
 }

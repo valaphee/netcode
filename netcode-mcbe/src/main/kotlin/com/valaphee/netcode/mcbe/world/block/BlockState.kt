@@ -18,6 +18,7 @@ package com.valaphee.netcode.mcbe.world.block
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.util.Int2ObjectOpenHashBiMapVersioned
 
 /**
  * @author Kevin Ludwig
@@ -56,6 +57,8 @@ class BlockState {
         } else throw IllegalArgumentException()
     }
 
+    fun getId(version: Int) = registry.getLastInt(version, this)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -75,4 +78,10 @@ class BlockState {
     }
 
     override fun toString() = "${blockKey}${if (states.isNotEmpty()) "[${states.entries.joinToString(",")}]" else ""}"
+
+    companion object {
+        val registry = Int2ObjectOpenHashBiMapVersioned<BlockState>()
+
+        operator fun get(version: Int, id: Int) = registry.getLast(version, id)
+    }
 }

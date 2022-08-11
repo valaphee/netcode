@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -45,16 +44,13 @@ class InteractPacket(
     override fun handle(handler: PacketHandler) = handler.interact(this)
 
     override fun toString() = "InteractPacket(action=$action, runtimeEntityId=$runtimeEntityId, mousePosition=$mousePosition)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object InteractPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): InteractPacket {
-        val action = InteractPacket.Action.values()[buffer.readByte().toInt()]
-        val runtimeEntityId = buffer.readVarULong()
-        val mousePosition = if (action == InteractPacket.Action.LeaveVehicle || action == InteractPacket.Action.Mouseover) buffer.readFloat3() else null
-        return InteractPacket(action, runtimeEntityId, mousePosition)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): InteractPacket {
+            val action = InteractPacket.Action.values()[buffer.readByte().toInt()]
+            val runtimeEntityId = buffer.readVarULong()
+            val mousePosition = if (action == Action.LeaveVehicle || action == Action.Mouseover) buffer.readFloat3() else null
+            return InteractPacket(action, runtimeEntityId, mousePosition)
+        }
     }
 }

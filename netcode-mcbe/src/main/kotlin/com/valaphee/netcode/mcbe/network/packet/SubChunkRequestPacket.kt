@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_18_010
@@ -53,11 +52,8 @@ class SubChunkRequestPacket(
     override fun handle(handler: PacketHandler) = handler.subChunkRequest(this)
 
     override fun toString() = "SubChunkRequestPacket(dimension=$dimension, position=$position, requests=$requests)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object SubChunkRequestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = SubChunkRequestPacket(buffer.readVarInt(), buffer.readInt3(), if (version >= V1_18_010) safeList(buffer.readIntLE()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) } else listOf(Int3.Zero))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = SubChunkRequestPacket(buffer.readVarInt(), buffer.readInt3(), if (version >= V1_18_010) safeList(buffer.readIntLE()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) } else listOf(Int3.Zero))
+    }
 }

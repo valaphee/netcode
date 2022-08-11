@@ -22,7 +22,6 @@ import com.valaphee.netcode.mcbe.command.writeOrigin
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -46,11 +45,8 @@ class CommandPacket(
     override fun handle(handler: PacketHandler) = handler.command(this)
 
     override fun toString() = "CommandPacket(command='$command', origin=$origin, internal=$internal)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object CommandPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = CommandPacket(buffer.readString(), buffer.readOrigin(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = CommandPacket(buffer.readString(), buffer.readOrigin(), buffer.readBoolean())
+    }
 }

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -38,11 +37,8 @@ class MapCreateLockedCopyPacket(
     override fun handle(handler: PacketHandler) = handler.mapCreateLockedCopy(this)
 
     override fun toString() = "MapCreateLockedCopyPacket(mapId=$mapId, newMapId=$newMapId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object MapCreateLockedCopyPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = MapCreateLockedCopyPacket(buffer.readVarLong(), buffer.readVarLong())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = MapCreateLockedCopyPacket(buffer.readVarLong(), buffer.readVarLong())
+    }
 }

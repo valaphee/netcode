@@ -28,7 +28,7 @@ data class Entity(
     @get:JsonProperty("name") val name: String,
     @get:JsonProperty("dimension") val dimension: Int,
     @get:JsonProperty("position") val position: Float3,
-    @get:JsonProperty("yRot") val yRot: Float,
+    @get:JsonProperty("yRot") val yaw: Float,
     @get:JsonProperty("variant") val variant: Int,
     @get:JsonProperty("color") val color: String
 )

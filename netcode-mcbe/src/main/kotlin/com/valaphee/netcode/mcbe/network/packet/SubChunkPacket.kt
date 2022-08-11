@@ -20,9 +20,9 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
+import com.valaphee.netcode.mcbe.network.V1_18_002
 import com.valaphee.netcode.mcbe.network.V1_18_010
 import com.valaphee.netcode.util.safeList
 
@@ -110,7 +110,7 @@ class SubChunkPacket(
             buffer.writeVarInt(response.result.ordinal)
             buffer.writeByte(response.heightMapStatus.ordinal)
             if (response.heightMapStatus == Response.HeightMapStatus.Available || version < 475) buffer.writeBytes(response.heightMap!!)
-            if (version >= 475) if (cache) {
+            if (version >= V1_18_002) if (cache) {
                 buffer.writeBoolean(true)
                 buffer.writeLongLE(response.blobId)
             } else buffer.writeBoolean(false)
@@ -120,42 +120,40 @@ class SubChunkPacket(
     override fun handle(handler: PacketHandler) = handler.subChunk(this)
 
     override fun toString() = "SubChunkPacket(cache=$cache, dimension=$dimension, position=$position, responses=$responses)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object SubChunkPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = if (version >= V1_18_010) {
-        val cache = buffer.readBoolean()
-        val dimension = buffer.readVarInt()
-        val position = buffer.readInt3()
-        val responses = safeList(buffer.readIntLE()) {
-            val position = Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt())
-            val result = SubChunkPacket.Response.Result.values()[buffer.readByte().toInt()]
-            val data = if (result != SubChunkPacket.Response.Result.SuccessEmpty || !cache) buffer.readByteArray() else null
-            val heightMapStatus = SubChunkPacket.Response.HeightMapStatus.values()[buffer.readByte().toInt()]
-            val heightMap = if (heightMapStatus == SubChunkPacket.Response.HeightMapStatus.Available) ByteArray(256).also { buffer.readBytes(it) } else null
-            val blobId = if (cache) buffer.readLongLE() else 0L
-            SubChunkPacket.Response(position, result, data, heightMapStatus, heightMap, blobId)
-        }
-        SubChunkPacket(cache, dimension, position, responses)
-    } else {
-        val dimension = buffer.readVarInt()
-        val position = buffer.readInt3()
-        val data = buffer.readByteArray()
-        val result = SubChunkPacket.Response.Result.values()[buffer.readVarInt()]
-        val heightMapStatus = SubChunkPacket.Response.HeightMapStatus.values()[buffer.readByte().toInt()]
-        val heightMap = if (heightMapStatus == SubChunkPacket.Response.HeightMapStatus.Available || version < 475) ByteArray(256).also { buffer.readBytes(it) } else null
-        val cache: Boolean
-        val blobId: Long
-        if (version >= 475) {
-            cache = buffer.readBoolean()
-            blobId = if (cache) buffer.readLongLE() else 0L
+
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = if (version >= V1_18_010) {
+            val cache = buffer.readBoolean()
+            val dimension = buffer.readVarInt()
+            val position = buffer.readInt3()
+            val responses = safeList(buffer.readIntLE()) {
+                val position = Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt())
+                val result = Response.Result.values()[buffer.readByte().toInt()]
+                val data = if (result != Response.Result.SuccessEmpty || !cache) buffer.readByteArray() else null
+                val heightMapStatus = Response.HeightMapStatus.values()[buffer.readByte().toInt()]
+                val heightMap = if (heightMapStatus == Response.HeightMapStatus.Available) ByteArray(256).also { buffer.readBytes(it) } else null
+                val blobId = if (cache) buffer.readLongLE() else 0L
+                Response(position, result, data, heightMapStatus, heightMap, blobId)
+            }
+            SubChunkPacket(cache, dimension, position, responses)
         } else {
-            cache = false
-            blobId = 0L
+            val dimension = buffer.readVarInt()
+            val position = buffer.readInt3()
+            val data = buffer.readByteArray()
+            val result = Response.Result.values()[buffer.readVarInt()]
+            val heightMapStatus = Response.HeightMapStatus.values()[buffer.readByte().toInt()]
+            val heightMap = if (heightMapStatus == Response.HeightMapStatus.Available || version < 475) ByteArray(256).also { buffer.readBytes(it) } else null
+            val cache: Boolean
+            val blobId: Long
+            if (version >= V1_18_002) {
+                cache = buffer.readBoolean()
+                blobId = if (cache) buffer.readLongLE() else 0L
+            } else {
+                cache = false
+                blobId = 0L
+            }
+            SubChunkPacket(cache, dimension, position, listOf(Response(position, result, data, heightMapStatus, heightMap, blobId)))
         }
-        SubChunkPacket(cache, dimension, position, listOf(SubChunkPacket.Response(position, result, data, heightMapStatus, heightMap, blobId)))
     }
 }

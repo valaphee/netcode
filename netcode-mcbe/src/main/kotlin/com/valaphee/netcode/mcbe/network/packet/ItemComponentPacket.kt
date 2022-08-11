@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.util.safeList
@@ -53,11 +52,8 @@ class ItemComponentPacket(
     override fun handle(handler: PacketHandler) = handler.itemComponent(this)
 
     override fun toString() = "ItemComponentPacket(entries=$entries)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ItemComponentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ItemComponentPacket(safeList(buffer.readVarUInt()) { ItemComponentPacket.Entry(buffer.readString(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer))) })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ItemComponentPacket(safeList(buffer.readVarUInt()) { Entry(buffer.readString(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer))) })
+    }
 }

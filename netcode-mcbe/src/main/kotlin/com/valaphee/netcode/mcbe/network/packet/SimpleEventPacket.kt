@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -40,11 +39,8 @@ class SimpleEventPacket(
     override fun handle(handler: PacketHandler) = handler.simpleEvent(this)
 
     override fun toString() = "SimpleEventPacket(event=$event)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object SimpleEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = SimpleEventPacket(SimpleEventPacket.Event.values()[buffer.readShortLE().toInt()])
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = SimpleEventPacket(Event.values()[buffer.readShortLE().toInt()])
+    }
 }

@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import io.netty.buffer.ByteBufInputStream
@@ -46,11 +45,8 @@ class WorldGenericEventPacket(
     override fun handle(handler: PacketHandler) = handler.worldGenericEvent(this)
 
     override fun toString() = "WorldGenericEventPacket(event=$event, data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object WorldGenericEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = WorldGenericEventPacket(checkNotNull(WorldEventPacket.Event.registryByVersion(version)[buffer.readVarInt()]), buffer.nbtVarIntNoWrapObjectMapper.readValue(ByteBufInputStream(buffer) as InputStream))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = WorldGenericEventPacket(checkNotNull(WorldEventPacket.Event.registryByVersion(version)[buffer.readVarInt()]), buffer.nbtVarIntNoWrapObjectMapper.readValue(ByteBufInputStream(buffer) as InputStream))
+    }
 }

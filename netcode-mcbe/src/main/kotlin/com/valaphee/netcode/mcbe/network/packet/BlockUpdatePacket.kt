@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -30,7 +29,7 @@ import com.valaphee.netcode.mcbe.network.Restriction
 @Restrict(Restriction.ToClient)
 class BlockUpdatePacket(
     val position: Int3,
-    val runtimeId: Int,
+    val blockStateId: Int,
     val flags: Set<Flag>,
     val layer: Int
 ) : Packet() {
@@ -41,20 +40,17 @@ class BlockUpdatePacket(
     override val id get() = 0x15
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
-        buffer.writeVarUInt(runtimeId)
+        buffer.writeBlockPosition(position)
+        buffer.writeVarUInt(blockStateId)
         buffer.writeVarUIntFlags(flags)
         buffer.writeVarUInt(layer)
     }
 
     override fun handle(handler: PacketHandler) = handler.blockUpdate(this)
 
-    override fun toString() = "BlockUpdatePacket(position=$position, runtimeId=$runtimeId, flags=$flags, layer=$layer)"
-}
+    override fun toString() = "BlockUpdatePacket(position=$position, blockStateId=$blockStateId, flags=$flags, layer=$layer)"
 
-/**
- * @author Kevin Ludwig
- */
-object BlockUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BlockUpdatePacket(buffer.readInt3UnsignedY(), buffer.readVarUInt(), buffer.readVarUIntFlags(), buffer.readVarUInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = BlockUpdatePacket(buffer.readBlockPosition(), buffer.readVarUInt(), buffer.readVarUIntFlags(), buffer.readVarUInt())
+    }
 }

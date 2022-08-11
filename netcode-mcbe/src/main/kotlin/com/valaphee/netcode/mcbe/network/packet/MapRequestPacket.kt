@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_19_020
@@ -37,7 +36,6 @@ class MapRequestPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarLong(mapId)
-
         if (version >= V1_19_020) {
             buffer.writeIntLE(pixels.size)
             pixels.forEach {
@@ -50,11 +48,8 @@ class MapRequestPacket(
     override fun handle(handler: PacketHandler) = handler.mapRequest(this)
 
     override fun toString() = "MapRequestPacket(mapId=$mapId, pixels=$pixels)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object MapRequestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = MapRequestPacket(buffer.readVarLong(), if (version >= V1_19_020) safeList(buffer.readIntLE()) { buffer.readIntLE() to buffer.readUnsignedShortLE() } else emptyList())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = MapRequestPacket(buffer.readVarLong(), if (version >= V1_19_020) safeList(buffer.readIntLE()) { buffer.readIntLE() to buffer.readUnsignedShortLE() } else emptyList())
+    }
 }

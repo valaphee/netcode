@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -61,11 +60,8 @@ class LabTablePacket(
     override fun handle(handler: PacketHandler) = handler.labTable(this)
 
     override fun toString() = "LabTablePacket(action=$action, position=$position, reactionType=$reactionType)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object LabTablePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = LabTablePacket(LabTablePacket.Action.values()[buffer.readByte().toInt()], buffer.readInt3(), LabTablePacket.ReactionType.values()[buffer.readByte().toInt()])
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = LabTablePacket(Action.values()[buffer.readByte().toInt()], buffer.readInt3(), ReactionType.values()[buffer.readByte().toInt()])
+    }
 }

@@ -21,7 +21,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_18_030
@@ -61,17 +60,14 @@ class ParticlePacket(
     override fun handle(handler: PacketHandler) = handler.particle(this)
 
     override fun toString() = "ParticlePacket(dimension=$dimension, uniqueEntityId=$uniqueEntityId, position=$position, particleName='$particleName')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ParticlePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ParticlePacket(
-        Dimension.values()[buffer.readUnsignedByte().toInt()],
-        buffer.readVarLong(),
-        buffer.readFloat3(),
-        buffer.readString(),
-        if (version >= V1_18_030 && buffer.readBoolean()) buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)) else null
-    )
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ParticlePacket(
+            Dimension.values()[buffer.readUnsignedByte().toInt()],
+            buffer.readVarLong(),
+            buffer.readFloat3(),
+            buffer.readString(),
+            if (version >= V1_18_030 && buffer.readBoolean()) buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)) else null
+        )
+    }
 }

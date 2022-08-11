@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.V1_14_060
 import com.valaphee.netcode.mcbe.world.entity.player.Appearance
 import com.valaphee.netcode.mcbe.world.entity.player.readAppearance
@@ -48,11 +47,8 @@ class AppearancePacket(
     override fun handle(handler: PacketHandler) = handler.appearance(this)
 
     override fun toString() = "AppearancePacket(userId=$userId, appearance=$appearance, newName='$newName', oldName='$oldName')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object AppearancePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = AppearancePacket(buffer.readUuid(), buffer.readAppearance(version), buffer.readString(), buffer.readString()).also { if (version >= V1_14_060) it.appearance.trusted = buffer.readBoolean() }
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = AppearancePacket(buffer.readUuid(), buffer.readAppearance(version), buffer.readString(), buffer.readString()).apply { if (version >= V1_14_060) appearance.trusted = buffer.readBoolean() }
+    }
 }

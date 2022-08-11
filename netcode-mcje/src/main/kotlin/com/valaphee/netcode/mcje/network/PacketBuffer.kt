@@ -25,9 +25,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int2
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.util.Direction
-import com.valaphee.netcode.mcje.util.NamespacedKey
-import com.valaphee.netcode.mcje.util.Registries
-import com.valaphee.netcode.mcje.util.minecraftKey
 import com.valaphee.netcode.network.ByteBufWrapper
 import io.netty.buffer.ByteBuf
 import net.kyori.adventure.text.Component
@@ -125,12 +122,6 @@ class PacketBuffer(
 
     fun writeString(value: String) {
         writeByteArray(value.toByteArray(StandardCharsets.UTF_8))
-    }
-
-    fun readNamespacedKey() = minecraftKey(readString())
-
-    fun writeNamespacedKey(value: NamespacedKey) {
-        writeString(value.toString())
     }
 
     fun readComponent() = GsonComponentSerializer.gson().deserialize(readString(Short.MAX_VALUE * 8))

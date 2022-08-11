@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -42,11 +41,8 @@ class ShowCreditsPacket(
     override fun handle(handler: PacketHandler) = handler.showCredits(this)
 
     override fun toString() = "ShowCreditsPacket(runtimeEntityId=$runtimeEntityId, status=$status)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ShowCreditsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ShowCreditsPacket(buffer.readVarULong(), ShowCreditsPacket.Status.values()[buffer.readVarInt()])
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ShowCreditsPacket(buffer.readVarULong(), Status.values()[buffer.readVarInt()])
+    }
 }

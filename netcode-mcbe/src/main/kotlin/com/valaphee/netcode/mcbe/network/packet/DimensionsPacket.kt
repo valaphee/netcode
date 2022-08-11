@@ -19,12 +19,11 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
  */
-class DimensionDataPacket(
+class DimensionsPacket(
     val dimensions: List<Dimension>
 ) : Packet() {
     data class Dimension(
@@ -46,14 +45,11 @@ class DimensionDataPacket(
         }
     }
 
-    override fun handle(handler: PacketHandler) = handler.dimensionData(this)
+    override fun handle(handler: PacketHandler) = handler.dimensions(this)
 
-    override fun toString() = "DimensionDataPacket(dimensions=$dimensions)"
-}
+    override fun toString() = "DimensionsPacket(dimensions=$dimensions)"
 
-/**
- * @author Kevin Ludwig
- */
-object DimensionDataPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = DimensionDataPacket(List(buffer.readVarUInt()) { DimensionDataPacket.Dimension(buffer.readString(), buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt()) })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = DimensionsPacket(List(buffer.readVarUInt()) { Dimension(buffer.readString(), buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt()) })
+    }
 }

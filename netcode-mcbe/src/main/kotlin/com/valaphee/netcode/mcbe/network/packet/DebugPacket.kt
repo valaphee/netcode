@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -41,11 +40,8 @@ class DebugPacket(
     override fun handle(handler: PacketHandler) = handler.debug(this)
 
     override fun toString() = "DebugPacket(uniqueEntityId=$uniqueEntityId, data='$data')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object DebugPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = DebugPacket(buffer.readVarULong(), buffer.readString())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = DebugPacket(buffer.readVarULong(), buffer.readString())
+    }
 }

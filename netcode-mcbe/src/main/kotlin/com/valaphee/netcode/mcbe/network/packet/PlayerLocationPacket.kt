@@ -21,7 +21,6 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.V1_16_100
 
 /**
@@ -67,30 +66,27 @@ class PlayerLocationPacket(
     override fun handle(handler: PacketHandler) = handler.playerLocation(this)
 
     override fun toString() = "PlayerLocationPacket(runtimeEntityId=$runtimeEntityId, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, mode=$mode, onGround=$onGround, drivingRuntimeEntityId=$vehicleRuntimeEntityId, teleportationCause=$teleportationCause, entityTypeId=$entityTypeId, tick=$tick)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object PlayerLocationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): PlayerLocationPacket {
-        val runtimeEntityId = buffer.readVarULong()
-        val position = buffer.readFloat3()
-        val rotation = buffer.readFloat2()
-        val headRotationYaw = buffer.readFloatLE()
-        val mode = PlayerLocationPacket.Mode.values()[buffer.readUnsignedByte().toInt()]
-        val onGround = buffer.readBoolean()
-        val drivingRuntimeEntityId = buffer.readVarULong()
-        val teleportationCause: PlayerLocationPacket.TeleportationCause
-        val entityTypeId: Int
-        if (mode == PlayerLocationPacket.Mode.Teleport) {
-            teleportationCause = PlayerLocationPacket.TeleportationCause.values()[buffer.readIntLE()]
-            entityTypeId = buffer.readIntLE()
-        } else {
-            teleportationCause = PlayerLocationPacket.TeleportationCause.Unknown
-            entityTypeId = 0
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): PlayerLocationPacket {
+            val runtimeEntityId = buffer.readVarULong()
+            val position = buffer.readFloat3()
+            val rotation = buffer.readFloat2()
+            val headRotationYaw = buffer.readFloatLE()
+            val mode = PlayerLocationPacket.Mode.values()[buffer.readUnsignedByte().toInt()]
+            val onGround = buffer.readBoolean()
+            val drivingRuntimeEntityId = buffer.readVarULong()
+            val teleportationCause: TeleportationCause
+            val entityTypeId: Int
+            if (mode == Mode.Teleport) {
+                teleportationCause = PlayerLocationPacket.TeleportationCause.values()[buffer.readIntLE()]
+                entityTypeId = buffer.readIntLE()
+            } else {
+                teleportationCause = TeleportationCause.Unknown
+                entityTypeId = 0
+            }
+            val tick = if (version >= V1_16_100) buffer.readVarULong() else 0
+            return PlayerLocationPacket(runtimeEntityId, position, rotation, headRotationYaw, mode, onGround, drivingRuntimeEntityId, teleportationCause, entityTypeId, tick)
         }
-        val tick = if (version >= V1_16_100) buffer.readVarULong() else 0
-        return PlayerLocationPacket(runtimeEntityId, position, rotation, headRotationYaw, mode, onGround, drivingRuntimeEntityId, teleportationCause, entityTypeId, tick)
     }
 }

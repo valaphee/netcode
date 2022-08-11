@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -28,7 +27,7 @@ import com.valaphee.netcode.mcbe.network.Restriction
  */
 @Restrict(Restriction.ToClient)
 class DisconnectPacket(
-    val message: String? = null
+    val message: String?
 ) : Packet() {
     override val id get() = 0x05
 
@@ -42,11 +41,8 @@ class DisconnectPacket(
     override fun handle(handler: PacketHandler) = handler.disconnect(this)
 
     override fun toString() = "DisconnectPacket(message=$message)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object DisconnectPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = DisconnectPacket(if (!buffer.readBoolean()) buffer.readString() else null)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = DisconnectPacket(if (!buffer.readBoolean()) buffer.readString() else null)
+    }
 }

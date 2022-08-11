@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import io.netty.buffer.ByteBufInputStream
@@ -53,17 +52,14 @@ class StructureTemplateDataExportResponsePacket(
     override fun handle(handler: PacketHandler) = handler.structureTemplateDataExportResponse(this)
 
     override fun toString() = "StructureTemplateDataExportResponsePacket(name='$name', save=$save, data=$data, type=$type)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object StructureTemplateDataExportResponsePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): StructureTemplateDataExportResponsePacket {
-        val name = buffer.readString()
-        val save = buffer.readBoolean()
-        val data = if (save) buffer.nbtVarIntObjectMapper.readValue<Any?>(ByteBufInputStream(buffer)) else null
-        val type = StructureTemplateDataExportResponsePacket.Type.values()[buffer.readUnsignedByte().toInt()]
-        return StructureTemplateDataExportResponsePacket(name, save, data, type)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): StructureTemplateDataExportResponsePacket {
+            val name = buffer.readString()
+            val save = buffer.readBoolean()
+            val data = if (save) buffer.nbtVarIntObjectMapper.readValue<Any?>(ByteBufInputStream(buffer)) else null
+            val type = Type.values()[buffer.readUnsignedByte().toInt()]
+            return StructureTemplateDataExportResponsePacket(name, save, data, type)
+        }
     }
 }

@@ -19,27 +19,19 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.mcbe.world.Sound
 
 /**
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
 class SoundStopPacket(
-    val sound: Sound? = null,
     val soundKey: String? = null
 ) : Packet() {
-    constructor(sound: Sound) : this(sound, null)
-
-    constructor(soundName: String) : this(null, soundName)
-
     override val id get() = 0x57
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        val soundKey = sound?.key ?: soundKey
         soundKey?.let {
             buffer.writeString(it)
             buffer.writeBoolean(false)
@@ -51,24 +43,13 @@ class SoundStopPacket(
 
     override fun handle(handler: PacketHandler) = handler.soundStop(this)
 
-    override fun toString() = "SoundStopPacket(sound=$sound, soundKey=$soundKey)"
-}
+    override fun toString() = "SoundStopPacket(soundKey=$soundKey)"
 
-/**
- * @author Kevin Ludwig
- */
-object SoundStopPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): SoundStopPacket {
-        val _soundKey = buffer.readString()
-        val sound: Sound?
-        val soundKey: String?
-        if (!buffer.readBoolean()) {
-            sound = Sound.byKeyOrNull(_soundKey)
-            soundKey = _soundKey
-        } else {
-            sound = null
-            soundKey = null
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): SoundStopPacket {
+            val _soundKey = buffer.readString()
+            val soundKey = if (!buffer.readBoolean()) _soundKey else null
+            return SoundStopPacket(soundKey)
         }
-        return SoundStopPacket(sound, soundKey)
     }
 }

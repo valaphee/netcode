@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int2
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_17_041
@@ -58,19 +57,16 @@ class ChunkPacket(
     override fun handle(handler: PacketHandler) = handler.chunk(this)
 
     override fun toString() = "ChunkPacket(position=$position, subChunkCount=$subChunkCount, data=<omitted>, blobIds=${blobIds?.contentToString()}, request=$request)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ChunkPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ChunkPacket {
-        val position = Int2(buffer.readVarInt(), buffer.readVarInt())
-        var subChunkCount = buffer.readVarUInt()
-        val request = subChunkCount == -1 || subChunkCount == -2
-        if (subChunkCount == -2) subChunkCount = buffer.readShortLE().toInt()
-        val blobIds = if (buffer.readBoolean()) LongArray(buffer.readVarUInt()) { buffer.readLongLE() } else null
-        val data = buffer.readByteArray()
-        return ChunkPacket(position, subChunkCount, data, blobIds, request)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ChunkPacket {
+            val position = Int2(buffer.readVarInt(), buffer.readVarInt())
+            var subChunkCount = buffer.readVarUInt()
+            val request = subChunkCount == -1 || subChunkCount == -2
+            if (subChunkCount == -2) subChunkCount = buffer.readShortLE().toInt()
+            val blobIds = if (buffer.readBoolean()) LongArray(buffer.readVarUInt()) { buffer.readLongLE() } else null
+            val data = buffer.readByteArray()
+            return ChunkPacket(position, subChunkCount, data, blobIds, request)
+        }
     }
 }

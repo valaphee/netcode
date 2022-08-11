@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.util.safeList
@@ -56,15 +55,12 @@ class ScoreboardIdentityPacket(
     override fun handle(handler: PacketHandler) = handler.scoreboardIdentity(this)
 
     override fun toString() = "ScoreboardIdentityPacket(action=$action, entries=$entries)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ScoreboardIdentityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ScoreboardIdentityPacket {
-        val action = ScoreboardIdentityPacket.Action.values()[buffer.readUnsignedByte().toInt()]
-        val entries = safeList(buffer.readVarUInt()) { ScoreboardIdentityPacket.Entry(buffer.readVarLong(), if (action == ScoreboardIdentityPacket.Action.Add) buffer.readUuid() else null) }
-        return ScoreboardIdentityPacket(action, entries)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ScoreboardIdentityPacket {
+            val action = Action.values()[buffer.readUnsignedByte().toInt()]
+            val entries = safeList(buffer.readVarUInt()) { Entry(buffer.readVarLong(), if (action == Action.Add) buffer.readUuid() else null) }
+            return ScoreboardIdentityPacket(action, entries)
+        }
     }
 }

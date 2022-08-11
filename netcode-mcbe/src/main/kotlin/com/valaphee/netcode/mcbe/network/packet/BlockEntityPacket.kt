@@ -21,7 +21,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -36,18 +35,15 @@ class BlockEntityPacket(
     override val id get() = 0x38
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
     override fun handle(handler: PacketHandler) = handler.blockEntity(this)
 
     override fun toString() = "BlockEntityPacket(position=$position, data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object BlockEntityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BlockEntityPacket(buffer.readInt3UnsignedY(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = BlockEntityPacket(buffer.readBlockPosition(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
+    }
 }

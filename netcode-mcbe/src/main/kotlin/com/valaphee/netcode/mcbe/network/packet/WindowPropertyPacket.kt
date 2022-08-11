@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -43,11 +42,8 @@ class WindowPropertyPacket(
     override fun handle(handler: PacketHandler) = handler.windowProperty(this)
 
     override fun toString() = "WindowPropertyPacket(windowId=$windowId, property=$property, value=$value)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object WindowPropertyPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = WindowPropertyPacket(buffer.readByte().toInt(), buffer.readVarInt(), buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = WindowPropertyPacket(buffer.readByte().toInt(), buffer.readVarInt(), buffer.readVarInt())
+    }
 }

@@ -19,15 +19,14 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.GameMode
 
 /**
  * @author Kevin Ludwig
  */
 class PlayerGameModePacket(
-    val uniqueEntityId: Long,
-    val gameMode: GameMode
+    val gameMode: GameMode,
+    val uniqueEntityId: Long
 ) : Packet() {
     override val id get() = 0x97
 
@@ -38,16 +37,9 @@ class PlayerGameModePacket(
 
     override fun handle(handler: PacketHandler) = handler.playerGameMode(this)
 
-    override fun toString() = "PlayerGameModePacket(uniqueEntityId=$uniqueEntityId, gameMode=$gameMode)"
-}
+    override fun toString() = "PlayerGameModePacket(gameMode=$gameMode, uniqueEntityId=$uniqueEntityId)"
 
-/**
- * @author Kevin Ludwig
- */
-object PlayerGameModePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): PlayerGameModePacket {
-        val gameMode = GameMode.values()[buffer.readVarInt()]
-        val uniqueEntityId = buffer.readVarLong()
-        return PlayerGameModePacket(uniqueEntityId, gameMode)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = PlayerGameModePacket(GameMode.values()[buffer.readVarInt()], buffer.readVarLong())
     }
 }

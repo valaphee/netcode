@@ -20,6 +20,10 @@ package com.valaphee.netcode.mcbe.network
  * @author Kevin Ludwig
  */
 abstract class Packet {
+    interface Reader {
+        fun read(buffer: PacketBuffer, version: Int): Packet
+    }
+
     abstract val id: Int
     var senderId = 0
     var clientId = 0

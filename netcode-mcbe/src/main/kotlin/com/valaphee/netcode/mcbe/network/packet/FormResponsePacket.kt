@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.V1_19_020
 
 /**
@@ -55,11 +54,8 @@ class FormResponsePacket(
     override fun handle(handler: PacketHandler) = handler.formResponse(this)
 
     override fun toString() = "FormResponsePacket(formId=$formId, formData=$formData, cancelReason=$cancelReason)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object FormResponsePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = FormResponsePacket(buffer.readVarUInt(), if (version < V1_19_020 || buffer.readBoolean()) buffer.jsonObjectMapper.readValue<Any>(buffer.readString()) else null, if (version >= V1_19_020 && buffer.readBoolean()) FormResponsePacket.CancelReason.values()[buffer.readUnsignedByte().toInt()] else null)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = FormResponsePacket(buffer.readVarUInt(), if (version < V1_19_020 || buffer.readBoolean()) buffer.jsonObjectMapper.readValue<Any>(buffer.readString()) else null, if (version >= V1_19_020 && buffer.readBoolean()) CancelReason.values()[buffer.readUnsignedByte().toInt()] else null)
+    }
 }

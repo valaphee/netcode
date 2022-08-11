@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.StructureSettings
@@ -53,7 +52,7 @@ class StructureBlockUpdatePacket(
     override val id get() = 0x5A
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         buffer.writeString(name)
         buffer.writeString(metadata)
         buffer.writeBoolean(includingPlayers)
@@ -67,11 +66,8 @@ class StructureBlockUpdatePacket(
     override fun handle(handler: PacketHandler) = handler.structureBlockUpdate(this)
 
     override fun toString() = "StructureBlockUpdatePacket(position=$position, name='$name', metadata='$metadata', includingPlayers=$includingPlayers, showBoundingBox=$showBoundingBox, mode=$mode, settings=$settings, redstoneSaveMode=$redstoneSaveMode, powered=$powered)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object StructureBlockUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = StructureBlockUpdatePacket(buffer.readInt3UnsignedY(), buffer.readString(), buffer.readString(), buffer.readBoolean(), buffer.readBoolean(), StructureBlockUpdatePacket.Mode.values()[buffer.readVarInt()], buffer.readStructureSettings(version), StructureBlockUpdatePacket.RedstoneSaveMode.values()[buffer.readVarInt()], buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = StructureBlockUpdatePacket(buffer.readBlockPosition(), buffer.readString(), buffer.readString(), buffer.readBoolean(), buffer.readBoolean(), Mode.values()[buffer.readVarInt()], buffer.readStructureSettings(version), RedstoneSaveMode.values()[buffer.readVarInt()], buffer.readBoolean())
+    }
 }

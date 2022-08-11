@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -33,7 +32,7 @@ class BlockEventPacket(
     override val id get() = 0x1A
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         buffer.writeVarInt(data1)
         buffer.writeVarInt(data2)
     }
@@ -41,11 +40,8 @@ class BlockEventPacket(
     override fun handle(handler: PacketHandler) = handler.blockEvent(this)
 
     override fun toString() = "BlockEventPacket(position=$position, data1=$data1, data2=$data2)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object BlockEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = BlockEventPacket(buffer.readInt3UnsignedY(), buffer.readVarInt(), buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = BlockEventPacket(buffer.readBlockPosition(), buffer.readVarInt(), buffer.readVarInt())
+    }
 }

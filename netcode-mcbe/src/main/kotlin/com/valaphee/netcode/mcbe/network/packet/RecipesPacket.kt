@@ -19,11 +19,11 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.mcbe.network.V1_16_221
+import com.valaphee.netcode.mcbe.network.V1_16_010
 import com.valaphee.netcode.mcbe.network.V1_17_034
+import com.valaphee.netcode.mcbe.world.item.Item
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.crafting.BrewingContainerRecipe
 import com.valaphee.netcode.mcbe.world.item.crafting.BrewingMixRecipe
@@ -34,11 +34,9 @@ import com.valaphee.netcode.mcbe.world.item.crafting.Recipe
 import com.valaphee.netcode.mcbe.world.item.crafting.ShapedRecipe
 import com.valaphee.netcode.mcbe.world.item.crafting.ShapelessRecipe
 import com.valaphee.netcode.mcbe.world.item.readIngredient
-import com.valaphee.netcode.mcbe.world.item.readItemStackInstance
-import com.valaphee.netcode.mcbe.world.item.readItemStackPreV1_16_221
+import com.valaphee.netcode.mcbe.world.item.readItemStack
 import com.valaphee.netcode.mcbe.world.item.writeIngredient
-import com.valaphee.netcode.mcbe.world.item.writeItemStackInstance
-import com.valaphee.netcode.mcbe.world.item.writeItemStackPreV1_16_221
+import com.valaphee.netcode.mcbe.world.item.writeItemStack
 import com.valaphee.netcode.util.safeList
 import kotlin.reflect.jvm.jvmName
 
@@ -51,7 +49,7 @@ class RecipesPacket(
     val brewingMixRecipes: List<BrewingMixRecipe>,
     val brewingContainerRecipes: List<BrewingContainerRecipe>,
     val materialReductionRecipes: List<MaterialReductionRecipe>,
-    val cleanRecipes: Boolean
+    val reset: Boolean
 ) : Packet() {
     override val id get() = 0x34
 
@@ -63,37 +61,37 @@ class RecipesPacket(
                     buffer.writeVarInt(0)
                     buffer.writeString(it.description.key)
                     buffer.writeVarUInt(it.input.size)
-                    it.input.forEach(buffer::writeIngredient)
+                    it.input.forEach { buffer.writeIngredient(it, version) }
                     buffer.writeVarUInt(1)
-                    if (version >= V1_16_221) buffer.writeItemStackInstance(it.output) else buffer.writeItemStackPreV1_16_221(it.output)
+                    buffer.writeItemStack(it.output, version, false)
                     buffer.writeUuid(it.id)
                     buffer.writeString(it.tags.single())
                     buffer.writeVarInt(it.priority)
-                    if (version >= 407) buffer.writeVarUInt(it.netId)
+                    if (version >= V1_16_010) buffer.writeVarUInt(it.netId)
                 }
                 is ShapedRecipe -> {
                     buffer.writeVarInt(1)
                     buffer.writeString(it.description.key)
                     buffer.writeVarInt(it.width)
                     buffer.writeVarInt(it.height)
-                    it.input.forEach(buffer::writeIngredient)
+                    it.input.forEach { buffer.writeIngredient(it, version) }
                     buffer.writeVarUInt(it.output.size)
-                    it.output.forEach { if (version >= V1_16_221) buffer.writeItemStackInstance(it) else buffer.writeItemStackPreV1_16_221(it) }
+                    it.output.forEach { buffer.writeItemStack(it, version, false) }
                     buffer.writeUuid(it.id)
                     buffer.writeString(it.tags.single())
                     buffer.writeVarInt(it.priority)
-                    if (version >= 407) buffer.writeVarUInt(it.netId)
+                    if (version >= V1_16_010) buffer.writeVarUInt(it.netId)
                 }
                 is FurnaceRecipe -> {
                     if (it.input.subId == -1) {
                         buffer.writeVarInt(2)
-                        buffer.writeVarInt(buffer.registries.items.getId(it.input.item))
+                        buffer.writeVarInt(Item[version, it.input.itemKey])
                     } else {
                         buffer.writeVarInt(3)
-                        buffer.writeVarInt(buffer.registries.items.getId(it.input.item))
+                        buffer.writeVarInt(Item[version, it.input.itemKey])
                         buffer.writeVarInt(it.input.subId)
                     }
-                    if (version >= V1_16_221) buffer.writeItemStackInstance(it.output) else buffer.writeItemStackPreV1_16_221(it.output)
+                    buffer.writeItemStack(it.output, version, false)
                     buffer.writeString(it.tags.single())
                 }
                 is MultiRecipe -> {
@@ -107,67 +105,64 @@ class RecipesPacket(
 
         buffer.writeVarUInt(brewingMixRecipes.size)
         brewingMixRecipes.forEach {
-            buffer.writeVarInt(buffer.registries.items.getId(it.input.item))
-            if (version >= 407) buffer.writeVarInt(it.input.subId)
-            buffer.writeVarInt(buffer.registries.items.getId(it.reagent.item))
-            if (version >= 407) buffer.writeVarInt(it.reagent.subId)
-            buffer.writeVarInt(buffer.registries.items.getId(it.output.item))
-            if (version >= 407) buffer.writeVarInt(it.output.subId)
+            buffer.writeVarInt(Item[version, it.input.itemKey])
+            if (version >= V1_16_010) buffer.writeVarInt(it.input.subId)
+            buffer.writeVarInt(Item[version, it.reagent.itemKey])
+            if (version >= V1_16_010) buffer.writeVarInt(it.reagent.subId)
+            buffer.writeVarInt(Item[version, it.output.itemKey])
+            if (version >= V1_16_010) buffer.writeVarInt(it.output.subId)
         }
         buffer.writeVarUInt(brewingContainerRecipes.size)
         brewingContainerRecipes.forEach {
-            buffer.writeVarInt(buffer.registries.items.getId(it.input))
-            buffer.writeVarInt(buffer.registries.items.getId(it.reagent))
-            buffer.writeVarInt(buffer.registries.items.getId(it.output))
+            buffer.writeVarInt(Item[version, it.input])
+            buffer.writeVarInt(Item[version, it.reagent])
+            buffer.writeVarInt(Item[version, it.output])
         }
         if (version >= V1_17_034) {
             buffer.writeVarUInt(materialReductionRecipes.size)
             materialReductionRecipes.forEach {
-                buffer.writeVarInt(buffer.registries.items.getId(it.input.item))
+                buffer.writeVarInt(Item[version, it.input.itemKey])
                 buffer.writeVarUInt(it.output.size)
                 it.output.forEach {
-                    buffer.writeVarInt(buffer.registries.items.getId(it.item))
+                    buffer.writeVarInt(Item[version, it.itemKey])
                     buffer.writeVarInt(it.count)
                 }
             }
         }
-        buffer.writeBoolean(cleanRecipes)
+        buffer.writeBoolean(reset)
     }
 
     override fun handle(handler: PacketHandler) = handler.recipes(this)
 
-    override fun toString() = "RecipesPacket(recipes=$recipes, brewingMixRecipes=$brewingMixRecipes, brewingContainerRecipes=$brewingContainerRecipes, materialReductionRecipes=$materialReductionRecipes, cleanRecipes=$cleanRecipes)"
-}
+    override fun toString() = "RecipesPacket(recipes=$recipes, brewingMixRecipes=$brewingMixRecipes, brewingContainerRecipes=$brewingContainerRecipes, materialReductionRecipes=$materialReductionRecipes, reset=$reset)"
 
-/**
- * @author Kevin Ludwig
- */
-object RecipesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = RecipesPacket(
-        safeList(buffer.readVarUInt()) {
-            when (val type = buffer.readVarInt()) {
-                0, 5, 6 -> ShapelessRecipe(ShapelessRecipe.Description(buffer.readString()), safeList(buffer.readVarUInt()) { checkNotNull(buffer.readIngredient()) }, safeList(buffer.readVarUInt()) { checkNotNull(if (version >= V1_16_221) buffer.readItemStackInstance() else buffer.readItemStackPreV1_16_221()) }.single(), buffer.readUuid(), listOf(buffer.readString()), buffer.readVarInt(), if (version >= 407) buffer.readVarUInt() else 0)
-                1, 7 -> {
-                    val key = buffer.readString()
-                    val width = buffer.readVarInt()
-                    val height = buffer.readVarInt()
-                    val input = safeList(width * height) { buffer.readIngredient() }
-                    val output = safeList(buffer.readVarUInt()) { checkNotNull(if (version >= V1_16_221) buffer.readItemStackInstance() else buffer.readItemStackPreV1_16_221()) }
-                    val id = buffer.readUuid()
-                    val tag = buffer.readString()
-                    val priority = buffer.readVarInt()
-                    val netId = if (version >= 407) buffer.readVarUInt() else 0
-                    ShapedRecipe(id, key, width, height, input.toTypedArray(), output, tag, priority, netId)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = RecipesPacket(
+            safeList(buffer.readVarUInt()) {
+                when (val type = buffer.readVarInt()) {
+                    0, 5, 6 -> ShapelessRecipe(ShapelessRecipe.Description(buffer.readString()), safeList(buffer.readVarUInt()) { buffer.readIngredient(version)!! }, safeList(buffer.readVarUInt()) { buffer.readItemStack(version, false)!! }.single(), buffer.readUuid(), listOf(buffer.readString()), buffer.readVarInt(), if (version >= V1_16_010) buffer.readVarUInt() else 0)
+                    1, 7 -> {
+                        val key = buffer.readString()
+                        val width = buffer.readVarInt()
+                        val height = buffer.readVarInt()
+                        val input = safeList(width * height) { buffer.readIngredient(version) }
+                        val output = safeList(buffer.readVarUInt()) { buffer.readItemStack(version, false)!! }
+                        val id = buffer.readUuid()
+                        val tag = buffer.readString()
+                        val priority = buffer.readVarInt()
+                        val netId = if (version >= V1_16_010) buffer.readVarUInt() else 0
+                        ShapedRecipe(id, key, width, height, input.toTypedArray(), output, tag, priority, netId)
+                    }
+                    2 -> FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(Item[version, buffer.readVarInt()]!!, -1), buffer.readItemStack(version, false)!!, listOf(buffer.readString()))
+                    3 -> FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()), buffer.readItemStack(version, false)!!, listOf(buffer.readString()))
+                    4 -> MultiRecipe(buffer.readUuid(), buffer.readVarUInt())
+                    else -> error("No such recipe type: $type")
                 }
-                2 -> FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()]), -1), checkNotNull(if (version >= V1_16_221) buffer.readItemStackInstance() else buffer.readItemStackPreV1_16_221()), listOf(buffer.readString()))
-                3 -> FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()]), buffer.readVarInt()), checkNotNull(if (version >= V1_16_221) buffer.readItemStackInstance() else buffer.readItemStackPreV1_16_221()), listOf(buffer.readString()))
-                4 -> MultiRecipe(buffer.readUuid(), buffer.readVarUInt())
-                else -> error("No such recipe type: $type")
-            }
-        },
-        safeList(buffer.readVarUInt()) { BrewingMixRecipe(BrewingMixRecipe.Description(""), emptyList(), ItemStack(buffer.registries.items[buffer.readVarInt()] ?: "minecraft:unknown", buffer.readVarInt()), ItemStack(buffer.registries.items[buffer.readVarInt()] ?: "minecraft:unknown", buffer.readVarInt()), ItemStack(buffer.registries.items[buffer.readVarInt()] ?: "minecraft:unknown", buffer.readVarInt())) },
-        safeList(buffer.readVarUInt()) { BrewingContainerRecipe(BrewingContainerRecipe.Description(""), emptyList(), checkNotNull(buffer.registries.items[buffer.readVarInt()]), checkNotNull(buffer.registries.items[buffer.readVarInt()]), checkNotNull(buffer.registries.items[buffer.readVarInt()])) },
-        if (version >= V1_17_034) safeList(buffer.readVarUInt()) { MaterialReductionRecipe(MaterialReductionRecipe.Description(""), emptyList(), ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()])), safeList(buffer.readVarUInt()) { ItemStack(checkNotNull(buffer.registries.items[buffer.readVarInt()]), buffer.readVarInt()) }) } else emptyList(),
-        buffer.readBoolean()
-    )
+            },
+            safeList(buffer.readVarUInt()) { BrewingMixRecipe(BrewingMixRecipe.Description(""), emptyList(), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt())) },
+            safeList(buffer.readVarUInt()) { BrewingContainerRecipe(BrewingContainerRecipe.Description(""), emptyList(), Item[version, buffer.readVarInt()]!!, Item[version, buffer.readVarInt()]!!, Item[version, buffer.readVarInt()]!!) },
+            if (version >= V1_17_034) safeList(buffer.readVarUInt()) { MaterialReductionRecipe(MaterialReductionRecipe.Description(""), emptyList(), ItemStack(Item[version, buffer.readVarInt()]!!), safeList(buffer.readVarUInt()) { ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()) }) } else emptyList(),
+            buffer.readBoolean()
+        )
+    }
 }

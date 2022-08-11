@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.item.enchanting.Enchantment
@@ -77,21 +76,18 @@ class EnchantOptionsPacket(
     override fun handle(handler: PacketHandler) = handler.enchantOptions(this)
 
     override fun toString() = "EnchantOptionsPacket(options=$options)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EnchantOptionsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EnchantOptionsPacket(safeList(buffer.readVarUInt()) {
-        EnchantOptionsPacket.Option(
-            buffer.readVarUInt(),
-            buffer.readIntLE(),
-            safeList(buffer.readVarUInt()) { EnchantOptionsPacket.Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
-            safeList(buffer.readVarUInt()) { EnchantOptionsPacket.Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
-            safeList(buffer.readVarUInt()) { EnchantOptionsPacket.Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
-            buffer.readString(),
-            buffer.readVarUInt()
-        )
-    })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EnchantOptionsPacket(safeList(buffer.readVarUInt()) {
+            Option(
+                buffer.readVarUInt(),
+                buffer.readIntLE(),
+                safeList(buffer.readVarUInt()) { Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
+                safeList(buffer.readVarUInt()) { Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
+                safeList(buffer.readVarUInt()) { Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
+                buffer.readString(),
+                buffer.readVarUInt()
+            )
+        })
+    }
 }

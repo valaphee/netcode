@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -38,11 +37,8 @@ class TickSyncPacket(
     override fun handle(handler: PacketHandler) = handler.tickSync(this)
 
     override fun toString() = "TickSyncPacket(requestTicks=$requestTicks, responseTicks=$responseTicks)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object TickSyncPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = TickSyncPacket(buffer.readLongLE(), buffer.readLongLE())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = TickSyncPacket(buffer.readLongLE(), buffer.readLongLE())
+    }
 }

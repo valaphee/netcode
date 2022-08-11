@@ -20,7 +20,6 @@ import com.valaphee.netcode.mcbe.command.CommandPermission
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.entity.player.AbilityLayer
 import com.valaphee.netcode.mcbe.world.entity.player.PlayerPermission
 import com.valaphee.netcode.mcbe.world.entity.player.readAbilityLayer
@@ -53,11 +52,8 @@ class AbilitiesPacket(
     override fun handle(handler: PacketHandler) = handler.abilities(this)
 
     override fun toString() = "AbilitiesPacket(uniqueEntityId=$uniqueEntityId, playerPermission$playerPermission, commandPermission=$commandPermission, abilityLayers=$abilityLayers)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object AbilitiesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = AbilitiesPacket(buffer.readLongLE(), PlayerPermission.values()[buffer.readVarUInt()], CommandPermission.values()[buffer.readVarUInt()], safeList(buffer.readVarUInt()) { buffer.readAbilityLayer() })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = AbilitiesPacket(buffer.readLongLE(), PlayerPermission.values()[buffer.readVarUInt()], CommandPermission.values()[buffer.readVarUInt()], safeList(buffer.readVarUInt()) { buffer.readAbilityLayer() })
+    }
 }

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.util.safeList
@@ -41,11 +40,8 @@ class FogPacket(
     override fun handle(handler: PacketHandler) = handler.fog(this)
 
     override fun toString() = "FogPacket(effects=$effects)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object FogPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = FogPacket(safeList(buffer.readVarUInt()) { buffer.readString() })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = FogPacket(safeList(buffer.readVarUInt()) { buffer.readString() })
+    }
 }

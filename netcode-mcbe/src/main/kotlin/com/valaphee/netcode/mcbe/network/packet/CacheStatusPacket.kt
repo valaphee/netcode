@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -39,11 +38,8 @@ class CacheStatusPacket(
     override fun handle(handler: PacketHandler) = handler.cacheStatus(this)
 
     override fun toString() = "CacheStatusPacket(supported=$supported)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object CacheStatusPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = CacheStatusPacket(buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = CacheStatusPacket(buffer.readBoolean())
+    }
 }

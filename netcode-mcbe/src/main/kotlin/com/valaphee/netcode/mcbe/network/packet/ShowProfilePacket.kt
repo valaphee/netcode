@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -39,11 +38,8 @@ class ShowProfilePacket(
     override fun handle(handler: PacketHandler) = handler.showProfile(this)
 
     override fun toString() = "ShowProfilePacket(xboxUserId='$xboxUserId')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ShowProfilePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ShowProfilePacket(buffer.readString())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ShowProfilePacket(buffer.readString())
+    }
 }

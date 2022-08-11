@@ -25,7 +25,6 @@ import com.valaphee.netcode.mcbe.command.writeOrigin
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.util.safeList
@@ -61,18 +60,15 @@ class CommandResponsePacket(
     override fun handle(handler: PacketHandler) = handler.commandResponse(this)
 
     override fun toString() = "CommandResponsePacket(origin=$origin, type=$type, successCount=$successCount, messages=$messages, data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object CommandResponsePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): CommandResponsePacket {
-        val origin = buffer.readOrigin()
-        val type = CommandResponsePacket.Type.values()[buffer.readByte().toInt()]
-        val successCount = buffer.readVarUInt()
-        val messages = safeList(buffer.readVarUInt()) { buffer.readMessage() }
-        val data = if (type == CommandResponsePacket.Type.Data) buffer.readString() else null
-        return CommandResponsePacket(origin, type, successCount, messages, data)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): CommandResponsePacket {
+            val origin = buffer.readOrigin()
+            val type = Type.values()[buffer.readByte().toInt()]
+            val successCount = buffer.readVarUInt()
+            val messages = safeList(buffer.readVarUInt()) { buffer.readMessage() }
+            val data = if (type == Type.Data) buffer.readString() else null
+            return CommandResponsePacket(origin, type, successCount, messages, data)
+        }
     }
 }

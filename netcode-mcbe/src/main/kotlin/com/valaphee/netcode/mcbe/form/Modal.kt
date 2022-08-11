@@ -27,5 +27,5 @@ data class Modal(
     @get:JsonProperty("button1") val yesButtonText: String,
     @get:JsonProperty("button2") val noButtonText: String
 ) : Form<Boolean>() {
-    override fun getResponse(response: Any?) = response as Boolean
+    override fun parseResponse(response: Any?) = response as Boolean
 }

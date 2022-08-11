@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import io.netty.buffer.ByteBufInputStream
@@ -51,11 +50,8 @@ class PositionTrackingDbServerBroadcastPacket(
     override fun handle(handler: PacketHandler) = handler.positionTrackingDbServerBroadcast(this)
 
     override fun toString() = "PositionTrackingDbServerBroadcastPacket(action=$action, trackingId=$trackingId, data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object PositionTrackingDbServerBroadcastPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = PositionTrackingDbServerBroadcastPacket(PositionTrackingDbServerBroadcastPacket.Action.values()[buffer.readByte().toInt()], buffer.readVarUInt(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = PositionTrackingDbServerBroadcastPacket(Action.values()[buffer.readByte().toInt()], buffer.readVarUInt(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
+    }
 }

@@ -21,7 +21,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_19_020
@@ -53,11 +52,8 @@ class ChunkPublishPacket(
     override fun handle(handler: PacketHandler) = handler.chunkPublish(this)
 
     override fun toString() = "ChunkPublishPacket(position=$position, radius=$radius, chunks=$chunks)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ChunkPublishPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ChunkPublishPacket(buffer.readInt3(), buffer.readVarUInt(), if (version >= V1_19_020) safeList(buffer.readIntLE()) { Int2(buffer.readVarInt(), buffer.readVarInt()) } else emptyList())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ChunkPublishPacket(buffer.readInt3(), buffer.readVarUInt(), if (version >= V1_19_020) safeList(buffer.readIntLE()) { Int2(buffer.readVarInt(), buffer.readVarInt()) } else emptyList())
+    }
 }

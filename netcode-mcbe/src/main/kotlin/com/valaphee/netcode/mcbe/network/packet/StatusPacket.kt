@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -50,11 +49,8 @@ class StatusPacket(
     override fun handle(handler: PacketHandler) = handler.status(this)
 
     override fun toString() = "StatusPacket(status=$status)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object StatusPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = StatusPacket(StatusPacket.Status.values()[buffer.readInt()])
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = StatusPacket(Status.values()[buffer.readInt()])
+    }
 }

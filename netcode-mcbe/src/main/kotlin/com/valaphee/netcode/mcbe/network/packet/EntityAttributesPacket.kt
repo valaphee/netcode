@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_16_201
@@ -32,7 +31,7 @@ import com.valaphee.netcode.mcbe.world.entity.attribute.Attributes
 class EntityAttributesPacket(
     val runtimeEntityId: Long,
     val attributes: Attributes,
-    val tick: Long = 0
+    val tick: Long = 0L
 ) : Packet() {
     override val id get() = 0x1D
 
@@ -45,11 +44,8 @@ class EntityAttributesPacket(
     override fun handle(handler: PacketHandler) = handler.entityAttributes(this)
 
     override fun toString() = "EntityAttributesPacket(runtimeEntityId=$runtimeEntityId, attributes=$attributes, tick=$tick)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object EntityAttributesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = EntityAttributesPacket(buffer.readVarULong(), Attributes().apply { readFromBuffer(buffer, version, false) }, if (version >= V1_16_201) buffer.readVarULong() else 0)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = EntityAttributesPacket(buffer.readVarULong(), Attributes().apply { readFromBuffer(buffer, version, false) }, if (version >= V1_16_201) buffer.readVarULong() else 0)
+    }
 }

@@ -30,13 +30,4 @@ data class Command(
     enum class Flag {
         Usage, Visible, Synchronized, Executable, Type, Cheat, Unknown6
     }
-
-    class Builder(
-        val name: String,
-        val description: String,
-        val flags: Set<Flag>,
-        val permission: CommandPermission,
-        val aliasesIndex: Int,
-        val overloadStructures: List<List<Parameter.Builder>>
-    )
 }

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.V1_16_100
 
 /**
@@ -27,23 +26,20 @@ import com.valaphee.netcode.mcbe.network.V1_16_100
  */
 class WindowClosePacket(
     val windowId: Int,
-    val serverside: Boolean
+    val fromServer: Boolean
 ) : Packet() {
     override val id get() = 0x2F
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
-        if (version >= V1_16_100) buffer.writeBoolean(serverside)
+        if (version >= V1_16_100) buffer.writeBoolean(fromServer)
     }
 
     override fun handle(handler: PacketHandler) = handler.windowClose(this)
 
-    override fun toString() = "WindowClosePacket(windowId=$windowId, serverside=$serverside)"
-}
+    override fun toString() = "WindowClosePacket(windowId=$windowId, fromServer=$fromServer)"
 
-/**
- * @author Kevin Ludwig
- */
-object WindowClosePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = WindowClosePacket(buffer.readByte().toInt(), if (version >= V1_16_100) buffer.readBoolean() else false)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = WindowClosePacket(buffer.readByte().toInt(), if (version >= V1_16_100) buffer.readBoolean() else false)
+    }
 }

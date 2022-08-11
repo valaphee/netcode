@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -40,11 +39,8 @@ class PhotoItemPacket(
     override fun handle(handler: PacketHandler) = handler.photoItem(this)
 
     override fun toString() = "PhotoItemPacket(photoId=$photoId, photoName='$photoName', photoItemName='$photoItemName')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object PhotoItemPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = PhotoItemPacket(buffer.readLongLE(), buffer.readString(), buffer.readString())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = PhotoItemPacket(buffer.readLongLE(), buffer.readString(), buffer.readString())
+    }
 }

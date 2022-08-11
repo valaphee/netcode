@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -28,24 +27,21 @@ import com.valaphee.netcode.mcbe.network.Restriction
  */
 @Restrict(Restriction.ToClient)
 class CameraPacket(
-    val cameraUniqueEntityId: Long,
+    val uniqueCameraId: Long,
     val uniqueEntityId: Long
 ) : Packet() {
     override val id get() = 0x49
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarLong(cameraUniqueEntityId)
+        buffer.writeVarLong(uniqueCameraId)
         buffer.writeVarLong(uniqueEntityId)
     }
 
     override fun handle(handler: PacketHandler) = handler.camera(this)
 
-    override fun toString() = "CameraPacket(cameraUniqueEntityId=$cameraUniqueEntityId, uniqueEntityId=$uniqueEntityId)"
-}
+    override fun toString() = "CameraPacket(uniqueCameraId=$uniqueCameraId, uniqueEntityId=$uniqueEntityId)"
 
-/**
- * @author Kevin Ludwig
- */
-object CameraPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = CameraPacket(buffer.readVarLong(), buffer.readVarLong())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = CameraPacket(buffer.readVarLong(), buffer.readVarLong())
+    }
 }

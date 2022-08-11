@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.entity.player.AbilityLayer
 
 /**
@@ -47,11 +46,8 @@ class AbilityPacket(
     override fun handle(handler: PacketHandler) = handler.ability(this)
 
     override fun toString() = "AbilityPacket(ability=$ability, type=$type, boolValue=$boolValue, floatValue=$floatValue)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object AbilityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = AbilityPacket(AbilityLayer.Ability.values()[buffer.readVarInt()], AbilityPacket.Type.values()[buffer.readUnsignedByte().toInt()], buffer.readBoolean(), buffer.readFloatLE())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = AbilityPacket(AbilityLayer.Ability.values()[buffer.readVarInt()], Type.values()[buffer.readUnsignedByte().toInt()], buffer.readBoolean(), buffer.readFloatLE())
+    }
 }

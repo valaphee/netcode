@@ -20,7 +20,6 @@ import com.valaphee.netcode.mcbe.command.CommandPermission
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.world.WorldFlag
 import com.valaphee.netcode.mcbe.world.entity.player.PlayerFlag
 import com.valaphee.netcode.mcbe.world.entity.player.PlayerPermission
@@ -29,12 +28,12 @@ import com.valaphee.netcode.mcbe.world.entity.player.PlayerPermission
  * @author Kevin Ludwig
  */
 class AdventureSettingsPacket(
-    val uniqueEntityId: Long,
     val playerFlags: Set<PlayerFlag>,
     val commandPermission: CommandPermission,
     val worldFlags: Set<WorldFlag>,
     val playerPermission: PlayerPermission,
-    val customFlags: Int
+    val customFlags: Int,
+    val uniqueEntityId: Long
 ) : Packet() {
     override val id get() = 0x37
 
@@ -49,20 +48,9 @@ class AdventureSettingsPacket(
 
     override fun handle(handler: PacketHandler) = handler.adventureSettings(this)
 
-    override fun toString() = "AdventureSettingsPacket(uniqueEntityId=$uniqueEntityId, playerFlags=$playerFlags, commandPermission=$commandPermission, worldFlags=$worldFlags, playerPermission$playerPermission, customFlags=$customFlags)"
-}
+    override fun toString() = "AdventureSettingsPacket(playerFlags=$playerFlags, commandPermission=$commandPermission, worldFlags=$worldFlags, playerPermission$playerPermission, customFlags=$customFlags, uniqueEntityId=$uniqueEntityId)"
 
-/**
- * @author Kevin Ludwig
- */
-object AdventureSettingsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): AdventureSettingsPacket {
-        val playerFlags = buffer.readVarUIntFlags<PlayerFlag>()
-        val commandPermission = CommandPermission.values()[buffer.readVarUInt()]
-        val worldFlags = buffer.readVarUIntFlags<WorldFlag>()
-        val playerPermission = PlayerPermission.values()[buffer.readVarUInt()]
-        val customFlags = buffer.readVarUInt()
-        val uniqueEntityId = buffer.readLongLE()
-        return AdventureSettingsPacket(uniqueEntityId, playerFlags, commandPermission, worldFlags, playerPermission, customFlags)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = AdventureSettingsPacket(buffer.readVarUIntFlags(), CommandPermission.values()[buffer.readVarUInt()], buffer.readVarUIntFlags(), PlayerPermission.values()[buffer.readVarUInt()], buffer.readVarUInt(), buffer.readLongLE())
     }
 }

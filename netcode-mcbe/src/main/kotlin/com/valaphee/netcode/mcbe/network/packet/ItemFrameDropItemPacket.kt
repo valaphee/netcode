@@ -20,7 +20,6 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -31,17 +30,14 @@ class ItemFrameDropItemPacket(
     override val id get() = 0x47
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
     }
 
     override fun handle(handler: PacketHandler) = handler.itemFrameDropItem(this)
 
     override fun toString() = "ItemFrameDropItemPacket(position=$position)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ItemFrameDropItemPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ItemFrameDropItemPacket(buffer.readInt3UnsignedY())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ItemFrameDropItemPacket(buffer.readBlockPosition())
+    }
 }

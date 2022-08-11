@@ -21,7 +21,6 @@ import com.valaphee.foundry.math.Float4
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -29,7 +28,7 @@ import com.valaphee.netcode.mcbe.network.Restriction
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
-class DebugRendererPacket(
+class DebugOverlayPacket(
     val type: Type,
     val markerText: String?,
     val markerPosition: Float3?,
@@ -58,32 +57,29 @@ class DebugRendererPacket(
         }
     }
 
-    override fun handle(handler: PacketHandler) = handler.debugRenderer(this)
+    override fun handle(handler: PacketHandler) = handler.debugOverlay(this)
 
-    override fun toString() = "DebugRendererPacket(type=$type, markerText=$markerText, markerPosition=$markerPosition, markerColor=$markerColor, markerDuration=$markerDuration)"
-}
+    override fun toString() = "DebugOverlayPacket(type=$type, markerText=$markerText, markerPosition=$markerPosition, markerColor=$markerColor, markerDuration=$markerDuration)"
 
-/**
- * @author Kevin Ludwig
- */
-object DebugRendererPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): DebugRendererPacket {
-        val type = DebugRendererPacket.Type.values()[buffer.readIntLE()]
-        val markerText: String?
-        val markerPosition: Float3?
-        val markerColor: Float4?
-        val markerDuration: Long
-        if (type == DebugRendererPacket.Type.AddDebugMarkerCube) {
-            markerText = buffer.readString()
-            markerPosition = buffer.readFloat3()
-            markerColor = Float4(buffer.readFloatLE(), buffer.readFloatLE(), buffer.readFloatLE(), buffer.readFloatLE())
-            markerDuration = buffer.readLong()
-        } else {
-            markerText = null
-            markerPosition = null
-            markerColor = null
-            markerDuration = 0
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): DebugOverlayPacket {
+            val type = Type.values()[buffer.readIntLE()]
+            val markerText: String?
+            val markerPosition: Float3?
+            val markerColor: Float4?
+            val markerDuration: Long
+            if (type == Type.AddDebugMarkerCube) {
+                markerText = buffer.readString()
+                markerPosition = buffer.readFloat3()
+                markerColor = Float4(buffer.readFloatLE(), buffer.readFloatLE(), buffer.readFloatLE(), buffer.readFloatLE())
+                markerDuration = buffer.readLong()
+            } else {
+                markerText = null
+                markerPosition = null
+                markerColor = null
+                markerDuration = 0
+            }
+            return DebugOverlayPacket(type, markerText, markerPosition, markerColor, markerDuration)
         }
-        return DebugRendererPacket(type, markerText, markerPosition, markerColor, markerDuration)
     }
 }

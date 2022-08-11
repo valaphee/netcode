@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 
@@ -43,19 +42,16 @@ class CacheBlobStatusPacket(
     override fun handle(handler: PacketHandler) = handler.cacheBlobStatus(this)
 
     override fun toString() = "CacheBlobStatusPacket(misses=${misses.contentToString()}, hits=${hits.contentToString()})"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object CacheBlobStatusPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): CacheBlobStatusPacket {
-        val missCount = buffer.readVarUInt()
-        val hitCount = buffer.readVarUInt()
-        val length = (missCount + hitCount) * 8
-        check(length <= buffer.readableBytes()) { "Length of $length exceeds ${buffer.readableBytes()}" }
-        val misses = LongArray(missCount) { buffer.readLongLE() }
-        val hits = LongArray(hitCount) { buffer.readLongLE() }
-        return CacheBlobStatusPacket(misses, hits)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): CacheBlobStatusPacket {
+            val missCount = buffer.readVarUInt()
+            val hitCount = buffer.readVarUInt()
+            val length = (missCount + hitCount) * 8
+            check(length <= buffer.readableBytes()) { "Length of $length exceeds ${buffer.readableBytes()}" }
+            val misses = LongArray(missCount) { buffer.readLongLE() }
+            val hits = LongArray(hitCount) { buffer.readLongLE() }
+            return CacheBlobStatusPacket(misses, hits)
+        }
     }
 }

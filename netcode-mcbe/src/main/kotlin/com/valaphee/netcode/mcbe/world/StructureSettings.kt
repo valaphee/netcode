@@ -54,15 +54,15 @@ data class StructureSettings(
     }
 }
 
-fun PacketBuffer.readStructureSettings(version: Int) = StructureSettings(readString(), readBoolean(), readBoolean(), if (version >= V1_18_030) readBoolean() else false, readInt3UnsignedY(), readInt3UnsignedY(), readVarLong(), StructureSettings.Rotation.values()[readUnsignedByte().toInt()], StructureSettings.Mirror.values()[readUnsignedByte().toInt()], if (version >= V1_17_002) StructureSettings.AnimationMode.values()[readUnsignedByte().toInt()] else StructureSettings.AnimationMode.None, if (version >= V1_17_002) readFloatLE() else 0.0f, readFloatLE(), readIntLE(), readFloat3())
+fun PacketBuffer.readStructureSettings(version: Int) = StructureSettings(readString(), readBoolean(), readBoolean(), if (version >= V1_18_030) readBoolean() else false, readBlockPosition(), readBlockPosition(), readVarLong(), StructureSettings.Rotation.values()[readUnsignedByte().toInt()], StructureSettings.Mirror.values()[readUnsignedByte().toInt()], if (version >= V1_17_002) StructureSettings.AnimationMode.values()[readUnsignedByte().toInt()] else StructureSettings.AnimationMode.None, if (version >= V1_17_002) readFloatLE() else 0.0f, readFloatLE(), readIntLE(), readFloat3())
 
 fun PacketBuffer.writeStructureSettings(value: StructureSettings, version: Int) {
     writeString(value.paletteName)
     writeBoolean(value.ignoringEntities)
     writeBoolean(value.ignoringBlocks)
     if (version >= V1_18_030) writeBoolean(value.disableTicking)
-    writeInt3UnsignedY(value.size)
-    writeInt3UnsignedY(value.offset)
+    writeBlockPosition(value.size)
+    writeBlockPosition(value.offset)
     writeVarLong(value.lastEditedByEntityId)
     writeByte(value.rotation.ordinal)
     writeByte(value.mirror.ordinal)

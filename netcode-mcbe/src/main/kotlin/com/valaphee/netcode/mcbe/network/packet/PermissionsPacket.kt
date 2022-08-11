@@ -20,7 +20,6 @@ import com.valaphee.netcode.mcbe.command.CommandPermission
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -41,11 +40,8 @@ class PermissionsPacket(
     override fun handle(handler: PacketHandler) = handler.permissions(this)
 
     override fun toString() = "PermissionsPacket(uniqueEntityId=$uniqueEntityId, commandPermission=$commandPermission, customPermissions=$customPermissions)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object PermissionsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = PermissionsPacket(buffer.readLongLE(), CommandPermission.values()[buffer.readVarInt()], buffer.readUnsignedShortLE())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = PermissionsPacket(buffer.readLongLE(), CommandPermission.values()[buffer.readVarInt()], buffer.readUnsignedShortLE())
+    }
 }

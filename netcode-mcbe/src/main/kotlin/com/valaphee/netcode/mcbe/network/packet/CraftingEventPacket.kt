@@ -19,13 +19,9 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
-import com.valaphee.netcode.mcbe.network.V1_16_221
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readItemStack
-import com.valaphee.netcode.mcbe.world.item.readItemStackPreV1_16_221
 import com.valaphee.netcode.mcbe.world.item.writeItemStack
-import com.valaphee.netcode.mcbe.world.item.writeItemStackPreV1_16_221
 import com.valaphee.netcode.util.safeList
 import java.util.UUID
 
@@ -50,19 +46,16 @@ class CraftingEventPacket(
         buffer.writeVarInt(type.ordinal)
         buffer.writeUuid(recipeId)
         buffer.writeVarUInt(inputs.size)
-        inputs.forEach { if (version >= V1_16_221) buffer.writeItemStack(it) else buffer.writeItemStackPreV1_16_221(it) }
+        inputs.forEach { buffer.writeItemStack(it, version) }
         buffer.writeVarUInt(outputs.size)
-        outputs.forEach { if (version >= V1_16_221) buffer.writeItemStack(it) else buffer.writeItemStackPreV1_16_221(it) }
+        outputs.forEach { buffer.writeItemStack(it, version) }
     }
 
     override fun handle(handler: PacketHandler) = handler.craftingEvent(this)
 
     override fun toString() = "CraftingEventPacket(windowId=$windowId, type=$type, recipeId=$recipeId, inputs=$inputs, outputs=$outputs)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object CraftingEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = CraftingEventPacket(buffer.readUnsignedByte().toInt(), CraftingEventPacket.Type.values()[buffer.readVarInt()], buffer.readUuid(), safeList(buffer.readVarUInt()) { if (version >= V1_16_221) buffer.readItemStack() else buffer.readItemStackPreV1_16_221() }, safeList(buffer.readVarUInt()) { if (version >= V1_16_221) buffer.readItemStack() else buffer.readItemStackPreV1_16_221() })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = CraftingEventPacket(buffer.readUnsignedByte().toInt(), Type.values()[buffer.readVarInt()], buffer.readUuid(), safeList(buffer.readVarUInt()) { buffer.readItemStack(version) }, safeList(buffer.readVarUInt()) { buffer.readItemStack(version) })
+    }
 }

@@ -33,7 +33,7 @@ sealed class SubChunk {
 
     abstract operator fun set(x: Int, y: Int, z: Int, value: Int, layer: Int)
 
-    abstract fun writeToBuffer(buffer: PacketBuffer, runtime: Boolean)
+    abstract fun writeToBuffer(buffer: PacketBuffer, version: Int, runtime: Boolean)
 
     companion object {
         const val YSize = 16
@@ -46,18 +46,18 @@ sealed class SubChunk {
  * @author Kevin Ludwig
  */
 class LegacySubChunk(
-    var blockIds: ByteArray = ByteArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize),
-    var blockSubIds: NibbleArray = NibbleArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize)
+    var blockIds: ByteArray = ByteArray(Chunk.XZSize * YSize * Chunk.XZSize),
+    var blockSubIds: NibbleArray = NibbleArray(Chunk.XZSize * YSize * Chunk.XZSize)
 ) : SubChunk() {
     override fun get(x: Int, y: Int, z: Int): Int {
-        val index = (x shl SubChunk.XShift) or (z shl SubChunk.ZShift) or y
+        val index = (x shl XShift) or (z shl ZShift) or y
         return (blockIds[index].toInt() and (blockIdMask shl blockIdShift)) or blockSubIds[index]
     }
 
     override fun get(x: Int, y: Int, z: Int, layer: Int) = get(x, y, z)
 
     override fun set(x: Int, y: Int, z: Int, value: Int) {
-        val index = (x shl SubChunk.XShift) or (z shl SubChunk.ZShift) or y
+        val index = (x shl XShift) or (z shl ZShift) or y
         blockIds[index] = ((value shr blockIdShift) and blockIdMask).toByte()
         blockSubIds[index] = (value and blockSubIdMask)
     }
@@ -66,7 +66,7 @@ class LegacySubChunk(
 
     override val empty get() = blockIds.all { it.toInt() == 0 }
 
-    override fun writeToBuffer(buffer: PacketBuffer, runtime: Boolean) {
+    override fun writeToBuffer(buffer: PacketBuffer, version: Int, runtime: Boolean) {
         buffer.writeByte(0)
         buffer.writeBytes(blockIds)
         buffer.writeBytes(blockSubIds.bytes)
@@ -100,7 +100,7 @@ class CompactSubChunk(
 
     override val empty get() = layers.all { it.empty }
 
-    override fun writeToBuffer(buffer: PacketBuffer, runtime: Boolean) {
+    override fun writeToBuffer(buffer: PacketBuffer, version: Int, runtime: Boolean) {
         if (index != null) {
             buffer.writeByte(9)
             buffer.writeByte(layers.size)
@@ -109,18 +109,18 @@ class CompactSubChunk(
             buffer.writeByte(8)
             buffer.writeByte(layers.size)
         }
-        layers.forEach { it.writeToBuffer(buffer, runtime) }
+        layers.forEach { it.writeToBuffer(buffer, version, runtime) }
     }
 }
 
-fun PacketBuffer.readSubChunk() = when (val version = readUnsignedByte().toInt()) {
-    0, 2, 3, 4, 5, 6 -> LegacySubChunk(ByteArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize).apply { readBytes(this) }, NibbleArray(ByteArray((BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize) / 2).apply { readBytes(this) })).also { if (isReadable(4096)) skipBytes(4096) }
-    1 -> CompactSubChunk(listOf(readLayer()))
-    8 -> CompactSubChunk(List(readUnsignedByte().toInt()) { readLayer() })
+fun PacketBuffer.readSubChunk(version: Int) = when (val subChunkVersion = readUnsignedByte().toInt()) {
+    0, 2, 3, 4, 5, 6 -> LegacySubChunk(ByteArray(Chunk.XZSize * SubChunk.YSize * Chunk.XZSize).apply { readBytes(this) }, NibbleArray(ByteArray((Chunk.XZSize * SubChunk.YSize * Chunk.XZSize) / 2).apply { readBytes(this) })).also { if (isReadable(4096)) skipBytes(4096) }
+    1 -> CompactSubChunk(listOf(readLayer(version)))
+    8 -> CompactSubChunk(List(readUnsignedByte().toInt()) { readLayer(version) })
     9 -> {
         val layerCount = readUnsignedByte().toInt()
         val index = readByte().toInt()
-        CompactSubChunk(List(layerCount) { readLayer() }, index)
+        CompactSubChunk(List(layerCount) { readLayer(version) }, index)
     }
-    else -> error("No such sub chunk version: $version")
+    else -> error("No such sub chunk version: $subChunkVersion")
 }

@@ -20,13 +20,13 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.util.NamespacedKey
-import com.valaphee.netcode.mcje.util.Registry
+import com.valaphee.netcode.mcje.util.Int2ObjectOpenHashBiMap
 import com.valaphee.netcode.mcje.util.minecraftKey
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
 import com.valaphee.netcode.mcje.world.item.writeItemStack
 
-var particleTypes: Registry<NamespacedKey>? = null
+var particleTypes: Int2ObjectOpenHashBiMap<NamespacedKey>? = null
 
 /**
  * @author Kevin Ludwig

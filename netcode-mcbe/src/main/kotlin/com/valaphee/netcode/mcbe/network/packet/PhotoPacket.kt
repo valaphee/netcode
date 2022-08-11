@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.PacketReader
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_17_034
@@ -58,31 +57,28 @@ class PhotoPacket(
     override fun handle(handler: PacketHandler) = handler.photo(this)
 
     override fun toString() = "PhotoPacket(name='$name', data=${data.contentToString()}, bookId='$bookId', type=$type, sourceType=$sourceType, ownerId=$ownerId, newName=$newName)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object PhotoPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): PhotoPacket {
-        val name = buffer.readString()
-        val data = buffer.readByteArray()
-        val bookId = buffer.readString()
-        val type: PhotoPacket.Type?
-        val sourceType: PhotoPacket.Type?
-        val ownerId: Long
-        val newName: String?
-        if (version >= V1_17_034) {
-            type = PhotoPacket.Type.values()[buffer.readByte().toInt()]
-            sourceType = PhotoPacket.Type.values()[buffer.readByte().toInt()]
-            ownerId = buffer.readLongLE()
-            newName = buffer.readString()
-        } else {
-            type = null
-            sourceType = null
-            ownerId = 0
-            newName = null
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): PhotoPacket {
+            val name = buffer.readString()
+            val data = buffer.readByteArray()
+            val bookId = buffer.readString()
+            val type: Type?
+            val sourceType: Type?
+            val ownerId: Long
+            val newName: String?
+            if (version >= V1_17_034) {
+                type = PhotoPacket.Type.values()[buffer.readByte().toInt()]
+                sourceType = PhotoPacket.Type.values()[buffer.readByte().toInt()]
+                ownerId = buffer.readLongLE()
+                newName = buffer.readString()
+            } else {
+                type = null
+                sourceType = null
+                ownerId = 0
+                newName = null
+            }
+            return PhotoPacket(name, data, bookId, type, sourceType, ownerId, newName)
         }
-        return PhotoPacket(name, data, bookId, type, sourceType, ownerId, newName)
     }
 }
