@@ -41,7 +41,7 @@ import com.valaphee.netcode.mcbe.world.entity.writeLink
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readItemStack
 import com.valaphee.netcode.mcbe.world.item.writeItemStack
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import java.util.UUID
 
 /**
@@ -147,9 +147,9 @@ class PlayerAddPacket(
                 playerPermission = PlayerPermission.values()[buffer.readVarUInt()]
                 commandPermission = CommandPermission.values()[buffer.readVarUInt()]
                 customFlags = 0
-                abilityLayers = safeList(buffer.readVarUInt()) { buffer.readAbilityLayer() }
+                abilityLayers = LazyList(buffer.readVarUInt()) { buffer.readAbilityLayer() }
             }
-            val links = safeList(buffer.readVarUInt()) { buffer.readLink(version) }
+            val links = LazyList(buffer.readVarUInt()) { buffer.readLink(version) }
             val deviceId = buffer.readString()
             val operatingSystem = User.OperatingSystem.values()[buffer.readIntLE() + 1]
             return PlayerAddPacket(userId, userName, uniqueEntityId, runtimeEntityId, platformChatId, position, velocity, rotation, headRotationYaw, itemStackInHand, gameMode, metadata, playerFlags, commandPermission, worldFlags, playerPermission, customFlags, abilityLayers, links, deviceId, operatingSystem)

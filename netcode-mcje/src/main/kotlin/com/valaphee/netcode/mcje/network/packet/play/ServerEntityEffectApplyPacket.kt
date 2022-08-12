@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -46,11 +46,8 @@ class ServerEntityEffectApplyPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityEffectApply(this)
 
     override fun toString() = "ServerEntityEffectApplyPacket(entityId=$entityId, effectId=$effectId, amplifier=$amplifier, duration=$duration, flags=$flags)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerEntityEffectApplyPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectApplyPacket(buffer.readVarInt(), buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readVarInt(), buffer.readByteFlags())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectApplyPacket(buffer.readVarInt(), buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readVarInt(), buffer.readByteFlags())
+    }
 }

@@ -21,7 +21,7 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import java.util.UUID
 
 /**
@@ -51,7 +51,7 @@ class PacksResponsePacket(
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int) = PacksResponsePacket(
             PacksResponsePacket.Status.values()[buffer.readUnsignedByte().toInt()],
-            safeList(buffer.readUnsignedShortLE()) {
+            LazyList(buffer.readUnsignedShortLE()) {
                 val pack = buffer.readString().split("_".toRegex(), 2).toTypedArray()
                 UUID.fromString(pack[0]) to if (pack.size == 2) pack[1] else null
             }

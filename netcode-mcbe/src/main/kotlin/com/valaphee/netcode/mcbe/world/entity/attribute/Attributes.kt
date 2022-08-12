@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcbe.world.entity.attribute
 
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.V1_19_020
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import java.util.EnumMap
 
 /**
@@ -51,7 +51,7 @@ class Attributes(
                 val value = buffer.readFloatLE()
                 val defaultValue = buffer.readFloatLE()
                 val field = AttributeField.byKey(buffer.readString())
-                val modifiers = if (version >= V1_19_020) safeList(buffer.readVarUInt()) { AttributeValueModifier(buffer.readString(), buffer.readString(), buffer.readFloatLE(), AttributeValueModifier.Operation.values()[buffer.readIntLE()], buffer.readIntLE(), buffer.readBoolean()) } else emptyList()
+                val modifiers = if (version >= V1_19_020) LazyList(buffer.readVarUInt()) { AttributeValueModifier(buffer.readString(), buffer.readString(), buffer.readFloatLE(), AttributeValueModifier.Operation.values()[buffer.readIntLE()], buffer.readIntLE(), buffer.readBoolean()) } else emptyList()
                 attributes[field] = AttributeValue(field, minimum, maximum, defaultValue, modifiers, value)
             }
         }

@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Double3
 import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.ParticleData
 import com.valaphee.netcode.mcje.world.readParticleData
@@ -49,20 +49,17 @@ class ServerParticlePacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.particle(this)
 
     override fun toString() = "ServerParticlePacket(data=$data, longDistance=$longDistance, position=$position, offset=$offset, speed=$speed, count=$count)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerParticlePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerParticlePacket {
-        val typeId = buffer.readInt()
-        val longDistance = buffer.readBoolean()
-        val position = buffer.readDouble3()
-        val offset = buffer.readFloat3()
-        val speed = buffer.readFloat()
-        val count = buffer.readInt()
-        val data = buffer.readParticleData(typeId)
-        return ServerParticlePacket(data, longDistance, position, offset, speed, count)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerParticlePacket {
+            val typeId = buffer.readInt()
+            val longDistance = buffer.readBoolean()
+            val position = buffer.readDouble3()
+            val offset = buffer.readFloat3()
+            val speed = buffer.readFloat()
+            val count = buffer.readInt()
+            val data = buffer.readParticleData(typeId)
+            return ServerParticlePacket(data, longDistance, position, offset, speed, count)
+        }
     }
 }

@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -41,6 +41,6 @@ class DeathPacket(
     override fun toString() = "DeathPacket(cause='$cause', messages=$messages)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = DeathPacket(buffer.readString(), safeList(buffer.readVarUInt()) { buffer.readString() })
+        override fun read(buffer: PacketBuffer, version: Int) = DeathPacket(buffer.readString(), LazyList(buffer.readVarUInt()) { buffer.readString() })
     }
 }

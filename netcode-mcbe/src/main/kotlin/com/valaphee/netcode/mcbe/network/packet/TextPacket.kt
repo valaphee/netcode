@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -79,7 +79,7 @@ class TextPacket(
                 Type.Raw, Type.Tip, Type.System, Type.Object, Type.ObjectWhisper -> message = buffer.readString()
                 Type.Translation, Type.PopUp, Type.JukeboxPopUp -> {
                     message = buffer.readString()
-                    arguments = safeList(buffer.readVarUInt()) { buffer.readString() }
+                    arguments = LazyList(buffer.readVarUInt()) { buffer.readString() }
                 }
             }
             val xboxUserId = buffer.readString()

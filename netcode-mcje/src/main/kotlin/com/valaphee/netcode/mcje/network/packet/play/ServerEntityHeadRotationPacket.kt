@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -36,11 +36,8 @@ class ServerEntityHeadRotationPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityHeadRotation(this)
 
     override fun toString() = "ServerEntityHeadRotationPacket(entityId=$entityId, yaw=$yaw)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerEntityHeadRotationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityHeadRotationPacket(buffer.readVarInt(), buffer.readAngle())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityHeadRotationPacket(buffer.readVarInt(), buffer.readAngle())
+    }
 }

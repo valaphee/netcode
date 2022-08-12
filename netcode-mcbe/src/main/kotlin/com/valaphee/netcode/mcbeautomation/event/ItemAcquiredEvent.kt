@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcje.network
+package com.valaphee.netcode.mcbeautomation.event
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbeautomation.Event
 
 /**
  * @author Kevin Ludwig
  */
-interface PacketReader {
-    fun read(buffer: PacketBuffer, version: Int): Packet<out PacketHandler>
-}
+data class ItemAcquiredEvent(
+    @get:JsonProperty("player") val player: Entity,
+    @get:JsonProperty("item") val item: Item,
+    @get:JsonProperty("acquisitionMethodId") val method: Int,
+    @get:JsonProperty("count") val count: Int
+) : Event()

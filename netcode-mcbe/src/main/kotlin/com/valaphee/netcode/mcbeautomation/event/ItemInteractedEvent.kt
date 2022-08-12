@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation.event
+package com.valaphee.netcode.mcbeautomation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.automation.Event
+import com.valaphee.netcode.mcbeautomation.Event
 
 /**
  * @author Kevin Ludwig
  */
-data class PlayerTravelledEvent(
+data class ItemInteractedEvent(
     @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("travelMethod") val method: Int,
-    @get:JsonProperty("metersTravelled") val distance: Float,
-    @get:JsonProperty("isUnderwater") val underwater: Boolean,
-    @get:JsonProperty("newBiome") val biome: Int,
-    @get:JsonProperty("vehicle") val vehicle: Entity?,
+    @get:JsonProperty("item") val item: ItemStack,
+    @get:JsonProperty("method") val method: Int,
+    @get:JsonProperty("count") val count: Int
 ) : Event()

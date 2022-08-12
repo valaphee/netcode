@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.V1_19_0
 
 /**
@@ -45,29 +45,26 @@ class ClientPlayerChatPacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.playerChat(this)
 
     override fun toString() = "ClientPlayerChatPacket(message='$message', time=$time, salt=$salt, signature=${signature.contentToString()}, preview=$preview)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientPlayerChatPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientPlayerChatPacket {
-        val message = buffer.readString(256)
-        val time: Long
-        val salt: Long
-        val signature: ByteArray?
-        val preview: Boolean
-        if (version >= V1_19_0) {
-            time = buffer.readLong()
-            salt = buffer.readLong()
-            signature = buffer.readByteArray()
-            preview = buffer.readBoolean()
-        } else {
-            time = 0
-            salt = 0
-            signature = null
-            preview = false
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ClientPlayerChatPacket {
+            val message = buffer.readString(256)
+            val time: Long
+            val salt: Long
+            val signature: ByteArray?
+            val preview: Boolean
+            if (version >= V1_19_0) {
+                time = buffer.readLong()
+                salt = buffer.readLong()
+                signature = buffer.readByteArray()
+                preview = buffer.readBoolean()
+            } else {
+                time = 0
+                salt = 0
+                signature = null
+                preview = false
+            }
+            return ClientPlayerChatPacket(message, time, salt, signature, preview)
         }
-        return ClientPlayerChatPacket(message, time, salt, signature, preview)
     }
 }

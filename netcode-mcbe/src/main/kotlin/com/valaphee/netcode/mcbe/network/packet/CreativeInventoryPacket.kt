@@ -25,7 +25,7 @@ import com.valaphee.netcode.mcbe.network.V1_16_221
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readItemStack
 import com.valaphee.netcode.mcbe.world.item.writeItemStack
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -49,7 +49,7 @@ class CreativeInventoryPacket(
     override fun toString() = "CreativeInventoryPacket(content=$content)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = CreativeInventoryPacket(safeList(buffer.readVarUInt()) {
+        override fun read(buffer: PacketBuffer, version: Int) = CreativeInventoryPacket(LazyList(buffer.readVarUInt()) {
             if (version >= V1_16_221) {
                 val netId = buffer.readVarUInt()
                 buffer.readItemStack(version, false)?.apply { this.netId = netId }

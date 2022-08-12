@@ -64,7 +64,7 @@ class Metadata {
         modifiedValues.forEach { (fieldId, value) ->
             buffer.writeVarUInt(fieldId)
             val type = value.type
-            buffer.writeVarUInt(MetadataType.registry.getId(type))
+            buffer.writeVarUInt(MetadataType.registry.getInt(type))
             type.write(buffer, value.value)
         }
     }

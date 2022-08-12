@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.V1_19_0
 import com.valaphee.netcode.mcje.world.entity.player.Hand
 
@@ -38,11 +37,8 @@ class ClientItemUsePacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.itemUse(this)
 
     override fun toString() = "ClientItemUsePacket(hand=$hand, confirmId=$confirmId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientItemUsePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientItemUsePacket(Hand.values()[buffer.readVarInt()], if (version >= V1_19_0) buffer.readVarInt() else 0)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientItemUsePacket(Hand.values()[buffer.readVarInt()], if (version >= V1_19_0) buffer.readVarInt() else 0)
+    }
 }

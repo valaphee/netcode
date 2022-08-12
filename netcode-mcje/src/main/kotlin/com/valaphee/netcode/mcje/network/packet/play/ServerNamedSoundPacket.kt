@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.world.SoundCategory
@@ -45,11 +45,8 @@ class ServerNamedSoundPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.namedSound(this)
 
     override fun toString() = "ServerNamedSoundPacket(soundKey=$soundKey, category=$category, position=$position, volume=$volume, pitch=$pitch)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerNamedSoundPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerNamedSoundPacket(buffer.readNamespacedKey(), SoundCategory.values()[buffer.readVarInt()], buffer.readInt3().toMutableFloat3().scale(1 / 8.0f), buffer.readFloat(), buffer.readFloat())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerNamedSoundPacket(buffer.readNamespacedKey(), SoundCategory.values()[buffer.readVarInt()], buffer.readInt3().toMutableFloat3().scale(1 / 8.0f), buffer.readFloat(), buffer.readFloat())
+    }
 }

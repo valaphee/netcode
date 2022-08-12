@@ -18,12 +18,12 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
 import com.valaphee.netcode.mcje.world.item.writeItemStack
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -76,11 +76,8 @@ class ServerTradePacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.trade(this)
 
     override fun toString() = "ServerTradePacket(windowId=$windowId, offers=$offers, level=$level, experience=$experience, regular=$regular, restock=$restock)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerTradePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTradePacket(buffer.readVarInt(), safeList(buffer.readUnsignedByte().toInt()) { ServerTradePacket.Offer(buffer.readItemStack(), buffer.readItemStack(), if (buffer.readBoolean()) buffer.readItemStack() else null, buffer.readBoolean(), buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readFloat(), buffer.readInt()) }, buffer.readVarInt(), buffer.readVarInt(), buffer.readBoolean(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerTradePacket(buffer.readVarInt(), LazyList(buffer.readUnsignedByte().toInt()) { Offer(buffer.readItemStack(), buffer.readItemStack(), if (buffer.readBoolean()) buffer.readItemStack() else null, buffer.readBoolean(), buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readFloat(), buffer.readInt()) }, buffer.readVarInt(), buffer.readVarInt(), buffer.readBoolean(), buffer.readBoolean())
+    }
 }

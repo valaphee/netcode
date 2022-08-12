@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.V1_16_0
 
 /**
@@ -45,23 +44,20 @@ class ClientAbilitiesPacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.abilities(this)
 
     override fun toString() = "ClientAbilitiesPacket(flags=$flags, flySpeed=$flySpeed, walkSpeed=$walkSpeed)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientAbilitiesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientAbilitiesPacket {
-        val flags = buffer.readByteFlags<ClientAbilitiesPacket.Flag>()
-        val flySpeed: Float
-        val walkSpeed: Float
-        if (version >= V1_16_0) {
-            flySpeed = 0.0f
-            walkSpeed = 0.0f
-        } else {
-            flySpeed = buffer.readFloat()
-            walkSpeed = buffer.readFloat()
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ClientAbilitiesPacket {
+            val flags = buffer.readByteFlags<Flag>()
+            val flySpeed: Float
+            val walkSpeed: Float
+            if (version >= V1_16_0) {
+                flySpeed = 0.0f
+                walkSpeed = 0.0f
+            } else {
+                flySpeed = buffer.readFloat()
+                walkSpeed = buffer.readFloat()
+            }
+            return ClientAbilitiesPacket(flags, flySpeed, walkSpeed)
         }
-        return ClientAbilitiesPacket(flags, flySpeed, walkSpeed)
     }
 }

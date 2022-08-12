@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation.event
+package com.valaphee.netcode.mcbeautomation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbeautomation.Event
 
 /**
  * @author Kevin Ludwig
  */
-data class ItemStack(
-    @get:JsonProperty("namespace") val namespace: String,
-    @get:JsonProperty("id") val key: String,
-    @get:JsonProperty("aux") val aux: Int,
-    @get:JsonProperty("stackSize") val count: Int,
-    @get:JsonProperty("maxStackSize") val maximumCount: Int,
-    @get:JsonProperty("freeStackSize") val remainingCount: Int,
-    @get:JsonProperty("enchantments") val enchantments: List<Enchantment>
-) {
-    class Enchantment(
-        @get:JsonProperty("type") val id: Int,
-        @get:JsonProperty("name") val name: String,
-        @get:JsonProperty("level") val value: Int
-    )
-}
+data class PlayerMessageEvent(
+    @get:JsonProperty("type") val type: String,
+    @get:JsonProperty("sender") val sender: String,
+    @get:JsonProperty("message") val message: String
+) : Event()

@@ -20,11 +20,10 @@ import com.valaphee.foundry.math.Int2
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.mcje.util.NibbleArray
-import com.valaphee.netcode.mcje.world.chunk.BlockStorage
+import com.valaphee.netcode.mcje.world.chunk.Chunk
 import com.valaphee.netcode.mcje.world.chunk.SubChunk
 import java.util.BitSet
 
@@ -65,16 +64,16 @@ class ServerChunkLightPacket(
             buffer.writeVarInt(emptyBlockLight.size)
             emptyBlockLight.forEach { buffer.writeLong(it) }
             buffer.writeVarInt(skyLight.size)
-            skyLight.forEach { buffer.writeByteArray(it!!.bytes) }
+            skyLight.forEach { buffer.writeByteArray(it!!.data) }
             buffer.writeVarInt(blockLight.size)
-            blockLight.forEach { buffer.writeByteArray(it!!.bytes) }
+            blockLight.forEach { buffer.writeByteArray(it!!.data) }
         } else {
             buffer.writeVarInt(withSkyLight.toLongArray().single().toInt())
             buffer.writeVarInt(withBlockLight.toLongArray().single().toInt())
             buffer.writeVarInt(emptySkyLight.toLongArray().single().toInt())
             buffer.writeVarInt(emptyBlockLight.toLongArray().single().toInt())
-            skyLight.forEach { buffer.writeByteArray(it!!.bytes) }
-            blockLight.forEach { buffer.writeByteArray(it!!.bytes) }
+            skyLight.forEach { buffer.writeByteArray(it!!.data) }
+            blockLight.forEach { buffer.writeByteArray(it!!.data) }
         }
     }
 
@@ -82,51 +81,48 @@ class ServerChunkLightPacket(
 
     override fun toString() = "ServerChunkLightPacket(position=$position, trustEdges=$trustEdges, withSkyLight=$withSkyLight, withBlockLight=$withBlockLight, emptySkyLight=$emptySkyLight, emptyBlockLight=$emptyBlockLight, skyLight=$skyLight, blockLight=$blockLight)"
 
-    companion object {
-        val EmptyLight = NibbleArray(BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize)
-    }
-}
-
-/**
- * @author Kevin Ludwig
- */
-object ServerChunkLightPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerChunkLightPacket {
-        val position = Int2(buffer.readInt(), buffer.readInt())
-        val trustEdges = buffer.readBoolean()
-        val withSkyLight: BitSet?
-        val withBlockLight: BitSet?
-        val emptySkyLight: BitSet?
-        val emptyBlockLight: BitSet?
-        val skyLight: Array<NibbleArray?>?
-        val blockLight: Array<NibbleArray?>?
-        if (version >= V1_18_2) {
-            withSkyLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
-            withBlockLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
-            emptySkyLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
-            emptyBlockLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
-            skyLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray((BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize) / 2)) }
-            blockLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray((BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize) / 2)) }
-        } else {
-            withSkyLight = BitSet.valueOf(longArrayOf(buffer.readVarInt().toUInt().toLong()))
-            withBlockLight = BitSet.valueOf(longArrayOf(buffer.readVarInt().toUInt().toLong()))
-            emptySkyLight = BitSet.valueOf(longArrayOf(buffer.readVarInt().toUInt().toLong()))
-            emptyBlockLight = BitSet.valueOf(longArrayOf(buffer.readVarInt().toUInt().toLong()))
-            skyLight = Array(18) {
-                when {
-                    withSkyLight[it] -> NibbleArray(buffer.readByteArray((BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize) / 2))
-                    emptySkyLight[it] -> ServerChunkLightPacket.EmptyLight
-                    else -> null
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerChunkLightPacket {
+            val position = Int2(buffer.readInt(), buffer.readInt())
+            val trustEdges = buffer.readBoolean()
+            val withSkyLight: BitSet?
+            val withBlockLight: BitSet?
+            val emptySkyLight: BitSet?
+            val emptyBlockLight: BitSet?
+            val skyLight: Array<NibbleArray?>?
+            val blockLight: Array<NibbleArray?>?
+            if (version >= V1_18_2) {
+                withSkyLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
+                withBlockLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
+                emptySkyLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
+                emptyBlockLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
+                skyLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray((Chunk.XZSize * SubChunk.YSize * Chunk.XZSize) / 2)) }
+                blockLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray((Chunk.XZSize * SubChunk.YSize * Chunk.XZSize) / 2)) }
+            } else {
+                withSkyLight = BitSet.valueOf(longArrayOf(buffer.readVarInt().toUInt().toLong()))
+                withBlockLight = BitSet.valueOf(longArrayOf(buffer.readVarInt().toUInt().toLong()))
+                emptySkyLight = BitSet.valueOf(longArrayOf(buffer.readVarInt().toUInt().toLong()))
+                emptyBlockLight = BitSet.valueOf(longArrayOf(buffer.readVarInt().toUInt().toLong()))
+                skyLight = Array(18) {
+                    when {
+                        withSkyLight[it] -> NibbleArray(buffer.readByteArray((Chunk.XZSize * SubChunk.YSize * Chunk.XZSize) / 2))
+                        emptySkyLight[it] -> EmptyLight
+                        else -> null
+                    }
+                }
+                blockLight = Array(18) {
+                    when {
+                        withBlockLight[it] -> NibbleArray(buffer.readByteArray((Chunk.XZSize * SubChunk.YSize * Chunk.XZSize) / 2))
+                        emptySkyLight[it] -> EmptyLight
+                        else -> null
+                    }
                 }
             }
-            blockLight = Array(18) {
-                when {
-                    withBlockLight[it] -> NibbleArray(buffer.readByteArray((BlockStorage.XZSize * SubChunk.YSize * BlockStorage.XZSize) / 2))
-                    emptySkyLight[it] -> ServerChunkLightPacket.EmptyLight
-                    else -> null
-                }
-            }
+            return ServerChunkLightPacket(position, trustEdges, withSkyLight, withBlockLight, emptySkyLight, emptyBlockLight, skyLight, blockLight)
         }
-        return ServerChunkLightPacket(position, trustEdges, withSkyLight, withBlockLight, emptySkyLight, emptyBlockLight, skyLight, blockLight)
+    }
+
+    companion object {
+        val EmptyLight = NibbleArray(Chunk.XZSize * SubChunk.YSize * Chunk.XZSize)
     }
 }

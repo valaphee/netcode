@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -50,11 +50,8 @@ class ClientPlayerActionPacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.playerAction(this)
 
     override fun toString() = "ClientPlayerActionPacket(entityId=$entityId, action=$action, jumpStrength=$jumpStrength)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientPlayerActionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientPlayerActionPacket(buffer.readVarInt(), ClientPlayerActionPacket.Action.values()[buffer.readVarInt()], buffer.readVarInt() / 100.0f)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientPlayerActionPacket(buffer.readVarInt(), Action.values()[buffer.readVarInt()], buffer.readVarInt() / 100.0f)
+    }
 }

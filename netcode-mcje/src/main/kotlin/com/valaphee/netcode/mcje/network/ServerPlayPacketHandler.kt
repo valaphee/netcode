@@ -46,8 +46,8 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerEntityEffectRevokePac
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityEquipmentPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityEventPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityHeadRotationPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerEntityLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityMetadataPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerEntityMoveRotatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityPassengersPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntitySoundPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityTeleportPacket
@@ -73,6 +73,8 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerPaintingAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerParticlePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPingPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerAddPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerChatPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerChatPreviewPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerCombatEventPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerListHeaderFooterPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerListPacket
@@ -90,10 +92,8 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerSoundPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSoundStopPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSpawnPositionPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerStackTakePacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerTeamPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSystemChatPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerChatPreviewPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerChatPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerTeamPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTimePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTitlePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTradePacket
@@ -188,7 +188,7 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun trade(packet: ServerTradePacket) = other(packet)
 
-    fun entityMoveRotate(packet: ServerEntityMoveRotatePacket) = other(packet)
+    fun entityLocation(packet: ServerEntityLocationPacket) = other(packet)
 
     fun vehicleLocation(packet: ServerVehicleLocationPacket) = other(packet)
 

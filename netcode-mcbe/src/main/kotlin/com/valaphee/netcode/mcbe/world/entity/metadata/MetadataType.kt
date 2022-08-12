@@ -20,6 +20,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.PacketBuffer
+import com.valaphee.netcode.util.Int2ObjectOpenHashBiMap
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -27,13 +28,13 @@ import java.io.OutputStream
 /**
  * @author Kevin Ludwig
  */
-interface MetadataType<T> {
-    fun read(buffer: PacketBuffer): T
+abstract class MetadataType<T> {
+    abstract fun read(buffer: PacketBuffer): T
 
-    fun write(buffer: PacketBuffer, value: T)
+    abstract fun write(buffer: PacketBuffer, value: T)
 
     companion object {
-        val Byte = object : MetadataType<Byte> {
+        val Byte = object : MetadataType<Byte>() {
             override fun read(buffer: PacketBuffer) = buffer.readByte()
 
             override fun write(buffer: PacketBuffer, value: Byte) {
@@ -41,7 +42,7 @@ interface MetadataType<T> {
             }
         }
 
-        val Short = object : MetadataType<Short> {
+        val Short = object : MetadataType<Short>() {
             override fun read(buffer: PacketBuffer) = buffer.readShortLE()
 
             override fun write(buffer: PacketBuffer, value: Short) {
@@ -49,7 +50,7 @@ interface MetadataType<T> {
             }
         }
 
-        val Int = object : MetadataType<Int> {
+        val Int = object : MetadataType<Int>() {
             override fun read(buffer: PacketBuffer) = buffer.readVarInt()
 
             override fun write(buffer: PacketBuffer, value: Int) {
@@ -57,7 +58,7 @@ interface MetadataType<T> {
             }
         }
 
-        val Float = object : MetadataType<Float> {
+        val Float = object : MetadataType<Float>() {
             override fun read(buffer: PacketBuffer) = buffer.readFloatLE()
 
             override fun write(buffer: PacketBuffer, value: Float) {
@@ -65,7 +66,7 @@ interface MetadataType<T> {
             }
         }
 
-        val String = object : MetadataType<String> {
+        val String = object : MetadataType<String>() {
             override fun read(buffer: PacketBuffer) = buffer.readString()
 
             override fun write(buffer: PacketBuffer, value: String) {
@@ -73,7 +74,7 @@ interface MetadataType<T> {
             }
         }
 
-        val Nbt = object : MetadataType<Any?> {
+        val Nbt = object : MetadataType<Any?>() {
             override fun read(buffer: PacketBuffer) = buffer.nbtVarIntObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
 
             override fun write(buffer: PacketBuffer, value: Any?) {
@@ -81,7 +82,7 @@ interface MetadataType<T> {
             }
         }
 
-        val Int3 = object : MetadataType<Int3> {
+        val Int3 = object : MetadataType<Int3>() {
             override fun read(buffer: PacketBuffer) = buffer.readInt3()
 
             override fun write(buffer: PacketBuffer, value: Int3) {
@@ -89,7 +90,7 @@ interface MetadataType<T> {
             }
         }
 
-        val Long = object : MetadataType<Long> {
+        val Long = object : MetadataType<Long>() {
             override fun read(buffer: PacketBuffer) = buffer.readVarLong()
 
             override fun write(buffer: PacketBuffer, value: Long) {
@@ -97,7 +98,7 @@ interface MetadataType<T> {
             }
         }
 
-        val Float3 = object : MetadataType<Float3> {
+        val Float3 = object : MetadataType<Float3>() {
             override fun read(buffer: PacketBuffer) = buffer.readFloat3()
 
             override fun write(buffer: PacketBuffer, value: Float3) {
@@ -105,7 +106,7 @@ interface MetadataType<T> {
             }
         }
 
-        val Flags = object : MetadataType<Set<Flag>> {
+        val Flags = object : MetadataType<Set<Flag>>() {
             override fun read(buffer: PacketBuffer) = buffer.readVarLongFlags<Flag>()
 
             override fun write(buffer: PacketBuffer, value: Set<Flag>) {
@@ -113,12 +114,26 @@ interface MetadataType<T> {
             }
         }
 
-        val Flags2 = object : MetadataType<Set<Flag2>> {
+        val Flags2 = object : MetadataType<Set<Flag2>>() {
             override fun read(buffer: PacketBuffer) = buffer.readVarLongFlags<Flag2>()
 
             override fun write(buffer: PacketBuffer, value: Set<Flag2>) {
                 buffer.writeVarLongFlags(value)
             }
+        }
+
+        val registry = Int2ObjectOpenHashBiMap<MetadataType<*>>().apply {
+            this[0] = Byte
+            this[1] = Short
+            this[2] = Int
+            this[3] = Float
+            this[4] = String
+            this[5] = Nbt
+            this[6] = Int3
+            this[7] = Flags
+            this[7] = Flags2
+            this[7] = Long
+            this[8] = Float3
         }
     }
 }

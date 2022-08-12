@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -34,11 +34,8 @@ class ClientHotbarPacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.hotbar(this)
 
     override fun toString() = "ClientHotbarPacket(slot=$slot)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientHotbarPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientHotbarPacket(buffer.readShort().toInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientHotbarPacket(buffer.readShort().toInt())
+    }
 }

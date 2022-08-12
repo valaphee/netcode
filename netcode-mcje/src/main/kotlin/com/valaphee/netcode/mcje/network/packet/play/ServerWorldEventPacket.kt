@@ -19,9 +19,8 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.util.Int2ObjectOpenHashBiMap
+import com.valaphee.netcode.util.Int2ObjectOpenHashBiMap
 
 /**
  * @author Kevin Ludwig
@@ -98,8 +97,10 @@ class ServerWorldEventPacket(
         CopperRemoveWax,
         CopperScrapeOxidation;
 
+        fun getId() = registry.getInt(this)
+
         companion object {
-            val registry = Int2ObjectOpenHashBiMap<Event>().apply {
+            private val registry = Int2ObjectOpenHashBiMap<Event>().apply {
                 this[1000] = SoundClick
                 this[1001] = SoundClickFail
                 this[1002] = SoundShoot
@@ -165,12 +166,14 @@ class ServerWorldEventPacket(
                 this[3004] = CopperRemoveWax
                 this[3005] = CopperScrapeOxidation
             }
+
+            operator fun get(id: Int): Event? = registry[id]
         }
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt(Event.registry.getId(event))
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeInt(event.getId())
+        buffer.writeBlockPosition(position)
         buffer.writeInt(data)
         buffer.writeBoolean(relativeVolumeDisabled)
     }
@@ -178,11 +181,8 @@ class ServerWorldEventPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.worldEvent(this)
 
     override fun toString() = "ServerWorldEventPacket(event=$event, position=$position, data=$data, relativeVolumeDisabled=$relativeVolumeDisabled)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerWorldEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWorldEventPacket(checkNotNull(ServerWorldEventPacket.Event.registry[buffer.readInt()]), buffer.readInt3UnsignedY(), buffer.readInt(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerWorldEventPacket(checkNotNull(ServerWorldEventPacket.Event[buffer.readInt()]), buffer.readBlockPosition(), buffer.readInt(), buffer.readBoolean())
+    }
 }

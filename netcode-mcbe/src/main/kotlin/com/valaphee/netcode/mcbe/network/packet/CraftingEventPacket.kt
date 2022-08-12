@@ -22,7 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readItemStack
 import com.valaphee.netcode.mcbe.world.item.writeItemStack
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import java.util.UUID
 
 /**
@@ -56,6 +56,6 @@ class CraftingEventPacket(
     override fun toString() = "CraftingEventPacket(windowId=$windowId, type=$type, recipeId=$recipeId, inputs=$inputs, outputs=$outputs)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = CraftingEventPacket(buffer.readUnsignedByte().toInt(), Type.values()[buffer.readVarInt()], buffer.readUuid(), safeList(buffer.readVarUInt()) { buffer.readItemStack(version) }, safeList(buffer.readVarUInt()) { buffer.readItemStack(version) })
+        override fun read(buffer: PacketBuffer, version: Int) = CraftingEventPacket(buffer.readUnsignedByte().toInt(), Type.values()[buffer.readVarInt()], buffer.readUuid(), LazyList(buffer.readVarUInt()) { buffer.readItemStack(version) }, LazyList(buffer.readVarUInt()) { buffer.readItemStack(version) })
     }
 }

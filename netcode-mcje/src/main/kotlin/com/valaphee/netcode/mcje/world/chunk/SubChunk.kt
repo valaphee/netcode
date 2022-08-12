@@ -51,5 +51,5 @@ fun PacketBuffer.writeSubChunkPre758(value: SubChunk) {
 fun PacketBuffer.writeSubChunk(value: SubChunk) {
     writeShort(value.blockCount)
     writeStorage(value.blocks)
-    writeStorage(value.blocks)
+    writeStorage(value.biomes!!)
 }

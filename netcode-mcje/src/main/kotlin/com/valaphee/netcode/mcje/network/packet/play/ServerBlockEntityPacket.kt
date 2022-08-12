@@ -20,7 +20,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_18_2
 import io.netty.buffer.ByteBufInputStream
@@ -75,7 +75,7 @@ class ServerBlockEntityPacket(
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         if (version >= V1_18_2) buffer.writeVarInt(type.ordinal) else buffer.writeByte(type.ordinal)
         buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
@@ -83,11 +83,8 @@ class ServerBlockEntityPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.blockEntity(this)
 
     override fun toString() = "ServerBlockEntityPacket(position=$position, type=$type, data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerBlockEntityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEntityPacket(buffer.readInt3UnsignedY(), ServerBlockEntityPacket.Type.values()[if (version >= 758) buffer.readVarInt() else buffer.readByte().toInt()], buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEntityPacket(buffer.readBlockPosition(), ServerBlockEntityPacket.Type.values()[if (version >= V1_18_2) buffer.readVarInt() else buffer.readByte().toInt()], buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    }
 }

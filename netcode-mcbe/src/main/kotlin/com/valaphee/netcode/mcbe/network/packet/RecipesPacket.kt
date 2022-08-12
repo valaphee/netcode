@@ -37,7 +37,7 @@ import com.valaphee.netcode.mcbe.world.item.readIngredient
 import com.valaphee.netcode.mcbe.world.item.readItemStack
 import com.valaphee.netcode.mcbe.world.item.writeIngredient
 import com.valaphee.netcode.mcbe.world.item.writeItemStack
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import kotlin.reflect.jvm.jvmName
 
 /**
@@ -138,15 +138,15 @@ class RecipesPacket(
 
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int) = RecipesPacket(
-            safeList(buffer.readVarUInt()) {
+            LazyList(buffer.readVarUInt()) {
                 when (val type = buffer.readVarInt()) {
-                    0, 5, 6 -> ShapelessRecipe(ShapelessRecipe.Description(buffer.readString()), safeList(buffer.readVarUInt()) { buffer.readIngredient(version)!! }, safeList(buffer.readVarUInt()) { buffer.readItemStack(version, false)!! }.single(), buffer.readUuid(), listOf(buffer.readString()), buffer.readVarInt(), if (version >= V1_16_010) buffer.readVarUInt() else 0)
+                    0, 5, 6 -> ShapelessRecipe(ShapelessRecipe.Description(buffer.readString()), LazyList(buffer.readVarUInt()) { buffer.readIngredient(version)!! }, LazyList(buffer.readVarUInt()) { buffer.readItemStack(version, false)!! }.single(), buffer.readUuid(), listOf(buffer.readString()), buffer.readVarInt(), if (version >= V1_16_010) buffer.readVarUInt() else 0)
                     1, 7 -> {
                         val key = buffer.readString()
                         val width = buffer.readVarInt()
                         val height = buffer.readVarInt()
-                        val input = safeList(width * height) { buffer.readIngredient(version) }
-                        val output = safeList(buffer.readVarUInt()) { buffer.readItemStack(version, false)!! }
+                        val input = LazyList(width * height) { buffer.readIngredient(version) }
+                        val output = LazyList(buffer.readVarUInt()) { buffer.readItemStack(version, false)!! }
                         val id = buffer.readUuid()
                         val tag = buffer.readString()
                         val priority = buffer.readVarInt()
@@ -159,9 +159,9 @@ class RecipesPacket(
                     else -> error("No such recipe type: $type")
                 }
             },
-            safeList(buffer.readVarUInt()) { BrewingMixRecipe(BrewingMixRecipe.Description(""), emptyList(), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt())) },
-            safeList(buffer.readVarUInt()) { BrewingContainerRecipe(BrewingContainerRecipe.Description(""), emptyList(), Item[version, buffer.readVarInt()]!!, Item[version, buffer.readVarInt()]!!, Item[version, buffer.readVarInt()]!!) },
-            if (version >= V1_17_034) safeList(buffer.readVarUInt()) { MaterialReductionRecipe(MaterialReductionRecipe.Description(""), emptyList(), ItemStack(Item[version, buffer.readVarInt()]!!), safeList(buffer.readVarUInt()) { ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()) }) } else emptyList(),
+            LazyList(buffer.readVarUInt()) { BrewingMixRecipe(BrewingMixRecipe.Description(""), emptyList(), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt())) },
+            LazyList(buffer.readVarUInt()) { BrewingContainerRecipe(BrewingContainerRecipe.Description(""), emptyList(), Item[version, buffer.readVarInt()]!!, Item[version, buffer.readVarInt()]!!, Item[version, buffer.readVarInt()]!!) },
+            if (version >= V1_17_034) LazyList(buffer.readVarUInt()) { MaterialReductionRecipe(MaterialReductionRecipe.Description(""), emptyList(), ItemStack(Item[version, buffer.readVarInt()]!!), LazyList(buffer.readVarUInt()) { ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()) }) } else emptyList(),
             buffer.readBoolean()
         )
     }

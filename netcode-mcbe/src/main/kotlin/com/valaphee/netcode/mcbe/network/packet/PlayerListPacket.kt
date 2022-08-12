@@ -26,7 +26,7 @@ import com.valaphee.netcode.mcbe.world.entity.player.Appearance
 import com.valaphee.netcode.mcbe.world.entity.player.User
 import com.valaphee.netcode.mcbe.world.entity.player.readAppearance
 import com.valaphee.netcode.mcbe.world.entity.player.writeAppearance
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import java.util.UUID
 
 /**
@@ -86,7 +86,7 @@ class PlayerListPacket(
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int): PlayerListPacket {
             val action = Action.values()[buffer.readUnsignedByte().toInt()]
-            val entries = safeList(buffer.readVarUInt()) {
+            val entries = LazyList(buffer.readVarUInt()) {
                 when (action) {
                     Action.Add -> Entry(
                         buffer.readUuid(),

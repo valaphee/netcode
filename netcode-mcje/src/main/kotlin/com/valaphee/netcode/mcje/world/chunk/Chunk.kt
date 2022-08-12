@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation
-
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
-import kotlin.reflect.KClass
+package com.valaphee.netcode.mcje.world.chunk
 
 /**
  * @author Kevin Ludwig
  */
-abstract class Command {
-    @get:JsonProperty("commandLine") abstract val commandLine: String
-
-    @get:JsonIgnore abstract val responseType: KClass<out CommandResponse>
+object Chunk {
+    const val XZSize = 16
 }
-
-abstract class CommandResponse

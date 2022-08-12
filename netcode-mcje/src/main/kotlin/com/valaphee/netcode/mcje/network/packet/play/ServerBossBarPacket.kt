@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import net.kyori.adventure.text.Component
 import java.util.UUID
@@ -75,85 +75,82 @@ class ServerBossBarPacket(
 
     override fun toString() = "ServerBossBarPacket(entityUid=$entityUid, action=$action, title=$title, percentage=$percentage, color=$color, overlay=$overlay, darkenSky=$darkenSky, playEndMusic=$playEndMusic, showFog=$showFog)"
 
-    companion object {
-        internal const val flagDarkenSky = 1
-        internal const val flagPlayEndMusic = 1 shl 1
-        internal const val flagShowFog = 1 shl 2
-    }
-}
-
-/**
- * @author Kevin Ludwig
- */
-object ServerBossBarPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerBossBarPacket {
-        val entityUid = buffer.readUuid()
-        val action = ServerBossBarPacket.Action.values()[buffer.readVarInt()]
-        val title: Component?
-        val percentage: Float
-        val color: ServerBossBarPacket.Color?
-        val overlay: ServerBossBarPacket.Overlay?
-        val darkenSky: Boolean
-        val playEndMusic: Boolean
-        val showFog: Boolean
-        when (action) {
-            ServerBossBarPacket.Action.Show -> {
-                title = buffer.readComponent()
-                percentage = buffer.readFloat()
-                color = ServerBossBarPacket.Color.values()[buffer.readVarInt()]
-                overlay = ServerBossBarPacket.Overlay.values()[buffer.readVarInt()]
-                val flagsValue = buffer.readByte().toInt()
-                darkenSky = flagsValue and ServerBossBarPacket.flagDarkenSky != 0
-                playEndMusic = flagsValue and ServerBossBarPacket.flagPlayEndMusic != 0
-                showFog = flagsValue and ServerBossBarPacket.flagShowFog != 0
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerBossBarPacket {
+            val entityUid = buffer.readUuid()
+            val action = Action.values()[buffer.readVarInt()]
+            val title: Component?
+            val percentage: Float
+            val color: Color?
+            val overlay: Overlay?
+            val darkenSky: Boolean
+            val playEndMusic: Boolean
+            val showFog: Boolean
+            when (action) {
+                Action.Show -> {
+                    title = buffer.readComponent()
+                    percentage = buffer.readFloat()
+                    color = Color.values()[buffer.readVarInt()]
+                    overlay = Overlay.values()[buffer.readVarInt()]
+                    val flagsValue = buffer.readByte().toInt()
+                    darkenSky = flagsValue and flagDarkenSky != 0
+                    playEndMusic = flagsValue and flagPlayEndMusic != 0
+                    showFog = flagsValue and flagShowFog != 0
+                }
+                Action.SetPercentage -> {
+                    title = null
+                    percentage = buffer.readFloat()
+                    color = null
+                    overlay = null
+                    darkenSky = false
+                    playEndMusic = false
+                    showFog = false
+                }
+                Action.SetTitle -> {
+                    title = buffer.readComponent()
+                    percentage = 0.0f
+                    color = null
+                    overlay = null
+                    darkenSky = false
+                    playEndMusic = false
+                    showFog = false
+                }
+                Action.SetStyle -> {
+                    title = null
+                    percentage = 0.0f
+                    color = Color.values()[buffer.readVarInt()]
+                    overlay = Overlay.values()[buffer.readVarInt()]
+                    darkenSky = false
+                    playEndMusic = false
+                    showFog = false
+                }
+                Action.SetFlags -> {
+                    title = null
+                    percentage = 0.0f
+                    color = null
+                    overlay = null
+                    val flagsValue = buffer.readByte().toInt()
+                    darkenSky = flagsValue and flagDarkenSky != 0
+                    playEndMusic = flagsValue and flagPlayEndMusic != 0
+                    showFog = flagsValue and flagShowFog != 0
+                }
+                else -> {
+                    title = null
+                    percentage = 0.0f
+                    color = null
+                    overlay = null
+                    darkenSky = false
+                    playEndMusic = false
+                    showFog = false
+                }
             }
-            ServerBossBarPacket.Action.SetPercentage -> {
-                title = null
-                percentage = buffer.readFloat()
-                color = null
-                overlay = null
-                darkenSky = false
-                playEndMusic = false
-                showFog = false
-            }
-            ServerBossBarPacket.Action.SetTitle -> {
-                title = buffer.readComponent()
-                percentage = 0.0f
-                color = null
-                overlay = null
-                darkenSky = false
-                playEndMusic = false
-                showFog = false
-            }
-            ServerBossBarPacket.Action.SetStyle -> {
-                title = null
-                percentage = 0.0f
-                color = ServerBossBarPacket.Color.values()[buffer.readVarInt()]
-                overlay = ServerBossBarPacket.Overlay.values()[buffer.readVarInt()]
-                darkenSky = false
-                playEndMusic = false
-                showFog = false
-            }
-            ServerBossBarPacket.Action.SetFlags -> {
-                title = null
-                percentage = 0.0f
-                color = null
-                overlay = null
-                val flagsValue = buffer.readByte().toInt()
-                darkenSky = flagsValue and ServerBossBarPacket.flagDarkenSky != 0
-                playEndMusic = flagsValue and ServerBossBarPacket.flagPlayEndMusic != 0
-                showFog = flagsValue and ServerBossBarPacket.flagShowFog != 0
-            }
-            else -> {
-                title = null
-                percentage = 0.0f
-                color = null
-                overlay = null
-                darkenSky = false
-                playEndMusic = false
-                showFog = false
-            }
+            return ServerBossBarPacket(entityUid, action, title, percentage, color, overlay, darkenSky, playEndMusic, showFog)
         }
-        return ServerBossBarPacket(entityUid, action, title, percentage, color, overlay, darkenSky, playEndMusic, showFog)
+    }
+
+    companion object {
+        private const val flagDarkenSky    = 1 shl 0
+        private const val flagPlayEndMusic = 1 shl 1
+        private const val flagShowFog      = 1 shl 2
     }
 }

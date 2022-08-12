@@ -31,7 +31,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_17_011
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -110,8 +110,8 @@ class CommandsPacket(
 
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int): CommandsPacket {
-            val values = safeList(buffer.readVarUInt()) { buffer.readString() }
-            val postfixes = safeList(buffer.readVarUInt()) { buffer.readString() }
+            val values = LazyList(buffer.readVarUInt()) { buffer.readString() }
+            val postfixes = LazyList(buffer.readVarUInt()) { buffer.readString() }
             val indexReader: () -> Int = when {
                 values.size <= 0xFF -> {
                     { buffer.readUnsignedByte().toInt() }
@@ -123,10 +123,10 @@ class CommandsPacket(
                     { buffer.readIntLE() }
                 }
             }
-            val enumerations = safeList(buffer.readVarUInt()) { Enumeration(buffer.readString(), safeList(buffer.readVarUInt()) { values[indexReader()] }.toMutableSet(), false) }
-            val commandHelpers = safeList(buffer.readVarUInt()) {
-                CommandData(buffer.readString(), buffer.readString(), if (version >= V1_17_011) buffer.readShortLEFlags() else buffer.readByteFlags(), CommandPermission.values()[buffer.readByte().toInt()], buffer.readIntLE(), safeList(buffer.readVarUInt()) {
-                    safeList(buffer.readVarUInt()) {
+            val enumerations = LazyList(buffer.readVarUInt()) { Enumeration(buffer.readString(), LazyList(buffer.readVarUInt()) { values[indexReader()] }.toMutableSet(), false) }
+            val commandHelpers = LazyList(buffer.readVarUInt()) {
+                CommandData(buffer.readString(), buffer.readString(), if (version >= V1_17_011) buffer.readShortLEFlags() else buffer.readByteFlags(), CommandPermission.values()[buffer.readByte().toInt()], buffer.readIntLE(), LazyList(buffer.readVarUInt()) {
+                    LazyList(buffer.readVarUInt()) {
                         val name = buffer.readString()
                         val type = buffer.readIntLE()
                         val optional = buffer.readBoolean()
@@ -135,8 +135,8 @@ class CommandsPacket(
                     }
                 })
             }
-            val softEnumerations = safeList(buffer.readVarUInt()) { buffer.readEnumeration(true) }
-            val constraints = safeList(buffer.readVarUInt()) { buffer.readEnumerationConstraint(values, enumerations) }
+            val softEnumerations = LazyList(buffer.readVarUInt()) { buffer.readEnumeration(true) }
+            val constraints = LazyList(buffer.readVarUInt()) { buffer.readEnumerationConstraint(values, enumerations) }
             return CommandsPacket(commandHelpers.map {
                 val aliasesIndex = it.aliasesIndex
                 Command(it.name, it.description, it.flags, it.permission, if (aliasesIndex == -1) null else enumerations[aliasesIndex], it.overloadStructures.map {

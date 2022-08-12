@@ -21,7 +21,7 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.V1_09_0
 import com.valaphee.netcode.mcje.network.V1_11_0
 import com.valaphee.netcode.mcje.network.V1_14_0
@@ -42,7 +42,7 @@ class ClientBlockPlacePacket(
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         if (version >= V1_14_0) buffer.writeVarInt(hand.ordinal)
-        buffer.writeInt3UnsignedY(blockPosition)
+        buffer.writeBlockPosition(blockPosition)
         if (version >= V1_09_0) buffer.writeVarInt(blockFace?.ordinal ?: 0xFF) else buffer.writeByte(blockFace?.ordinal ?: 0xFF)
         if (version in V1_09_0 until V1_14_0) buffer.writeVarInt(hand.ordinal)
         if (version >= V1_11_0) buffer.writeFloat3(clickPosition) else {
@@ -57,20 +57,17 @@ class ClientBlockPlacePacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.blockPlace(this)
 
     override fun toString() = "ClientBlockPlacePacket(hand=$hand, blockPosition=$blockPosition, blockFace=$blockFace, clickPosition=$clickPosition, insideBlock=$insideBlock, confirmId=$confirmId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientBlockPlacePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientBlockPlacePacket {
-        var hand = if (version >= V1_14_0) Hand.values()[buffer.readVarInt()] else Hand.Main
-        val blockPosition = buffer.readInt3UnsignedY()
-        val blockFace = if (version >= V1_09_0) buffer.readVarInt() else buffer.readUnsignedByte().toInt()
-        if (version in V1_09_0 until V1_14_0) hand = Hand.values()[buffer.readVarInt()]
-        val clickPosition = if (version >= V1_11_0) buffer.readFloat3() else Float3(buffer.readByte().toFloat(), buffer.readByte().toFloat(), buffer.readByte().toFloat())
-        val insideBlock = if (version >= V1_14_0) buffer.readBoolean() else false
-        val confirmId = if (version >= V1_19_0) buffer.readVarInt() else 0
-        return ClientBlockPlacePacket(hand, blockPosition, if (blockFace == 0xFF) null else Direction.values()[blockFace], clickPosition, insideBlock, confirmId)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ClientBlockPlacePacket {
+            var hand = if (version >= V1_14_0) Hand.values()[buffer.readVarInt()] else Hand.Main
+            val blockPosition = buffer.readBlockPosition()
+            val blockFace = if (version >= V1_09_0) buffer.readVarInt() else buffer.readUnsignedByte().toInt()
+            if (version in V1_09_0 until V1_14_0) hand = Hand.values()[buffer.readVarInt()]
+            val clickPosition = if (version >= V1_11_0) buffer.readFloat3() else Float3(buffer.readByte().toFloat(), buffer.readByte().toFloat(), buffer.readByte().toFloat())
+            val insideBlock = if (version >= V1_14_0) buffer.readBoolean() else false
+            val confirmId = if (version >= V1_19_0) buffer.readVarInt() else 0
+            return ClientBlockPlacePacket(hand, blockPosition, if (blockFace != 0xFF) Direction.values()[blockFace] else null, clickPosition, insideBlock, confirmId)
+        }
     }
 }

@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation
+package com.valaphee.netcode.mcbeautomation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.valaphee.netcode.mcbeautomation.Event
 
 /**
  * @author Kevin Ludwig
  */
-abstract class Event
-
-/**
- * @author Kevin Ludwig
- */
-data class EventRequest(
-    @get:JsonProperty("eventName") val eventName: String
-)
+data class EndOfDayEvent(
+    @get:JsonProperty("player") val player: Entity
+) : Event()

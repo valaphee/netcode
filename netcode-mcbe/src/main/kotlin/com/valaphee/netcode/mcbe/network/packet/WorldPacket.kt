@@ -49,7 +49,7 @@ import com.valaphee.netcode.mcbe.world.readExperiment
 import com.valaphee.netcode.mcbe.world.readGameRule
 import com.valaphee.netcode.mcbe.world.writeExperiment
 import com.valaphee.netcode.mcbe.world.writeGameRule
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
@@ -329,11 +329,11 @@ class WorldPacket(
             val platformBroadcastMode = GamePublishMode.values()[buffer.readVarInt()]
             val commandsEnabled = buffer.readBoolean()
             val resourcePacksRequired = buffer.readBoolean()
-            val gameRules = safeList(buffer.readVarUInt()) { buffer.readGameRule(version) }
+            val gameRules = LazyList(buffer.readVarUInt()) { buffer.readGameRule(version) }
             val experiments: List<Experiment>
             val experimentsPreviouslyToggled: Boolean
             if (version >= V1_16_100) {
-                experiments = safeList(buffer.readIntLE()) { buffer.readExperiment() }
+                experiments = LazyList(buffer.readIntLE()) { buffer.readExperiment() }
                 experimentsPreviouslyToggled = buffer.readBoolean()
             } else {
                 experiments = emptyList()
@@ -411,7 +411,7 @@ class WorldPacket(
             if (version >= V1_16_100) {
                 blocksData = null
                 val nbtObjectReader = buffer.nbtVarIntObjectMapper/*.readerFor(Block::class.java).withAttribute("version", version)*/
-                blocks = safeList(buffer.readVarUInt()) {
+                blocks = LazyList(buffer.readVarUInt()) {
                     val blockKey = buffer.readString()
                     val block = nbtObjectReader.readValue<Map<String, Any?>>(ByteBufInputStream(buffer) as InputStream)
                     val blockProperties = (block["properties"] as List<Any?>?)

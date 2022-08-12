@@ -239,7 +239,7 @@ class WorldEventPacket(
         fun getId(version: Int) = registry.getLastInt(version, this)
 
         companion object {
-            val registry = Int2ObjectOpenHashBiMapVersioned<Event>().apply {
+            private val registry = Int2ObjectOpenHashBiMapVersioned<Event>().apply {
                 put(SoundClick                   , V1_14_060 to   1000                                          )
                 put(SoundClickFail               , V1_14_060 to   1001                                          )
                 put(SoundLaunch                  , V1_14_060 to   1002                                          )

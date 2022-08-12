@@ -28,7 +28,7 @@ import com.valaphee.netcode.mcbe.world.inventory.WindowId
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readItemStack
 import com.valaphee.netcode.mcbe.world.item.writeItemStack
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 
 /**
@@ -183,14 +183,14 @@ class InventoryTransactionPacket(
             val legacySlots: List<LegacySlot>?
             if (version >= V1_16_010) {
                 legacyRequestId = buffer.readVarInt()
-                legacySlots = if (legacyRequestId < -1 && (legacyRequestId and 1) == 0) safeList(buffer.readVarUInt()) { LegacySlot(buffer.readByte().toInt(), buffer.readByteArray()) } else null
+                legacySlots = if (legacyRequestId < -1 && (legacyRequestId and 1) == 0) LazyList(buffer.readVarUInt()) { LegacySlot(buffer.readByte().toInt(), buffer.readByteArray()) } else null
             } else {
                 legacyRequestId = 0
                 legacySlots = null
             }
             val type = Type.values()[buffer.readVarUInt()]
             val usingNetIds = if (version in V1_16_010 until V1_16_221) buffer.readBoolean() else false
-            val actions = safeList(buffer.readVarUInt()) { buffer.readAction(version, usingNetIds) }
+            val actions = LazyList(buffer.readVarUInt()) { buffer.readAction(version, usingNetIds) }
             val actionId: Int
             val runtimeEntityId: Long
             val position: Int3?

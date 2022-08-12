@@ -43,7 +43,7 @@ class Metadata {
         var fieldId = buffer.readByte().toInt()
         while (fieldId != -1) {
             val typeId = buffer.readVarInt()
-            val type = MetadataType.registry.idToValue[typeId] ?: error("No such metadata type: $typeId (field id: $fieldId)")
+            val type = MetadataType.registry[typeId] ?: error("No such metadata type: $typeId (field id: $fieldId)")
             values[fieldId] = MetadataValue(type, type.read(buffer))
             fieldId = buffer.readByte().toInt()
         }
@@ -54,7 +54,7 @@ class Metadata {
             if (value.modified) {
                 buffer.writeByte(fieldId)
                 val type = value.type
-                buffer.writeVarInt(MetadataType.registry.getId(type))
+                buffer.writeVarInt(MetadataType.registry.getInt(type))
                 type.write(buffer, value)
             }
         }

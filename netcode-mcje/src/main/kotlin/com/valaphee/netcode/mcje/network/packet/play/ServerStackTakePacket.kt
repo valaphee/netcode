@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -38,11 +38,8 @@ class ServerStackTakePacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.stackTake(this)
 
     override fun toString() = "ServerStackTakePacket(stackEntityId=$stackEntityId, entityId=$entityId, stackCount=$stackCount)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerStackTakePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerStackTakePacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerStackTakePacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt())
+    }
 }

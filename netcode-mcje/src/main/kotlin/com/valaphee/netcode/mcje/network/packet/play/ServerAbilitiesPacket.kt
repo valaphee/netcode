@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -42,11 +42,8 @@ class ServerAbilitiesPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.abilities(this)
 
     override fun toString() = "ServerAbilitiesPacket(flags=$flags, flySpeed=$flySpeed, walkSpeed=$walkSpeed)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerAbilitiesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerAbilitiesPacket(buffer.readByteFlags(), buffer.readFloat(), buffer.readFloat())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerAbilitiesPacket(buffer.readByteFlags(), buffer.readFloat(), buffer.readFloat())
+    }
 }

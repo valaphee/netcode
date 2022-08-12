@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation.event
+package com.valaphee.netcode.mcbeautomation
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.automation.Event
 
 /**
  * @author Kevin Ludwig
  */
-data class PlayerTransformEvent(
-    @get:JsonProperty("player") val player: Entity,
-) : Event()
+data class Error(
+    @get:JsonProperty("statusCode") val statusCode: Int,
+    @get:JsonProperty("statusMessage") val statusMessage: String
+)

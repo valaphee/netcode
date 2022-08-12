@@ -17,6 +17,7 @@
 package com.valaphee.netcode.mcje.world.entity.attribute
 
 import com.valaphee.netcode.mcje.network.PacketBuffer
+import com.valaphee.netcode.mcje.network.V1_18_2
 import java.util.EnumMap
 
 /**
@@ -27,7 +28,6 @@ class Attributes(
 ) {
     operator fun get(field: AttributeField) = attributes[field]
 
-    @Suppress("TYPE_INFERENCE_ONLY_INPUT_TYPES_WARNING")
     fun getValue(field: AttributeField) = attributes[field]?.modifiedValue ?: field.defaultValue
 
     fun add(field: AttributeField) = field.attributeValue().also { attributes[field] = it }
@@ -36,8 +36,8 @@ class Attributes(
 
     val modified get() = attributes.values.any { it.modified }
 
-    fun readFromBufferPre758(buffer: PacketBuffer) {
-        repeat(buffer.readInt()) {
+    fun readFromBuffer(buffer: PacketBuffer, version: Int) {
+        repeat(if (version >= V1_18_2) buffer.readVarInt() else buffer.readInt()) {
             val field = AttributeField.byKey(buffer.readNamespacedKey())
             val value = AttributeValue(field, buffer.readDouble())
             repeat(buffer.readVarInt()) { value.applyModifier(AttributeValueModifier(buffer.readUuid(), buffer.readDouble(), AttributeValueModifier.Operation.values()[buffer.readByte().toInt()])) }
@@ -45,37 +45,9 @@ class Attributes(
         }
     }
 
-    fun readFromBuffer(buffer: PacketBuffer) {
-        repeat(buffer.readVarInt()) {
-            val field = AttributeField.byKey(buffer.readNamespacedKey())
-            val value = AttributeValue(field, buffer.readDouble())
-            repeat(buffer.readVarInt()) { value.applyModifier(AttributeValueModifier(buffer.readUuid(), buffer.readDouble(), AttributeValueModifier.Operation.values()[buffer.readByte().toInt()])) }
-            attributes[field] = value
-        }
-    }
-
-    fun writeToBufferPre758(buffer: PacketBuffer) {
+    fun writeToBuffer(buffer: PacketBuffer, version: Int) {
         val modifiedAttributes = attributes.filter { it.value.modified }
-        buffer.writeInt(modifiedAttributes.count())
-        modifiedAttributes.forEach { (field, value) ->
-            if (value.modified) {
-                buffer.writeNamespacedKey(field.key)
-                buffer.writeDouble(value.value)
-                val modifiers = value.modifiers
-                buffer.writeVarInt(modifiers.size)
-                modifiers.forEach {
-                    buffer.writeUuid(it.id)
-                    buffer.writeDouble(it.value)
-                    buffer.writeByte(it.operation.ordinal)
-                }
-                value.flagAsSaved()
-            }
-        }
-    }
-
-    fun writeToBuffer(buffer: PacketBuffer) {
-        val modifiedAttributes = attributes.filter { it.value.modified }
-        buffer.writeVarInt(modifiedAttributes.count())
+        if (version >= V1_18_2) buffer.writeVarInt(modifiedAttributes.count()) else buffer.writeInt(modifiedAttributes.count())
         modifiedAttributes.forEach { (field, value) ->
             if (value.modified) {
                 buffer.writeNamespacedKey(field.key)

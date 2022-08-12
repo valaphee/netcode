@@ -24,7 +24,7 @@ import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.item.ItemStack
 import com.valaphee.netcode.mcbe.world.item.readItemStackWithNetId
 import com.valaphee.netcode.mcbe.world.item.writeItemStackWithNetId
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -47,6 +47,6 @@ class InventoryContentPacket(
     override fun toString() = "InventoryContentPacket(windowId=$windowId, content=$content)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = InventoryContentPacket(buffer.readVarUInt(), safeList(buffer.readVarUInt()) { buffer.readItemStackWithNetId(version) })
+        override fun read(buffer: PacketBuffer, version: Int) = InventoryContentPacket(buffer.readVarUInt(), LazyList(buffer.readVarUInt()) { buffer.readItemStackWithNetId(version) })
     }
 }

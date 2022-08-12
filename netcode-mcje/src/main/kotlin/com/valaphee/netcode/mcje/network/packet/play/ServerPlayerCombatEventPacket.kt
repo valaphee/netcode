@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_18_2
 import net.kyori.adventure.text.Component
@@ -37,9 +37,9 @@ class ServerPlayerCombatEventPacket(
     }
 
     override val reader get() = when (event) {
-        Event.End -> ServerPlayerCombatEventEndPacketReader
-        Event.Enter -> ServerPlayerCombatEventEnterPacketReader
-        Event.Death -> ServerPlayerCombatEventDeathPacketReader
+        Event.End -> EndReader
+        Event.Enter -> EnterReader
+        Event.Death -> DeathReader
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
@@ -61,55 +61,43 @@ class ServerPlayerCombatEventPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.playerCombatEvent(this)
 
     override fun toString() = "ServerPlayerCombatEventPacket(event=$event, durationOrPlayerEntityId=$durationOrPlayerEntityId, entityId=$entityId, message=$message)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerPlayerCombatEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerPlayerCombatEventPacket {
-        val event = ServerPlayerCombatEventPacket.Event.values()[buffer.readVarInt()]
-        val durationOrPlayerEntityId: Int
-        val entityId: Int
-        val message: Component?
-        when (event) {
-            ServerPlayerCombatEventPacket.Event.Enter -> {
-                durationOrPlayerEntityId = 0
-                entityId = 0
-                message = null
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerPlayerCombatEventPacket {
+            val event = Event.values()[buffer.readVarInt()]
+            val durationOrPlayerEntityId: Int
+            val entityId: Int
+            val message: Component?
+            when (event) {
+                Event.Enter -> {
+                    durationOrPlayerEntityId = 0
+                    entityId = 0
+                    message = null
+                }
+                Event.End -> {
+                    durationOrPlayerEntityId = buffer.readVarInt()
+                    entityId = buffer.readInt()
+                    message = null
+                }
+                Event.Death -> {
+                    durationOrPlayerEntityId = buffer.readVarInt()
+                    entityId = buffer.readInt()
+                    message = buffer.readComponent()
+                }
             }
-            ServerPlayerCombatEventPacket.Event.End -> {
-                durationOrPlayerEntityId = buffer.readVarInt()
-                entityId = buffer.readInt()
-                message = null
-            }
-            ServerPlayerCombatEventPacket.Event.Death -> {
-                durationOrPlayerEntityId = buffer.readVarInt()
-                entityId = buffer.readInt()
-                message = buffer.readComponent()
-            }
+            return ServerPlayerCombatEventPacket(event, durationOrPlayerEntityId, entityId, message)
         }
-        return ServerPlayerCombatEventPacket(event, durationOrPlayerEntityId, entityId, message)
     }
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerPlayerCombatEventEndPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerCombatEventPacket(ServerPlayerCombatEventPacket.Event.End, buffer.readVarInt(), buffer.readInt(), null)
-}
+    object EndReader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerCombatEventPacket(Event.End, buffer.readVarInt(), buffer.readInt(), null)
+    }
 
-/**
- * @author Kevin Ludwig
- */
-object ServerPlayerCombatEventEnterPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerCombatEventPacket(ServerPlayerCombatEventPacket.Event.Enter, 0, 0, null)
-}
+    object EnterReader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerCombatEventPacket(Event.Enter, 0, 0, null)
+    }
 
-/**
- * @author Kevin Ludwig
- */
-object ServerPlayerCombatEventDeathPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerCombatEventPacket(ServerPlayerCombatEventPacket.Event.Death, buffer.readVarInt(), buffer.readInt(), buffer.readComponent())
+    object DeathReader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerCombatEventPacket(Event.Death, buffer.readVarInt(), buffer.readInt(), buffer.readComponent())
+    }
 }

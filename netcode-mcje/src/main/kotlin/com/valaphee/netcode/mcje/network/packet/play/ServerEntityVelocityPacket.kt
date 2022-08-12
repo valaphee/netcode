@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Double3
 import com.valaphee.foundry.math.MutableDouble3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -41,11 +41,8 @@ class ServerEntityVelocityPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityVelocity(this)
 
     override fun toString() = "ServerEntityVelocityPacket(entityId=$entityId, velocity=$velocity)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerEntityVelocityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityVelocityPacket(buffer.readVarInt(), MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityVelocityPacket(buffer.readVarInt(), MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
+    }
 }

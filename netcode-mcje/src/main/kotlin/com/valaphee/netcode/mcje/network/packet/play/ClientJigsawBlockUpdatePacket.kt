@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
@@ -35,7 +35,7 @@ class ClientJigsawBlockUpdatePacket(
     val jointType: String
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         buffer.writeNamespacedKey(name)
         buffer.writeNamespacedKey(target)
         buffer.writeNamespacedKey(pool)
@@ -46,11 +46,8 @@ class ClientJigsawBlockUpdatePacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.jigsawBlockUpdate(this)
 
     override fun toString() = "ClientJigsawBlockUpdatePacket(position=$position, name=$name, target=$target, pool=$pool, finalState='$finalState', jointType='$jointType')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientJigsawBlockUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientJigsawBlockUpdatePacket(buffer.readInt3UnsignedY(), buffer.readNamespacedKey(), buffer.readNamespacedKey(), buffer.readNamespacedKey(), buffer.readString(), buffer.readString())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientJigsawBlockUpdatePacket(buffer.readBlockPosition(), buffer.readNamespacedKey(), buffer.readNamespacedKey(), buffer.readNamespacedKey(), buffer.readString(), buffer.readString())
+    }
 }

@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_18_2
 import net.kyori.adventure.text.Component
@@ -38,11 +38,11 @@ class ServerTitlePacket(
     }
 
     override val reader get() = when (action) {
-        Action.Clear -> ServerTitleClearPacketReader
-        Action.ActionBar -> ServerTitleActionBarPacketReader
-        Action.SetSubTitle -> ServerTitleSetSubTitlePacketReader
-        Action.SetTitle -> ServerTitleSetTitlePacketReader
-        Action.SetTimings -> ServerTitleSetTimingsPacketReader
+        Action.Clear -> ClearReader
+        Action.ActionBar -> ActionBarReader
+        Action.SetSubTitle -> SetSubTitleReader
+        Action.SetTitle -> SetTitleReader
+        Action.SetTimings -> SetTimingsReader
         else -> null
     }
 
@@ -62,73 +62,55 @@ class ServerTitlePacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.title(this)
 
     override fun toString() = "ServerTitlePacket(action=$action, text=$text, fadeInTime=$fadeInTime, stayTime=$stayTime, fadeOutTime=$fadeOutTime)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerTitlePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerTitlePacket {
-        val action = ServerTitlePacket.Action.values()[buffer.readVarInt()]
-        val text: Component?
-        val fadeInTime: Int
-        val stayTime: Int
-        val fadeOutTime: Int
-        when (action) {
-            ServerTitlePacket.Action.SetTitle, ServerTitlePacket.Action.SetSubTitle, ServerTitlePacket.Action.ActionBar -> {
-                text = buffer.readComponent()
-                fadeInTime = 0
-                stayTime = 0
-                fadeOutTime = 0
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerTitlePacket {
+            val action = Action.values()[buffer.readVarInt()]
+            val text: Component?
+            val fadeInTime: Int
+            val stayTime: Int
+            val fadeOutTime: Int
+            when (action) {
+                Action.SetTitle, Action.SetSubTitle, Action.ActionBar -> {
+                    text = buffer.readComponent()
+                    fadeInTime = 0
+                    stayTime = 0
+                    fadeOutTime = 0
+                }
+                Action.SetTimings -> {
+                    text = null
+                    fadeInTime = buffer.readInt()
+                    stayTime = buffer.readInt()
+                    fadeOutTime = buffer.readInt()
+                }
+                Action.Clear, Action.Reset -> {
+                    text = null
+                    fadeInTime = 0
+                    stayTime = 0
+                    fadeOutTime = 0
+                }
             }
-            ServerTitlePacket.Action.SetTimings -> {
-                text = null
-                fadeInTime = buffer.readInt()
-                stayTime = buffer.readInt()
-                fadeOutTime = buffer.readInt()
-            }
-            ServerTitlePacket.Action.Clear, ServerTitlePacket.Action.Reset -> {
-                text = null
-                fadeInTime = 0
-                stayTime = 0
-                fadeOutTime = 0
-            }
+            return ServerTitlePacket(action, text, fadeInTime, stayTime, fadeOutTime)
         }
-        return ServerTitlePacket(action, text, fadeInTime, stayTime, fadeOutTime)
     }
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerTitleClearPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTitlePacket(ServerTitlePacket.Action.Clear, null, 0, 0, 0)
-}
+    object ClearReader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerTitlePacket(Action.Clear, null, 0, 0, 0)
+    }
 
-/**
- * @author Kevin Ludwig
- */
-object ServerTitleActionBarPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTitlePacket(ServerTitlePacket.Action.ActionBar, buffer.readComponent(), 0, 0, 0)
-}
+    object ActionBarReader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerTitlePacket(Action.ActionBar, buffer.readComponent(), 0, 0, 0)
+    }
 
-/**
- * @author Kevin Ludwig
- */
-object ServerTitleSetSubTitlePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTitlePacket(ServerTitlePacket.Action.SetSubTitle, buffer.readComponent(), 0, 0, 0)
-}
+    object SetSubTitleReader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerTitlePacket(Action.SetSubTitle, buffer.readComponent(), 0, 0, 0)
+    }
 
-/**
- * @author Kevin Ludwig
- */
-object ServerTitleSetTitlePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTitlePacket(ServerTitlePacket.Action.SetTitle, buffer.readComponent(), 0, 0, 0)
-}
+    object SetTitleReader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerTitlePacket(Action.SetTitle, buffer.readComponent(), 0, 0, 0)
+    }
 
-/**
- * @author Kevin Ludwig
- */
-object ServerTitleSetTimingsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerTitlePacket(ServerTitlePacket.Action.SetTimings, null, buffer.readInt(), buffer.readInt(), buffer.readInt())
+    object SetTimingsReader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerTitlePacket(Action.SetTimings, null, buffer.readInt(), buffer.readInt(), buffer.readInt())
+    }
 }

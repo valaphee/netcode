@@ -22,9 +22,13 @@ import com.valaphee.netcode.network.ProtocolHandler
  * @author Kevin Ludwig
  */
 abstract class Packet<T : ProtocolHandler> {
-    open val reader: PacketReader? = null
+    open val reader: Reader? = null
 
     abstract fun write(buffer: PacketBuffer, version: Int)
 
     abstract fun handle(handler: T)
+
+    interface Reader {
+        fun read(buffer: PacketBuffer, version: Int): Packet<out PacketHandler>
+    }
 }

@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_19_0
 
@@ -39,7 +39,7 @@ class ServerActionConfirmPacket(
 
     override fun write(buffer: PacketBuffer, version: Int) {
         if (version >= V1_19_0) buffer.writeVarInt(confirmId) else {
-            buffer.writeInt3UnsignedY(position!!)
+            buffer.writeBlockPosition(position!!)
             buffer.writeVarInt(blockStateId)
             buffer.writeVarInt(action!!.ordinal)
             buffer.writeBoolean(succeed)
@@ -49,31 +49,28 @@ class ServerActionConfirmPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.actionConfirm(this)
 
     override fun toString() = "ServerActionConfirmPacket(position=$position, blockStateId=$blockStateId, action=$action, succeed=$succeed, confirmId=$confirmId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerActionConfirmPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerActionConfirmPacket {
-        val position: Int3?
-        val blockStateId: Int
-        val action: ServerActionConfirmPacket.Action?
-        val succeed: Boolean
-        val confirmId: Int
-        if (version >= V1_19_0) {
-            position = null
-            blockStateId = 0
-            action = null
-            succeed = false
-            confirmId = buffer.readVarInt()
-        } else {
-            position = buffer.readInt3UnsignedY()
-            blockStateId = buffer.readVarInt()
-            action = ServerActionConfirmPacket.Action.values()[buffer.readVarInt()]
-            succeed = buffer.readBoolean()
-            confirmId = 0
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerActionConfirmPacket {
+            val position: Int3?
+            val blockStateId: Int
+            val action: Action?
+            val succeed: Boolean
+            val confirmId: Int
+            if (version >= V1_19_0) {
+                position = null
+                blockStateId = 0
+                action = null
+                succeed = false
+                confirmId = buffer.readVarInt()
+            } else {
+                position = buffer.readBlockPosition()
+                blockStateId = buffer.readVarInt()
+                action = Action.values()[buffer.readVarInt()]
+                succeed = buffer.readBoolean()
+                confirmId = 0
+            }
+            return ServerActionConfirmPacket(position, blockStateId, action, succeed, confirmId)
         }
-        return ServerActionConfirmPacket(position, blockStateId, action, succeed, confirmId)
     }
 }

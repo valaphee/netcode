@@ -52,7 +52,7 @@ data class Parameter(
         fun getId(version: Int) = registry.getLastInt(version, this)
 
         companion object {
-            val registry = Int2ObjectOpenHashBiMapVersioned<Type>().apply {
+            private val registry = Int2ObjectOpenHashBiMapVersioned<Type>().apply {
                 put(Integer    , V1_14_060 to 0x01                                                         )
                 put(Float      , V1_14_060 to 0x02, V1_16_100 to 0x03                                      )
                 put(Float1     , V1_14_060 to 0x03, V1_16_100 to 0x04                                      )

@@ -18,9 +18,9 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import net.kyori.adventure.text.Component
 
 /**
@@ -54,11 +54,8 @@ class ServerCommandSuggestPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.commandSuggest(this)
 
     override fun toString() = "ServerCommandSuggestPacket(id=$id, start=$start, length=$length, matches=$matches)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerCommandSuggestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerCommandSuggestPacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(), safeList(buffer.readVarInt()) { ServerCommandSuggestPacket.Match(buffer.readString(), if (buffer.readBoolean()) buffer.readComponent() else null) })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerCommandSuggestPacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt(), LazyList(buffer.readVarInt()) { Match(buffer.readString(), if (buffer.readBoolean()) buffer.readComponent() else null) })
+    }
 }

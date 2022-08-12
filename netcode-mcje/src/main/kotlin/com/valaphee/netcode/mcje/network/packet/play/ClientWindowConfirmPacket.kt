@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -38,11 +38,8 @@ class ClientWindowConfirmPacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.windowConfirm(this)
 
     override fun toString() = "ClientWindowConfirmPacket(windowId=$windowId, confirmId=$confirmId, accepted=$accepted)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientWindowConfirmPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientWindowConfirmPacket(buffer.readByte().toInt(), buffer.readShort().toInt(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientWindowConfirmPacket(buffer.readByte().toInt(), buffer.readShort().toInt(), buffer.readBoolean())
+    }
 }

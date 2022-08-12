@@ -23,7 +23,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_18_010
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -54,6 +54,6 @@ class SubChunkRequestPacket(
     override fun toString() = "SubChunkRequestPacket(dimension=$dimension, position=$position, requests=$requests)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = SubChunkRequestPacket(buffer.readVarInt(), buffer.readInt3(), if (version >= V1_18_010) safeList(buffer.readIntLE()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) } else listOf(Int3.Zero))
+        override fun read(buffer: PacketBuffer, version: Int) = SubChunkRequestPacket(buffer.readVarInt(), buffer.readInt3(), if (version >= V1_18_010) LazyList(buffer.readIntLE()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) } else listOf(Int3.Zero))
     }
 }

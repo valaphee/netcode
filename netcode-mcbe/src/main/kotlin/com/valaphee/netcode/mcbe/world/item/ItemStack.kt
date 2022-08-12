@@ -35,7 +35,7 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.V1_16_100
 import com.valaphee.netcode.mcbe.network.V1_16_221
 import com.valaphee.netcode.mcbe.world.block.BlockState
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -153,8 +153,8 @@ fun PacketBuffer.readItemStack(version: Int, withNetId: Boolean = true): ItemSta
                     else -> null
                 }
             },
-            readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
-            readIntLE().let { if (it == 0) null else safeList(it) { readString16() } },
+            readIntLE().let { if (it == 0) null else LazyList(it) { readString16() } },
+            readIntLE().let { if (it == 0) null else LazyList(it) { readString16() } },
             if (itemKey == "minecraft:shield") readLongLE() else 0,
             netId,
             if (blockStateId != 0) BlockState[version, blockStateId] else null
@@ -172,8 +172,8 @@ fun PacketBuffer.readItemStack(version: Int, withNetId: Boolean = true): ItemSta
                     else -> null
                 }
             },
-            readVarInt().let { if (it == 0) null else safeList(it) { readString() } },
-            readVarInt().let { if (it == 0) null else safeList(it) { readString() } },
+            readVarInt().let { if (it == 0) null else LazyList(it) { readString() } },
+            readVarInt().let { if (it == 0) null else LazyList(it) { readString() } },
             if (itemKey == "minecraft:shield") readVarLong() else 0
         )
     }

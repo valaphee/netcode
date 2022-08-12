@@ -22,7 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.item.enchanting.Enchantment
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -78,13 +78,13 @@ class EnchantOptionsPacket(
     override fun toString() = "EnchantOptionsPacket(options=$options)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = EnchantOptionsPacket(safeList(buffer.readVarUInt()) {
+        override fun read(buffer: PacketBuffer, version: Int) = EnchantOptionsPacket(LazyList(buffer.readVarUInt()) {
             Option(
                 buffer.readVarUInt(),
                 buffer.readIntLE(),
-                safeList(buffer.readVarUInt()) { Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
-                safeList(buffer.readVarUInt()) { Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
-                safeList(buffer.readVarUInt()) { Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
+                LazyList(buffer.readVarUInt()) { Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
+                LazyList(buffer.readVarUInt()) { Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
+                LazyList(buffer.readVarUInt()) { Slot(Enchantment.values()[buffer.readUnsignedByte().toInt()], buffer.readUnsignedByte()) },
                 buffer.readString(),
                 buffer.readVarUInt()
             )

@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.Difficulty
 
@@ -37,11 +37,8 @@ class ServerDifficultyPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.difficulty(this)
 
     override fun toString() = "ServerDifficultyPacket(difficulty=$difficulty, locked=$locked)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerDifficultyPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerDifficultyPacket(Difficulty.values()[buffer.readByte().toInt()], buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerDifficultyPacket(Difficulty.values()[buffer.readByte().toInt()], buffer.readBoolean())
+    }
 }

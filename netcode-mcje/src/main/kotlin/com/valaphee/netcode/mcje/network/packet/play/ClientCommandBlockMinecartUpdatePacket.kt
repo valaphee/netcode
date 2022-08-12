@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -38,11 +38,8 @@ class ClientCommandBlockMinecartUpdatePacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.commandBlockMinecartUpdate(this)
 
     override fun toString() = "ClientCommandBlockMinecartUpdatePacket(entityId=$entityId, command='$command', outputTracked=$outputTracked)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientCommandBlockMinecartUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientCommandBlockMinecartUpdatePacket(buffer.readVarInt(), buffer.readString(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientCommandBlockMinecartUpdatePacket(buffer.readVarInt(), buffer.readString(), buffer.readBoolean())
+    }
 }

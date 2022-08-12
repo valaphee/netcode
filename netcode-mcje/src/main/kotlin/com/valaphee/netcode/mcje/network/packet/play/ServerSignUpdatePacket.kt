@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -29,17 +29,14 @@ class ServerSignUpdatePacket(
     val position: Int3
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.signUpdate(this)
 
     override fun toString() = "ServerSignUpdatePacket(position=$position)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerSignUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerSignUpdatePacket(buffer.readInt3UnsignedY())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerSignUpdatePacket(buffer.readBlockPosition())
+    }
 }

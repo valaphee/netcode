@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
 
 /**
  * @author Kevin Ludwig
@@ -34,11 +33,8 @@ class ClientTeleportConfirmPacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.teleportConfirm(this)
 
     override fun toString() = "ClientTeleportConfirmPacket(id=$id)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientTeleportConfirmPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientTeleportConfirmPacket(buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientTeleportConfirmPacket(buffer.readVarInt())
+    }
 }

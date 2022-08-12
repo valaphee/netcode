@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import net.kyori.adventure.text.Component
 
@@ -39,11 +39,8 @@ class ServerWindowOpenPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.windowOpen(this)
 
     override fun toString() = "ServerWindowOpenPacket(windowId=$windowId, windowTypeId=$windowTypeId, title=$title)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerWindowOpenPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowOpenPacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readComponent())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerWindowOpenPacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readComponent())
+    }
 }

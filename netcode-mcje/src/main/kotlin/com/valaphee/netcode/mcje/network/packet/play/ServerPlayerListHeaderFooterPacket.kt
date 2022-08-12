@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import net.kyori.adventure.text.Component
 
@@ -37,11 +37,8 @@ class ServerPlayerListHeaderFooterPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.playerListHeaderFooter(this)
 
     override fun toString() = "ServerPlayerListHeaderFooterPacket(header=$header, footer=$footer)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerPlayerListHeaderFooterPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerListHeaderFooterPacket(buffer.readComponent(), buffer.readComponent())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerListHeaderFooterPacket(buffer.readComponent(), buffer.readComponent())
+    }
 }

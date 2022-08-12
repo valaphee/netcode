@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_19_0
 import net.kyori.adventure.text.Component
@@ -45,11 +45,8 @@ class ServerSystemChatPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.systemChat(this)
 
     override fun toString() = "ServerSystemChatPacket(message=$message, type=$type, userId=$userId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerSystemChatPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerSystemChatPacket(buffer.readComponent(), ServerSystemChatPacket.Type.values()[buffer.readByte().toInt()], if (version < V1_19_0) buffer.readUuid() else null)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerSystemChatPacket(buffer.readComponent(), ServerSystemChatPacket.Type.values()[buffer.readByte().toInt()], if (version < V1_19_0) buffer.readUuid() else null)
+    }
 }

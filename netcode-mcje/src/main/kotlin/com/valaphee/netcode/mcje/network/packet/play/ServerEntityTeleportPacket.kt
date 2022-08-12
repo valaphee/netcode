@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Double3
 import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -42,11 +42,8 @@ class ServerEntityTeleportPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityTeleport(this)
 
     override fun toString() = "ServerEntityTeleportPacket(entityId=$entityId, position=$position, rotation=$rotation, onGround=$onGround)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerEntityTeleportPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityTeleportPacket(buffer.readVarInt(), buffer.readDouble3(), buffer.readAngle2(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityTeleportPacket(buffer.readVarInt(), buffer.readDouble3(), buffer.readAngle2(), buffer.readBoolean())
+    }
 }

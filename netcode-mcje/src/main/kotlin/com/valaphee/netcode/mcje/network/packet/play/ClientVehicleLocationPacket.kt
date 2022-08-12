@@ -21,7 +21,7 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -38,11 +38,8 @@ class ClientVehicleLocationPacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.vehicleLocation(this)
 
     override fun toString() = "ClientVehicleLocationPacket(position=$position, rotation=$rotation)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientVehicleLocationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientVehicleLocationPacket(buffer.readDouble3(), buffer.readFloat2())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientVehicleLocationPacket(buffer.readDouble3(), buffer.readFloat2())
+    }
 }

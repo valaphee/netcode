@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation
+package com.valaphee.netcode.mcbeautomation
 
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper

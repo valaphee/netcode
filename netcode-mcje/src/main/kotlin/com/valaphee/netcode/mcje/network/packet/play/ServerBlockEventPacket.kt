@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -32,7 +31,7 @@ class ServerBlockEventPacket(
     val blockId: Int
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         buffer.writeByte(data1)
         buffer.writeByte(data2)
         buffer.writeVarInt(blockId)
@@ -41,11 +40,8 @@ class ServerBlockEventPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.blockEvent(this)
 
     override fun toString() = "ServerBlockEventPacket(position=$position, data1=$data1, data2=$data2, blockId=$blockId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerBlockEventPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEventPacket(buffer.readInt3UnsignedY(), buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerBlockEventPacket(buffer.readBlockPosition(), buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readVarInt())
+    }
 }

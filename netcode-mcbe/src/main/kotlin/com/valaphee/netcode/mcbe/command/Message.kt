@@ -17,7 +17,7 @@
 package com.valaphee.netcode.mcbe.command
 
 import com.valaphee.netcode.mcbe.network.PacketBuffer
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -28,7 +28,7 @@ data class Message(
     val arguments: List<String>
 )
 
-fun PacketBuffer.readMessage() = Message(readBoolean(), readString(), safeList(readVarUInt()) { readString() })
+fun PacketBuffer.readMessage() = Message(readBoolean(), readString(), LazyList(readVarUInt()) { readString() })
 
 fun PacketBuffer.writeMessage(value: Message) {
     writeBoolean(value.success)

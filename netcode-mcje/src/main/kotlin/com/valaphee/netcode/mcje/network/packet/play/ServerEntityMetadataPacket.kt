@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.entity.metadata.Metadata
 
@@ -37,11 +37,8 @@ class ServerEntityMetadataPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityMetadata(this)
 
     override fun toString() = "ServerEntityMetadataPacket(entityId=$entityId, metadata=$metadata)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerEntityMetadataPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityMetadataPacket(buffer.readVarInt(), Metadata().apply { readFromBuffer(buffer) })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityMetadataPacket(buffer.readVarInt(), Metadata().apply { readFromBuffer(buffer) })
+    }
 }

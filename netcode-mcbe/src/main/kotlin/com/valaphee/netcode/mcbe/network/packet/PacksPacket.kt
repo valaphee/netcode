@@ -23,7 +23,7 @@ import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_16_201
 import com.valaphee.netcode.mcbe.network.V1_17_011
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import java.util.UUID
 
 /**
@@ -86,8 +86,8 @@ class PacksPacket(
             buffer.readBoolean(),
             buffer.readBoolean(),
             if (version >= V1_17_011) buffer.readBoolean() else false,
-            safeList(buffer.readUnsignedShortLE()) { Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readLongLE(), buffer.readString(), buffer.readString(), buffer.readString(), buffer.readBoolean()) },
-            safeList(buffer.readUnsignedShortLE()) { Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readLongLE(), buffer.readString(), buffer.readString(), buffer.readString(), buffer.readBoolean(), if (version >= V1_16_201) buffer.readBoolean() else false) }
+            LazyList(buffer.readUnsignedShortLE()) { Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readLongLE(), buffer.readString(), buffer.readString(), buffer.readString(), buffer.readBoolean()) },
+            LazyList(buffer.readUnsignedShortLE()) { Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readLongLE(), buffer.readString(), buffer.readString(), buffer.readString(), buffer.readBoolean(), if (version >= V1_16_201) buffer.readBoolean() else false) }
         )
     }
 }

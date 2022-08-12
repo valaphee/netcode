@@ -22,7 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_19_020
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -50,6 +50,6 @@ class MapRequestPacket(
     override fun toString() = "MapRequestPacket(mapId=$mapId, pixels=$pixels)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = MapRequestPacket(buffer.readVarLong(), if (version >= V1_19_020) safeList(buffer.readIntLE()) { buffer.readIntLE() to buffer.readUnsignedShortLE() } else emptyList())
+        override fun read(buffer: PacketBuffer, version: Int) = MapRequestPacket(buffer.readVarLong(), if (version >= V1_19_020) LazyList(buffer.readIntLE()) { buffer.readIntLE() to buffer.readUnsignedShortLE() } else emptyList())
     }
 }

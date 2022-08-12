@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -37,11 +37,8 @@ class ServerEntityPassengersPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityPassengers(this)
 
     override fun toString() = "ServerEntityPassengersPacket(entityId=$entityId, passengerEntityIds=${passengerEntityIds.contentToString()})"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerEntityPassengersPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityPassengersPacket(buffer.readVarInt(), IntArray(buffer.readVarInt()) { buffer.readVarInt() })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityPassengersPacket(buffer.readVarInt(), IntArray(buffer.readVarInt()) { buffer.readVarInt() })
+    }
 }

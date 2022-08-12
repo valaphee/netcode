@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -39,6 +39,6 @@ class PurchaseReceiptPacket(
     override fun toString() = "PurchaseReceiptPacket(offerIds=$offerIds)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = PurchaseReceiptPacket(safeList(buffer.readVarUInt()) { buffer.readString() })
+        override fun read(buffer: PacketBuffer, version: Int) = PurchaseReceiptPacket(LazyList(buffer.readVarUInt()) { buffer.readString() })
     }
 }

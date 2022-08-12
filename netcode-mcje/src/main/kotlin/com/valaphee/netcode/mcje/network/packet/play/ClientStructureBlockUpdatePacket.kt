@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -58,7 +58,7 @@ class ClientStructureBlockUpdatePacket(
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         buffer.writeVarInt(action.ordinal)
         buffer.writeVarInt(mode.ordinal)
         buffer.writeString(name)
@@ -83,30 +83,27 @@ class ClientStructureBlockUpdatePacket(
 
     override fun toString() = "ClientStructureBlockUpdatePacket(position=$position, action=$action, mode=$mode, name='$name', offset=$offset, size=$size, mirror=$mirror, rotation=$rotation, metadata='$metadata', integrityValue=$integrityValue, integritySeed=$integritySeed, ignoreEntities=$ignoreEntities, showAir=$showAir, showBoundingBox=$showBoundingBox)"
 
-    companion object {
-        internal const val flagIgnoreEntities = 1
-        internal const val flagShowAir = 1 shl 1
-        internal const val flagShowBoundingBox = 1 shl 2
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ClientStructureBlockUpdatePacket {
+            val position = buffer.readBlockPosition()
+            val action = ClientStructureBlockUpdatePacket.Action.values()[buffer.readVarInt()]
+            val mode = ClientStructureBlockUpdatePacket.Mode.values()[buffer.readVarInt()]
+            val name = buffer.readString()
+            val offset = Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt())
+            val size = Int3(buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt())
+            val mirror = ClientStructureBlockUpdatePacket.Mirror.values()[buffer.readVarInt()]
+            val rotation = ClientStructureBlockUpdatePacket.Rotation.values()[buffer.readVarInt()]
+            val metadata = buffer.readString()
+            val integrityValue = buffer.readFloat()
+            val integritySeed = buffer.readVarLong()
+            val flagsValue = buffer.readByte().toInt()
+            return ClientStructureBlockUpdatePacket(position, action, mode, name, offset, size, mirror, rotation, metadata, integrityValue, integritySeed, 0 != flagsValue and ClientStructureBlockUpdatePacket.flagIgnoreEntities, 0 != flagsValue and ClientStructureBlockUpdatePacket.flagShowAir, 0 != flagsValue and ClientStructureBlockUpdatePacket.flagShowBoundingBox)
+        }
     }
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientStructureBlockUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientStructureBlockUpdatePacket {
-        val position = buffer.readInt3UnsignedY()
-        val action = ClientStructureBlockUpdatePacket.Action.values()[buffer.readVarInt()]
-        val mode = ClientStructureBlockUpdatePacket.Mode.values()[buffer.readVarInt()]
-        val name = buffer.readString()
-        val offset = Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt())
-        val size = Int3(buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt())
-        val mirror = ClientStructureBlockUpdatePacket.Mirror.values()[buffer.readVarInt()]
-        val rotation = ClientStructureBlockUpdatePacket.Rotation.values()[buffer.readVarInt()]
-        val metadata = buffer.readString()
-        val integrityValue = buffer.readFloat()
-        val integritySeed = buffer.readVarLong()
-        val flagsValue = buffer.readByte().toInt()
-        return ClientStructureBlockUpdatePacket(position, action, mode, name, offset, size, mirror, rotation, metadata, integrityValue, integritySeed, 0 != flagsValue and ClientStructureBlockUpdatePacket.flagIgnoreEntities, 0 != flagsValue and ClientStructureBlockUpdatePacket.flagShowAir, 0 != flagsValue and ClientStructureBlockUpdatePacket.flagShowBoundingBox)
+    companion object {
+        private const val flagIgnoreEntities = 1
+        private const val flagShowAir = 1 shl 1
+        private const val flagShowBoundingBox = 1 shl 2
     }
 }

@@ -17,7 +17,7 @@
 package com.valaphee.netcode.mcbe.command
 
 import com.valaphee.netcode.mcbe.network.PacketBuffer
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -28,7 +28,7 @@ data class Enumeration constructor(
     val soft: Boolean = false
 )
 
-fun PacketBuffer.readEnumeration(soft: Boolean) = Enumeration(readString(), safeList(readVarUInt()) { readString() }.toMutableSet(), soft)
+fun PacketBuffer.readEnumeration(soft: Boolean) = Enumeration(readString(), LazyList(readVarUInt()) { readString() }.toMutableSet(), soft)
 
 fun PacketBuffer.writeEnumeration(value: Enumeration) {
     writeString(value.name)

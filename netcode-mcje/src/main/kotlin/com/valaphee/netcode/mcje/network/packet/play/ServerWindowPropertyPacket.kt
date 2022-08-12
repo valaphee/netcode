@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -38,11 +38,8 @@ class ServerWindowPropertyPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.windowProperty(this)
 
     override fun toString() = "ServerWindowPropertyPacket(windowId=$windowId, property=$property, value=$value)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerWindowPropertyPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowPropertyPacket(buffer.readUnsignedByte().toInt(), buffer.readShort().toInt(), buffer.readShort().toInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerWindowPropertyPacket(buffer.readUnsignedByte().toInt(), buffer.readShort().toInt(), buffer.readShort().toInt())
+    }
 }

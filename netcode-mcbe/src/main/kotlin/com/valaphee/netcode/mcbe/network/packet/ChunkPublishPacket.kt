@@ -24,7 +24,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_19_020
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -54,6 +54,6 @@ class ChunkPublishPacket(
     override fun toString() = "ChunkPublishPacket(position=$position, radius=$radius, chunks=$chunks)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ChunkPublishPacket(buffer.readInt3(), buffer.readVarUInt(), if (version >= V1_19_020) safeList(buffer.readIntLE()) { Int2(buffer.readVarInt(), buffer.readVarInt()) } else emptyList())
+        override fun read(buffer: PacketBuffer, version: Int) = ChunkPublishPacket(buffer.readInt3(), buffer.readVarUInt(), if (version >= V1_19_020) LazyList(buffer.readIntLE()) { Int2(buffer.readVarInt(), buffer.readVarInt()) } else emptyList())
     }
 }

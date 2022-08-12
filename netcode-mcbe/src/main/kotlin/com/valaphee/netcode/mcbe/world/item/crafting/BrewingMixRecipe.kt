@@ -27,8 +27,8 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.valaphee.netcode.mcbe.pack.Data
-import com.valaphee.netcode.mcbe.util.Registry
 import com.valaphee.netcode.mcbe.world.item.ItemStack
+import com.valaphee.netcode.util.Int2ObjectOpenHashBiMap
 
 /**
  * @author Kevin Ludwig
@@ -54,7 +54,52 @@ data class BrewingMixRecipe(
     object PotionDeserializer : JsonDeserializer<ItemStack>() {
         override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
             val key = parser.readValueAs(String::class.java)
-            return if (key.startsWith("minecraft:potion_type:")) ItemStack("minecraft:potion", potionTypes.getId(key.removePrefix("minecraft:potion_type:"))) else error("Unexpected item in brewing mix recipe: $key")
+            return if (key.startsWith("minecraft:potion_type:")) ItemStack("minecraft:potion", potionTypes.getInt(key.removePrefix("minecraft:potion_type:"))) else error("Unexpected item in brewing mix recipe: $key")
+        }
+    }
+
+    companion object {
+        private val potionTypes = Int2ObjectOpenHashBiMap<String>().apply {
+            this[ 0] = "water"
+            this[ 1] = "mundane"
+            this[ 3] = "thick"
+            this[ 4] = "awkward"
+            this[ 5] = "night_vision"
+            this[ 6] = "long_night_vision"
+            this[ 7] = "invisibility"
+            this[ 8] = "long_invisibility"
+            this[ 9] = "leaping"
+            this[10] = "long_leaping"
+            this[11] = "strong_leaping"
+            this[12] = "fire_resistance"
+            this[13] = "long_fire_resistance"
+            this[14] = "swiftness"
+            this[15] = "long_swiftness"
+            this[16] = "strong_swiftness"
+            this[17] = "slowness"
+            this[18] = "long_slowness"
+            this[19] = "water_breathing"
+            this[20] = "long_water_breathing"
+            this[21] = "healing"
+            this[22] = "strong_healing"
+            this[23] = "harming"
+            this[24] = "strong_harming"
+            this[25] = "poison"
+            this[26] = "long_poison"
+            this[27] = "strong_poison"
+            this[28] = "regeneration"
+            this[29] = "long_regeneration"
+            this[30] = "strong_regeneration"
+            this[31] = "strength"
+            this[32] = "long_strength"
+            this[33] = "strong_strength"
+            this[34] = "weakness"
+            this[35] = "long_weakness"
+            this[37] = "turtle_master"
+            this[38] = "long_turtle_master"
+            this[39] = "strong_turtle_master"
+            this[40] = "slow_falling"
+            this[41] = "long_slow_falling"
         }
     }
 }

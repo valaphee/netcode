@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation.event
+package com.valaphee.netcode.mcbeautomation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.automation.Event
+import com.valaphee.netcode.mcbeautomation.Event
 
 /**
  * @author Kevin Ludwig
  */
-data class ItemEquippedEvent(
+data class BlockBrokenEvent(
     @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("item") val item: ItemStack,
-    @get:JsonProperty("slot") val slot: Int,
+    @get:JsonProperty("block") val block: Block,
+    @get:JsonProperty("tool") val tool: ItemStack,
+    @get:JsonProperty("destructionMethod") val method: Int,
+    @get:JsonProperty("count") val count: Int,
+    @get:JsonProperty("variant") val variant: Int
 ) : Event()

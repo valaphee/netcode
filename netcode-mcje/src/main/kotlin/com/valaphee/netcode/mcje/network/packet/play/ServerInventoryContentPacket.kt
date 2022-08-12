@@ -18,14 +18,14 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.mcje.network.V1_19_0
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
 import com.valaphee.netcode.mcje.world.item.writeItemStack
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -47,11 +47,8 @@ class ServerInventoryContentPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.inventoryContent(this)
 
     override fun toString() = "ServerInventoryContentPacket(windowId=$windowId, stateId=$stateId, content=$content, itemStackInHand=$itemStackInHand)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerInventoryContentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerInventoryContentPacket(buffer.readUnsignedByte().toInt(), if (version >= V1_18_2) buffer.readVarInt() else 0, safeList(if (version >= V1_19_0) buffer.readVarInt() else buffer.readShort().toInt()) { buffer.readItemStack() }, if (version >= V1_19_0) buffer.readItemStack() else null)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerInventoryContentPacket(buffer.readUnsignedByte().toInt(), if (version >= V1_18_2) buffer.readVarInt() else 0, LazyList(if (version >= V1_19_0) buffer.readVarInt() else buffer.readShort().toInt()) { buffer.readItemStack() }, if (version >= V1_19_0) buffer.readItemStack() else null)
+    }
 }

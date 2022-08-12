@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Double3
 import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -38,11 +38,8 @@ class ServerVehicleLocationPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.vehicleLocation(this)
 
     override fun toString() = "ServerVehicleLocationPacket(position=$position, rotation=$rotation)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerVehicleLocationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerVehicleLocationPacket(buffer.readDouble3(), buffer.readFloat2())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerVehicleLocationPacket(buffer.readDouble3(), buffer.readFloat2())
+    }
 }

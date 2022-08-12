@@ -19,26 +19,23 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
  */
 class ClientKeepAlivePacket(
-    val id: Long
+    val keepAliveId: Long
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeLong(id)
+        buffer.writeLong(keepAliveId)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.keepAlive(this)
 
-    override fun toString() = "ClientKeepAlivePacket(id=$id)"
-}
+    override fun toString() = "ClientKeepAlivePacket(keepAliveId=$keepAliveId)"
 
-/**
- * @author Kevin Ludwig
- */
-object ClientKeepAlivePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientKeepAlivePacket(buffer.readLong())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientKeepAlivePacket(buffer.readLong())
+    }
 }

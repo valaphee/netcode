@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
@@ -40,11 +40,8 @@ class ServerQueryPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.query(this)
 
     override fun toString() = "ServerQueryPacket(id=$id, data=$data)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerQueryPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerQueryPacket(buffer.readVarInt(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerQueryPacket(buffer.readVarInt(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    }
 }

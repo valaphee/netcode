@@ -22,12 +22,12 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.util.Direction
 import com.valaphee.netcode.mcje.util.NamespacedKey
-import com.valaphee.netcode.mcje.util.Int2ObjectOpenHashBiMap
 import com.valaphee.netcode.mcje.world.ParticleData
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
 import com.valaphee.netcode.mcje.world.item.writeItemStack
 import com.valaphee.netcode.mcje.world.readParticleData
+import com.valaphee.netcode.util.Int2ObjectOpenHashBiMap
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import net.kyori.adventure.text.Component
@@ -118,21 +118,21 @@ interface MetadataType<T> {
             }
         }
 
-        val Int3UnsignedY = object : MetadataType<Int3> {
-            override fun read(buffer: PacketBuffer) = buffer.readInt3UnsignedY()
+        val BlockPosition = object : MetadataType<Int3> {
+            override fun read(buffer: PacketBuffer) = buffer.readBlockPosition()
 
             override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.writeInt3UnsignedY(value as Int3)
+                buffer.writeBlockPosition(value as Int3)
             }
         }
 
         val OptionalInt3UnsignedY = object : MetadataType<Int3?> {
-            override fun read(buffer: PacketBuffer) = if (buffer.readBoolean()) buffer.readInt3UnsignedY() else null
+            override fun read(buffer: PacketBuffer) = if (buffer.readBoolean()) buffer.readBlockPosition() else null
 
             override fun write(buffer: PacketBuffer, value: Any?) {
                 value?.let {
                     buffer.writeBoolean(true)
-                    buffer.writeInt3UnsignedY(value as Int3)
+                    buffer.writeBlockPosition(value as Int3)
                 } ?: buffer.writeBoolean(false)
             }
         }
@@ -227,13 +227,13 @@ interface MetadataType<T> {
             }
         }
 
-        val DimensionAndInt3UnsignedY = object : MetadataType<Pair<NamespacedKey, Int3>> {
-            override fun read(buffer: PacketBuffer) = buffer.readNamespacedKey() to buffer.readInt3UnsignedY()
+        val DimensionAndBlockPosition = object : MetadataType<Pair<NamespacedKey, Int3>> {
+            override fun read(buffer: PacketBuffer) = buffer.readNamespacedKey() to buffer.readBlockPosition()
 
             override fun write(buffer: PacketBuffer, value: Any?) {
                 val (dimension, position) = value as Pair<NamespacedKey, Int3>
                 buffer.writeNamespacedKey(dimension)
-                buffer.writeInt3UnsignedY(position)
+                buffer.writeBlockPosition(position)
             }
         }
 
@@ -255,17 +255,17 @@ interface MetadataType<T> {
         }
 
         val registry = Int2ObjectOpenHashBiMap<MetadataType<*>>().apply {
-            this[0] = Flags
-            this[0] = Byte
-            this[1] = Int
-            this[2] = Float
-            this[3] = String
-            this[4] = Component
-            this[5] = OptionalComponent
-            this[6] = ItemStack
-            this[7] = Boolean
-            this[8] = Float3
-            this[9] = Int3UnsignedY
+            this[ 0] = Flags
+            this[ 0] = Byte
+            this[ 1] = Int
+            this[ 2] = Float
+            this[ 3] = String
+            this[ 4] = Component
+            this[ 5] = OptionalComponent
+            this[ 6] = ItemStack
+            this[ 7] = Boolean
+            this[ 8] = Float3
+            this[ 9] = BlockPosition
             this[10] = OptionalInt3UnsignedY
             this[11] = Direction
             this[12] = OptionalUuid
@@ -277,7 +277,7 @@ interface MetadataType<T> {
             this[18] = Pose
             this[19] = CatVariant
             this[20] = FrogVariant
-            this[21] = DimensionAndInt3UnsignedY
+            this[21] = DimensionAndBlockPosition
             this[22] = PaintingVariant
         }
     }

@@ -18,10 +18,10 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -64,24 +64,21 @@ class ServerRecipeBookPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.recipeBook(this)
 
     override fun toString() = "ServerRecipeBookPacket(action=$action, craftingRecipeBookOpen=$craftingRecipeBookOpen, craftingRecipeBookFilterActive=$craftingRecipeBookFilterActive, smeltingRecipeBookOpen=$smeltingRecipeBookOpen, smeltingRecipeBookFilterActive=$smeltingRecipeBookFilterActive, blastingRecipeBookOpen=$blastingRecipeBookOpen, blastingRecipeBookFilterActive=$blastingRecipeBookFilterActive, smokingRecipeBookOpen=$smokingRecipeBookOpen, smokingRecipeBookFilterActive=$smokingRecipeBookFilterActive, recipeIds=$recipeIds, availableRecipeIds=$availableRecipeIds)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerRecipeBookPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerRecipeBookPacket {
-        val action = ServerRecipeBookPacket.Action.values()[buffer.readVarInt()]
-        val craftingRecipeBookOpen = buffer.readBoolean()
-        val craftingRecipeBookFilterActive = buffer.readBoolean()
-        val smeltingRecipeBookOpen = buffer.readBoolean()
-        val smeltingRecipeBookFilterActive = buffer.readBoolean()
-        val blastingRecipeBookOpen = buffer.readBoolean()
-        val blastingRecipeBookFilterActive = buffer.readBoolean()
-        val smokingRecipeBookOpen = buffer.readBoolean()
-        val smokingRecipeBookFilterActive = buffer.readBoolean()
-        val recipeIds = safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }
-        val availableRecipeIds = if (action == ServerRecipeBookPacket.Action.Initialize) safeList(buffer.readVarInt()) { buffer.readNamespacedKey() } else null
-        return ServerRecipeBookPacket(action, craftingRecipeBookOpen, craftingRecipeBookFilterActive, smeltingRecipeBookOpen, smeltingRecipeBookFilterActive, blastingRecipeBookOpen, blastingRecipeBookFilterActive, smokingRecipeBookOpen, smokingRecipeBookFilterActive, recipeIds, availableRecipeIds)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerRecipeBookPacket {
+            val action = ServerRecipeBookPacket.Action.values()[buffer.readVarInt()]
+            val craftingRecipeBookOpen = buffer.readBoolean()
+            val craftingRecipeBookFilterActive = buffer.readBoolean()
+            val smeltingRecipeBookOpen = buffer.readBoolean()
+            val smeltingRecipeBookFilterActive = buffer.readBoolean()
+            val blastingRecipeBookOpen = buffer.readBoolean()
+            val blastingRecipeBookFilterActive = buffer.readBoolean()
+            val smokingRecipeBookOpen = buffer.readBoolean()
+            val smokingRecipeBookFilterActive = buffer.readBoolean()
+            val recipeIds = LazyList(buffer.readVarInt()) { buffer.readNamespacedKey() }
+            val availableRecipeIds = if (action == ServerRecipeBookPacket.Action.Initialize) LazyList(buffer.readVarInt()) { buffer.readNamespacedKey() } else null
+            return ServerRecipeBookPacket(action, craftingRecipeBookOpen, craftingRecipeBookFilterActive, smeltingRecipeBookOpen, smeltingRecipeBookFilterActive, blastingRecipeBookOpen, blastingRecipeBookFilterActive, smokingRecipeBookOpen, smokingRecipeBookFilterActive, recipeIds, availableRecipeIds)
+        }
     }
 }

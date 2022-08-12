@@ -21,7 +21,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcje.chat.ChatType
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.mcje.network.V1_19_0
@@ -30,7 +29,7 @@ import com.valaphee.netcode.mcje.world.Biome
 import com.valaphee.netcode.mcje.world.Dimension
 import com.valaphee.netcode.mcje.world.GameMode
 import com.valaphee.netcode.mcje.world.entity.player.DeathLocation
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -96,45 +95,42 @@ class ServerWorldPacket(
         if (version >= V1_19_0) deathLocation?.let {
             buffer.writeBoolean(true)
             buffer.writeNamespacedKey(it.dimension)
-            buffer.writeInt3UnsignedY(it.position)
+            buffer.writeBlockPosition(it.position)
         } ?: buffer.writeBoolean(false)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.world(this)
 
     override fun toString() = "ServerWorldPacket(entityId=$entityId, hardcore=$hardcore, gameMode=$gameMode, previousGameMode=$previousGameMode, worldNames=$worldNames, registries=$registries, dimensionName=$dimensionName, dimension=$dimension, worldName=$worldName, hashedSeed=$hashedSeed, maximumPlayers=$maximumPlayers, viewDistance=$viewDistance, simulationDistance=$simulationDistance, reducedDebugInfo=$reducedDebugInfo, respawnScreen=$respawnScreen, debugGenerator=$debugGenerator, flatGenerator=$flatGenerator, deathLocation=$deathLocation)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerWorldPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerWorldPacket {
-        val entityId = buffer.readInt()
-        val hardcore = buffer.readBoolean()
-        val gameMode = checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt()))
-        val previousGameMode = checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt()))
-        val worldNames = safeList(buffer.readVarInt()) { buffer.readNamespacedKey() }
-        val registries = buffer.nbtObjectMapper.readValue<ServerWorldPacket.Registries>(ByteBufInputStream(buffer))
-        val dimensionName: NamespacedKey?
-        val dimension: Dimension?
-        if (version >= V1_19_0) {
-            dimensionName = buffer.readNamespacedKey()
-            dimension = registries.dimensions.value.find { it.key == dimensionName.toString() }?.value
-        } else {
-            dimensionName = null
-            dimension = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerWorldPacket {
+            val entityId = buffer.readInt()
+            val hardcore = buffer.readBoolean()
+            val gameMode = checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt()))
+            val previousGameMode = checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt()))
+            val worldNames = LazyList(buffer.readVarInt()) { buffer.readNamespacedKey() }
+            val registries = buffer.nbtObjectMapper.readValue<Registries>(ByteBufInputStream(buffer))
+            val dimensionName: NamespacedKey?
+            val dimension: Dimension?
+            if (version >= V1_19_0) {
+                dimensionName = buffer.readNamespacedKey()
+                dimension = registries.dimensions.value.find { it.key == dimensionName.toString() }?.value
+            } else {
+                dimensionName = null
+                dimension = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
+            }
+            val worldName = buffer.readNamespacedKey()
+            val hashedSeed = buffer.readLong()
+            val maximumPlayers = buffer.readVarInt()
+            val viewDistance = buffer.readVarInt()
+            val simulationDistance = if (version >= V1_18_2) buffer.readVarInt() else 5
+            val reducedDebugInfo = buffer.readBoolean()
+            val respawnScreen = buffer.readBoolean()
+            val debugGenerator = buffer.readBoolean()
+            val flatGenerator = buffer.readBoolean()
+            val deathLocation = /*if (version >= V1_19_0 && buffer.readBoolean()) DeathLocation(buffer.readNamespacedKey(), buffer.readInt3UnsignedY()) else */null
+            return ServerWorldPacket(entityId, hardcore, gameMode, previousGameMode, worldNames, registries, dimensionName, dimension, worldName, hashedSeed, maximumPlayers, viewDistance, simulationDistance, reducedDebugInfo, respawnScreen, debugGenerator, flatGenerator, deathLocation)
         }
-        val worldName = buffer.readNamespacedKey()
-        val hashedSeed = buffer.readLong()
-        val maximumPlayers = buffer.readVarInt()
-        val viewDistance = buffer.readVarInt()
-        val simulationDistance = if (version >= V1_18_2) buffer.readVarInt() else 5
-        val reducedDebugInfo = buffer.readBoolean()
-        val respawnScreen = buffer.readBoolean()
-        val debugGenerator = buffer.readBoolean()
-        val flatGenerator = buffer.readBoolean()
-        val deathLocation = /*if (version >= V1_19_0 && buffer.readBoolean()) DeathLocation(buffer.readNamespacedKey(), buffer.readInt3UnsignedY()) else */null
-        return ServerWorldPacket(entityId, hardcore, gameMode, previousGameMode, worldNames, registries, dimensionName, dimension, worldName, hashedSeed, maximumPlayers, viewDistance, simulationDistance, reducedDebugInfo, respawnScreen, debugGenerator, flatGenerator, deathLocation)
     }
 }

@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -31,7 +31,7 @@ class ClientJigsawGeneratePacket(
     val keepJigsaws: Boolean
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         buffer.writeVarInt(depth)
         buffer.writeBoolean(keepJigsaws)
     }
@@ -39,11 +39,8 @@ class ClientJigsawGeneratePacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.jigsawGenerate(this)
 
     override fun toString() = "ClientJigsawGeneratePacket(position=$position, depth=$depth, keepJigsaws=$keepJigsaws)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientJigsawGeneratePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientJigsawGeneratePacket(buffer.readInt3UnsignedY(), buffer.readVarInt(), buffer.readBoolean())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientJigsawGeneratePacket(buffer.readBlockPosition(), buffer.readVarInt(), buffer.readBoolean())
+    }
 }

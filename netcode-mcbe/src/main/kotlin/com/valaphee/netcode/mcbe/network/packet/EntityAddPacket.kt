@@ -29,7 +29,7 @@ import com.valaphee.netcode.mcbe.world.entity.attribute.Attributes
 import com.valaphee.netcode.mcbe.world.entity.metadata.Metadata
 import com.valaphee.netcode.mcbe.world.entity.readLink
 import com.valaphee.netcode.mcbe.world.entity.writeLink
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -81,7 +81,7 @@ class EntityAddPacket(
             if (version >= V1_19_010) buffer.readFloatLE() else 0.0f,
             Attributes().apply { readFromBuffer(buffer, version, true) },
             Metadata().apply { readFromBuffer(buffer) },
-            safeList(buffer.readVarUInt()) { buffer.readLink(version) }
+            LazyList(buffer.readVarUInt()) { buffer.readLink(version) }
         )
     }
 }

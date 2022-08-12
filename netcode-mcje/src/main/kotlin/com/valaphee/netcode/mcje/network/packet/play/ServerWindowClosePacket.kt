@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -34,11 +34,8 @@ class ServerWindowClosePacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.windowClose(this)
 
     override fun toString() = "ServerWindowClosePacket(windowId=$windowId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerWindowClosePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerWindowClosePacket(buffer.readUnsignedByte().toInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerWindowClosePacket(buffer.readUnsignedByte().toInt())
+    }
 }

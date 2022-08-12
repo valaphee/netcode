@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import java.util.UUID
 
 /**
@@ -35,11 +35,8 @@ class ClientSpectatePacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.spectate(this)
 
     override fun toString() = "ClientSpectatePacket(userId=$userId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientSpectatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientSpectatePacket(buffer.readUuid())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientSpectatePacket(buffer.readUuid())
+    }
 }

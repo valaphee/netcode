@@ -20,10 +20,10 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_18_2
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -49,11 +49,8 @@ class ServerExplosionPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.explosion(this)
 
     override fun toString() = "ServerExplosionPacket(position=$position, radius=$radius, affectedBlocks=$affectedBlocks, velocity=$velocity)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerExplosionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerExplosionPacket(buffer.readFloat3(), buffer.readFloat(), safeList(if (version >= V1_18_2) buffer.readVarInt() else buffer.readInt()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) }, buffer.readFloat3())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerExplosionPacket(buffer.readFloat3(), buffer.readFloat(), LazyList(if (version >= V1_18_2) buffer.readVarInt() else buffer.readInt()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) }, buffer.readFloat3())
+    }
 }

@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -36,11 +36,8 @@ class ClientBeaconUpdatePacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.beaconUpdate(this)
 
     override fun toString() = "ClientBeaconUpdatePacket(primaryEffectId=$primaryEffectId, secondaryEffectId=$secondaryEffectId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientBeaconUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientBeaconUpdatePacket(buffer.readVarInt(), buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientBeaconUpdatePacket(buffer.readVarInt(), buffer.readVarInt())
+    }
 }

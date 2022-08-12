@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -44,17 +44,14 @@ class ServerScorePacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.score(this)
 
     override fun toString() = "ServerScorePacket(name='$name', action=$action, objectiveName='$objectiveName', value=$value)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerScorePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerScorePacket {
-        val name = buffer.readString(40)
-        val action = ServerScorePacket.Action.values()[buffer.readUnsignedByte().toInt()]
-        val objectiveName = buffer.readString(16)
-        val value = if (action == ServerScorePacket.Action.Set) buffer.readVarInt() else 0
-        return ServerScorePacket(name, action, objectiveName, value)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerScorePacket {
+            val name = buffer.readString(40)
+            val action = Action.values()[buffer.readUnsignedByte().toInt()]
+            val objectiveName = buffer.readString(16)
+            val value = if (action == Action.Set) buffer.readVarInt() else 0
+            return ServerScorePacket(name, action, objectiveName, value)
+        }
     }
 }

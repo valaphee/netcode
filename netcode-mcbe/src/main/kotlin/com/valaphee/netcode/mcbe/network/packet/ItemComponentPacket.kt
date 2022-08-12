@@ -22,7 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -54,6 +54,6 @@ class ItemComponentPacket(
     override fun toString() = "ItemComponentPacket(entries=$entries)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ItemComponentPacket(safeList(buffer.readVarUInt()) { Entry(buffer.readString(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer))) })
+        override fun read(buffer: PacketBuffer, version: Int) = ItemComponentPacket(LazyList(buffer.readVarUInt()) { Entry(buffer.readString(), buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer))) })
     }
 }

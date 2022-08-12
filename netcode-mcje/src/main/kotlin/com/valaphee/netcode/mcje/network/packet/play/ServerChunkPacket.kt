@@ -21,11 +21,10 @@ import com.valaphee.foundry.math.Int2
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.mcje.util.NibbleArray
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import java.io.OutputStream
@@ -84,11 +83,11 @@ class ServerChunkPacket(
             emptyBlockLight.forEach { buffer.writeLong(it) }
             skyLight!!.let {
                 buffer.writeVarInt(it.size)
-                it.forEach { buffer.writeByteArray(it.bytes) }
+                it.forEach { buffer.writeByteArray(it.data) }
             }
             blockLight!!.let {
                 buffer.writeVarInt(it.size)
-                it.forEach { buffer.writeByteArray(it.bytes) }
+                it.forEach { buffer.writeByteArray(it.data) }
             }
         } else {
             buffer.writeBoolean(biomes != null)
@@ -107,57 +106,54 @@ class ServerChunkPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.chunk(this)
 
     override fun toString() = "ServerChunkPacket(position=$position, withSubChunks=$withSubChunks, heightMap=<omitted>, biomes=<omitted>, data=<omitted>, blockEntities=$blockEntities, trustEdges=$trustEdges, withSkyLight=$withSkyLight, withBlockLight=$withBlockLight, emptySkyLight=$emptySkyLight, emptyBlockLight=$emptyBlockLight, skyLight=$skyLight, blockLight=$blockLight)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerChunkPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerChunkPacket {
-        val position = Int2(buffer.readInt(), buffer.readInt())
-        val withSubChunks: Int?
-        val heightMap: Any?
-        val biomes: IntArray?
-        val data: ByteArray
-        val blockEntities: List<ServerChunkPacket.BlockEntity>
-        val trustEdges: Boolean
-        val withSkyLight: BitSet?
-        val withBlockLight: BitSet?
-        val emptySkyLight: BitSet?
-        val emptyBlockLight: BitSet?
-        val skyLight: Array<NibbleArray>?
-        val blockLight: Array<NibbleArray>?
-        if (version >= V1_18_2) {
-            withSubChunks = null
-            heightMap = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
-            biomes = null
-            data = buffer.readByteArray()
-            blockEntities = safeList(buffer.readVarInt()) {
-                val xz = buffer.readByte().toInt()
-                ServerChunkPacket.BlockEntity(Int3((xz shr 4) and 0xF, buffer.readShort().toInt(), xz and 0xF), buffer.readVarInt(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerChunkPacket {
+            val position = Int2(buffer.readInt(), buffer.readInt())
+            val withSubChunks: Int?
+            val heightMap: Any?
+            val biomes: IntArray?
+            val data: ByteArray
+            val blockEntities: List<BlockEntity>
+            val trustEdges: Boolean
+            val withSkyLight: BitSet?
+            val withBlockLight: BitSet?
+            val emptySkyLight: BitSet?
+            val emptyBlockLight: BitSet?
+            val skyLight: Array<NibbleArray>?
+            val blockLight: Array<NibbleArray>?
+            if (version >= V1_18_2) {
+                withSubChunks = null
+                heightMap = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
+                biomes = null
+                data = buffer.readByteArray()
+                blockEntities = LazyList(buffer.readVarInt()) {
+                    val xz = buffer.readByte().toInt()
+                    BlockEntity(Int3((xz shr 4) and 0xF, buffer.readShort().toInt(), xz and 0xF), buffer.readVarInt(), buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+                }
+                trustEdges = buffer.readBoolean()
+                withSkyLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
+                withBlockLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
+                emptySkyLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
+                emptyBlockLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
+                skyLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray()) }
+                blockLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray()) }
+            } else {
+                val withBiomes = buffer.readBoolean()
+                withSubChunks = buffer.readVarInt()
+                heightMap = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
+                biomes = if (withBiomes) IntArray(buffer.readVarInt()) { buffer.readVarInt() } else null
+                data = buffer.readByteArray()
+                blockEntities = LazyList(buffer.readVarInt()) { BlockEntity(Int3.Zero, 0, buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))) }
+                trustEdges = false
+                withSkyLight = null
+                withBlockLight = null
+                emptySkyLight = null
+                emptyBlockLight = null
+                skyLight = null
+                blockLight = null
             }
-            trustEdges = buffer.readBoolean()
-            withSkyLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
-            withBlockLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
-            emptySkyLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
-            emptyBlockLight = BitSet.valueOf(LongArray(buffer.readVarInt()) { buffer.readLong() })
-            skyLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray()) }
-            blockLight = Array(buffer.readVarInt()) { NibbleArray(buffer.readByteArray()) }
-        } else {
-            val withBiomes = buffer.readBoolean()
-            withSubChunks = buffer.readVarInt()
-            heightMap = buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))
-            biomes = if (withBiomes) IntArray(buffer.readVarInt()) { buffer.readVarInt() } else null
-            data = buffer.readByteArray()
-            blockEntities = safeList(buffer.readVarInt()) { ServerChunkPacket.BlockEntity(Int3.Zero, 0, buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer))) }
-            trustEdges = false
-            withSkyLight = null
-            withBlockLight = null
-            emptySkyLight = null
-            emptyBlockLight = null
-            skyLight = null
-            blockLight = null
+            return ServerChunkPacket(position, withSubChunks, heightMap, biomes, data, blockEntities, trustEdges, withSkyLight, withBlockLight, emptySkyLight, emptyBlockLight, skyLight, blockLight)
         }
-        return ServerChunkPacket(position, withSubChunks, heightMap, biomes, data, blockEntities, trustEdges, withSkyLight, withBlockLight, emptySkyLight, emptyBlockLight, skyLight, blockLight)
     }
 }

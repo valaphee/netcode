@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
 
@@ -37,11 +37,8 @@ class ServerCraftPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.craft(this)
 
     override fun toString() = "ServerCraftPacket(windowId=$windowId, recipeId=$recipeId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerCraftPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerCraftPacket(buffer.readByte().toInt(), buffer.readNamespacedKey())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerCraftPacket(buffer.readByte().toInt(), buffer.readNamespacedKey())
+    }
 }

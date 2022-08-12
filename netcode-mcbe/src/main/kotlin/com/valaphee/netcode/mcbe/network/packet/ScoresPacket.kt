@@ -22,7 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.scoreboard.Score
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -63,7 +63,7 @@ class ScoresPacket(
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int): ScoresPacket {
             val action = Action.values()[buffer.readUnsignedByte().toInt()]
-            val entries = safeList(buffer.readVarUInt()) {
+            val entries = LazyList(buffer.readVarUInt()) {
                 val scoreboardId = buffer.readVarLong()
                 val objectiveId = buffer.readString()
                 val score = buffer.readIntLE()

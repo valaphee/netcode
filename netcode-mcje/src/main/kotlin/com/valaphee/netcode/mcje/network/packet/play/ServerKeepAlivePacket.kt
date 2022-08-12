@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -34,11 +34,8 @@ class ServerKeepAlivePacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.keepAlive(this)
 
     override fun toString() = "ServerKeepAlivePacket(id=$id)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerKeepAlivePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerKeepAlivePacket(buffer.readLong())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerKeepAlivePacket(buffer.readLong())
+    }
 }

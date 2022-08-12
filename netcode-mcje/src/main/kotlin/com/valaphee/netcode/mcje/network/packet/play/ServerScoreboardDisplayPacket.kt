@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -58,11 +58,8 @@ class ServerScoreboardDisplayPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.scoreboardDisplay(this)
 
     override fun toString() = "ServerScoreboardDisplayPacket(displaySlot=$displaySlot, name='$name')"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerScoreboardDisplayPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerScoreboardDisplayPacket(ServerScoreboardDisplayPacket.DisplaySlot.values()[buffer.readUnsignedByte().toInt()], buffer.readString(16))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerScoreboardDisplayPacket(DisplaySlot.values()[buffer.readUnsignedByte().toInt()], buffer.readString(16))
+    }
 }

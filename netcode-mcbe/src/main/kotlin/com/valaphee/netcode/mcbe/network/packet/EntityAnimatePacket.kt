@@ -20,7 +20,7 @@ import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.V1_17_034
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -51,6 +51,6 @@ class EntityAnimatePacket(
     override fun toString() = "EntityAnimatePacket(animation='$animation', nextState='$nextState', stopExpression='$stopExpression', controller='$controller', blendOutTime=$blendOutTime, runtimeEntityIds=$runtimeEntityIds)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = EntityAnimatePacket(buffer.readString(), buffer.readString(), buffer.readString(), buffer.readString(), buffer.readFloatLE(), safeList(buffer.readVarUInt()) { buffer.readVarULong() },)
+        override fun read(buffer: PacketBuffer, version: Int) = EntityAnimatePacket(buffer.readString(), buffer.readString(), buffer.readString(), buffer.readString(), buffer.readFloatLE(), LazyList(buffer.readVarUInt()) { buffer.readVarULong() },)
     }
 }

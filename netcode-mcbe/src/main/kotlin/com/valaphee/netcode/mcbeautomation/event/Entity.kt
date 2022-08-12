@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation.event
+package com.valaphee.netcode.mcbeautomation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.automation.Event
+import com.valaphee.foundry.math.Float3
 
 /**
  * @author Kevin Ludwig
  */
-data class MobInteractedEvent(
-    @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("mob") val mob: Entity,
-    @get:JsonProperty("interactionType") val method: Int
-) : Event() {
-    data class Mob(
-        @get:JsonProperty("color") val color: Int,
-        @get:JsonProperty("type") val type: Int,
-        @get:JsonProperty("variant") val variant: Int
-    )
-}
+data class Entity(
+    @get:JsonProperty("id") val id: Long,
+    @get:JsonProperty("type") val type: String,
+    @get:JsonProperty("name") val name: String,
+    @get:JsonProperty("dimension") val dimension: Int,
+    @get:JsonProperty("position") val position: Float3,
+    @get:JsonProperty("yRot") val yaw: Float,
+    @get:JsonProperty("variant") val variant: Int,
+    @get:JsonProperty("color") val color: String
+)

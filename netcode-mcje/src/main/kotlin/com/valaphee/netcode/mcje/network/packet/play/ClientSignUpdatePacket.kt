@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -33,7 +33,7 @@ class ClientSignUpdatePacket(
     val text3: String
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         buffer.writeString(text0)
         buffer.writeString(text1)
         buffer.writeString(text2)
@@ -43,11 +43,8 @@ class ClientSignUpdatePacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.signUpdate(this)
 
     override fun toString() = "ClientSignUpdatePacket(position=$position, text0=$text0, text1=$text1, text2=$text2, text3=$text3)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientSignUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientSignUpdatePacket(buffer.readInt3UnsignedY(), buffer.readString(384), buffer.readString(384), buffer.readString(384), buffer.readString(384))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientSignUpdatePacket(buffer.readBlockPosition(), buffer.readString(384), buffer.readString(384), buffer.readString(384), buffer.readString(384))
+    }
 }

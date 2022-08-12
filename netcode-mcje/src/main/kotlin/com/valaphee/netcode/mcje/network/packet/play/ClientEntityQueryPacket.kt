@@ -19,28 +19,25 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
  */
 class ClientEntityQueryPacket(
-    val id: Int,
+    val queryId: Int,
     val entityId: Int
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(id)
+        buffer.writeVarInt(queryId)
         buffer.writeVarInt(entityId)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.entityQuery(this)
 
-    override fun toString() = "ClientEntityQueryPacket(id=$id, entityId=$entityId)"
-}
+    override fun toString() = "ClientEntityQueryPacket(queryId=$queryId, entityId=$entityId)"
 
-/**
- * @author Kevin Ludwig
- */
-object ClientEntityQueryPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientEntityQueryPacket(buffer.readVarInt(), buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientEntityQueryPacket(buffer.readVarInt(), buffer.readVarInt())
+    }
 }

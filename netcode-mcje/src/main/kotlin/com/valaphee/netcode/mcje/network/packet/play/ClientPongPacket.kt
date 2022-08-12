@@ -19,26 +19,23 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
  */
 class ClientPongPacket(
-    val id: Int
+    val pingId: Int
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt(id)
+        buffer.writeInt(pingId)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.pong(this)
 
-    override fun toString() = "ClientPongPacket(id=$id)"
-}
+    override fun toString() = "ClientPongPacket(pingId=$pingId)"
 
-/**
- * @author Kevin Ludwig
- */
-object ClientPongPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientPongPacket(buffer.readInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientPongPacket(buffer.readInt())
+    }
 }

@@ -18,9 +18,9 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import net.kyori.adventure.text.Component
 
 /**
@@ -103,85 +103,82 @@ class ServerTeamPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.team(this)
 
     override fun toString() = "ServerTeamPacket(name='$name', action=$action, displayName=$displayName, friendlyFlags=$friendlyFlags, nametagVisibility=$nametagVisibility, collisionRule=$collisionRule, styleCode=$styleCode, prefix=$prefix, suffix=$suffix, userNames=$userNames)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerTeamPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerTeamPacket {
-        val name = buffer.readString(16)
-        val action = ServerTeamPacket.Action.values()[buffer.readUnsignedByte().toInt()]
-        val displayName: Component?
-        val friendlyFlags: Byte
-        val nametagVisibility: ServerTeamPacket.Rule?
-        val collisionRule: ServerTeamPacket.Rule?
-        val styleCode: Int
-        val prefix: Component?
-        val suffix: Component?
-        val userNames: List<String>?
-        when (action) {
-            ServerTeamPacket.Action.Create -> {
-                displayName = buffer.readComponent()
-                friendlyFlags = buffer.readByte()
-                nametagVisibility = when (buffer.readString(32)) {
-                    "never" -> ServerTeamPacket.Rule.Never
-                    "hideForOtherTeams" -> ServerTeamPacket.Rule.OtherTeams
-                    "hideForOwnTeam" -> ServerTeamPacket.Rule.OwnTeam
-                    else -> ServerTeamPacket.Rule.Always
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerTeamPacket {
+            val name = buffer.readString(16)
+            val action = Action.values()[buffer.readUnsignedByte().toInt()]
+            val displayName: Component?
+            val friendlyFlags: Byte
+            val nametagVisibility: Rule?
+            val collisionRule: Rule?
+            val styleCode: Int
+            val prefix: Component?
+            val suffix: Component?
+            val userNames: List<String>?
+            when (action) {
+                Action.Create -> {
+                    displayName = buffer.readComponent()
+                    friendlyFlags = buffer.readByte()
+                    nametagVisibility = when (buffer.readString(32)) {
+                        "never" -> Rule.Never
+                        "hideForOtherTeams" -> Rule.OtherTeams
+                        "hideForOwnTeam" -> Rule.OwnTeam
+                        else -> Rule.Always
+                    }
+                    collisionRule = when (buffer.readString(32)) {
+                        "never" -> Rule.Never
+                        "pushOtherTeams" -> Rule.OtherTeams
+                        "pushOwnTeam" -> Rule.OwnTeam
+                        else -> Rule.Always
+                    }
+                    styleCode = buffer.readVarInt()
+                    prefix = buffer.readComponent()
+                    suffix = buffer.readComponent()
+                    userNames = LazyList(buffer.readVarInt()) { buffer.readString(40) }
                 }
-                collisionRule = when (buffer.readString(32)) {
-                    "never" -> ServerTeamPacket.Rule.Never
-                    "pushOtherTeams" -> ServerTeamPacket.Rule.OtherTeams
-                    "pushOwnTeam" -> ServerTeamPacket.Rule.OwnTeam
-                    else -> ServerTeamPacket.Rule.Always
+                Action.Remove -> {
+                    displayName = null
+                    friendlyFlags = 0
+                    nametagVisibility = null
+                    collisionRule = null
+                    styleCode = 0
+                    prefix = null
+                    suffix = null
+                    userNames = null
                 }
-                styleCode = buffer.readVarInt()
-                prefix = buffer.readComponent()
-                suffix = buffer.readComponent()
-                userNames = safeList(buffer.readVarInt()) { buffer.readString(40) }
-            }
-            ServerTeamPacket.Action.Remove -> {
-                displayName = null
-                friendlyFlags = 0
-                nametagVisibility = null
-                collisionRule = null
-                styleCode = 0
-                prefix = null
-                suffix = null
-                userNames = null
-            }
-            ServerTeamPacket.Action.Update -> {
-                displayName = buffer.readComponent()
-                friendlyFlags = buffer.readByte()
-                nametagVisibility = when (buffer.readString(32)) {
-                    "never" -> ServerTeamPacket.Rule.Never
-                    "hideForOtherTeams" -> ServerTeamPacket.Rule.OtherTeams
-                    "hideForOwnTeam" -> ServerTeamPacket.Rule.OwnTeam
-                    else -> ServerTeamPacket.Rule.Always
+                Action.Update -> {
+                    displayName = buffer.readComponent()
+                    friendlyFlags = buffer.readByte()
+                    nametagVisibility = when (buffer.readString(32)) {
+                        "never" -> Rule.Never
+                        "hideForOtherTeams" -> Rule.OtherTeams
+                        "hideForOwnTeam" -> Rule.OwnTeam
+                        else -> Rule.Always
+                    }
+                    collisionRule = when (buffer.readString(32)) {
+                        "never" -> Rule.Never
+                        "pushOtherTeams" -> Rule.OtherTeams
+                        "pushOwnTeam" -> Rule.OwnTeam
+                        else -> Rule.Always
+                    }
+                    styleCode = buffer.readVarInt()
+                    prefix = buffer.readComponent()
+                    suffix = buffer.readComponent()
+                    userNames = null
                 }
-                collisionRule = when (buffer.readString(32)) {
-                    "never" -> ServerTeamPacket.Rule.Never
-                    "pushOtherTeams" -> ServerTeamPacket.Rule.OtherTeams
-                    "pushOwnTeam" -> ServerTeamPacket.Rule.OwnTeam
-                    else -> ServerTeamPacket.Rule.Always
+                Action.AddUserNames, Action.RemoveUserNames -> {
+                    displayName = null
+                    friendlyFlags = 0
+                    nametagVisibility = null
+                    collisionRule = null
+                    styleCode = 0
+                    prefix = null
+                    suffix = null
+                    userNames = LazyList(buffer.readVarInt()) { buffer.readString(40) }
                 }
-                styleCode = buffer.readVarInt()
-                prefix = buffer.readComponent()
-                suffix = buffer.readComponent()
-                userNames = null
             }
-            ServerTeamPacket.Action.AddUserNames, ServerTeamPacket.Action.RemoveUserNames -> {
-                displayName = null
-                friendlyFlags = 0
-                nametagVisibility = null
-                collisionRule = null
-                styleCode = 0
-                prefix = null
-                suffix = null
-                userNames = safeList(buffer.readVarInt()) { buffer.readString(40) }
-            }
+            return ServerTeamPacket(name, action, displayName, friendlyFlags, nametagVisibility, collisionRule, styleCode, prefix, suffix, userNames)
         }
-        return ServerTeamPacket(name, action, displayName, friendlyFlags, nametagVisibility, collisionRule, styleCode, prefix, suffix, userNames)
     }
 }

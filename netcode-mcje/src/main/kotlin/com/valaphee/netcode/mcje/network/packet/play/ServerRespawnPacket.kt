@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_19_0
 import com.valaphee.netcode.mcje.util.NamespacedKey
@@ -57,18 +57,15 @@ class ServerRespawnPacket(
         if (version >= V1_19_0) deathLocation?.let {
             buffer.writeBoolean(true)
             buffer.writeNamespacedKey(it.dimension)
-            buffer.writeInt3UnsignedY(it.position)
+            buffer.writeBlockPosition(it.position)
         } ?: buffer.writeBoolean(false)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.respawn(this)
 
     override fun toString() = "ServerRespawnPacket(dimension=$dimension, worldName=$worldName, hashedSeed=$hashedSeed, gameMode=$gameMode, previousGameMode=$previousGameMode, debugGenerator=$debugGenerator, flatGenerator=$flatGenerator, keepMetadata=$keepMetadata, deathLocation=$deathLocation)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerRespawnPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerRespawnPacket(if (version >= V1_19_0) buffer.readNamespacedKey() else null, if (version < V1_19_0) buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)) else null, buffer.readNamespacedKey(), buffer.readLong(), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), if (version >= V1_19_0 && buffer.readBoolean()) DeathLocation(buffer.readNamespacedKey(), buffer.readInt3UnsignedY()) else null)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerRespawnPacket(if (version >= V1_19_0) buffer.readNamespacedKey() else null, if (version < V1_19_0) buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)) else null, buffer.readNamespacedKey(), buffer.readLong(), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), checkNotNull(GameMode.byIdOrNull(buffer.readByte().toInt())), buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean(), if (version >= V1_19_0 && buffer.readBoolean()) DeathLocation(buffer.readNamespacedKey(), buffer.readBlockPosition()) else null)
+    }
 }

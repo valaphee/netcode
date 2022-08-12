@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Double3
 import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import java.util.UUID
 
@@ -43,11 +43,8 @@ class ServerPlayerAddPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.playerAdd(this)
 
     override fun toString() = "ServerPlayerAddPacket(entityId=$entityId, userId=$userId, position=$position, rotation=$rotation)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerPlayerAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerAddPacket(buffer.readVarInt(), buffer.readUuid(), buffer.readDouble3(), buffer.readAngle2())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerAddPacket(buffer.readVarInt(), buffer.readUuid(), buffer.readDouble3(), buffer.readAngle2())
+    }
 }

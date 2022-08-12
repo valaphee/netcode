@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -34,11 +34,8 @@ class ClientTradePacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.trade(this)
 
     override fun toString() = "ClientTradePacket(slotId=$slotId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientTradePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientTradePacket(buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientTradePacket(buffer.readVarInt())
+    }
 }

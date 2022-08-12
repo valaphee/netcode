@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import net.kyori.adventure.text.Component
 
@@ -51,24 +51,21 @@ class ServerObjectivePacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.objective(this)
 
     override fun toString() = "ServerObjectivePacket(name='$name', action=$action, displayName=$displayName, type=$type)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerObjectivePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerObjectivePacket {
-        val name = buffer.readString(16)
-        val action = ServerObjectivePacket.Action.values()[buffer.readUnsignedByte().toInt()]
-        val displayName: Component?
-        val type: ServerObjectivePacket.Type?
-        if (action == ServerObjectivePacket.Action.Create || action == ServerObjectivePacket.Action.Update) {
-            displayName = buffer.readComponent()
-            type = ServerObjectivePacket.Type.values()[buffer.readVarInt()]
-        } else {
-            displayName = null
-            type = null
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerObjectivePacket {
+            val name = buffer.readString(16)
+            val action = Action.values()[buffer.readUnsignedByte().toInt()]
+            val displayName: Component?
+            val type: Type?
+            if (action == Action.Create || action == Action.Update) {
+                displayName = buffer.readComponent()
+                type = Type.values()[buffer.readVarInt()]
+            } else {
+                displayName = null
+                type = null
+            }
+            return ServerObjectivePacket(name, action, displayName, type)
         }
-        return ServerObjectivePacket(name, action, displayName, type)
     }
 }

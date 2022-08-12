@@ -45,7 +45,7 @@ class InventoryRequestPacket(
             fun getId(version: Int) = registry.getLastInt(version, this)
 
             companion object {
-                val registry = Int2ObjectOpenHashBiMapVersioned<Type>().apply {
+                private val registry = Int2ObjectOpenHashBiMapVersioned<Type>().apply {
                     put(Move                         , V1_16_010 to  0                                                   )
                     put(Place                        , V1_16_010 to  1                                                   )
                     put(Swap                         , V1_16_010 to  2                                                   )

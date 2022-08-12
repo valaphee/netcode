@@ -21,7 +21,7 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.MutableDouble3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_19_0
 import java.util.UUID
@@ -56,11 +56,8 @@ class ServerEntityAddPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityAdd(this)
 
     override fun toString() = "ServerEntityAddPacket(entityId=$entityId, entityUid=$entityUid, entityTypeId=$entityTypeId, position=$position, rotation=$rotation, headRotationYaw=$headRotationYaw, motion=$velocity)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerEntityAddPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAddPacket(buffer.readVarInt(), buffer.readUuid(), buffer.readVarInt(), buffer.readDouble3(), buffer.readAngle2(), buffer.readAngle(), if (version >= V1_19_0) buffer.readVarInt() else 0, MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAddPacket(buffer.readVarInt(), buffer.readUuid(), buffer.readVarInt(), buffer.readDouble3(), buffer.readAngle2(), buffer.readAngle(), if (version >= V1_19_0) buffer.readVarInt() else 0, MutableDouble3(buffer.readShort().toDouble(), buffer.readShort().toDouble(), buffer.readShort().toDouble()).scale(1 / 8000.0))
+    }
 }

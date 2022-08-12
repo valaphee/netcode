@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import net.kyori.adventure.text.Component
 import java.util.UUID
@@ -58,11 +58,8 @@ class ServerPlayerChatPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.playerChat(this)
 
     override fun toString() = "ServerPlayerChatPacket(message=$message, unsignedMessage=$unsignedMessage, type=$type, userId=$userId, userName=$userName, teamName=$teamName, time=$time, salt=$salt, signature=${signature.contentToString()})"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerPlayerChatPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerChatPacket(buffer.readComponent(), if (buffer.readBoolean()) buffer.readComponent() else null, ServerSystemChatPacket.Type.values()[buffer.readVarInt()], buffer.readUuid(), buffer.readComponent(), if (buffer.readBoolean()) buffer.readComponent() else null, buffer.readLong(), buffer.readLong(), buffer.readByteArray())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerChatPacket(buffer.readComponent(), if (buffer.readBoolean()) buffer.readComponent() else null, ServerSystemChatPacket.Type.values()[buffer.readVarInt()], buffer.readUuid(), buffer.readComponent(), if (buffer.readBoolean()) buffer.readComponent() else null, buffer.readLong(), buffer.readLong(), buffer.readByteArray())
+    }
 }

@@ -25,7 +25,7 @@ import com.valaphee.netcode.mcbe.network.V1_16_100
 import com.valaphee.netcode.mcbe.world.Experiment
 import com.valaphee.netcode.mcbe.world.readExperiment
 import com.valaphee.netcode.mcbe.world.writeExperiment
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import java.util.UUID
 
 /**
@@ -79,11 +79,11 @@ class PacksStackPacket(
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int) = PacksStackPacket(
             buffer.readBoolean(),
-            safeList(buffer.readVarUInt()) { Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readString()) },
-            safeList(buffer.readVarUInt()) { Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readString()) },
+            LazyList(buffer.readVarUInt()) { Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readString()) },
+            LazyList(buffer.readVarUInt()) { Pack(UUID.fromString(buffer.readString()), buffer.readString(), buffer.readString()) },
             if (version < V1_16_100) buffer.readBoolean() else false,
             buffer.readString(),
-            if (version >= V1_16_100) safeList(buffer.readIntLE()) { buffer.readExperiment() } else emptyList(),
+            if (version >= V1_16_100) LazyList(buffer.readIntLE()) { buffer.readExperiment() } else emptyList(),
             if (version >= V1_16_100) buffer.readBoolean() else false
         )
     }

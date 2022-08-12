@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 import java.util.UUID
 
 /**
@@ -42,6 +42,6 @@ class EmotesPacket(
     override fun toString() = "EmotesPacket(runtimeEntityId=$runtimeEntityId, pieceIds=$pieceIds)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = EmotesPacket(buffer.readVarULong(), safeList(buffer.readVarUInt()) { buffer.readUuid() })
+        override fun read(buffer: PacketBuffer, version: Int) = EmotesPacket(buffer.readVarULong(), LazyList(buffer.readVarUInt()) { buffer.readUuid() })
     }
 }

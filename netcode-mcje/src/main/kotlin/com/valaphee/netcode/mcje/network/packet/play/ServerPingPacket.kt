@@ -18,27 +18,24 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
  */
 class ServerPingPacket(
-    val id: Int
+    val pingId: Int
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt(id)
+        buffer.writeInt(pingId)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.ping(this)
 
-    override fun toString() = "ServerPingPacket(id=$id)"
-}
+    override fun toString() = "ServerPingPacket(pingId=$pingId)"
 
-/**
- * @author Kevin Ludwig
- */
-object ServerPingPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerPingPacket(buffer.readInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerPingPacket(buffer.readInt())
+    }
 }

@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.util.NamespacedKey
 
@@ -34,9 +34,9 @@ class ServerSculkVibrationSignalPacket(
     val arrivalTicks: Int
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(sourcePosition)
+        buffer.writeBlockPosition(sourcePosition)
         buffer.writeNamespacedKey(destinationIdentifier)
-        buffer.writeInt3UnsignedY(destinationPosition)
+        buffer.writeBlockPosition(destinationPosition)
         buffer.writeVarInt(destinationEntityId)
         buffer.writeVarInt(arrivalTicks)
     }
@@ -44,11 +44,8 @@ class ServerSculkVibrationSignalPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.sculkVibrationSignal(this)
 
     override fun toString() = "ServerSculkVibrationSignalPacket(sourcePosition=$sourcePosition, destinationIdentifier=$destinationIdentifier, destinationPosition=$destinationPosition, destinationEntityId=$destinationEntityId, arrivalTicks=$arrivalTicks)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerSculkVibrationSignalPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerSculkVibrationSignalPacket(buffer.readInt3UnsignedY(), buffer.readNamespacedKey(), buffer.readInt3UnsignedY(), buffer.readVarInt(), buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerSculkVibrationSignalPacket(buffer.readBlockPosition(), buffer.readNamespacedKey(), buffer.readBlockPosition(), buffer.readVarInt(), buffer.readVarInt())
+    }
 }

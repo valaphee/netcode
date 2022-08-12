@@ -27,7 +27,7 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -66,7 +66,7 @@ class CommandResponsePacket(
             val origin = buffer.readOrigin()
             val type = Type.values()[buffer.readByte().toInt()]
             val successCount = buffer.readVarUInt()
-            val messages = safeList(buffer.readVarUInt()) { buffer.readMessage() }
+            val messages = LazyList(buffer.readVarUInt()) { buffer.readMessage() }
             val data = if (type == Type.Data) buffer.readString() else null
             return CommandResponsePacket(origin, type, successCount, messages, data)
         }

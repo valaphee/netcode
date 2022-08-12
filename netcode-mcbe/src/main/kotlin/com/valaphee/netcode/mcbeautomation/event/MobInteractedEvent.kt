@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation.event
+package com.valaphee.netcode.mcbeautomation.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.automation.Event
+import com.valaphee.netcode.mcbeautomation.Event
 
 /**
  * @author Kevin Ludwig
  */
-data class MobKilledEvent(
+data class MobInteractedEvent(
     @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("victim") val victim: Entity,
-    @get:JsonProperty("killMethodType") val method: Int,
-    @get:JsonProperty("isMonster") val monster: Boolean,
-    @get:JsonProperty("armorHead") val armorHead: ItemStack,
-    @get:JsonProperty("armorTorso") val armorTorso: ItemStack,
-    @get:JsonProperty("armorLegs") val armorLegs: ItemStack,
-    @get:JsonProperty("armorFeet") val armorFeet: ItemStack,
-    @get:JsonProperty("weapon") val weapon: ItemStack,
-    @get:JsonProperty("playerIsHiddenFrom") val ambush: Boolean
-) : Event()
+    @get:JsonProperty("mob") val mob: Entity,
+    @get:JsonProperty("interactionType") val method: Int
+) : Event() {
+    data class Mob(
+        @get:JsonProperty("color") val color: Int,
+        @get:JsonProperty("type") val type: Int,
+        @get:JsonProperty("variant") val variant: Int
+    )
+}

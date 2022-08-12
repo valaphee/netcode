@@ -14,30 +14,19 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation.command
+package com.valaphee.netcode.mcbeautomation
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.automation.Command
-import com.valaphee.netcode.mcbe.automation.CommandResponse
+import kotlin.reflect.KClass
 
 /**
  * @author Kevin Ludwig
  */
-data class EnableEncryptionCommand(
-    @get:JsonIgnore val publicKey: String,
-    @get:JsonIgnore val salt: String
-) : Command() {
-    override val commandLine get() = """enableencryption "$publicKey" "$salt""""
+abstract class Command {
+    @get:JsonProperty("commandLine") abstract val commandLine: String
 
-    override val responseType get() = EnableEncryptionCommandResponse::class
+    @get:JsonIgnore abstract val responseType: KClass<out CommandResponse>
 }
 
-/**
- * @author Kevin Ludwig
- */
-data class EnableEncryptionCommandResponse(
-    @get:JsonProperty("publicKey") val publicKey: String,
-    @get:JsonProperty("statusCode") val statusCode: Int,
-    @get:JsonProperty("statusMessage") val statusMessage: String
-) : CommandResponse()
+abstract class CommandResponse

@@ -24,7 +24,7 @@ import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_18_002
 import com.valaphee.netcode.mcbe.network.V1_18_010
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -127,7 +127,7 @@ class SubChunkPacket(
             val cache = buffer.readBoolean()
             val dimension = buffer.readVarInt()
             val position = buffer.readInt3()
-            val responses = safeList(buffer.readIntLE()) {
+            val responses = LazyList(buffer.readIntLE()) {
                 val position = Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt())
                 val result = Response.Result.values()[buffer.readByte().toInt()]
                 val data = if (result != Response.Result.SuccessEmpty || !cache) buffer.readByteArray() else null

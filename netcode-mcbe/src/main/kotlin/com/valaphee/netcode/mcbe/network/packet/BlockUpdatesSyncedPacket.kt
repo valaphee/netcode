@@ -22,7 +22,7 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -70,8 +70,8 @@ class BlockUpdatesSyncedPacket(
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int) = BlockUpdatesSyncedPacket(
             buffer.readBlockPosition(),
-            safeList(buffer.readVarUInt()) { Update(buffer.readBlockPosition(), buffer.readVarUInt(), buffer.readVarUIntFlags(), buffer.readVarULong(), BlockUpdateSyncedPacket.Type.values()[buffer.readVarULong().toInt()]) },
-            safeList(buffer.readVarUInt()) { Update(buffer.readBlockPosition(), buffer.readVarUInt(), buffer.readVarUIntFlags(), buffer.readVarULong(), BlockUpdateSyncedPacket.Type.values()[buffer.readVarULong().toInt()]) }
+            LazyList(buffer.readVarUInt()) { Update(buffer.readBlockPosition(), buffer.readVarUInt(), buffer.readVarUIntFlags(), buffer.readVarULong(), BlockUpdateSyncedPacket.Type.values()[buffer.readVarULong().toInt()]) },
+            LazyList(buffer.readVarUInt()) { Update(buffer.readBlockPosition(), buffer.readVarUInt(), buffer.readVarUIntFlags(), buffer.readVarULong(), BlockUpdateSyncedPacket.Type.values()[buffer.readVarULong().toInt()]) }
         )
     }
 }

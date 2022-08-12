@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -34,11 +34,8 @@ class ServerSimulationDistancePacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.simulationDistance(this)
 
     override fun toString() = "ServerSimulationDistancePacket(distance=$distance)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerSimulationDistancePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerSimulationDistancePacket(buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerSimulationDistancePacket(buffer.readVarInt())
+    }
 }

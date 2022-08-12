@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_18_2
 
@@ -31,18 +31,15 @@ class ServerSpawnPositionPacket(
     val yaw: Float
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         if (version >= V1_18_2) buffer.writeAngle(yaw)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.spawnPosition(this)
 
     override fun toString() = "ServerSpawnPositionPacket(position=$position, yaw=$yaw)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerSpawnPositionPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerSpawnPositionPacket(buffer.readInt3UnsignedY(), if (version >= V1_18_2) buffer.readAngle() else 0.0f)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerSpawnPositionPacket(buffer.readBlockPosition(), if (version >= V1_18_2) buffer.readAngle() else 0.0f)
+    }
 }

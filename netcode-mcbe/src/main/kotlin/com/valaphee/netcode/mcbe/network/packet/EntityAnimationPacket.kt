@@ -36,7 +36,7 @@ class EntityAnimationPacket(
         fun getId(version: Int) = registry.getLastInt(version, this)
 
         companion object {
-            val registry = Int2ObjectOpenHashBiMapVersioned<Animation>().apply {
+            private val registry = Int2ObjectOpenHashBiMapVersioned<Animation>().apply {
                 put(NoAction        , V1_14_060 to 0x00)
                 put(SwingArm        , V1_14_060 to 0x01)
                 put(WakeUp          , V1_14_060 to 0x03)

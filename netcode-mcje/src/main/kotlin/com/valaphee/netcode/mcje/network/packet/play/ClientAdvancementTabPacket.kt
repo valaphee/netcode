@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
@@ -41,15 +41,12 @@ class ClientAdvancementTabPacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.advancementTab(this)
 
     override fun toString() = "ClientAdvancementTabPacket(action=$action, tabKey=$tabKey)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientAdvancementTabPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientAdvancementTabPacket {
-        val action = ClientAdvancementTabPacket.Action.values()[buffer.readVarInt()];
-        val tabKey = if (action == ClientAdvancementTabPacket.Action.Opened) buffer.readNamespacedKey() else null
-        return ClientAdvancementTabPacket(action, tabKey)
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ClientAdvancementTabPacket {
+            val action = ClientAdvancementTabPacket.Action.values()[buffer.readVarInt()];
+            val tabKey = if (action == Action.Opened) buffer.readNamespacedKey() else null
+            return ClientAdvancementTabPacket(action, tabKey)
+        }
     }
 }

@@ -20,20 +20,20 @@ package com.valaphee.netcode.mcje.util
  * @author Kevin Ludwig
  */
 class NibbleArray(
-    val bytes: ByteArray
+    val data: ByteArray
 ) {
-    val length: Int = bytes.size * 2
+    val length: Int = data.size * 2
 
     constructor(length: Int) : this(ByteArray(length / 2))
 
     operator fun get(index: Int): Int {
-        val value = bytes[index shr 1].toInt()
+        val value = data[index shr 1].toInt()
         return if (index and 1 == 0) value and 0xF else (value shr 4) and 0xF
     }
 
     operator fun set(index: Int, value: Int) {
         val _index = index shr 1
-        bytes[_index] = (if (_index and 1 == 0) (bytes[_index].toInt() and 0xF0) or (value and 0xF) else (bytes[_index].toInt() and 0xF) or ((value and 0xF) shl 4)).toByte()
+        data[_index] = (if (_index and 1 == 0) (data[_index].toInt() and 0xF0) or (value and 0xF) else (data[_index].toInt() and 0xF) or ((value and 0xF) shl 4)).toByte()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -42,10 +42,10 @@ class NibbleArray(
 
         other as NibbleArray
 
-        if (!bytes.contentEquals(other.bytes)) return false
+        if (!data.contentEquals(other.data)) return false
 
         return true
     }
 
-    override fun hashCode() = bytes.contentHashCode()
+    override fun hashCode() = data.contentHashCode()
 }

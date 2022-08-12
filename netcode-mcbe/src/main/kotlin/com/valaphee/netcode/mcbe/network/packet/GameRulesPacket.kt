@@ -24,7 +24,7 @@ import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.world.GameRule
 import com.valaphee.netcode.mcbe.world.readGameRule
 import com.valaphee.netcode.mcbe.world.writeGameRule
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -45,6 +45,6 @@ class GameRulesPacket(
     override fun toString() = "GameRulesPacket(gameRules=$gameRules)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = GameRulesPacket(safeList(buffer.readVarUInt()) { buffer.readGameRule(version) })
+        override fun read(buffer: PacketBuffer, version: Int) = GameRulesPacket(LazyList(buffer.readVarUInt()) { buffer.readGameRule(version) })
     }
 }

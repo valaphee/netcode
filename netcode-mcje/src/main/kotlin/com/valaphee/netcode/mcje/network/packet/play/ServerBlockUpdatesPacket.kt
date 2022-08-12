@@ -19,9 +19,9 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -49,19 +49,16 @@ class ServerBlockUpdatesPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.blockUpdates(this)
 
     override fun toString() = "ServerBlockUpdatesPacket(subChunkPosition=$subChunkPosition, trustEdges=$trustEdges, updates=$updates)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerBlockUpdatesPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ServerBlockUpdatesPacket {
-        val subChunkPosition = buffer.readLong()
-        val trustEdges = buffer.readBoolean()
-        val updates = safeList(buffer.readVarInt()) {
-            val update = buffer.readVarLong()
-            ServerBlockUpdatesPacket.Update(Int3(((update shr 8) and 0xF).toInt(), (update and 0xF).toInt(), ((update shr 4) and 0xF).toInt()), (update shr 12).toInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ServerBlockUpdatesPacket {
+            val subChunkPosition = buffer.readLong()
+            val trustEdges = buffer.readBoolean()
+            val updates = LazyList(buffer.readVarInt()) {
+                val update = buffer.readVarLong()
+                Update(Int3(((update shr 8) and 0xF).toInt(), (update and 0xF).toInt(), ((update shr 4) and 0xF).toInt()), (update shr 12).toInt())
+            }
+            return ServerBlockUpdatesPacket(Int3((subChunkPosition shr 42).toInt(), ((subChunkPosition shl 44) shr 44).toInt(), ((subChunkPosition shl 22) shr 42).toInt()), trustEdges, updates)
         }
-        return ServerBlockUpdatesPacket(Int3((subChunkPosition shr 42).toInt(), ((subChunkPosition shl 44) shr 44).toInt(), ((subChunkPosition shl 22) shr 42).toInt()), trustEdges, updates)
     }
 }

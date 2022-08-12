@@ -24,7 +24,7 @@ import com.valaphee.netcode.mcbe.world.entity.player.AbilityLayer
 import com.valaphee.netcode.mcbe.world.entity.player.PlayerPermission
 import com.valaphee.netcode.mcbe.world.entity.player.readAbilityLayer
 import com.valaphee.netcode.mcbe.world.entity.player.writeAbilityLayer
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -54,6 +54,6 @@ class AbilitiesPacket(
     override fun toString() = "AbilitiesPacket(uniqueEntityId=$uniqueEntityId, playerPermission$playerPermission, commandPermission=$commandPermission, abilityLayers=$abilityLayers)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = AbilitiesPacket(buffer.readLongLE(), PlayerPermission.values()[buffer.readVarUInt()], CommandPermission.values()[buffer.readVarUInt()], safeList(buffer.readVarUInt()) { buffer.readAbilityLayer() })
+        override fun read(buffer: PacketBuffer, version: Int) = AbilitiesPacket(buffer.readLongLE(), PlayerPermission.values()[buffer.readVarUInt()], CommandPermission.values()[buffer.readVarUInt()], LazyList(buffer.readVarUInt()) { buffer.readAbilityLayer() })
     }
 }

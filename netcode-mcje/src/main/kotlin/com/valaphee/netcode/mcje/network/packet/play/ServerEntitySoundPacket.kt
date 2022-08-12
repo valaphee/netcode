@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.SoundCategory
 
@@ -43,11 +43,8 @@ class ServerEntitySoundPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.entitySound(this)
 
     override fun toString() = "ServerEntitySoundPacket(soundId=$soundId, category=$category, entityId=$entityId, volume=$volume, pitch=$pitch)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerEntitySoundPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntitySoundPacket(buffer.readVarInt(), SoundCategory.values()[buffer.readVarInt()], buffer.readVarInt(), buffer.readFloat(), buffer.readFloat())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerEntitySoundPacket(buffer.readVarInt(), SoundCategory.values()[buffer.readVarInt()], buffer.readVarInt(), buffer.readFloat(), buffer.readFloat())
+    }
 }

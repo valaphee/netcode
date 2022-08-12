@@ -20,13 +20,10 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.util.NamespacedKey
-import com.valaphee.netcode.mcje.util.Int2ObjectOpenHashBiMap
 import com.valaphee.netcode.mcje.util.minecraftKey
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
 import com.valaphee.netcode.mcje.world.item.writeItemStack
-
-var particleTypes: Int2ObjectOpenHashBiMap<NamespacedKey>? = null
 
 /**
  * @author Kevin Ludwig
@@ -64,7 +61,7 @@ fun PacketBuffer.readParticleData(typeId: Int) = when (particleTypes!![typeId]) 
         val blockPosition: Int3?
         val entityId: Int
         if (block) {
-            blockPosition = readInt3UnsignedY()
+            blockPosition = readBlockPosition()
             entityId = 0
         } else {
             blockPosition = null

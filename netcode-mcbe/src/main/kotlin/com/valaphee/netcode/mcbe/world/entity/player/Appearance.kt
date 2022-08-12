@@ -24,7 +24,7 @@ import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.V1_16_100
 import com.valaphee.netcode.mcbe.network.V1_16_210
 import com.valaphee.netcode.mcbe.network.V1_17_034
-import com.valaphee.netcode.util.safeList
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -154,7 +154,7 @@ fun PacketBuffer.readAppearance(version: Int): Appearance {
         armSize = readString()
         skinColor = readString()
         personaPieces = mutableListOf<Appearance.PersonaPiece>().apply { repeat(readIntLE()) { add(Appearance.PersonaPiece(readString(), readString(), readString(), readBoolean(), readString())) } }
-        personaPieceTints = mutableListOf<Appearance.PersonaPieceTint>().apply { repeat(readIntLE()) { add(Appearance.PersonaPieceTint(readString(), safeList(readIntLE()) { readString() })) } }
+        personaPieceTints = mutableListOf<Appearance.PersonaPieceTint>().apply { repeat(readIntLE()) { add(Appearance.PersonaPieceTint(readString(), LazyList(readIntLE()) { readString() })) } }
         premiumSkin = readBoolean()
         personaSkin = readBoolean()
         capeOnClassicSkin = readBoolean()
@@ -170,7 +170,7 @@ fun PacketBuffer.readAppearance(version: Int): Appearance {
             armSize = readString()
             skinColor = readString()
             personaPieces = mutableListOf<Appearance.PersonaPiece>().apply { repeat(readIntLE()) { add(Appearance.PersonaPiece(readString(), readString(), readString(), readBoolean(), readString())) } }
-            personaPieceTints = mutableListOf<Appearance.PersonaPieceTint>().apply { repeat(readIntLE()) { add(Appearance.PersonaPieceTint(readString(), safeList(readIntLE()) { readString() })) } }
+            personaPieceTints = mutableListOf<Appearance.PersonaPieceTint>().apply { repeat(readIntLE()) { add(Appearance.PersonaPieceTint(readString(), LazyList(readIntLE()) { readString() })) } }
         } else {
             armSize = ""
             skinColor = ""

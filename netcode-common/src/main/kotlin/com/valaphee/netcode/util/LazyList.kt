@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-package com.valaphee.netcode.mcbe.automation.event
+package com.valaphee.netcode.util
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.valaphee.netcode.mcbe.automation.Event
-
-/**
- * @author Kevin Ludwig
- */
-data class ItemInteractedEvent(
-    @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("item") val item: ItemStack,
-    @get:JsonProperty("method") val method: Int,
-    @get:JsonProperty("count") val count: Int
-) : Event()
+inline fun <T> LazyList(size: Int, init: (index: Int) -> T): List<T> = mutableListOf<T>().apply { repeat(size) { add(init(it)) } }

@@ -19,7 +19,8 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
+import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.mcje.world.entity.player.MainHand
 import com.valaphee.netcode.mcje.world.entity.player.SkinPart
 import java.util.Locale
@@ -48,7 +49,7 @@ class ClientSettingsPacket(
         buffer.writeBoolean(chatColors)
         buffer.writeByteFlags(skinParts)
         buffer.writeVarInt(mainHand.ordinal)
-        if (version >= 758) {
+        if (version >= V1_18_2) {
             buffer.writeBoolean(textFilter)
             buffer.writeBoolean(visibleInStatus)
         }
@@ -57,28 +58,25 @@ class ClientSettingsPacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.settings(this)
 
     override fun toString() = "ClientSettingsPacket(locale=$locale, viewDistance=$viewDistance, chatMode=$chatMode, chatColors=$chatColors, skinParts=$skinParts, mainHand=$mainHand, filterText=$textFilter, visibleInStatus=$visibleInStatus)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientSettingsPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientSettingsPacket {
-        val locale = Locale.forLanguageTag(buffer.readString(16).replace('_', '-'))
-        val viewDistance = buffer.readUnsignedByte().toInt()
-        val chatMode = ClientSettingsPacket.ChatMode.values()[buffer.readVarInt()]
-        val chatColors = buffer.readBoolean()
-        val skinParts = buffer.readByteFlags<SkinPart>()
-        val mainHand = MainHand.values()[buffer.readVarInt()]
-        val textFilter: Boolean
-        val present: Boolean
-        if (version >= 758) {
-            textFilter = buffer.readBoolean()
-            present = buffer.readBoolean()
-        } else {
-            textFilter = false
-            present = false
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ClientSettingsPacket {
+            val locale = Locale.forLanguageTag(buffer.readString(16).replace('_', '-'))
+            val viewDistance = buffer.readUnsignedByte().toInt()
+            val chatMode = ClientSettingsPacket.ChatMode.values()[buffer.readVarInt()]
+            val chatColors = buffer.readBoolean()
+            val skinParts = buffer.readByteFlags<SkinPart>()
+            val mainHand = MainHand.values()[buffer.readVarInt()]
+            val textFilter: Boolean
+            val present: Boolean
+            if (version >= V1_18_2) {
+                textFilter = buffer.readBoolean()
+                present = buffer.readBoolean()
+            } else {
+                textFilter = false
+                present = false
+            }
+            return ClientSettingsPacket(locale, viewDistance, chatMode, chatColors, skinParts, mainHand, textFilter, present)
         }
-        return ClientSettingsPacket(locale, viewDistance, chatMode, chatColors, skinParts, mainHand, textFilter, present)
     }
 }

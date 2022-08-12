@@ -19,28 +19,25 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
  */
 class ClientCommandSuggestPacket(
-    val id: Int,
+    val suggestId: Int,
     val command: String
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(id)
+        buffer.writeVarInt(suggestId)
         buffer.writeString(command)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.commandSuggest(this)
 
-    override fun toString() = "ClientCommandSuggestPacket(id=$id, command='$command')"
-}
+    override fun toString() = "ClientCommandSuggestPacket(suggestId=$suggestId, command='$command')"
 
-/**
- * @author Kevin Ludwig
- */
-object ClientCommandSuggestPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ClientCommandSuggestPacket(buffer.readVarInt(), buffer.readString(32500))
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientCommandSuggestPacket(buffer.readVarInt(), buffer.readString(32500))
+    }
 }

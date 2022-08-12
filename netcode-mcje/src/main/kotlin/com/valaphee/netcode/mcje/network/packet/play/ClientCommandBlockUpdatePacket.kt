@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -38,7 +38,7 @@ class ClientCommandBlockUpdatePacket(
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3UnsignedY(position)
+        buffer.writeBlockPosition(position)
         buffer.writeString(command)
         buffer.writeVarInt(mode.ordinal)
         var flagsValue = if (outputTracked) flagOutputTracked else 0
@@ -51,22 +51,19 @@ class ClientCommandBlockUpdatePacket(
 
     override fun toString() = "ClientCommandBlockUpdatePacket(position=$position, command='$command', mode=$mode, outputTracked=$outputTracked, conditionMet=$conditionMet, executeOnFirstTick=$executeOnFirstTick)"
 
-    companion object {
-        internal const val flagOutputTracked = 1
-        internal const val flagConditionMet = 1 shl 1
-        internal const val flagExecuteOnFirstTick = 1 shl 2
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ClientCommandBlockUpdatePacket {
+            val position = buffer.readBlockPosition()
+            val command = buffer.readString()
+            val mode = ClientCommandBlockUpdatePacket.Mode.values()[buffer.readVarInt()]
+            val flags = buffer.readByte().toInt()
+            return ClientCommandBlockUpdatePacket(position, command, mode, flags and flagOutputTracked != 0, flags and flagConditionMet != 0, flags and flagExecuteOnFirstTick != 0)
+        }
     }
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientCommandBlockUpdatePacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientCommandBlockUpdatePacket {
-        val position = buffer.readInt3UnsignedY()
-        val command = buffer.readString()
-        val mode = ClientCommandBlockUpdatePacket.Mode.values()[buffer.readVarInt()]
-        val flags = buffer.readByte().toInt()
-        return ClientCommandBlockUpdatePacket(position, command, mode, flags and ClientCommandBlockUpdatePacket.flagOutputTracked != 0, flags and ClientCommandBlockUpdatePacket.flagConditionMet != 0, flags and ClientCommandBlockUpdatePacket.flagExecuteOnFirstTick != 0)
+    companion object {
+        private const val flagOutputTracked      = 1 shl 0
+        private const val flagConditionMet       = 1 shl 1
+        private const val flagExecuteOnFirstTick = 1 shl 2
     }
 }

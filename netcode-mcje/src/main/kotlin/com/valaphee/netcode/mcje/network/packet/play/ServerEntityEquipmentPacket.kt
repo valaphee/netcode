@@ -18,7 +18,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
@@ -44,24 +43,21 @@ class ServerEntityEquipmentPacket(
         buffer.writeVarInt(entityId)
         equipments.forEachIndexed { i, equipment ->
             buffer.writeByte(equipment.slot.ordinal or (if (i == equipments.size - 1) 0 else 0b1000_0000))
-            buffer.writeItemStack(equipment.itemStack)
+            buffer.writeItemStack(equipment.itemStack, version)
         }
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityEquipment(this)
 
     override fun toString() = "ServerEntityEquipmentPacket(entityId=$entityId, equipments=$equipments)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerEntityEquipmentPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEquipmentPacket(buffer.readVarInt(), ArrayList<ServerEntityEquipmentPacket.Equipment>().apply {
-        var slot: Int
-        do {
-            slot = buffer.readByte().toInt()
-            add(ServerEntityEquipmentPacket.Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[slot and 0b0111_1111], buffer.readItemStack()))
-        } while (slot and 0b1000_0000 != 0)
-    })
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEquipmentPacket(buffer.readVarInt(), ArrayList<Equipment>().apply {
+            var slot: Int
+            do {
+                slot = buffer.readByte().toInt()
+                add(Equipment(ServerEntityEquipmentPacket.Equipment.Slot.values()[slot and 0b0111_1111], buffer.readItemStack(version)))
+            } while (slot and 0b1000_0000 != 0)
+        })
+    }
 }

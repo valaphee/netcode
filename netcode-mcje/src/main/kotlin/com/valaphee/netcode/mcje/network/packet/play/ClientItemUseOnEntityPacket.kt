@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.world.entity.player.Hand
 
 /**
@@ -54,32 +54,29 @@ class ClientItemUseOnEntityPacket(
     override fun handle(handler: ClientPlayPacketHandler) = handler.itemUseOnEntity(this)
 
     override fun toString() = "ClientItemUseOnEntityPacket(entityId=$entityId, type=$type, position=$position, hand=$hand, sneaking=$sneaking)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientItemUseOnEntityPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientItemUseOnEntityPacket {
-        val entityId = buffer.readVarInt()
-        val type = ClientItemUseOnEntityPacket.Type.values()[buffer.readVarInt()]
-        val position: Float3?
-        val hand: Hand?
-        when (type) {
-            ClientItemUseOnEntityPacket.Type.InteractAt -> {
-                position = buffer.readFloat3()
-                hand = Hand.values()[buffer.readVarInt()]
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ClientItemUseOnEntityPacket {
+            val entityId = buffer.readVarInt()
+            val type = Type.values()[buffer.readVarInt()]
+            val position: Float3?
+            val hand: Hand?
+            when (type) {
+                Type.InteractAt -> {
+                    position = buffer.readFloat3()
+                    hand = Hand.values()[buffer.readVarInt()]
+                }
+                Type.Interact -> {
+                    position = null
+                    hand = Hand.values()[buffer.readVarInt()]
+                }
+                else -> {
+                    position = null
+                    hand = null
+                }
             }
-            ClientItemUseOnEntityPacket.Type.Interact -> {
-                position = null
-                hand = Hand.values()[buffer.readVarInt()]
-            }
-            else -> {
-                position = null
-                hand = null
-            }
+            val sneaking = buffer.readBoolean()
+            return ClientItemUseOnEntityPacket(entityId, type, position, hand, sneaking)
         }
-        val sneaking = buffer.readBoolean()
-        return ClientItemUseOnEntityPacket(entityId, type, position, hand, sneaking)
     }
 }

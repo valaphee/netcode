@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.entity.player.Hand
 
@@ -35,11 +35,8 @@ class ServerBookOpenPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.bookOpen(this)
 
     override fun toString() = "ServerBookOpenPacket(hand=$hand)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerBookOpenPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerBookOpenPacket(Hand.values()[buffer.readVarInt()])
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerBookOpenPacket(Hand.values()[buffer.readVarInt()])
+    }
 }

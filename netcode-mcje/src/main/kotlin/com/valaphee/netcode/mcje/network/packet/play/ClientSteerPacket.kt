@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
@@ -39,19 +39,16 @@ class ClientSteerPacket(
 
     override fun toString() = "ClientSteerPacket(move=$move, jumping=$jumping, sneaking=$sneaking)"
 
-    companion object {
-        internal const val flagJumping = 1
-        internal const val flagSneaking = 1 shl 1
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int): ClientSteerPacket {
+            val move = buffer.readFloat2()
+            val flagsValue = buffer.readByte().toInt()
+            return ClientSteerPacket(move, flagsValue and flagJumping != 0, flagsValue and flagSneaking != 0)
+        }
     }
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ClientSteerPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int): ClientSteerPacket {
-        val move = buffer.readFloat2()
-        val flagsValue = buffer.readByte().toInt()
-        return ClientSteerPacket(move, flagsValue and ClientSteerPacket.flagJumping != 0, flagsValue and ClientSteerPacket.flagSneaking != 0)
+    companion object {
+        private const val flagJumping  = 1 shl 0
+        private const val flagSneaking = 1 shl 1
     }
 }

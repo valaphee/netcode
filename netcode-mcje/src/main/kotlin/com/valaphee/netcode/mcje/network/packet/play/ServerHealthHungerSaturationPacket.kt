@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -38,11 +38,8 @@ class ServerHealthHungerSaturationPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.healthHungerSaturation(this)
 
     override fun toString() = "ServerHealthHungerSaturationPacket(health=$health, hunger=$hunger, saturation=$saturation)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerHealthHungerSaturationPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerHealthHungerSaturationPacket(buffer.readFloat(), buffer.readVarInt(), buffer.readFloat())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerHealthHungerSaturationPacket(buffer.readFloat(), buffer.readVarInt(), buffer.readFloat())
+    }
 }

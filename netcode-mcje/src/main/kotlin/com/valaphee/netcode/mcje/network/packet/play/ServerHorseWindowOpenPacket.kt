@@ -18,7 +18,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -38,11 +37,8 @@ class ServerHorseWindowOpenPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.horseWindowOpen(this)
 
     override fun toString() = "ServerHorseWindowOpenPacket(windowId=$windowId, slotCount=$slotCount, entityId=$entityId)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerHorseWindowOpenPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerHorseWindowOpenPacket(buffer.readByte().toInt(), buffer.readVarInt(), buffer.readInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerHorseWindowOpenPacket(buffer.readByte().toInt(), buffer.readVarInt(), buffer.readInt())
+    }
 }

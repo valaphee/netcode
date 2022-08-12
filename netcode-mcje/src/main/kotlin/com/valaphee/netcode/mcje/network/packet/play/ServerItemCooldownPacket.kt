@@ -18,7 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.PacketReader
+import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
@@ -36,11 +36,8 @@ class ServerItemCooldownPacket(
     override fun handle(handler: ServerPlayPacketHandler) = handler.itemCooldown(this)
 
     override fun toString() = "ServerItemCooldownPacket(itemId=$itemId, cooldown=$cooldown)"
-}
 
-/**
- * @author Kevin Ludwig
- */
-object ServerItemCooldownPacketReader : PacketReader {
-    override fun read(buffer: PacketBuffer, version: Int) = ServerItemCooldownPacket(buffer.readVarInt(), buffer.readVarInt())
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerItemCooldownPacket(buffer.readVarInt(), buffer.readVarInt())
+    }
 }
