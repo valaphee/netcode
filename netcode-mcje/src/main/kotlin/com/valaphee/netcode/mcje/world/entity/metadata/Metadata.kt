@@ -39,23 +39,23 @@ class Metadata {
 
     val modified get() = values.values.any { it.modified }
 
-    fun readFromBuffer(buffer: PacketBuffer) {
+    fun readFromBuffer(buffer: PacketBuffer, version: Int) {
         var fieldId = buffer.readByte().toInt()
         while (fieldId != -1) {
             val typeId = buffer.readVarInt()
             val type = MetadataType.registry[typeId] ?: error("No such metadata type: $typeId (field id: $fieldId)")
-            values[fieldId] = MetadataValue(type, type.read(buffer))
+            values[fieldId] = MetadataValue(type, type.read(buffer, version))
             fieldId = buffer.readByte().toInt()
         }
     }
 
-    fun writeToBuffer(buffer: PacketBuffer) {
+    fun writeToBuffer(buffer: PacketBuffer, version: Int) {
         values.forEach { (fieldId, value) ->
             if (value.modified) {
                 buffer.writeByte(fieldId)
                 val type = value.type
                 buffer.writeVarInt(MetadataType.registry.getInt(type))
-                type.write(buffer, value)
+                type.write(buffer, value, version)
             }
         }
         buffer.writeByte(-1)

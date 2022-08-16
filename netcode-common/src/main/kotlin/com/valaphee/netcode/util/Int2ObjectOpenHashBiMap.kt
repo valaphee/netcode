@@ -17,8 +17,6 @@
 package com.valaphee.netcode.util
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
-import it.unimi.dsi.fastutil.objects.Object2IntMap
-import it.unimi.dsi.fastutil.objects.Object2IntMaps
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
 /**
@@ -26,9 +24,15 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
  */
 class Int2ObjectOpenHashBiMap<T> : Int2ObjectOpenHashMap<T>() {
     private val reverse_ = Object2IntOpenHashMap<T>()
-    val reverse: Object2IntMap<T> by lazy { Object2IntMaps.unmodifiable(reverse_) }
+
+    override fun defaultReturnValue(returnValue: T) {
+        super.defaultReturnValue(returnValue)
+        reverse_.defaultReturnValue(reverse_.getInt(returnValue))
+    }
 
     fun getInt(value: T) = reverse_.getInt(value)
+
+    override fun containsValue(value: T) = reverse_.containsKey(value)
 
     override fun put(key: Int, value: T): T = super.put(key, value).also { reverse_.put(value, key) }
 

@@ -85,10 +85,10 @@ class RecipesPacket(
                 is FurnaceRecipe -> {
                     if (it.input.subId == -1) {
                         buffer.writeVarInt(2)
-                        buffer.writeVarInt(Item[version, it.input.itemKey])
+                        buffer.writeVarInt(it.input.itemId ?: Item[version, checkNotNull(it.input.itemKey) { "Neither item id nor key specified: ${it.input}" }])
                     } else {
                         buffer.writeVarInt(3)
-                        buffer.writeVarInt(Item[version, it.input.itemKey])
+                        buffer.writeVarInt(it.input.itemId ?: Item[version, checkNotNull(it.input.itemKey) { "Neither item id nor key specified: ${it.input}" }])
                         buffer.writeVarInt(it.input.subId)
                     }
                     buffer.writeItemStack(it.output, version, false)
@@ -105,11 +105,11 @@ class RecipesPacket(
 
         buffer.writeVarUInt(brewingMixRecipes.size)
         brewingMixRecipes.forEach {
-            buffer.writeVarInt(Item[version, it.input.itemKey])
+            buffer.writeVarInt(it.input.itemId ?: Item[version, checkNotNull(it.input.itemKey) { "Neither item id nor key specified: ${it.input}" }])
             if (version >= V1_16_010) buffer.writeVarInt(it.input.subId)
-            buffer.writeVarInt(Item[version, it.reagent.itemKey])
+            buffer.writeVarInt(it.reagent.itemId ?: Item[version, checkNotNull(it.reagent.itemKey) { "Neither item id nor key specified: ${it.reagent}" }])
             if (version >= V1_16_010) buffer.writeVarInt(it.reagent.subId)
-            buffer.writeVarInt(Item[version, it.output.itemKey])
+            buffer.writeVarInt(it.output.itemId ?: Item[version, checkNotNull(it.output.itemKey) { "Neither item id nor key specified: ${it.output}" }])
             if (version >= V1_16_010) buffer.writeVarInt(it.output.subId)
         }
         buffer.writeVarUInt(brewingContainerRecipes.size)
@@ -121,10 +121,10 @@ class RecipesPacket(
         if (version >= V1_17_034) {
             buffer.writeVarUInt(materialReductionRecipes.size)
             materialReductionRecipes.forEach {
-                buffer.writeVarInt(Item[version, it.input.itemKey])
+                buffer.writeVarInt(it.input.itemId ?: Item[version, checkNotNull(it.input.itemKey) { "Neither item id nor key specified: ${it.input}" }])
                 buffer.writeVarUInt(it.output.size)
                 it.output.forEach {
-                    buffer.writeVarInt(Item[version, it.itemKey])
+                    buffer.writeVarInt(it.itemId ?: Item[version, checkNotNull(it.itemKey) { "Neither item id nor key specified: $it" }])
                     buffer.writeVarInt(it.count)
                 }
             }
@@ -153,15 +153,41 @@ class RecipesPacket(
                         val netId = if (version >= V1_16_010) buffer.readVarUInt() else 0
                         ShapedRecipe(id, key, width, height, input.toTypedArray(), output, tag, priority, netId)
                     }
-                    2 -> FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(Item[version, buffer.readVarInt()]!!, -1), buffer.readItemStack(version, false)!!, listOf(buffer.readString()))
-                    3 -> FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()), buffer.readItemStack(version, false)!!, listOf(buffer.readString()))
+                    2 -> {
+                        val input = buffer.readVarInt()
+                        val output = checkNotNull(buffer.readItemStack(version, false)) { "Furnace recipe has no output. ($input)" }
+                        val tag = buffer.readString()
+                        FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(input, Item[version, input]!!, -1), output, listOf(tag))
+                    }
+                    3 -> {
+                        val inputId = buffer.readVarInt()
+                        val inputSubId = buffer.readVarInt()
+                        val output = checkNotNull(buffer.readItemStack(version, false)) { "Furnace recipe has no output. ($inputId:$inputSubId)" }
+                        val tag = buffer.readString()
+                        FurnaceRecipe(FurnaceRecipe.Description(""), ItemStack(inputId, Item[version, inputId]!!, inputSubId), output, listOf(tag))
+                    }
                     4 -> MultiRecipe(buffer.readUuid(), buffer.readVarUInt())
                     else -> error("No such recipe type: $type")
                 }
             },
-            LazyList(buffer.readVarUInt()) { BrewingMixRecipe(BrewingMixRecipe.Description(""), emptyList(), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()), ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt())) },
+            LazyList(buffer.readVarUInt()) {
+                val inputId = buffer.readVarInt()
+                val inputSubId = if (version >= V1_16_010) buffer.readVarInt() else -1
+                val reagentId = buffer.readVarInt()
+                val reagentSubId = if (version >= V1_16_010) buffer.readVarInt() else -1
+                val outputId = buffer.readVarInt()
+                val outputSubId = if (version >= V1_16_010) buffer.readVarInt() else -1
+                BrewingMixRecipe(BrewingMixRecipe.Description(""), emptyList(), ItemStack(inputId, Item[version, inputId]!!, inputSubId), ItemStack(reagentId, Item[version, reagentId]!!, reagentSubId), ItemStack(outputId, Item[version, outputId]!!, outputSubId))
+            },
             LazyList(buffer.readVarUInt()) { BrewingContainerRecipe(BrewingContainerRecipe.Description(""), emptyList(), Item[version, buffer.readVarInt()]!!, Item[version, buffer.readVarInt()]!!, Item[version, buffer.readVarInt()]!!) },
-            if (version >= V1_17_034) LazyList(buffer.readVarUInt()) { MaterialReductionRecipe(MaterialReductionRecipe.Description(""), emptyList(), ItemStack(Item[version, buffer.readVarInt()]!!), LazyList(buffer.readVarUInt()) { ItemStack(Item[version, buffer.readVarInt()]!!, buffer.readVarInt()) }) } else emptyList(),
+            if (version >= V1_17_034) LazyList(buffer.readVarUInt()) {
+                val input = buffer.readVarInt()
+                MaterialReductionRecipe(MaterialReductionRecipe.Description(""), emptyList(), ItemStack(input, Item[version, input]!!, -1), LazyList(buffer.readVarUInt()) {
+                    val outputId = buffer.readVarInt()
+                    val outputSubId = buffer.readVarInt()
+                    ItemStack(outputId, Item[version, outputId]!!, outputSubId)
+                })
+            } else emptyList(),
             buffer.readBoolean()
         )
     }

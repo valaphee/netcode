@@ -20,9 +20,9 @@ import com.valaphee.foundry.math.Double3
 import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.ParticleData
+import com.valaphee.netcode.mcje.world.ParticleType
 import com.valaphee.netcode.mcje.world.readParticleData
 
 /**
@@ -37,13 +37,13 @@ class ServerParticlePacket(
     val count: Int
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt(data.typeId)
+        buffer.writeInt(data.getTypeId(version))
         buffer.writeBoolean(longDistance)
         buffer.writeDouble3(position)
         buffer.writeFloat3(offset)
         buffer.writeFloat(speed)
         buffer.writeInt(count)
-        data.writeToBuffer(buffer)
+        data.writeToBuffer(buffer, version)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.particle(this)
@@ -52,13 +52,13 @@ class ServerParticlePacket(
 
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int): ServerParticlePacket {
-            val typeId = buffer.readInt()
+            val particleTypeId = buffer.readInt()
             val longDistance = buffer.readBoolean()
             val position = buffer.readDouble3()
             val offset = buffer.readFloat3()
             val speed = buffer.readFloat()
             val count = buffer.readInt()
-            val data = buffer.readParticleData(typeId)
+            val data = buffer.readParticleData(checkNotNull(ParticleType[version, particleTypeId]) { "No such particle type: $particleTypeId" }, version)
             return ServerParticlePacket(data, longDistance, position, offset, speed, count)
         }
     }

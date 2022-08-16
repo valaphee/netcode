@@ -39,17 +39,10 @@ class SubChunk(
     }
 }
 
-fun PacketBuffer.readSubChunkPre758() = SubChunk(readUnsignedShort(), readStorage(), null)
+fun PacketBuffer.readSubChunk(version: Int) = SubChunk(readUnsignedShort(), readStorage(), if (version >= 758) readStorage() else null)
 
-fun PacketBuffer.readSubChunk() = SubChunk(readUnsignedShort(), readStorage(), readStorage())
-
-fun PacketBuffer.writeSubChunkPre758(value: SubChunk) {
+fun PacketBuffer.writeSubChunk(value: SubChunk, version: Int) {
     writeShort(value.blockCount)
     writeStorage(value.blocks)
-}
-
-fun PacketBuffer.writeSubChunk(value: SubChunk) {
-    writeShort(value.blockCount)
-    writeStorage(value.blocks)
-    writeStorage(value.biomes!!)
+    if (version >= 758) writeStorage(value.biomes!!)
 }

@@ -40,7 +40,8 @@ import java.io.OutputStream
 @JsonSerialize(using = ItemStack.Serializer::class)
 @JsonDeserialize(using = ItemStack.Deserializer::class)
 data class ItemStack(
-    val item: NamespacedKey,
+    val itemId: Int?,
+    val itemKey: NamespacedKey?,
     val count: Int = 1,
     val data: Any? = null,
 ) {
@@ -50,16 +51,36 @@ data class ItemStack(
 
         other as ItemStack
 
-        if (item != other.item) return false
+        if (itemKey != other.itemKey) return false
         if (data != other.data) return false
 
         return true
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ItemStack
+
+        if (itemKey != other.itemKey) return false
+        if (count != other.count) return false
+        if (data != other.data) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = itemKey?.hashCode() ?: 0
+        result = 31 * result + count
+        result = 31 * result + (data?.hashCode() ?: 0)
+        return result
+    }
+
     object Serializer : JsonSerializer<ItemStack>() {
         override fun serialize(value: ItemStack, generator: JsonGenerator, provider: SerializerProvider) {
             generator.writeStartObject()
-            generator.writeStringField("id", value.item.toString())
+            generator.writeStringField("id", value.itemKey.toString())
             generator.writeNumberField("Count", value.count)
             value.data?.let { generator.writeObjectField("tag", value.data) }
             generator.writeEndObject()
@@ -69,26 +90,29 @@ data class ItemStack(
     object Deserializer : JsonDeserializer<ItemStack>() {
         override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
             val node = parser.readValueAsTree<JsonNode>()
-            return ItemStack(minecraftKey(node["id"].textValue()), node["Count"]?.intValue() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
+            return ItemStack(null, minecraftKey(node["id"].textValue()), node["Count"]?.intValue() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
         }
     }
 }
 
-fun PacketBuffer.readItemStack(version: Int) = if (version >= V1_13_0) if (readBoolean()) ItemStack(readVarInt() to null, readByte().toInt(), nbtObjectMapper.readValue(ByteBufInputStream(buffer))) else null else {
-    val itemId = readShort()
-    if (itemId >= 0) ItemStack(itemId.toInt() to null, readByte().toInt(), readShort().let { nbtObjectMapper.readValue(ByteBufInputStream(buffer)) }) else null
+fun PacketBuffer.readItemStack(version: Int) = if (version >= V1_13_0) if (readBoolean()) {
+    val itemId = readVarInt()
+    ItemStack(itemId, Item[version, itemId], readByte().toInt(), nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+} else null else {
+    val itemId = readShort().toInt()
+    if (itemId >= 0) ItemStack(itemId, Item[version, itemId], readByte().toInt(), readShort().let { nbtObjectMapper.readValue(ByteBufInputStream(buffer)) }) else null
 }
 
 fun PacketBuffer.writeItemStack(value: ItemStack?, version: Int) {
     if (version >= V1_13_0) value?.let {
         writeBoolean(true)
-        writeVarInt(it.item.first)
+        writeVarInt(it.itemId ?: Item[version, checkNotNull(it.itemKey) { "Neither item id nor key specified: $it" }])
         writeByte(it.count)
         nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
     } ?: writeBoolean(false) else value?.let {
-        writeShort(it.item.first)
+        writeShort(it.itemId ?: Item[version, checkNotNull(it.itemKey) { "Neither item id nor key specified: $it" }])
         writeByte(it.count)
-        //writeShort()
+        writeShort(0)
         nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
     } ?: writeShort(-1)
 }

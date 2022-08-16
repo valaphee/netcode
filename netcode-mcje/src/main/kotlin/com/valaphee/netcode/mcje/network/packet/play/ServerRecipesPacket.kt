@@ -18,7 +18,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.world.item.crafting.Recipe
 import com.valaphee.netcode.mcje.world.item.crafting.readRecipe
@@ -34,7 +33,7 @@ class ServerRecipesPacket(
         recipes.forEach {
             buffer.writeNamespacedKey(it.type)
             buffer.writeNamespacedKey(it.key)
-            it.writeToBuffer(buffer)
+            it.writeToBuffer(buffer, version)
         }
     }
 
@@ -43,6 +42,6 @@ class ServerRecipesPacket(
     override fun toString() = "ServerRecipesPacket(recipes=$recipes)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerRecipesPacket(List(buffer.readVarInt()) { buffer.readRecipe(buffer.readNamespacedKey(), buffer.readNamespacedKey()) })
+        override fun read(buffer: PacketBuffer, version: Int) = ServerRecipesPacket(List(buffer.readVarInt()) { buffer.readRecipe(version) })
     }
 }

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.mcje.world.entity.player.Hand
 import com.valaphee.netcode.mcje.world.item.ItemStack
@@ -48,7 +47,7 @@ class ClientBookEditPacket(
                 buffer.writeString(it)
             } ?: buffer.writeBoolean(false)
         } else {
-            buffer.writeItemStack(itemStack)
+            buffer.writeItemStack(itemStack, version)
             buffer.writeBoolean(sign)
             buffer.writeVarInt(hand.ordinal)
         }
@@ -72,7 +71,7 @@ class ClientBookEditPacket(
                 pages = List(buffer.readVarInt()) { buffer.readString() }
                 title = if (buffer.readBoolean()) buffer.readString() else null
             } else {
-                itemStack = buffer.readItemStack()
+                itemStack = buffer.readItemStack(version)
                 sign = buffer.readBoolean()
                 hand = Hand.values()[buffer.readVarInt()]
                 pages = null

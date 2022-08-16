@@ -47,7 +47,8 @@ import java.util.Base64
 @JsonSerialize(using = ItemStack.Serializer::class)
 @JsonDeserialize(using = ItemStack.Deserializer::class)
 data class ItemStack(
-    val itemKey: String,
+    val itemId: Int?,
+    val itemKey: String?,
     var subId: Int = 0,
     val count: Int = 1,
     val data: Any? = null,
@@ -100,14 +101,14 @@ data class ItemStack(
             generator.writeStartObject()
             when (generator) {
                 is NbtGenerator -> {
-                    generator.writeStringField("Name", value.itemKey)
+                    generator.writeStringField("Name", checkNotNull(value.itemKey))
                     generator.writeNumberField("Damage", value.subId.toShort())
                     generator.writeFieldName("Count")
                     generator.writeNumber(value.count.toByte())
                     value.data?.let { generator.writeObjectField("tag", value.data) }
                 }
                 else -> {
-                    generator.writeStringField("item", value.itemKey)
+                    generator.writeStringField("item", checkNotNull(value.itemKey))
                     generator.writeNumberField("data", value.subId)
                     generator.writeNumberField("count", value.count)
                     value.data?.let { generator.writeStringField("netcode:data", base64Encoder.encodeToString(objectMapper.writeValueAsBytes(it))) }
@@ -125,8 +126,8 @@ data class ItemStack(
         override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
             val node = parser.readValueAsTree<JsonNode>()
             return when (parser) {
-                is NbtParser -> ItemStack(node["Name"].textValue(), node["Damage"]?.intValue() ?: 0, node["Count"]?.intValue() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
-                else -> ItemStack(node["item"].textValue(), node["data"]?.intValue() ?: 0, node["count"]?.intValue() ?: 1, node["netcode:data"]?.let { objectMapper.readValue(base64Decoder.decode(it.textValue())) }, blockState = node["netcode:block_state"]?.let { BlockState(it.textValue()) })
+                is NbtParser -> ItemStack(null, node["Name"].textValue(), node["Damage"]?.intValue() ?: 0, node["Count"]?.intValue() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
+                else -> ItemStack(null, node["item"].textValue(), node["data"]?.intValue() ?: 0, node["count"]?.intValue() ?: 1, node["netcode:data"]?.let { objectMapper.readValue(base64Decoder.decode(it.textValue())) }, blockState = node["netcode:block_state"]?.let { BlockState(it.textValue()) })
             }
         }
     }
@@ -135,7 +136,7 @@ data class ItemStack(
 fun PacketBuffer.readItemStack(version: Int, withNetId: Boolean = true): ItemStack? {
     val itemId = readVarInt()
     if (itemId == 0) return null
-    val itemKey = Item[version, itemId]!!
+    val itemKey = Item[version, itemId]
     if (version >= V1_16_221) {
         val count = readUnsignedShortLE()
         val subId = readVarUInt()
@@ -143,6 +144,7 @@ fun PacketBuffer.readItemStack(version: Int, withNetId: Boolean = true): ItemSta
         val blockStateId = readVarInt()
         readVarUInt()
         return ItemStack(
+            itemId,
             itemKey,
             subId,
             count,
@@ -162,6 +164,7 @@ fun PacketBuffer.readItemStack(version: Int, withNetId: Boolean = true): ItemSta
     } else {
         val countAndSubId = readVarInt()
         return ItemStack(
+            null,
             itemKey,
             (countAndSubId shr 8).let { if (it == Short.MAX_VALUE.toInt()) -1 else it },
             countAndSubId and 0xFF,
@@ -187,12 +190,12 @@ fun PacketBuffer.readItemStackWithNetId(version: Int) = if (version in V1_16_100
 fun PacketBuffer.readIngredient(version: Int): ItemStack? {
     val itemId = readVarInt()
     if (itemId == 0) return null
-    return ItemStack(Item[version, itemId]!!, readVarInt().let { if (it == Short.MAX_VALUE.toInt()) -1 else it }, readVarInt())
+    return ItemStack(itemId, Item[version, itemId], readVarInt().let { if (it == Short.MAX_VALUE.toInt()) -1 else it }, readVarInt())
 }
 
 fun PacketBuffer.writeItemStack(value: ItemStack?, version: Int, withNetId: Boolean = true) {
     value?.let {
-        val itemId = Item[version, it.itemKey]
+        val itemId = it.itemId ?: Item[version, checkNotNull(it.itemKey) { "Neither item id nor key specified: $it" }]
         writeVarInt(itemId)
         if (itemId != 0) {
             if (version >= V1_16_221) {
@@ -248,7 +251,7 @@ fun PacketBuffer.writeItemStackWithNetId(value: ItemStack?, version: Int) {
 
 fun PacketBuffer.writeIngredient(value: ItemStack?, version: Int) {
     value?.let {
-        val itemId = Item[version, it.itemKey]
+        val itemId = it.itemId ?: Item[version, checkNotNull(it.itemKey) { "Neither item id nor key specified: $it" }]
         writeVarInt(itemId)
         if (itemId != 0) {
             writeVarInt(if (value.subId == -1) Short.MAX_VALUE.toInt() else value.subId)

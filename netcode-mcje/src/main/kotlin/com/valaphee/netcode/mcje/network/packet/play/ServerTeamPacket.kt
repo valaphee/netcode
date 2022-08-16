@@ -16,9 +16,9 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.valaphee.netcode.mcje.chat.StyleCode
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.util.LazyList
 import net.kyori.adventure.text.Component
@@ -33,7 +33,7 @@ class ServerTeamPacket(
     val friendlyFlags: Byte,
     val nametagVisibility: Rule?,
     val collisionRule: Rule?,
-    val styleCode: Int,
+    val styleCode: StyleCode?,
     val prefix: Component?,
     val suffix: Component?,
     val userNames: List<String>?
@@ -65,7 +65,7 @@ class ServerTeamPacket(
                     Rule.OwnTeam -> buffer.writeString("pushOwnTeam")
                     else -> buffer.writeString("always")
                 }
-                buffer.writeVarInt(styleCode)
+                buffer.writeVarInt(styleCode!!.ordinal)
                 buffer.writeComponent(prefix!!)
                 buffer.writeComponent(suffix!!)
                 userNames?.let {
@@ -89,7 +89,7 @@ class ServerTeamPacket(
                     Rule.OwnTeam -> buffer.writeString("pushOwnTeam")
                     else -> buffer.writeString("always")
                 }
-                buffer.writeVarInt(styleCode)
+                buffer.writeVarInt(styleCode!!.ordinal)
                 buffer.writeComponent(prefix!!)
                 buffer.writeComponent(suffix!!)
             }
@@ -112,7 +112,7 @@ class ServerTeamPacket(
             val friendlyFlags: Byte
             val nametagVisibility: Rule?
             val collisionRule: Rule?
-            val styleCode: Int
+            val styleCode: StyleCode?
             val prefix: Component?
             val suffix: Component?
             val userNames: List<String>?
@@ -132,7 +132,7 @@ class ServerTeamPacket(
                         "pushOwnTeam" -> Rule.OwnTeam
                         else -> Rule.Always
                     }
-                    styleCode = buffer.readVarInt()
+                    styleCode = StyleCode.values()[buffer.readVarInt()]
                     prefix = buffer.readComponent()
                     suffix = buffer.readComponent()
                     userNames = LazyList(buffer.readVarInt()) { buffer.readString(40) }
@@ -142,7 +142,7 @@ class ServerTeamPacket(
                     friendlyFlags = 0
                     nametagVisibility = null
                     collisionRule = null
-                    styleCode = 0
+                    styleCode = null
                     prefix = null
                     suffix = null
                     userNames = null
@@ -162,7 +162,7 @@ class ServerTeamPacket(
                         "pushOwnTeam" -> Rule.OwnTeam
                         else -> Rule.Always
                     }
-                    styleCode = buffer.readVarInt()
+                    styleCode = StyleCode.values()[buffer.readVarInt()]
                     prefix = buffer.readComponent()
                     suffix = buffer.readComponent()
                     userNames = null
@@ -172,7 +172,7 @@ class ServerTeamPacket(
                     friendlyFlags = 0
                     nametagVisibility = null
                     collisionRule = null
-                    styleCode = 0
+                    styleCode = null
                     prefix = null
                     suffix = null
                     userNames = LazyList(buffer.readVarInt()) { buffer.readString(40) }

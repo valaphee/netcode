@@ -30,7 +30,7 @@ open class Recipe(
     val type: NamespacedKey,
     val key: NamespacedKey
 ) {
-    open fun writeToBuffer(buffer: PacketBuffer) = Unit
+    open fun writeToBuffer(buffer: PacketBuffer, version: Int) = Unit
 
     override fun toString() = "Recipe(type=$type, key=$key)"
 
@@ -46,20 +46,20 @@ open class Recipe(
     }
 }
 
-fun PacketBuffer.readRecipe(type: NamespacedKey, key: NamespacedKey) = when (type) {
-    Recipe.craftingShapelessType -> ShapelessRecipe(type, key, readString(), List(readVarInt()) { List(readVarInt()) { readItemStack() } }, readItemStack())
+fun PacketBuffer.readRecipe(version: Int) = when (val type = readNamespacedKey()) {
+    Recipe.craftingShapelessType -> ShapelessRecipe(type, readNamespacedKey(), readString(), List(readVarInt()) { List(readVarInt()) { readItemStack(version) } }, readItemStack(version))
     Recipe.craftingShapedType -> {
         val width = readVarInt()
         val height = readVarInt()
         val group = readString()
-        val input = List(width * height) { List(readVarInt()) { readItemStack() } }
-        val output = readItemStack()
-        ShapedRecipe(type, key, width, height, group, input, output)
+        val input = List(width * height) { List(readVarInt()) { readItemStack(version) } }
+        val output = readItemStack(version)
+        ShapedRecipe(type, readNamespacedKey(), width, height, group, input, output)
     }
-    Recipe.smeltingType, Recipe.blastingType, Recipe.smokingType, Recipe.campfireCookingType -> FurnaceRecipe(type, key, readString(), List(readVarInt()) { readItemStack() }, readItemStack(), readFloat(), readVarInt())
-    Recipe.stonecuttingType -> StonecuttingRecipe(type, key, readString(), List(readVarInt()) { readItemStack() }, readItemStack())
-    Recipe.smithingType -> SmithingRecipe(type, key, List(readVarInt()) { readItemStack() }, List(readVarInt()) { readItemStack() }, readItemStack())
-    else -> Recipe(type, key)
+    Recipe.smeltingType, Recipe.blastingType, Recipe.smokingType, Recipe.campfireCookingType -> FurnaceRecipe(type, readNamespacedKey(), readString(), List(readVarInt()) { readItemStack(version) }, readItemStack(version), readFloat(), readVarInt())
+    Recipe.stonecuttingType -> StonecuttingRecipe(type, readNamespacedKey(), readString(), List(readVarInt()) { readItemStack(version) }, readItemStack(version))
+    Recipe.smithingType -> SmithingRecipe(type, readNamespacedKey(), List(readVarInt()) { readItemStack(version) }, List(readVarInt()) { readItemStack(version) }, readItemStack(version))
+    else -> Recipe(type, readNamespacedKey())
 }
 
 /**
@@ -72,14 +72,14 @@ class ShapelessRecipe(
     val input: List<List<ItemStack?>>,
     val output: ItemStack?
 ) : Recipe(type, key) {
-    override fun writeToBuffer(buffer: PacketBuffer) {
+    override fun writeToBuffer(buffer: PacketBuffer, version: Int) {
         buffer.writeString(group)
         buffer.writeVarInt(input.size)
         input.forEach {
             buffer.writeVarInt(it.size)
-            it.forEach(buffer::writeItemStack)
+            it.forEach { buffer.writeItemStack(it, version) }
         }
-        buffer.writeItemStack(output)
+        buffer.writeItemStack(output, version)
     }
 
     override fun toString() = "ShapelessRecipe(type=$type, key=$key, group='$group', input=$input, output=$output)"
@@ -97,15 +97,15 @@ class ShapedRecipe(
     val input: List<List<ItemStack?>>,
     val output: ItemStack?
 ) : Recipe(type, key) {
-    override fun writeToBuffer(buffer: PacketBuffer) {
+    override fun writeToBuffer(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(width)
         buffer.writeVarInt(height)
         buffer.writeString(group)
         input.forEach {
             buffer.writeVarInt(it.size)
-            it.forEach(buffer::writeItemStack)
+            it.forEach { buffer.writeItemStack(it, version) }
         }
-        buffer.writeItemStack(output)
+        buffer.writeItemStack(output, version)
     }
 
     override fun toString() = "ShapedRecipe(type=$type, key=$key, width=$width, height=$height, group='$group', input=$input, output=$output)"
@@ -123,11 +123,11 @@ class FurnaceRecipe(
     val experience: Float,
     val cookingTime: Int
 ) : Recipe(type, key) {
-    override fun writeToBuffer(buffer: PacketBuffer) {
+    override fun writeToBuffer(buffer: PacketBuffer, version: Int) {
         buffer.writeString(group)
         buffer.writeVarInt(input.size)
-        input.forEach(buffer::writeItemStack)
-        buffer.writeItemStack(output)
+        input.forEach { buffer.writeItemStack(it, version) }
+        buffer.writeItemStack(output, version)
         buffer.writeFloat(experience)
         buffer.writeVarInt(cookingTime)
     }
@@ -145,10 +145,10 @@ class StonecuttingRecipe(
     val input: List<ItemStack?>,
     val output: ItemStack?
 ) : Recipe(type, key) {
-    override fun writeToBuffer(buffer: PacketBuffer) {
+    override fun writeToBuffer(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(input.size)
-        input.forEach(buffer::writeItemStack)
-        buffer.writeItemStack(output)
+        input.forEach { buffer.writeItemStack(it, version) }
+        buffer.writeItemStack(output, version)
     }
 
     override fun toString() = "StonecutterRecipe(type=$type, key=$key, input=$input, output=$output)"
@@ -164,12 +164,12 @@ class SmithingRecipe(
     val material: List<ItemStack?>,
     val output: ItemStack?
 ) : Recipe(type, key) {
-    override fun writeToBuffer(buffer: PacketBuffer) {
+    override fun writeToBuffer(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(input.size)
-        input.forEach(buffer::writeItemStack)
+        input.forEach { buffer.writeItemStack(it, version) }
         buffer.writeVarInt(material.size)
-        material.forEach(buffer::writeItemStack)
-        buffer.writeItemStack(output)
+        material.forEach { buffer.writeItemStack(it, version) }
+        buffer.writeItemStack(output, version)
     }
 
     override fun toString() = "SmithingRecipe(type=$type, key=$key, input=$input, material=$material, output=$output)"

@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
 import com.valaphee.netcode.mcje.world.item.writeItemStack
@@ -33,7 +32,7 @@ class ClientCreativeInventorySlotPacket(
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeShort(slotId)
-        buffer.writeItemStack(itemStack)
+        buffer.writeItemStack(itemStack, version)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.creativeInventorySlot(this)
@@ -41,6 +40,6 @@ class ClientCreativeInventorySlotPacket(
     override fun toString() = "ClientCreativeInventorySlotPacket(slotId=$slotId, stack=$itemStack)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ClientCreativeInventorySlotPacket(buffer.readShort().toInt(), buffer.readItemStack())
+        override fun read(buffer: PacketBuffer, version: Int) = ClientCreativeInventorySlotPacket(buffer.readShort().toInt(), buffer.readItemStack(version))
     }
 }

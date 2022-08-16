@@ -23,6 +23,7 @@ import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.util.Direction
 import com.valaphee.netcode.mcje.util.NamespacedKey
 import com.valaphee.netcode.mcje.world.ParticleData
+import com.valaphee.netcode.mcje.world.ParticleType
 import com.valaphee.netcode.mcje.world.item.ItemStack
 import com.valaphee.netcode.mcje.world.item.readItemStack
 import com.valaphee.netcode.mcje.world.item.writeItemStack
@@ -38,55 +39,55 @@ import java.util.UUID
  * @author Kevin Ludwig
  */
 interface MetadataType<T> {
-    fun read(buffer: PacketBuffer): T
+    fun read(buffer: PacketBuffer, version: Int): T
 
-    fun write(buffer: PacketBuffer, value: Any?)
+    fun write(buffer: PacketBuffer, value: Any?, version: Int)
 
     companion object {
         val Byte = object : MetadataType<Byte> {
-            override fun read(buffer: PacketBuffer) = buffer.readByte()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readByte()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeByte((value as Byte).toInt())
             }
         }
 
         val Int = object : MetadataType<Int> {
-            override fun read(buffer: PacketBuffer) = buffer.readVarInt()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readVarInt()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeVarInt(value as Int)
             }
         }
 
         val Float = object : MetadataType<Float> {
-            override fun read(buffer: PacketBuffer) = buffer.readFloatLE()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readFloatLE()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeFloatLE(value as Float)
             }
         }
 
         val String = object : MetadataType<String> {
-            override fun read(buffer: PacketBuffer) = buffer.readString()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readString()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeString(value as String)
             }
         }
 
         val Component = object : MetadataType<Component> {
-            override fun read(buffer: PacketBuffer) = buffer.readComponent()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readComponent()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeComponent(value as Component)
             }
         }
 
         val OptionalComponent = object : MetadataType<Component?> {
-            override fun read(buffer: PacketBuffer): Component? = if (buffer.readBoolean()) buffer.readComponent() else null
+            override fun read(buffer: PacketBuffer, version: Int): Component? = if (buffer.readBoolean()) buffer.readComponent() else null
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 value?.let {
                     buffer.writeBoolean(true)
                     buffer.writeComponent(value as Component)
@@ -95,41 +96,41 @@ interface MetadataType<T> {
         }
 
         val ItemStack = object : MetadataType<ItemStack?> {
-            override fun read(buffer: PacketBuffer) = buffer.readItemStack()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readItemStack(version)
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.writeItemStack(value as ItemStack?)
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
+                buffer.writeItemStack(value as ItemStack?, version)
             }
         }
 
         val Boolean = object : MetadataType<Boolean> {
-            override fun read(buffer: PacketBuffer) = buffer.readBoolean()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readBoolean()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeBoolean(value as Boolean)
             }
         }
 
         val Float3 = object : MetadataType<Float3> {
-            override fun read(buffer: PacketBuffer) = buffer.readFloat3()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readFloat3()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeFloat3(value as Float3)
             }
         }
 
         val BlockPosition = object : MetadataType<Int3> {
-            override fun read(buffer: PacketBuffer) = buffer.readBlockPosition()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readBlockPosition()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeBlockPosition(value as Int3)
             }
         }
 
         val OptionalInt3UnsignedY = object : MetadataType<Int3?> {
-            override fun read(buffer: PacketBuffer) = if (buffer.readBoolean()) buffer.readBlockPosition() else null
+            override fun read(buffer: PacketBuffer, version: Int) = if (buffer.readBoolean()) buffer.readBlockPosition() else null
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 value?.let {
                     buffer.writeBoolean(true)
                     buffer.writeBlockPosition(value as Int3)
@@ -138,17 +139,17 @@ interface MetadataType<T> {
         }
 
         val Direction = object : MetadataType<Direction> {
-            override fun read(buffer: PacketBuffer) = buffer.readDirection()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readDirection()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeDirection(value as Direction)
             }
         }
 
         val OptionalUuid = object : MetadataType<UUID?> {
-            override fun read(buffer: PacketBuffer) = if (buffer.readBoolean()) buffer.readUuid() else null
+            override fun read(buffer: PacketBuffer, version: Int) = if (buffer.readBoolean()) buffer.readUuid() else null
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 value?.let {
                     buffer.writeBoolean(true)
                     buffer.writeUuid(it as UUID)
@@ -157,80 +158,80 @@ interface MetadataType<T> {
         }
 
         val OptionalBlockState = object : MetadataType<Int?> {
-            override fun read(buffer: PacketBuffer): Int? {
+            override fun read(buffer: PacketBuffer, version: Int): Int? {
                 val blockStateId = buffer.readVarInt()
                 return if (blockStateId == 0) null else blockStateId
             }
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 value?.let { buffer.writeVarInt(it as Int) } ?: buffer.writeVarInt(0)
             }
         }
 
         val Nbt = object : MetadataType<Any?> {
-            override fun read(buffer: PacketBuffer) = buffer.nbtObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.nbtObjectMapper.readValue<Any?>(ByteBufInputStream(buffer))
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, value)
             }
         }
 
         val Particle = object : MetadataType<ParticleData> {
-            override fun read(buffer: PacketBuffer) = buffer.readParticleData(buffer.readVarInt())
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readParticleData(checkNotNull(ParticleType[version, buffer.readVarInt()]), version)
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
-                buffer.writeVarInt((value as ParticleData).typeId)
-                value.writeToBuffer(buffer)
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
+                buffer.writeVarInt((value as ParticleData).getTypeId(version))
+                value.writeToBuffer(buffer, version)
             }
         }
 
         val VillagerData = object : MetadataType<VillagerData> {
-            override fun read(buffer: PacketBuffer) = buffer.readVillagerData()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readVillagerData()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeVillagerData(value as VillagerData)
             }
         }
 
         val OptionalInt = object : MetadataType<Int?> {
-            override fun read(buffer: PacketBuffer): Int? {
+            override fun read(buffer: PacketBuffer, version: Int): Int? {
                 val value = buffer.readVarInt()
                 return if (value == 0) null else value
             }
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeVarInt(value?.let { it as Int } ?: 0)
             }
         }
 
         val Pose = object : MetadataType<Pose> {
-            override fun read(buffer: PacketBuffer) = com.valaphee.netcode.mcje.world.entity.metadata.Pose.values()[buffer.readVarInt()]
+            override fun read(buffer: PacketBuffer, version: Int) = com.valaphee.netcode.mcje.world.entity.metadata.Pose.values()[buffer.readVarInt()]
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeVarInt((value as Pose).ordinal)
             }
         }
 
         val CatVariant = object : MetadataType<Int> {
-            override fun read(buffer: PacketBuffer) = buffer.readVarInt()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readVarInt()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeVarInt(value as Int)
             }
         }
 
         val FrogVariant = object : MetadataType<Int> {
-            override fun read(buffer: PacketBuffer) = buffer.readVarInt()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readVarInt()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeVarInt(value as Int)
             }
         }
 
         val DimensionAndBlockPosition = object : MetadataType<Pair<NamespacedKey, Int3>> {
-            override fun read(buffer: PacketBuffer) = buffer.readNamespacedKey() to buffer.readBlockPosition()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readNamespacedKey() to buffer.readBlockPosition()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 val (dimension, position) = value as Pair<NamespacedKey, Int3>
                 buffer.writeNamespacedKey(dimension)
                 buffer.writeBlockPosition(position)
@@ -238,17 +239,17 @@ interface MetadataType<T> {
         }
 
         val PaintingVariant = object : MetadataType<Int> {
-            override fun read(buffer: PacketBuffer) = buffer.readVarInt()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readVarInt()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 buffer.writeVarInt(value as Int)
             }
         }
 
         val Flags = object : MetadataType<Set<Flag>> {
-            override fun read(buffer: PacketBuffer) = buffer.readByteFlags<Flag>()
+            override fun read(buffer: PacketBuffer, version: Int) = buffer.readByteFlags<Flag>()
 
-            override fun write(buffer: PacketBuffer, value: Any?) {
+            override fun write(buffer: PacketBuffer, value: Any?, version: Int) {
                 @Suppress("UNCHECKED_CAST")
                 buffer.writeByteFlags(value as Set<Flag>)
             }

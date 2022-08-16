@@ -81,7 +81,7 @@ class GlobalStorage(
 }
 
 fun PacketBuffer.readStorage(): Storage {
-    val bitsPerEntry = readUnsignedByte().toInt()
+    val bitsPerEntry = readByte().toInt()
     return if (bitsPerEntry == 0) SingleStorage(readVarInt()).also { LongArray(readVarInt()) { readLong() } }
     else if (bitsPerEntry <= 8) {
         val paletteSize = readVarInt()
@@ -100,11 +100,11 @@ fun PacketBuffer.writeStorage(value: Storage) {
             writeVarInt(value.palette.size)
             value.palette.forEach { writeVarInt(it) }
             writeVarInt(value.data.data.size)
-            value.data.data.forEach { buffer.writeLong(it) }
+            value.data.data.forEach { writeLong(it) }
         }
         is GlobalStorage -> {
             writeVarInt(value.data.data.size)
-            value.data.data.forEach { buffer.writeLong(it) }
+            value.data.data.forEach { writeLong(it) }
         }
     }
 }

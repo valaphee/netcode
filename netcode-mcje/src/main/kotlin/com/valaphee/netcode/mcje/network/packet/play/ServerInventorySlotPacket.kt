@@ -18,7 +18,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.mcje.world.item.ItemStack
@@ -38,7 +37,7 @@ class ServerInventorySlotPacket(
         buffer.writeByte(windowId)
         if (version >= V1_18_2) buffer.writeVarInt(stateId)
         buffer.writeShort(slotId)
-        buffer.writeItemStack(itemStack)
+        buffer.writeItemStack(itemStack, version)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.inventorySlot(this)
@@ -46,6 +45,6 @@ class ServerInventorySlotPacket(
     override fun toString() = "ServerInventorySlotPacket(windowId=$windowId, stateId=$stateId, slotId=$slotId, stack=$itemStack)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerInventorySlotPacket(buffer.readByte().toInt(), if (version >= V1_18_2) buffer.readVarInt() else 0, buffer.readShort().toInt(), buffer.readItemStack())
+        override fun read(buffer: PacketBuffer, version: Int) = ServerInventorySlotPacket(buffer.readByte().toInt(), if (version >= V1_18_2) buffer.readVarInt() else 0, buffer.readShort().toInt(), buffer.readItemStack(version))
     }
 }

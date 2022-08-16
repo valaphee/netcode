@@ -38,7 +38,7 @@ class WorldGenericEventPacket(
     override val id get() = 0x7C
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(WorldEventPacket.Event.registryByVersion(version).getId(event))
+        buffer.writeVarInt(event.getId(version))
         buffer.nbtVarIntNoWrapObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
@@ -47,6 +47,11 @@ class WorldGenericEventPacket(
     override fun toString() = "WorldGenericEventPacket(event=$event, data=$data)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = WorldGenericEventPacket(checkNotNull(WorldEventPacket.Event.registryByVersion(version)[buffer.readVarInt()]), buffer.nbtVarIntNoWrapObjectMapper.readValue(ByteBufInputStream(buffer) as InputStream))
+        override fun read(buffer: PacketBuffer, version: Int): WorldGenericEventPacket{
+            val eventId = buffer.readVarInt()
+            val event = checkNotNull(WorldEventPacket.Event[version, eventId]) { "No such world event: $eventId" }
+            val data = buffer.nbtVarIntNoWrapObjectMapper.readValue<Any?>(ByteBufInputStream(buffer) as InputStream)
+            return WorldGenericEventPacket(event, data)
+        }
     }
 }

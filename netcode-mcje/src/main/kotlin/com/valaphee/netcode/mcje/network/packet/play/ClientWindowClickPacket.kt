@@ -19,7 +19,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.V1_17_0
 import com.valaphee.netcode.mcje.network.V1_17_1
 import com.valaphee.netcode.mcje.world.item.ItemStack
@@ -52,13 +51,13 @@ class ClientWindowClickPacket(
             buffer.writeVarInt(slots.size)
             slots.forEach {
                 buffer.writeShort(it.key)
-                buffer.writeItemStack(it.value)
+                buffer.writeItemStack(it.value, version)
             }
         } else {
             buffer.writeShort(confirmOrStateId)
             buffer.writeVarInt(button.ordinal)
         }
-        buffer.writeItemStack(itemStackInHand)
+        buffer.writeItemStack(itemStackInHand, version)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.windowClick(this)
@@ -72,17 +71,17 @@ class ClientWindowClickPacket(
             if (version >= V1_17_1) confirmOrStateId = buffer.readVarInt()
             val slotId = buffer.readShort().toInt()
             val buttonSpecifier = buffer.readByte().toInt()
-            val button: ClientWindowClickPacket.Button
+            val button: Button
             val slots: Map<Int, ItemStack?>
             if (version >= V1_17_0) {
-                button = ClientWindowClickPacket.Button.values()[buffer.readVarInt()]
-                slots = mutableMapOf<Int, ItemStack?>().apply { repeat(buffer.readVarInt()) { this[buffer.readShort().toInt()] = buffer.readItemStack() } }
+                button = Button.values()[buffer.readVarInt()]
+                slots = mutableMapOf<Int, ItemStack?>().apply { repeat(buffer.readVarInt()) { this[buffer.readShort().toInt()] = buffer.readItemStack(version) } }
             } else {
                 confirmOrStateId = buffer.readUnsignedShort()
-                button = ClientWindowClickPacket.Button.values()[buffer.readVarInt()]
+                button = Button.values()[buffer.readVarInt()]
                 slots = emptyMap()
             }
-            val itemStackInHand = buffer.readItemStack()
+            val itemStackInHand = buffer.readItemStack(version)
             return ClientWindowClickPacket(windowId, confirmOrStateId, slotId, buttonSpecifier, button, slots, itemStackInHand)
         }
     }

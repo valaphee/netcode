@@ -183,6 +183,6 @@ class ServerWorldEventPacket(
     override fun toString() = "ServerWorldEventPacket(event=$event, position=$position, data=$data, relativeVolumeDisabled=$relativeVolumeDisabled)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerWorldEventPacket(checkNotNull(ServerWorldEventPacket.Event[buffer.readInt()]), buffer.readBlockPosition(), buffer.readInt(), buffer.readBoolean())
+        override fun read(buffer: PacketBuffer, version: Int) = ServerWorldEventPacket(checkNotNull(Event[buffer.readInt()]), buffer.readBlockPosition(), buffer.readInt(), buffer.readBoolean())
     }
 }

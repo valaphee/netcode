@@ -22,7 +22,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
  * @author Kevin Ludwig
  */
 class Int2ObjectOpenHashBiMapVersioned<T> : Int2ObjectOpenHashMap<Int2ObjectOpenHashBiMap<T>>() {
-    private val versions by lazy { keys.sortedDescending() }
+    private val versions by lazy { (this as Int2ObjectOpenHashMap<Int2ObjectOpenHashBiMap<T>>).keys.sortedDescending() }
 
     fun put(value: T, vararg keyByVersion: Pair<Int, Int>) {
         keyByVersion.forEach { getOrPut(it.first) { Int2ObjectOpenHashBiMap() }[it.second] = value }

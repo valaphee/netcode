@@ -62,7 +62,7 @@ object SingleItemSerializer : JsonSerializer<ItemStack>() {
 object IngredientDeserializer : JsonDeserializer<ItemStack>() {
     override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
         val node = parser.readValueAsTree<JsonNode>()
-        return ItemStack(node["item"].asText(), node["data"]?.asInt() ?: -1, node["count"]?.asInt() ?: 1)
+        return ItemStack(null, node["item"].asText(), node["data"]?.asInt() ?: -1, node["count"]?.asInt() ?: 1)
     }
 }
 
@@ -73,7 +73,7 @@ object SingleIngredientDeserializer : JsonDeserializer<ItemStack>() {
     override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
         val item = parser.readValueAs(String::class.java)
         val subIdDelimiter = item.lastIndexOf(':')
-        return (if (subIdDelimiter != -1) item.substring(subIdDelimiter + 1).toIntOrNull() else null)?.let { ItemStack(item.substring(0, subIdDelimiter), it) } ?: ItemStack(item, -1)
+        return (if (subIdDelimiter != -1) item.substring(subIdDelimiter + 1).toIntOrNull() else null)?.let { ItemStack(null, item.substring(0, subIdDelimiter), it) } ?: ItemStack(null, item, -1)
     }
 }
 
@@ -84,6 +84,6 @@ object SingleItemDeserializer : JsonDeserializer<ItemStack>() {
     override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
         val item = parser.readValueAs(String::class.java)
         val subIdDelimiter = item.lastIndexOf(':')
-        return (if (subIdDelimiter != -1) item.substring(subIdDelimiter + 1).toIntOrNull() else null)?.let { ItemStack(item.substring(0, subIdDelimiter), it) } ?: ItemStack(item)
+        return (if (subIdDelimiter != -1) item.substring(subIdDelimiter + 1).toIntOrNull() else null)?.let { ItemStack(null, item.substring(0, subIdDelimiter), it) } ?: ItemStack(null, item)
     }
 }

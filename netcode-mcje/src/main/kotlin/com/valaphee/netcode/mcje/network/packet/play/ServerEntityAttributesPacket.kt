@@ -18,9 +18,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.network.V1_18_2
 import com.valaphee.netcode.mcje.world.entity.attribute.Attributes
 
 /**
@@ -32,7 +30,7 @@ class ServerEntityAttributesPacket(
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        if (version >= V1_18_2) attributes.writeToBuffer(buffer) else attributes.writeToBufferPre758(buffer)
+        attributes.writeToBuffer(buffer, version)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityAttributes(this)
@@ -40,6 +38,6 @@ class ServerEntityAttributesPacket(
     override fun toString() = "ServerEntityAttributesPacket(entityId=$entityId, attributes=$attributes)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAttributesPacket(buffer.readVarInt(), Attributes().apply { if (version >= V1_18_2) readFromBuffer(buffer) else readFromBufferPre758(buffer) })
+        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityAttributesPacket(buffer.readVarInt(), Attributes().apply { readFromBuffer(buffer, version) })
     }
 }
