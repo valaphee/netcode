@@ -18,35 +18,26 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.network.V1_19_0
 import net.kyori.adventure.text.Component
-import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
 class ServerSystemChatPacket(
     val message: Component,
-    val type: Type,
-    val userId: UUID? = null
+    val overlay: Boolean
 ) : Packet<ServerPlayPacketHandler>() {
-    enum class Type {
-        Chat, System, Tip, SayCommand, MsgCommand, TeamMsgCommand, EmoteCommand, TellrawCommand
-    }
-
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeComponent(message)
-        buffer.writeByte(type.ordinal)
-        if (version < V1_19_0) buffer.writeUuid(userId ?: UUID(0, 0))
+        buffer.writeBoolean(overlay)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.systemChat(this)
 
-    override fun toString() = "ServerSystemChatPacket(message=$message, type=$type, userId=$userId)"
+    override fun toString() = "ServerSystemChatPacket(message=$message, overlay=$overlay)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerSystemChatPacket(buffer.readComponent(), ServerSystemChatPacket.Type.values()[buffer.readByte().toInt()], if (version < V1_19_0) buffer.readUuid() else null)
+        override fun read(buffer: PacketBuffer, version: Int) = ServerSystemChatPacket(buffer.readComponent(), buffer.readBoolean())
     }
 }

@@ -33,18 +33,21 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientCustomPayloadPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientDifficultyLockPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientDifficultyPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientEntityQueryPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientJigsawGeneratePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientHotbarPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientItemNamePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientItemPickPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientItemUseOnEntityPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientItemUsePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientJigsawBlockUpdatePacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientJigsawGeneratePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientKeepAlivePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerActionPacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerChatPacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerChatPreviewPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientPongPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookDisplayRecipePacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookDisplayPacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookStatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientResourcePackStatusPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientSettingsPacket
@@ -56,8 +59,6 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientSteerPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientStructureBlockUpdatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientSwingArmPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientTeleportConfirmPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerChatPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerChatPreviewPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientTradePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientVehicleLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientWindowClickButtonPacket
@@ -129,7 +130,9 @@ interface ClientPlayPacketHandler : PacketHandler {
 
     fun pong(packet: ClientPongPacket) = other(packet)
 
-    fun recipeBookDisplayRecipe(packet: ClientRecipeBookDisplayRecipePacket) = other(packet)
+    fun recipeBook(packet: ClientRecipeBookPacket) = other(packet)
+
+    fun recipeBookDisplay(packet: ClientRecipeBookDisplayPacket) = other(packet)
 
     fun recipeBookState(packet: ClientRecipeBookStatePacket) = other(packet)
 

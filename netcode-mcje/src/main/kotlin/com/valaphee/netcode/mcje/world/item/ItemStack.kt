@@ -42,6 +42,7 @@ import java.io.OutputStream
 data class ItemStack(
     val itemId: Int?,
     val itemKey: NamespacedKey?,
+    val subId: Int = 0,
     val count: Int = 1,
     val data: Any? = null,
 ) {
@@ -52,6 +53,7 @@ data class ItemStack(
         other as ItemStack
 
         if (itemKey != other.itemKey) return false
+        if (subId != other.subId) return false
         if (data != other.data) return false
 
         return true
@@ -64,6 +66,7 @@ data class ItemStack(
         other as ItemStack
 
         if (itemKey != other.itemKey) return false
+        if (subId != other.subId) return false
         if (count != other.count) return false
         if (data != other.data) return false
 
@@ -90,7 +93,7 @@ data class ItemStack(
     object Deserializer : JsonDeserializer<ItemStack>() {
         override fun deserialize(parser: JsonParser, context: DeserializationContext): ItemStack {
             val node = parser.readValueAsTree<JsonNode>()
-            return ItemStack(null, minecraftKey(node["id"].textValue()), node["Count"]?.intValue() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
+            return ItemStack(null, minecraftKey(node["id"].textValue()), 0, node["Count"]?.intValue() ?: 1, context.readTreeAsValue(node["tag"], Any::class.java))
         }
     }
 }
@@ -100,7 +103,7 @@ fun PacketBuffer.readItemStack(version: Int) = if (version >= V1_13_0) if (readB
     ItemStack(itemId, Item[version, itemId], readByte().toInt(), nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
 } else null else {
     val itemId = readShort().toInt()
-    if (itemId >= 0) ItemStack(itemId, Item[version, itemId], readByte().toInt(), readShort().let { nbtObjectMapper.readValue(ByteBufInputStream(buffer)) }) else null
+    if (itemId >= 0) ItemStack(itemId, Item[version, itemId], readByte().toInt(), readUnsignedShort(), nbtObjectMapper.readValue(ByteBufInputStream(buffer))) else null
 }
 
 fun PacketBuffer.writeItemStack(value: ItemStack?, version: Int) {
@@ -112,7 +115,7 @@ fun PacketBuffer.writeItemStack(value: ItemStack?, version: Int) {
     } ?: writeBoolean(false) else value?.let {
         writeShort(it.itemId ?: Item[version, checkNotNull(it.itemKey) { "Neither item id nor key specified: $it" }])
         writeByte(it.count)
-        writeShort(0)
+        writeShort(it.subId)
         nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it.data)
     } ?: writeShort(-1)
 }

@@ -18,8 +18,9 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_18_2
+import com.valaphee.netcode.mcje.network.V1_19_1
 import com.valaphee.netcode.mcje.world.map.Decoration
 import com.valaphee.netcode.util.LazyList
 
@@ -41,8 +42,13 @@ class ServerMapPacket(
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(mapId)
         buffer.writeByte(scale)
-        buffer.writeBoolean(tracking)
-        buffer.writeBoolean(locked)
+        if (version >= V1_18_2) {
+            buffer.writeBoolean(locked)
+            if (version < V1_19_1) buffer.writeBoolean(tracking)
+        } else {
+            buffer.writeBoolean(tracking)
+            buffer.writeBoolean(locked)
+        }
         buffer.writeVarInt(decorations.size)
         decorations.forEach { (type, positionX, positionY, rotation, label) ->
             buffer.writeVarInt(type.ordinal)
@@ -68,14 +74,21 @@ class ServerMapPacket(
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.map(this)
 
-    override fun toString() = "ServerMapPacket(mapId=$mapId, scale=$scale, tracking=$tracking, locked=$locked, decorations=$decorations, width=$width, height=$height, offsetX=$offsetX, offsetY=$offsetY, data=<omitted>)"
+    override fun toString() = "ServerMapPacket(mapId=$mapId, scale=$scale, locked=$locked, tracking=$tracking, decorations=$decorations, width=$width, height=$height, offsetX=$offsetX, offsetY=$offsetY, data=<omitted>)"
 
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int): ServerMapPacket {
             val mapId = buffer.readVarInt()
             val scale = buffer.readUnsignedByte().toInt()
-            val tracking = buffer.readBoolean()
-            val locked = buffer.readBoolean()
+            val locked: Boolean
+            val tracking: Boolean
+            if (version >= V1_18_2) {
+                locked = buffer.readBoolean()
+                tracking = if (version >= V1_19_1) true else buffer.readBoolean()
+            } else {
+                tracking = buffer.readBoolean()
+                locked = buffer.readBoolean()
+            }
             val decorations = LazyList(buffer.readVarInt()) { Decoration(Decoration.Type.values()[buffer.readVarInt()], buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt(), if (buffer.readBoolean()) buffer.readComponent() else null) }
             val width = buffer.readUnsignedByte().toInt()
             val height: Int
@@ -93,7 +106,7 @@ class ServerMapPacket(
                 offsetY = 0
                 data = null
             }
-            return ServerMapPacket(mapId, scale, tracking, locked, decorations, width, height, offsetX, offsetY, data)
+            return ServerMapPacket(mapId, scale, locked, tracking, decorations, width, height, offsetX, offsetY, data)
         }
     }
 }

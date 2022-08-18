@@ -51,8 +51,8 @@ class ClientAbilitiesPacket(
             val flySpeed: Float
             val walkSpeed: Float
             if (version >= V1_16_0) {
-                flySpeed = 0.0f
-                walkSpeed = 0.0f
+                flySpeed = 0.05f
+                walkSpeed = 0.1f
             } else {
                 flySpeed = buffer.readFloat()
                 walkSpeed = buffer.readFloat()

@@ -21,7 +21,6 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.MutableDouble3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_19_0
 import java.util.UUID
@@ -31,7 +30,7 @@ import java.util.UUID
  */
 class ServerEntityAddPacket(
     val entityId: Int,
-    val entityUid: UUID?,
+    val entityUid: UUID,
     val entityTypeId: Int,
     val position: Double3,
     val rotation: Float2,
@@ -41,7 +40,7 @@ class ServerEntityAddPacket(
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(entityId)
-        buffer.writeUuid(entityUid!!)
+        buffer.writeUuid(entityUid)
         buffer.writeVarInt(entityTypeId)
         buffer.writeDouble3(position)
         buffer.writeAngle2(rotation)

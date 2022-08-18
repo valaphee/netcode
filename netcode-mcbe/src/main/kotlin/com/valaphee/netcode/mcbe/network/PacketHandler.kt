@@ -54,13 +54,14 @@ import com.valaphee.netcode.mcbe.network.packet.CraftingEventPacket
 import com.valaphee.netcode.mcbe.network.packet.CreativeInventoryPacket
 import com.valaphee.netcode.mcbe.network.packet.CustomEventPacket
 import com.valaphee.netcode.mcbe.network.packet.DeathPacket
-import com.valaphee.netcode.mcbe.network.packet.DebugPacket
 import com.valaphee.netcode.mcbe.network.packet.DebugOverlayPacket
+import com.valaphee.netcode.mcbe.network.packet.DebugPacket
 import com.valaphee.netcode.mcbe.network.packet.DefaultGameModePacket
 import com.valaphee.netcode.mcbe.network.packet.DifficultyPacket
-import com.valaphee.netcode.mcbe.network.packet.DimensionsPacket
 import com.valaphee.netcode.mcbe.network.packet.DimensionPacket
+import com.valaphee.netcode.mcbe.network.packet.DimensionsPacket
 import com.valaphee.netcode.mcbe.network.packet.DisconnectPacket
+import com.valaphee.netcode.mcbe.network.packet.EditorPacket
 import com.valaphee.netcode.mcbe.network.packet.EducationUriResourcePacket
 import com.valaphee.netcode.mcbe.network.packet.EmotePacket
 import com.valaphee.netcode.mcbe.network.packet.EmotesPacket
@@ -103,8 +104,11 @@ import com.valaphee.netcode.mcbe.network.packet.InventoryResponsePacket
 import com.valaphee.netcode.mcbe.network.packet.InventorySlotPacket
 import com.valaphee.netcode.mcbe.network.packet.InventoryTransactionPacket
 import com.valaphee.netcode.mcbe.network.packet.ItemActionPacket
+import com.valaphee.netcode.mcbe.network.packet.ItemAddPacket
 import com.valaphee.netcode.mcbe.network.packet.ItemComponentPacket
+import com.valaphee.netcode.mcbe.network.packet.ItemCooldownPacket
 import com.valaphee.netcode.mcbe.network.packet.ItemFrameDropItemPacket
+import com.valaphee.netcode.mcbe.network.packet.ItemTakePacket
 import com.valaphee.netcode.mcbe.network.packet.LabTablePacket
 import com.valaphee.netcode.mcbe.network.packet.LastHurtByPacket
 import com.valaphee.netcode.mcbe.network.packet.LatencyPacket
@@ -148,6 +152,7 @@ import com.valaphee.netcode.mcbe.network.packet.RespawnPacket
 import com.valaphee.netcode.mcbe.network.packet.RiderJumpPacket
 import com.valaphee.netcode.mcbe.network.packet.ScoreboardIdentityPacket
 import com.valaphee.netcode.mcbe.network.packet.ScoresPacket
+import com.valaphee.netcode.mcbe.network.packet.ScriptMessagePacket
 import com.valaphee.netcode.mcbe.network.packet.ServerSettingsPacket
 import com.valaphee.netcode.mcbe.network.packet.ServerSettingsRequestPacket
 import com.valaphee.netcode.mcbe.network.packet.ServerToClientHandshakePacket
@@ -163,8 +168,6 @@ import com.valaphee.netcode.mcbe.network.packet.SoundEventPacketV2
 import com.valaphee.netcode.mcbe.network.packet.SoundPacket
 import com.valaphee.netcode.mcbe.network.packet.SoundStopPacket
 import com.valaphee.netcode.mcbe.network.packet.SpawnPositionPacket
-import com.valaphee.netcode.mcbe.network.packet.ItemAddPacket
-import com.valaphee.netcode.mcbe.network.packet.ItemTakePacket
 import com.valaphee.netcode.mcbe.network.packet.StatusPacket
 import com.valaphee.netcode.mcbe.network.packet.SteerPacket
 import com.valaphee.netcode.mcbe.network.packet.StructureBlockUpdatePacket
@@ -175,6 +178,7 @@ import com.valaphee.netcode.mcbe.network.packet.SubChunkRequestPacket
 import com.valaphee.netcode.mcbe.network.packet.SubLoginPacket
 import com.valaphee.netcode.mcbe.network.packet.TextPacket
 import com.valaphee.netcode.mcbe.network.packet.TickSyncPacket
+import com.valaphee.netcode.mcbe.network.packet.TickingAreasLoadStatusPacket
 import com.valaphee.netcode.mcbe.network.packet.TimePacket
 import com.valaphee.netcode.mcbe.network.packet.TitlePacket
 import com.valaphee.netcode.mcbe.network.packet.ToastPacket
@@ -185,6 +189,8 @@ import com.valaphee.netcode.mcbe.network.packet.VideoStreamPacket
 import com.valaphee.netcode.mcbe.network.packet.ViewDistancePacket
 import com.valaphee.netcode.mcbe.network.packet.ViewDistanceRequestPacket
 import com.valaphee.netcode.mcbe.network.packet.ViolationPacket
+import com.valaphee.netcode.mcbe.network.packet.VolumeEntityAddPacket
+import com.valaphee.netcode.mcbe.network.packet.VolumeEntityRemovePacket
 import com.valaphee.netcode.mcbe.network.packet.WindowClosePacket
 import com.valaphee.netcode.mcbe.network.packet.WindowOpenPacket
 import com.valaphee.netcode.mcbe.network.packet.WindowPropertyPacket
@@ -515,6 +521,10 @@ interface PacketHandler : ProtocolHandler {
 
     fun entityProperties(packet: EntityPropertiesPacket) = other(packet)
 
+    fun volumeEntityAdd(packet: VolumeEntityAddPacket) = other(packet)
+
+    fun volumeEntityRemove(packet: VolumeEntityRemovePacket) = other(packet)
+
     fun simulation(packet: SimulationPacket) = other(packet)
 
     fun npcDialogue(packet: NpcDialoguePacket) = other(packet)
@@ -530,6 +540,12 @@ interface PacketHandler : ProtocolHandler {
     fun subChunk(packet: SubChunkPacket) = other(packet)
 
     fun subChunkRequest(packet: SubChunkRequestPacket) = other(packet)
+
+    fun itemCooldown(packet: ItemCooldownPacket) = other(packet)
+
+    fun scriptMessage(packet: ScriptMessagePacket) = other(packet)
+
+    fun tickingAreasLoadStatusPacket(packet: TickingAreasLoadStatusPacket) = other(packet)
 
     fun dimensions(packet: DimensionsPacket) = other(packet)
 
@@ -548,4 +564,6 @@ interface PacketHandler : ProtocolHandler {
     fun adventureSettingsWithoutAbilities(packet: AdventureSettingsWithoutAbilitiesPacket) = other(packet)
 
     fun death(packet: DeathPacket) = other(packet)
+
+    fun editor(packet: EditorPacket) = other(packet)
 }

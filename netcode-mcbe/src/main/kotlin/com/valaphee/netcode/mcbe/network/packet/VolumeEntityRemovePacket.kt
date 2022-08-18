@@ -16,44 +16,33 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.foundry.math.Int2
-import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.mcbe.network.V1_19_020
-import com.valaphee.netcode.util.LazyList
+import com.valaphee.netcode.mcbe.network.V1_18_030
 
 /**
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
-class ChunkPublishPacket(
-    val position: Int3,
-    val radius: Int,
-    val savedChunks: List<Int2>
+class VolumeEntityRemovePacket(
+    val entityId: Int,
+    val dimension: Int
 ) : Packet() {
-    override val id get() = 0x79
+    override val id = 0xA7
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3(position)
-        buffer.writeVarUInt(radius)
-        if (version >= V1_19_020) {
-            buffer.writeIntLE(savedChunks.size)
-            savedChunks.forEach {
-                buffer.writeVarInt(it.x)
-                buffer.writeVarInt(it.y)
-            }
-        }
+        buffer.writeVarUInt(entityId)
+        if (version >= V1_18_030) buffer.writeVarInt(dimension)
     }
 
-    override fun handle(handler: PacketHandler) = handler.chunkPublish(this)
+    override fun handle(handler: PacketHandler) = handler.volumeEntityRemove(this)
 
-    override fun toString() = "ChunkPublishPacket(position=$position, radius=$radius, savedChunks=$savedChunks)"
+    override fun toString() = "VolumeEntityRemovePacket(entityId=$entityId, dimension=$dimension)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ChunkPublishPacket(buffer.readInt3(), buffer.readVarUInt(), if (version >= V1_19_020) LazyList(buffer.readIntLE()) { Int2(buffer.readVarInt(), buffer.readVarInt()) } else emptyList())
+        override fun read(buffer: PacketBuffer, version: Int) = VolumeEntityRemovePacket(buffer.readVarUInt(), if (version >= V1_18_030) buffer.readVarInt() else 0)
     }
 }

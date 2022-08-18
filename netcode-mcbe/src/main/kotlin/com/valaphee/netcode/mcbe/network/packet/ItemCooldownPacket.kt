@@ -16,44 +16,32 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
-import com.valaphee.foundry.math.Int2
-import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.mcbe.network.V1_19_020
-import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
  */
 @Restrict(Restriction.ToClient)
-class ChunkPublishPacket(
-    val position: Int3,
-    val radius: Int,
-    val savedChunks: List<Int2>
+class ItemCooldownPacket(
+    val itemCategory: String,
+    val cooldown: Int
 ) : Packet() {
-    override val id get() = 0x79
+    override val id get() = 0xB0
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3(position)
-        buffer.writeVarUInt(radius)
-        if (version >= V1_19_020) {
-            buffer.writeIntLE(savedChunks.size)
-            savedChunks.forEach {
-                buffer.writeVarInt(it.x)
-                buffer.writeVarInt(it.y)
-            }
-        }
+        buffer.writeString(itemCategory)
+        buffer.writeVarInt(cooldown)
     }
 
-    override fun handle(handler: PacketHandler) = handler.chunkPublish(this)
+    override fun handle(handler: PacketHandler) = handler.itemCooldown(this)
 
-    override fun toString() = "ChunkPublishPacket(position=$position, radius=$radius, savedChunks=$savedChunks)"
+    override fun toString() = "ItemCooldownPacket(itemCategory=$itemCategory, cooldown=$cooldown)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ChunkPublishPacket(buffer.readInt3(), buffer.readVarUInt(), if (version >= V1_19_020) LazyList(buffer.readIntLE()) { Int2(buffer.readVarInt(), buffer.readVarInt()) } else emptyList())
+        override fun read(buffer: PacketBuffer, version: Int) = ItemCooldownPacket(buffer.readString(), buffer.readVarInt())
     }
 }

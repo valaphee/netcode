@@ -16,36 +16,31 @@
 
 package com.valaphee.netcode.mcbe.network.packet
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.Restrict
-import com.valaphee.netcode.mcbe.network.Restriction
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
  */
-@Restrict(Restriction.ToClient)
-class ToastPacket(
-    val title: String,
-    val content: String
+class EditorPacket(
+    val data: Any?
 ) : Packet() {
-    enum class Type {
-        None, Bool, Float
-    }
-
-    override val id get() = 0x00
+    override val id get() = 0x7A
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(title)
-        buffer.writeString(content)
+        buffer.nbtVarIntObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, data)
     }
 
-    override fun handle(handler: PacketHandler) = handler.toast(this)
+    override fun handle(handler: PacketHandler) = handler.editor(this)
 
-    override fun toString() = "ToastPacket(title='$title', content='$content')"
+    override fun toString() = "EditorPacket(data=$data)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ToastPacket(buffer.readString(), buffer.readString())
+        override fun read(buffer: PacketBuffer, version: Int) = EditorPacket(buffer.nbtVarIntObjectMapper.readValue(ByteBufInputStream(buffer)))
     }
 }

@@ -19,8 +19,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
-import com.valaphee.netcode.mcje.network.V1_12_0
 import com.valaphee.netcode.mcje.network.V1_13_0
 import com.valaphee.netcode.mcje.util.NamespacedKey
 
@@ -29,20 +27,34 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
  */
 class ClientCraftPacket(
     val windowId: Int,
-    val recipe: Pair<Int, NamespacedKey?>,
+    val recipeId: Int,
+    val recipeKey: NamespacedKey?,
     val all: Boolean
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeByte(windowId)
-        if (version in V1_12_0 until V1_13_0) buffer.writeVarInt(recipe.first) else buffer.writeNamespacedKey(recipe.second!!)
+        if (version >= V1_13_0) buffer.writeNamespacedKey(recipeKey!!) else buffer.writeVarInt(recipeId)
         buffer.writeBoolean(all)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.craft(this)
 
-    override fun toString() = "ClientCraftPacket(windowId=$windowId, recipe=$recipe, all=$all)"
+    override fun toString() = "ClientCraftPacket(windowId=$windowId, recipeId=$recipeId, recipeKey=$recipeKey, all=$all)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ClientCraftPacket(buffer.readUnsignedByte().toInt(), if (version in V1_12_0 until V1_13_0) buffer.readVarInt() to null else 0 to buffer.readNamespacedKey(), buffer.readBoolean())
+        override fun read(buffer: PacketBuffer, version: Int): ClientCraftPacket {
+            val windowId = buffer.readUnsignedByte().toInt()
+            val recipeId: Int
+            val recipeKey: NamespacedKey?
+            if (version >= V1_13_0) {
+                recipeId = 0
+                recipeKey = buffer.readNamespacedKey()
+            } else {
+                recipeId = buffer.readVarInt()
+                recipeKey = null
+            }
+            val all = buffer.readBoolean()
+            return ClientCraftPacket(windowId, recipeId, recipeKey, all)
+        }
     }
 }

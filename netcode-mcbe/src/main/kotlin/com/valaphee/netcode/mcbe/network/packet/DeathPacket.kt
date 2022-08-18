@@ -19,11 +19,14 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
+import com.valaphee.netcode.mcbe.network.Restrict
+import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
  */
+@Restrict(Restriction.ToClient)
 class DeathPacket(
     val cause: String,
     val messages: List<String>

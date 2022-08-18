@@ -18,7 +18,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import net.kyori.adventure.text.Component
 
@@ -34,9 +33,9 @@ class ServerPlayerChatPreviewPacket(
         buffer.writeComponent(message)
     }
 
-    override fun handle(handler: ServerPlayPacketHandler) = handler.textPreview(this)
+    override fun handle(handler: ServerPlayPacketHandler) = handler.playerChatPreview(this)
 
-    override fun toString() = "ServerTextPreviewPacket(id=$id, message=$message)"
+    override fun toString() = "ServerPlayerChatPreviewPacket(id=$id, message=$message)"
 
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerChatPreviewPacket(buffer.readInt(), buffer.readComponent())

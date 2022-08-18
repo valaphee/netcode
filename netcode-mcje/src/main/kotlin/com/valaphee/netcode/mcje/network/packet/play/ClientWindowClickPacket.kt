@@ -35,7 +35,7 @@ class ClientWindowClickPacket(
     val buttonSpecifier: Int,
     val button: Button,
     val slots: Map<Int, ItemStack?>,
-    val itemStackInHand: ItemStack?
+    val itemStack: ItemStack?
 ) : Packet<ClientPlayPacketHandler>() {
     enum class Button {
         Normal, Shift, Number, MiddleClick, QOrNoOp, Paint, DoubleClick
@@ -57,12 +57,12 @@ class ClientWindowClickPacket(
             buffer.writeShort(confirmOrStateId)
             buffer.writeVarInt(button.ordinal)
         }
-        buffer.writeItemStack(itemStackInHand, version)
+        buffer.writeItemStack(itemStack, version)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.windowClick(this)
 
-    override fun toString() = "ClientWindowClickPacket(windowId=$windowId, confirmOrStateId=$confirmOrStateId, slotId=$slotId, buttonSpecifier=$buttonSpecifier, button=$button, slots=$slots, itemStackInHand=$itemStackInHand)"
+    override fun toString() = "ClientWindowClickPacket(windowId=$windowId, confirmOrStateId=$confirmOrStateId, slotId=$slotId, buttonSpecifier=$buttonSpecifier, button=$button, slots=$slots, itemStackInHand=$itemStack)"
 
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int): ClientWindowClickPacket {

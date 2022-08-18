@@ -61,6 +61,7 @@ import com.valaphee.netcode.mcbe.network.packet.DifficultyPacket
 import com.valaphee.netcode.mcbe.network.packet.DimensionPacket
 import com.valaphee.netcode.mcbe.network.packet.DimensionsPacket
 import com.valaphee.netcode.mcbe.network.packet.DisconnectPacket
+import com.valaphee.netcode.mcbe.network.packet.EditorPacket
 import com.valaphee.netcode.mcbe.network.packet.EducationUriResourcePacket
 import com.valaphee.netcode.mcbe.network.packet.EmotePacket
 import com.valaphee.netcode.mcbe.network.packet.EmotesPacket
@@ -98,11 +99,14 @@ import com.valaphee.netcode.mcbe.network.packet.InputCorrectPacket
 import com.valaphee.netcode.mcbe.network.packet.InputPacket
 import com.valaphee.netcode.mcbe.network.packet.InteractPacket
 import com.valaphee.netcode.mcbe.network.packet.InventoryContentPacket
+import com.valaphee.netcode.mcbe.network.packet.InventoryRequestPacket
+import com.valaphee.netcode.mcbe.network.packet.InventoryResponsePacket
 import com.valaphee.netcode.mcbe.network.packet.InventorySlotPacket
 import com.valaphee.netcode.mcbe.network.packet.InventoryTransactionPacket
 import com.valaphee.netcode.mcbe.network.packet.ItemActionPacket
 import com.valaphee.netcode.mcbe.network.packet.ItemAddPacket
 import com.valaphee.netcode.mcbe.network.packet.ItemComponentPacket
+import com.valaphee.netcode.mcbe.network.packet.ItemCooldownPacket
 import com.valaphee.netcode.mcbe.network.packet.ItemFrameDropItemPacket
 import com.valaphee.netcode.mcbe.network.packet.ItemTakePacket
 import com.valaphee.netcode.mcbe.network.packet.LabTablePacket
@@ -147,6 +151,7 @@ import com.valaphee.netcode.mcbe.network.packet.RespawnPacket
 import com.valaphee.netcode.mcbe.network.packet.RiderJumpPacket
 import com.valaphee.netcode.mcbe.network.packet.ScoreboardIdentityPacket
 import com.valaphee.netcode.mcbe.network.packet.ScoresPacket
+import com.valaphee.netcode.mcbe.network.packet.ScriptMessagePacket
 import com.valaphee.netcode.mcbe.network.packet.ServerSettingsPacket
 import com.valaphee.netcode.mcbe.network.packet.ServerSettingsRequestPacket
 import com.valaphee.netcode.mcbe.network.packet.ServerToClientHandshakePacket
@@ -172,6 +177,7 @@ import com.valaphee.netcode.mcbe.network.packet.SubChunkRequestPacket
 import com.valaphee.netcode.mcbe.network.packet.SubLoginPacket
 import com.valaphee.netcode.mcbe.network.packet.TextPacket
 import com.valaphee.netcode.mcbe.network.packet.TickSyncPacket
+import com.valaphee.netcode.mcbe.network.packet.TickingAreasLoadStatusPacket
 import com.valaphee.netcode.mcbe.network.packet.TimePacket
 import com.valaphee.netcode.mcbe.network.packet.TitlePacket
 import com.valaphee.netcode.mcbe.network.packet.ToastPacket
@@ -182,6 +188,8 @@ import com.valaphee.netcode.mcbe.network.packet.VideoStreamPacket
 import com.valaphee.netcode.mcbe.network.packet.ViewDistancePacket
 import com.valaphee.netcode.mcbe.network.packet.ViewDistanceRequestPacket
 import com.valaphee.netcode.mcbe.network.packet.ViolationPacket
+import com.valaphee.netcode.mcbe.network.packet.VolumeEntityAddPacket
+import com.valaphee.netcode.mcbe.network.packet.VolumeEntityRemovePacket
 import com.valaphee.netcode.mcbe.network.packet.WindowClosePacket
 import com.valaphee.netcode.mcbe.network.packet.WindowOpenPacket
 import com.valaphee.netcode.mcbe.network.packet.WindowPropertyPacket
@@ -296,7 +304,9 @@ class PacketCodec(
             this[0x3E] = GameModePacket.Reader
             this[0x3F] = PlayerListPacket.Reader
             this[0x40] = SimpleEventPacket.Reader
+            //this[0x41] =
             this[0x42] = ExperienceOrbAddPacket.Reader
+            //this[0x43] = MapPacket.Reader
             this[0x44] = MapRequestPacket.Reader
             this[0x45] = ViewDistanceRequestPacket.Reader
             this[0x46] = ViewDistancePacket.Reader
@@ -372,8 +382,8 @@ class PacketCodec(
             this[0x90] = InputPacket.Reader
             this[0x91] = CreativeInventoryPacket.Reader
             this[0x92] = EnchantOptionsPacket.Reader
-            //this[0x93] = InventoryRequestPacket.Reader
-            //this[0x94] = InventoryResponsePacket.Reader
+            this[0x93] = InventoryRequestPacket.Reader
+            this[0x94] = InventoryResponsePacket.Reader
             this[0x95] = PlayerArmorDamagePacket.Reader
             this[0x96] = CodeBuilderPacket.Reader
             this[0x97] = PlayerGameModePacket.Reader
@@ -391,8 +401,8 @@ class PacketCodec(
             this[0xA3] = FilterPacket.Reader
             this[0xA4] = DebugOverlayPacket.Reader
             this[0xA5] = EntityPropertiesPacket.Reader
-            //this[0xA6] = VolumeEntityAddPacket.Reader
-            //this[0xA7] = VolumeEntityRemovePacket.Reader
+            this[0xA6] = VolumeEntityAddPacket.Reader
+            this[0xA7] = VolumeEntityRemovePacket.Reader
             this[0xA8] = SimulationPacket.Reader
             this[0xA9] = NpcDialoguePacket.Reader
             this[0xAA] = EducationUriResourcePacket.Reader
@@ -401,12 +411,12 @@ class PacketCodec(
             this[0xAD] = PhotoRequestPacket.Reader
             this[0xAE] = SubChunkPacket.Reader
             this[0xAF] = SubChunkRequestPacket.Reader
-            //this[0xB0] = ItemCooldownPacket.Reader
-            //this[0xB1] = ScriptMessagePacket.Reader
+            this[0xB0] = ItemCooldownPacket.Reader
+            this[0xB1] = ScriptMessagePacket.Reader
             //this[0xB2] = CodeBuilderSourcePacket.Reader
-            //this[0xB3] = TickingAreasLoadStatusPacket
+            this[0xB3] = TickingAreasLoadStatusPacket.Reader
             this[0xB4] = DimensionsPacket.Reader
-            //this[0xB5] = AgentActionEventPacket
+            //this[0xB5] = AgentActionEventPacket.Reader
             this[0xB6] = EntityPropertyPacket.Reader
             this[0xB7] = LessonProgressPacket.Reader
             this[0xB8] = AbilityPacket.Reader
@@ -415,7 +425,8 @@ class PacketCodec(
             this[0xBB] = AbilitiesPacket.Reader
             this[0xBC] = AdventureSettingsWithoutAbilitiesPacket.Reader
             this[0xBD] = DeathPacket.Reader
-            //this[0xBE] = EditorNetworkPacket.Reader
+            this[0xBE] = EditorPacket.Reader
+            //this[0xBF] =
         }
         private val clientReaders = readers.filterValues { it::class.java.getMethod("read", PacketBuffer::class.java, Int::class.java).returnType.kotlin.findAnnotation<Restrict>()?.value?.contains(Restriction.ToClient) ?: true }
         private val serverReaders = readers.filterValues { it::class.java.getMethod("read", PacketBuffer::class.java, Int::class.java).returnType.kotlin.findAnnotation<Restrict>()?.value?.contains(Restriction.ToServer) ?: true }

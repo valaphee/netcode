@@ -18,28 +18,27 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 
 /**
  * @author Kevin Ludwig
  */
-class ServerStackTakePacket(
-    val stackEntityId: Int,
+class ServerItemTakePacket(
     val entityId: Int,
-    val stackCount: Int
+    val otherEntityId: Int,
+    val itemCount: Int
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(stackEntityId)
         buffer.writeVarInt(entityId)
-        buffer.writeVarInt(stackCount)
+        buffer.writeVarInt(otherEntityId)
+        buffer.writeVarInt(itemCount)
     }
 
-    override fun handle(handler: ServerPlayPacketHandler) = handler.stackTake(this)
+    override fun handle(handler: ServerPlayPacketHandler) = handler.itemTake(this)
 
-    override fun toString() = "ServerStackTakePacket(stackEntityId=$stackEntityId, entityId=$entityId, stackCount=$stackCount)"
+    override fun toString() = "ServerStackTakePacket(entityId=$entityId, otherEntityId=$otherEntityId, itemCount=$itemCount)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerStackTakePacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt())
+        override fun read(buffer: PacketBuffer, version: Int) = ServerItemTakePacket(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt())
     }
 }

@@ -20,7 +20,8 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
+import com.valaphee.netcode.mcje.network.V1_09_0
+import com.valaphee.netcode.mcje.network.V1_16_0
 import com.valaphee.netcode.mcje.world.entity.player.Hand
 
 /**
@@ -41,14 +42,14 @@ class ClientItemUseOnEntityPacket(
         buffer.writeVarInt(entityId)
         buffer.writeVarInt(type.ordinal)
         when (type) {
-            Type.Interact -> buffer.writeVarInt(hand!!.ordinal)
+            Type.Interact -> if (version >= V1_09_0) buffer.writeVarInt(hand!!.ordinal)
             Type.Attack -> Unit
             Type.InteractAt -> {
                 buffer.writeFloat3(position!!)
-                buffer.writeVarInt(hand!!.ordinal)
+                if (version >= V1_09_0) buffer.writeVarInt(hand!!.ordinal)
             }
         }
-        buffer.writeBoolean(sneaking)
+        if (version >= V1_16_0) buffer.writeBoolean(sneaking)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.itemUseOnEntity(this)
@@ -64,18 +65,18 @@ class ClientItemUseOnEntityPacket(
             when (type) {
                 Type.InteractAt -> {
                     position = buffer.readFloat3()
-                    hand = Hand.values()[buffer.readVarInt()]
+                    hand = if (version >= V1_09_0) Hand.values()[buffer.readVarInt()] else Hand.Main
                 }
                 Type.Interact -> {
                     position = null
-                    hand = Hand.values()[buffer.readVarInt()]
+                    hand = if (version >= V1_09_0) Hand.values()[buffer.readVarInt()] else Hand.Main
                 }
                 else -> {
                     position = null
                     hand = null
                 }
             }
-            val sneaking = buffer.readBoolean()
+            val sneaking = if (version >= V1_16_0) buffer.readBoolean() else false
             return ClientItemUseOnEntityPacket(entityId, type, position, hand, sneaking)
         }
     }

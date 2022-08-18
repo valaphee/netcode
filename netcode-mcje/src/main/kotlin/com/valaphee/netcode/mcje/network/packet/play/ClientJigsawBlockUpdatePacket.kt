@@ -20,7 +20,7 @@ import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
+import com.valaphee.netcode.mcje.network.V1_16_0
 import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
@@ -28,26 +28,49 @@ import com.valaphee.netcode.mcje.util.NamespacedKey
  */
 class ClientJigsawBlockUpdatePacket(
     val position: Int3,
-    val name: NamespacedKey,
-    val target: NamespacedKey,
-    val pool: NamespacedKey,
+    val attachmentType: NamespacedKey?,
+    val name: NamespacedKey?,
+    val target: NamespacedKey?,
+    val targetPool: NamespacedKey,
     val finalState: String,
-    val jointType: String
+    val jointType: String?
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeBlockPosition(position)
-        buffer.writeNamespacedKey(name)
-        buffer.writeNamespacedKey(target)
-        buffer.writeNamespacedKey(pool)
+        if (version >= V1_16_0) {
+            buffer.writeNamespacedKey(name!!)
+            buffer.writeNamespacedKey(target!!)
+        } else {
+            buffer.writeNamespacedKey(attachmentType!!)
+        }
+        buffer.writeNamespacedKey(targetPool)
         buffer.writeString(finalState)
-        buffer.writeString(jointType)
+        if (version >= V1_16_0) buffer.writeString(jointType!!)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.jigsawBlockUpdate(this)
 
-    override fun toString() = "ClientJigsawBlockUpdatePacket(position=$position, name=$name, target=$target, pool=$pool, finalState='$finalState', jointType='$jointType')"
+    override fun toString() = "ClientJigsawBlockUpdatePacket(position=$position, attachmentType=$attachmentType, name=$name, target=$target, targetPool=$targetPool, finalState='$finalState', jointType='$jointType')"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ClientJigsawBlockUpdatePacket(buffer.readBlockPosition(), buffer.readNamespacedKey(), buffer.readNamespacedKey(), buffer.readNamespacedKey(), buffer.readString(), buffer.readString())
+        override fun read(buffer: PacketBuffer, version: Int): ClientJigsawBlockUpdatePacket {
+            val position = buffer.readBlockPosition()
+            val attachmentType: NamespacedKey?
+            val name: NamespacedKey?
+            val target: NamespacedKey?
+            if (version >= V1_16_0) {
+                attachmentType = null
+                name = buffer.readNamespacedKey()
+                target = buffer.readNamespacedKey()
+            } else {
+                attachmentType = buffer.readNamespacedKey()
+                name = null
+                target = null
+            }
+            val targetPool = buffer.readNamespacedKey()
+            val finalState = buffer.readString()
+            val jointType = if (version >= V1_16_0) buffer.readString() else null
+            return ClientJigsawBlockUpdatePacket(position, attachmentType, name, target, targetPool, finalState, jointType)
+        }
     }
 }

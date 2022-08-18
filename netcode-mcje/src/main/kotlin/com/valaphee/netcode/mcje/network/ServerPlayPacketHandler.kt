@@ -62,6 +62,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerHotbarPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerInventoryContentPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerInventorySlotPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerItemCooldownPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerItemTakePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerKeepAlivePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerLookAtPacket
@@ -91,7 +92,6 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerSimulationDistancePac
 import com.valaphee.netcode.mcje.network.packet.play.ServerSoundPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSoundStopPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSpawnPositionPacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerStackTakePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSystemChatPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTeamPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTimePacket
@@ -138,9 +138,7 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun difficulty(packet: ServerDifficultyPacket) = other(packet)
 
-    fun systemChat(packet: ServerSystemChatPacket) = other(packet)
-
-    fun textPreview(packet: ServerPlayerChatPreviewPacket) = other(packet)
+    fun playerChatPreview(packet: ServerPlayerChatPreviewPacket) = other(packet)
 
     fun commandSuggest(packet: ServerCommandSuggestPacket) = other(packet)
 
@@ -274,11 +272,13 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun soundStop(packet: ServerSoundStopPacket) = other(packet)
 
+    fun systemChat(packet: ServerSystemChatPacket) = other(packet)
+
     fun playerListHeaderFooter(packet: ServerPlayerListHeaderFooterPacket) = other(packet)
 
     fun query(packet: ServerQueryPacket) = other(packet)
 
-    fun stackTake(packet: ServerStackTakePacket) = other(packet)
+    fun itemTake(packet: ServerItemTakePacket) = other(packet)
 
     fun entityTeleport(packet: ServerEntityTeleportPacket) = other(packet)
 

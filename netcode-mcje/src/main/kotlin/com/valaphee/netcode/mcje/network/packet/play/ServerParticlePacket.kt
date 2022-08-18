@@ -21,6 +21,7 @@ import com.valaphee.foundry.math.Float3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_19_0
 import com.valaphee.netcode.mcje.world.ParticleData
 import com.valaphee.netcode.mcje.world.ParticleType
 import com.valaphee.netcode.mcje.world.readParticleData
@@ -37,7 +38,7 @@ class ServerParticlePacket(
     val count: Int
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt(data.getTypeId(version))
+        if (version >= V1_19_0) buffer.writeVarInt(data.getTypeId(version)) else buffer.writeInt(data.getTypeId(version))
         buffer.writeBoolean(longDistance)
         buffer.writeDouble3(position)
         buffer.writeFloat3(offset)
@@ -52,7 +53,7 @@ class ServerParticlePacket(
 
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int): ServerParticlePacket {
-            val particleTypeId = buffer.readInt()
+            val particleTypeId = if (version >= V1_19_0) buffer.readVarInt() else buffer.readInt()
             val longDistance = buffer.readBoolean()
             val position = buffer.readDouble3()
             val offset = buffer.readFloat3()

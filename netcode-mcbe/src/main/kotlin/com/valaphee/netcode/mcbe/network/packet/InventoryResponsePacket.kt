@@ -24,6 +24,7 @@ import com.valaphee.netcode.mcbe.network.Restriction
 import com.valaphee.netcode.mcbe.network.V1_16_100
 import com.valaphee.netcode.mcbe.network.V1_16_201
 import com.valaphee.netcode.mcbe.network.V1_16_210
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -32,95 +33,95 @@ import com.valaphee.netcode.mcbe.network.V1_16_210
 class InventoryResponsePacket(
     val responses: List<Response>
 ) : Packet() {
-    class Response(
-        val status: ResponseStatus,
+    data class Response(
+        val status: Status,
         val requestId: Int,
-        val windows: List<ResponseWindow>
-    )
+        val windows: List<Window>
+    ) {
+        enum class Status {
+            Ok,
+            Error,
+            InvalidRequestActionType,
+            ActionRequestNotAllowed,
+            ScreenHandlerEndRequestFailed,
+            ItemRequestActionHandlerCommitFailed,
+            InvalidRequestCraftActionType,
+            InvalidCraftRequest,
+            InvalidCraftRequestScreen,
+            InvalidCraftResult,
+            InvalidCraftResultIndex,
+            InvalidCraftResultItem,
+            InvalidItemNetId,
+            MissingCreatedOutputContainer,
+            FailedToSetCreatedItemOutputSlot,
+            RequestAlreadyInProgress,
+            FailedToInitSparseContainer,
+            ResultTransferFailed,
+            ExpectedItemSlotNotFullyConsumed,
+            ExpectedAnywhereItemNotFullyConsumed,
+            ItemAlreadyConsumedFromSlot,
+            ConsumedTooMuchFromSlot,
+            MismatchSlotExpectedConsumedItem,
+            MismatchSlotExpectedConsumedItemNetIdVariant,
+            FailedToMatchExpectedSlotConsumedItem,
+            FailedToMatchExpectedAllowedAnywhereConsumedItem,
+            ConsumedItemOutOfAllowedSlotRange,
+            ConsumedItemNotAllowed,
+            PlayerNotInCreativeMode,
+            InvalidExperimentalRecipeRequest,
+            FailedToCraftCreative,
+            FailedToGetLevelRecipe,
+            FailedToFindReceiptByNetId,
+            MismatchedCraftingSize,
+            MissingInputSparseContainer,
+            MismatchedRecipeForInputGridItems,
+            EmptyCraftResults,
+            FailedToEnchant,
+            MissingInputItem,
+            InsufficientPlayerLevelToEnchant,
+            MissingMaterialItem,
+            MissingActor,
+            UnknownPrimaryEffect,
+            PrimaryEffectOutOfRange,
+            PrimaryEffectUnavailable,
+            SecondaryEffectOutOfRange,
+            SecondaryEffectUnavailable,
+            DstContainerEqualToCreatedOutputContainer,
+            DstContainerAndSlotEqualToSrcContainerAndSlot,
+            FailedToValidateSrcSlot,
+            FailedToValidateDstSlot,
+            InvalidAdjustedAmount,
+            InvalidItemSetType,
+            InvalidTransferAmount,
+            CannotSwapItem,
+            CannotPlaceItem,
+            UnhandledItemSetType,
+            InvalidRemovedAmount,
+            InvalidRegion,
+            CannotDropItem,
+            CannotDestroyItem,
+            InvalidSourceContainer,
+            ItemNotConsumed,
+            InvalidNumCrafts,
+            InvalidCraftResultStackSize,
+            CannotRemoveItem,
+            CannotConsumeItem
+        }
 
-    enum class ResponseStatus {
-        Ok,
-        Error,
-        InvalidRequestActionType,
-        ActionRequestNotAllowed,
-        ScreenHandlerEndRequestFailed,
-        ItemRequestActionHandlerCommitFailed,
-        InvalidRequestCraftActionType,
-        InvalidCraftRequest,
-        InvalidCraftRequestScreen,
-        InvalidCraftResult,
-        InvalidCraftResultIndex,
-        InvalidCraftResultItem,
-        InvalidItemNetId,
-        MissingCreatedOutputContainer,
-        FailedToSetCreatedItemOutputSlot,
-        RequestAlreadyInProgress,
-        FailedToInitSparseContainer,
-        ResultTransferFailed,
-        ExpectedItemSlotNotFullyConsumed,
-        ExpectedAnywhereItemNotFullyConsumed,
-        ItemAlreadyConsumedFromSlot,
-        ConsumedTooMuchFromSlot,
-        MismatchSlotExpectedConsumedItem,
-        MismatchSlotExpectedConsumedItemNetIdVariant,
-        FailedToMatchExpectedSlotConsumedItem,
-        FailedToMatchExpectedAllowedAnywhereConsumedItem,
-        ConsumedItemOutOfAllowedSlotRange,
-        ConsumedItemNotAllowed,
-        PlayerNotInCreativeMode,
-        InvalidExperimentalRecipeRequest,
-        FailedToCraftCreative,
-        FailedToGetLevelRecipe,
-        FailedToFindReceiptByNetId,
-        MismatchedCraftingSize,
-        MissingInputSparseContainer,
-        MismatchedRecipeForInputGridItems,
-        EmptyCraftResults,
-        FailedToEnchant,
-        MissingInputItem,
-        InsufficientPlayerLevelToEnchant,
-        MissingMaterialItem,
-        MissingActor,
-        UnknownPrimaryEffect,
-        PrimaryEffectOutOfRange,
-        PrimaryEffectUnavailable,
-        SecondaryEffectOutOfRange,
-        SecondaryEffectUnavailable,
-        DstContainerEqualToCreatedOutputContainer,
-        DstContainerAndSlotEqualToSrcContainerAndSlot,
-        FailedToValidateSrcSlot,
-        FailedToValidateDstSlot,
-        InvalidAdjustedAmount,
-        InvalidItemSetType,
-        InvalidTransferAmount,
-        CannotSwapItem,
-        CannotPlaceItem,
-        UnhandledItemSetType,
-        InvalidRemovedAmount,
-        InvalidRegion,
-        CannotDropItem,
-        CannotDestroyItem,
-        InvalidSourceContainer,
-        ItemNotConsumed,
-        InvalidNumCrafts,
-        InvalidCraftResultStackSize,
-        CannotRemoveItem,
-        CannotConsumeItem
+        data class Window(
+            val windowId: Int,
+            val slots: List<Slot>
+        ) {
+            data class Slot(
+                val slotId: Int,
+                val hotbarSlot: Int,
+                val count: Int,
+                val netId: Int,
+                val name: String?,
+                val damage: Int
+            )
+        }
     }
-
-    class ResponseWindow(
-        val windowId: Int,
-        val slots: List<ResponseWindowSlot>
-    )
-
-    class ResponseWindowSlot(
-        val slotId: Int,
-        val hotbarSlot: Int,
-        val count: Int,
-        val netId: Int,
-        val name: String,
-        val damage: Int
-    )
 
     override val id get() = 0x94
 
@@ -129,12 +130,12 @@ class InventoryResponsePacket(
         responses.forEach {
             if (version >= V1_16_100) buffer.writeByte(it.status.ordinal) else buffer.writeBoolean(
                 when (it.status) {
-                    ResponseStatus.Ok -> true
+                    Response.Status.Ok -> true
                     else -> false
                 }
             )
             buffer.writeVarInt(it.requestId)
-            if (it.status == ResponseStatus.Ok) {
+            if (it.status == Response.Status.Ok) {
                 buffer.writeVarUInt(it.windows.size)
                 it.windows.forEach {
                     buffer.writeByte(it.windowId)
@@ -144,10 +145,8 @@ class InventoryResponsePacket(
                         buffer.writeByte(it.hotbarSlot)
                         buffer.writeByte(it.count)
                         buffer.writeVarInt(it.netId)
-                        if (version >= V1_16_201) {
-                            buffer.writeString(it.name)
-                            if (version >= V1_16_210) buffer.writeVarInt(it.damage)
-                        }
+                        if (version >= V1_16_201) buffer.writeString(it.name!!)
+                        if (version >= V1_16_210) buffer.writeVarInt(it.damage)
                     }
                 }
             }
@@ -157,4 +156,14 @@ class InventoryResponsePacket(
     override fun handle(handler: PacketHandler) = handler.inventoryResponse(this)
 
     override fun toString() = "InventoryResponsePacket(responses=$responses)"
+
+    object Reader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = InventoryResponsePacket(LazyList(buffer.readVarUInt()) {
+            val status = if (version >= V1_16_100) Response.Status.values()[buffer.readUnsignedByte().toInt()] else if (buffer.readBoolean()) Response.Status.Ok else Response.Status.Error
+            val requestId = buffer.readVarInt()
+            val windows = if (status == Response.Status.Ok) LazyList(buffer.readVarUInt()) { Response.Window(buffer.readByte().toInt(), LazyList(buffer.readVarUInt()) { Response.Window.Slot(buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readVarInt(), if (version >= V1_16_201) buffer.readString16() else null, if (version >= V1_16_210) buffer.readVarInt() else 0) }) } else emptyList()
+            Response(status, requestId, windows)
+
+        })
+    }
 }

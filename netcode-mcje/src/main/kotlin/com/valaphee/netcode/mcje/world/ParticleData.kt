@@ -54,7 +54,6 @@ fun PacketBuffer.readParticleData(typeKey: NamespacedKey, version: Int) = when (
     ParticleData.dustColorTransitionTypeKey -> DustColorTransitionParticleData(typeKey, readFloat3(), readFloat(), readFloat3())
     ParticleData.itemTypeKey -> ItemParticleData(typeKey, readItemStack(version))
     ParticleData.vibrationTypeKey -> {
-        val origin = readInt3()
         val block = when (val positionType = readString()) {
             "minecraft:block" -> true
             "minecraft:entity" -> false
@@ -62,15 +61,18 @@ fun PacketBuffer.readParticleData(typeKey: NamespacedKey, version: Int) = when (
         }
         val blockPosition: Int3?
         val entityId: Int
+        val entityEyeHeight: Float
         if (block) {
             blockPosition = readBlockPosition()
             entityId = 0
+            entityEyeHeight = 0.0f
         } else {
             blockPosition = null
             entityId = readVarInt()
+            entityEyeHeight = readFloat()
         }
         val ticks = readVarInt()
-        VibrationParticleData(typeKey, origin, block, blockPosition, entityId, ticks)
+        VibrationParticleData(typeKey, block, blockPosition, entityId, entityEyeHeight, ticks)
     }
     else -> ParticleData(typeKey)
 }
@@ -142,18 +144,20 @@ class ItemParticleData(
  */
 class VibrationParticleData(
     typeKey: NamespacedKey,
-    val origin: Int3,
     val block: Boolean,
     val blockPosition: Int3?,
     val entityId: Int,
+    val entityEyeHeight: Float,
     val ticks: Int
 ) : ParticleData(typeKey) {
     override fun writeToBuffer(buffer: PacketBuffer, version: Int) {
-        buffer.writeInt3(origin)
         buffer.writeString(if (block) "minecraft:block" else "minecraft:entity")
-        if (block) buffer.writeInt3(blockPosition!!) else buffer.writeVarInt(entityId)
+        if (block) buffer.writeInt3(blockPosition!!) else {
+            buffer.writeVarInt(entityId)
+            buffer.writeFloat(entityEyeHeight)
+        }
         buffer.writeVarInt(ticks)
     }
 
-    override fun toString() = "VibrationParticleData(typeKey=$typeKey, origin=$origin, block=$block, blockPosition=$blockPosition, entityId=$entityId, ticks=$ticks)"
+    override fun toString() = "VibrationParticleData(typeKey=$typeKey, block=$block, blockPosition=$blockPosition, entityId=$entityId, entityEyeHeight=$entityEyeHeight, ticks=$ticks)"
 }

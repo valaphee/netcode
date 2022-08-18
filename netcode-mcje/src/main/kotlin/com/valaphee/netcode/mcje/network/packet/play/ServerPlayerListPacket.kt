@@ -18,7 +18,6 @@ package com.valaphee.netcode.mcje.network.packet.play
 
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_19_0
 import com.valaphee.netcode.mcje.world.GameMode
@@ -45,7 +44,7 @@ class ServerPlayerListPacket(
         val signature: Signature? = null
     )  {
         data class Signature(
-            val time: Long,
+            val expiresAt: Long,
             val publicKey: ByteArray,
             val signature: ByteArray
         )
@@ -76,7 +75,7 @@ class ServerPlayerListPacket(
                     } ?: buffer.writeBoolean(false)
                     if (version >= V1_19_0) it.signature?.let {
                         buffer.writeBoolean(true)
-                        buffer.writeLong(it.time)
+                        buffer.writeLong(it.expiresAt)
                         buffer.writeByteArray(it.publicKey)
                         buffer.writeByteArray(it.signature)
                     } ?: buffer.writeBoolean(false)

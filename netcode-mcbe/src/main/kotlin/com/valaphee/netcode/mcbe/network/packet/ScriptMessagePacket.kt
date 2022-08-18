@@ -19,33 +19,26 @@ package com.valaphee.netcode.mcbe.network.packet
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
-import com.valaphee.netcode.mcbe.network.Restrict
-import com.valaphee.netcode.mcbe.network.Restriction
 
 /**
  * @author Kevin Ludwig
  */
-@Restrict(Restriction.ToClient)
-class ToastPacket(
-    val title: String,
-    val content: String
+class ScriptMessagePacket(
+    val channel: String,
+    val message: String
 ) : Packet() {
-    enum class Type {
-        None, Bool, Float
-    }
-
-    override val id get() = 0x00
+    override val id get() = 0xB1
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeString(title)
-        buffer.writeString(content)
+        buffer.writeString(channel)
+        buffer.writeString(message)
     }
 
-    override fun handle(handler: PacketHandler) = handler.toast(this)
+    override fun handle(handler: PacketHandler) = handler.scriptMessage(this)
 
-    override fun toString() = "ToastPacket(title='$title', content='$content')"
+    override fun toString() = "ScriptMessagePacket(channel=$channel, message=$message)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ToastPacket(buffer.readString(), buffer.readString())
+        override fun read(buffer: PacketBuffer, version: Int) = ScriptMessagePacket(buffer.readString(), buffer.readString())
     }
 }

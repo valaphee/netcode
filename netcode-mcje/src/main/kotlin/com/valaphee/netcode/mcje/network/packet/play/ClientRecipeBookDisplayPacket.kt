@@ -19,24 +19,23 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.util.NamespacedKey
 
 /**
  * @author Kevin Ludwig
  */
-class ClientRecipeBookDisplayRecipePacket(
-    val recipeId: NamespacedKey
+class ClientRecipeBookDisplayPacket(
+    val recipeKey: NamespacedKey
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeNamespacedKey(recipeId)
+        buffer.writeNamespacedKey(recipeKey)
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.recipeBookDisplayRecipe(this)
+    override fun handle(handler: ClientPlayPacketHandler) = handler.recipeBookDisplay(this)
 
-    override fun toString() = "ClientRecipeBookDisplayRecipePacket(recipeId=$recipeId)"
+    override fun toString() = "ClientRecipeBookDisplayPacket(recipeKey=$recipeKey)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ClientRecipeBookDisplayRecipePacket(buffer.readNamespacedKey())
+        override fun read(buffer: PacketBuffer, version: Int) = ClientRecipeBookDisplayPacket(buffer.readNamespacedKey())
     }
 }
