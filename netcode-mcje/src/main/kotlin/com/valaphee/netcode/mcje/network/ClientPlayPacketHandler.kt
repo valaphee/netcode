@@ -23,6 +23,9 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientBeaconUpdatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientBlockPlacePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientBlockQueryPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientBookEditPacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientChatAcknowledgePacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientChatPacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientChatPreviewPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientCommandBlockMinecartUpdatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientCommandBlockUpdatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientCommandPacket
@@ -43,8 +46,6 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientJigsawGeneratePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientKeepAlivePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerActionPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerChatPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerChatPreviewPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientPongPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookDisplayPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookPacket
@@ -76,11 +77,13 @@ interface ClientPlayPacketHandler : PacketHandler {
 
     fun difficulty(packet: ClientDifficultyPacket) = other(packet)
 
+    fun chatAcknowledge(packet: ClientChatAcknowledgePacket) = other(packet)
+
     fun command(packet: ClientCommandPacket) = other(packet)
 
-    fun playerChat(packet: ClientPlayerChatPacket) = other(packet)
+    fun chat(packet: ClientChatPacket) = other(packet)
 
-    fun playerChatPreview(packet: ClientPlayerChatPreviewPacket) = other(packet)
+    fun chatPreview(packet: ClientChatPreviewPacket) = other(packet)
 
     fun status(packet: ClientStatusPacket) = other(packet)
 

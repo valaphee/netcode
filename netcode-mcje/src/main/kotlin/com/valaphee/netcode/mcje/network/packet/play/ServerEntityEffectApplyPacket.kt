@@ -16,10 +16,14 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
+import com.valaphee.netcode.mcje.network.V1_19_0
+import io.netty.buffer.ByteBufInputStream
+import io.netty.buffer.ByteBufOutputStream
+import java.io.OutputStream
 
 /**
  * @author Kevin Ludwig
@@ -29,7 +33,8 @@ class ServerEntityEffectApplyPacket(
     val effectId: Int,
     val amplifier: Int,
     val duration: Int,
-    val flags: Set<Flag>
+    val flags: Set<Flag>,
+    val data: Any?
 ) : Packet<ServerPlayPacketHandler>() {
     enum class Flag {
         Ambient, ShowParticles, ShowIcon
@@ -41,13 +46,17 @@ class ServerEntityEffectApplyPacket(
         buffer.writeByte(amplifier)
         buffer.writeVarInt(duration)
         buffer.writeByteFlags(flags)
+        if (version >= V1_19_0) data?.let {
+            buffer.writeBoolean(true)
+            buffer.nbtObjectMapper.writeValue(ByteBufOutputStream(buffer) as OutputStream, it)
+        } ?: buffer.writeBoolean(false)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.entityEffectApply(this)
 
-    override fun toString() = "ServerEntityEffectApplyPacket(entityId=$entityId, effectId=$effectId, amplifier=$amplifier, duration=$duration, flags=$flags)"
+    override fun toString() = "ServerEntityEffectApplyPacket(entityId=$entityId, effectId=$effectId, amplifier=$amplifier, duration=$duration, flags=$flags, data=$data)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectApplyPacket(buffer.readVarInt(), buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readVarInt(), buffer.readByteFlags())
+        override fun read(buffer: PacketBuffer, version: Int) = ServerEntityEffectApplyPacket(buffer.readVarInt(), buffer.readUnsignedByte().toInt(), buffer.readUnsignedByte().toInt(), buffer.readVarInt(), buffer.readByteFlags(), if (version >= V1_19_0 && buffer.readBoolean()) buffer.nbtObjectMapper.readValue(ByteBufInputStream(buffer)) else null)
     }
 }

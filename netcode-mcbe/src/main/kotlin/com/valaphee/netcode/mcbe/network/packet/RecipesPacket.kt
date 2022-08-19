@@ -49,7 +49,7 @@ class RecipesPacket(
     val brewingMixRecipes: List<BrewingMixRecipe>,
     val brewingContainerRecipes: List<BrewingContainerRecipe>,
     val materialReductionRecipes: List<MaterialReductionRecipe>,
-    val reset: Boolean
+    val clean: Boolean
 ) : Packet() {
     override val id get() = 0x34
 
@@ -129,12 +129,12 @@ class RecipesPacket(
                 }
             }
         }
-        buffer.writeBoolean(reset)
+        buffer.writeBoolean(clean)
     }
 
     override fun handle(handler: PacketHandler) = handler.recipes(this)
 
-    override fun toString() = "RecipesPacket(recipes=$recipes, brewingMixRecipes=$brewingMixRecipes, brewingContainerRecipes=$brewingContainerRecipes, materialReductionRecipes=$materialReductionRecipes, reset=$reset)"
+    override fun toString() = "RecipesPacket(recipes=$recipes, brewingMixRecipes=$brewingMixRecipes, brewingContainerRecipes=$brewingContainerRecipes, materialReductionRecipes=$materialReductionRecipes, clean=$clean)"
 
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int) = RecipesPacket(

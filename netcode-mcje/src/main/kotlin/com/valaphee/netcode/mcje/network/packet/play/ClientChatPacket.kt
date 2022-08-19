@@ -19,18 +19,22 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.V1_19_0
+import com.valaphee.netcode.mcje.network.V1_19_1
+import com.valaphee.netcode.util.LazyList
+import java.util.UUID
 
 /**
  * @author Kevin Ludwig
  */
-class ClientPlayerChatPacket(
+class ClientChatPacket(
     val message: String,
     val time: Long,
     val salt: Long,
     val signature: ByteArray?,
-    val preview: Boolean
+    val preview: Boolean,
+    val lastSeenMessages: List<Pair<UUID, ByteArray>>,
+    val lastReceivedMessage: Pair<UUID, ByteArray>?
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(message)
@@ -40,14 +44,26 @@ class ClientPlayerChatPacket(
             buffer.writeByteArray(signature!!)
             buffer.writeBoolean(preview)
         }
+        if (version >= V1_19_1) {
+            buffer.writeVarInt(lastSeenMessages.size)
+            lastSeenMessages.forEach {
+                buffer.writeUuid(it.first)
+                buffer.writeByteArray(it.second)
+            }
+            lastReceivedMessage?.let {
+                buffer.writeBoolean(true)
+                buffer.writeUuid(it.first)
+                buffer.writeByteArray(it.second)
+            } ?: buffer.writeBoolean(false)
+        }
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.playerChat(this)
+    override fun handle(handler: ClientPlayPacketHandler) = handler.chat(this)
 
-    override fun toString() = "ClientPlayerChatPacket(message='$message', time=$time, salt=$salt, signature=${signature.contentToString()}, preview=$preview)"
+    override fun toString() = "ClientChatPacket(message='$message', time=$time, salt=$salt, signature=${signature?.contentToString()}, preview=$preview, lastSeenMessages=$lastSeenMessages, lastReceivedMessage=$lastReceivedMessage)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int): ClientPlayerChatPacket {
+        override fun read(buffer: PacketBuffer, version: Int): ClientChatPacket {
             val message = buffer.readString(256)
             val time: Long
             val salt: Long
@@ -64,7 +80,16 @@ class ClientPlayerChatPacket(
                 signature = null
                 preview = false
             }
-            return ClientPlayerChatPacket(message, time, salt, signature, preview)
+            val lastSeenMessages: List<Pair<UUID, ByteArray>>
+            val lastReceivedMessage: Pair<UUID, ByteArray>?
+            if (version >= V1_19_1) {
+                lastSeenMessages = LazyList(buffer.readVarInt()) { buffer.readUuid() to buffer.readByteArray() }
+                lastReceivedMessage = if (buffer.readBoolean()) buffer.readUuid() to buffer.readByteArray() else null
+            } else {
+                lastSeenMessages = emptyList()
+                lastReceivedMessage = null
+            }
+            return ClientChatPacket(message, time, salt, signature, preview, lastSeenMessages, lastReceivedMessage)
         }
     }
 }

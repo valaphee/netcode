@@ -19,12 +19,11 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 
 /**
  * @author Kevin Ludwig
  */
-class ClientPlayerChatPreviewPacket(
+class ClientChatPreviewPacket(
     val previewId: Int,
     val message: String
 ) : Packet<ClientPlayPacketHandler>() {
@@ -33,11 +32,11 @@ class ClientPlayerChatPreviewPacket(
         buffer.writeString(message)
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.playerChatPreview(this)
+    override fun handle(handler: ClientPlayPacketHandler) = handler.chatPreview(this)
 
-    override fun toString() = "ClientPlayerChatPreviewPacket(previewId=$previewId, message=$message)"
+    override fun toString() = "ClientChatPreviewPacket(previewId=$previewId, message=$message)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ClientPlayerChatPreviewPacket(buffer.readInt(), buffer.readString(256))
+        override fun read(buffer: PacketBuffer, version: Int) = ClientChatPreviewPacket(buffer.readInt(), buffer.readString(256))
     }
 }

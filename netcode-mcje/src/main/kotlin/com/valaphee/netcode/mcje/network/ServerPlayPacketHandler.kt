@@ -18,6 +18,8 @@ package com.valaphee.netcode.mcje.network
 
 import com.valaphee.netcode.mcje.network.packet.play.ServerAbilitiesPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerActionConfirmPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerAdvancementTabPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerAdvancementsPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBlockBreakAnimationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBlockEntityPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBlockEventPacket
@@ -27,6 +29,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerBookOpenPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBorderPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBossBarPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerCameraPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerChatDeletePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkLightPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkPublishPacket
@@ -74,8 +77,10 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerPaintingAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerParticlePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPingPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerAddPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerChatHeaderPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerChatPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerChatPreviewPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerChatPreviewSettingsPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerCombatEventPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerListHeaderFooterPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerPlayerListPacket
@@ -87,12 +92,15 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerRespawnPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerScorePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerScoreboardDisplayPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSculkVibrationSignalPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerServerDataPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSignUpdatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSimulationDistancePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSoundPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSoundStopPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSpawnPositionPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerStatisticsPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerSystemChatPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerTagsPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTeamPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTimePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerTitlePacket
@@ -112,9 +120,9 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerWorldPacket
 interface ServerPlayPacketHandler : PacketHandler {
     fun objectAdd(packet: ServerObjectAddPacket) = other(packet)
 
-    fun experienceOrbAdd(packet: ServerExperienceOrbAddPacket) = other(packet)
-
     fun entityAdd(packet: ServerEntityAddPacket) = other(packet)
+
+    fun experienceOrbAdd(packet: ServerExperienceOrbAddPacket) = other(packet)
 
     fun paintingAdd(packet: ServerPaintingAddPacket) = other(packet)
 
@@ -123,6 +131,8 @@ interface ServerPlayPacketHandler : PacketHandler {
     fun sculkVibrationSignal(packet: ServerSculkVibrationSignalPacket) = other(packet)
 
     fun entityAnimation(packet: ServerEntityAnimationPacket) = other(packet)
+
+    fun statistics(packet: ServerStatisticsPacket) = other(packet)
 
     fun actionConfirm(packet: ServerActionConfirmPacket) = other(packet)
 
@@ -157,6 +167,8 @@ interface ServerPlayPacketHandler : PacketHandler {
     fun customPayload(packet: ServerCustomPayloadPacket) = other(packet)
 
     fun namedSound(packet: ServerNamedSoundPacket) = other(packet)
+
+    fun chatDelete(packet: ServerChatDeletePacket) = other(packet)
 
     fun disconnect(packet: ServerDisconnectPacket) = other(packet)
 
@@ -202,6 +214,8 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun abilities(packet: ServerAbilitiesPacket) = other(packet)
 
+    fun playerChatHeader(packet: ServerPlayerChatHeaderPacket) = other(packet)
+
     fun playerChat(packet: ServerPlayerChatPacket) = other(packet)
 
     fun playerCombatEvent(packet: ServerPlayerCombatEventPacket) = other(packet)
@@ -226,6 +240,10 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun blockUpdates(packet: ServerBlockUpdatesPacket) = other(packet)
 
+    fun advancementTab(packet: ServerAdvancementTabPacket) = other(packet)
+
+    fun serverData(packet: ServerServerDataPacket) = other(packet)
+
     fun border(packet: ServerBorderPacket) = other(packet)
 
     fun camera(packet: ServerCameraPacket) = other(packet)
@@ -237,6 +255,8 @@ interface ServerPlayPacketHandler : PacketHandler {
     fun viewDistance(packet: ServerViewDistancePacket) = other(packet)
 
     fun spawnPosition(packet: ServerSpawnPositionPacket) = other(packet)
+
+    fun playerChatPreviewSettings(packet: ServerPlayerChatPreviewSettingsPacket) = other(packet)
 
     fun scoreboardDisplay(packet: ServerScoreboardDisplayPacket) = other(packet)
 
@@ -282,9 +302,13 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun entityTeleport(packet: ServerEntityTeleportPacket) = other(packet)
 
+    fun advancements(packet: ServerAdvancementsPacket) = other(packet)
+
     fun entityAttributes(packet: ServerEntityAttributesPacket) = other(packet)
 
     fun entityEffectApply(packet: ServerEntityEffectApplyPacket) = other(packet)
 
     fun recipes(packet: ServerRecipesPacket) = other(packet)
+
+    fun tags(packet: ServerTagsPacket) = other(packet)
 }
