@@ -100,7 +100,7 @@ data class ItemStack(
 
 fun PacketBuffer.readItemStack(version: Int) = if (version >= V1_13_0) if (readBoolean()) {
     val itemId = readVarInt()
-    ItemStack(itemId, Item[version, itemId], readByte().toInt(), nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
+    ItemStack(itemId, Item[version, itemId], 0, readByte().toInt(), nbtObjectMapper.readValue(ByteBufInputStream(buffer)))
 } else null else {
     val itemId = readShort().toInt()
     if (itemId >= 0) ItemStack(itemId, Item[version, itemId], readByte().toInt(), readUnsignedShort(), nbtObjectMapper.readValue(ByteBufInputStream(buffer))) else null

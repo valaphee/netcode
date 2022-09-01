@@ -39,6 +39,7 @@ class ClientCommandPacket(
         buffer.writeString(command)
         buffer.writeLong(time)
         buffer.writeLong(salt)
+        buffer.writeVarInt(signatures.size)
         signatures.forEach {
             buffer.writeString(it.first)
             buffer.writeByteArray(it.second)
@@ -64,7 +65,7 @@ class ClientCommandPacket(
 
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int): ClientCommandPacket {
-            val command = buffer.readString()
+            val command = buffer.readString(256)
             val time = buffer.readLong()
             val salt = buffer.readLong()
             val signatures = LazyList(buffer.readVarInt()) {  buffer.readString() to buffer.readByteArray() }

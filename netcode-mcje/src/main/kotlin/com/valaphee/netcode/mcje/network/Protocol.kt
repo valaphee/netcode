@@ -80,7 +80,6 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerBorderPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerBossBarPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerCameraPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChatDeletePacket
-import com.valaphee.netcode.mcje.network.packet.play.ServerChunkLightPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkPublishPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerChunkUnloadPacket
@@ -299,7 +298,7 @@ enum class Protocols(
             .register(ServerChunkPacket::class                    , ServerChunkPacket.Reader                    , V1_16_4 to 0x20, V1_18_2 to 0x22, V1_19_0 to 0x1F, V1_19_1 to 0x21)
             .register(ServerWorldEventPacket::class               , ServerWorldEventPacket.Reader               , V1_16_4 to 0x21, V1_18_2 to 0x23, V1_19_0 to 0x20, V1_19_1 to 0x22)
             .register(ServerParticlePacket::class                 , ServerParticlePacket.Reader                 , V1_16_4 to 0x22, V1_18_2 to 0x24, V1_19_0 to 0x21, V1_19_1 to 0x23)
-            .register(ServerChunkLightPacket::class               , ServerChunkLightPacket.Reader               , V1_16_4 to 0x23, V1_18_2 to 0x25, V1_19_0 to 0x22, V1_19_1 to 0x24)
+            //.register(ServerChunkLightPacket::class               , ServerChunkLightPacket.Reader               , V1_16_4 to 0x23, V1_18_2 to 0x25, V1_19_0 to 0x22, V1_19_1 to 0x24)
             .register(ServerWorldPacket::class                    , ServerWorldPacket.Reader                    , V1_16_4 to 0x24, V1_18_2 to 0x26, V1_19_0 to 0x23, V1_19_1 to 0x25)
             .register(ServerMapPacket::class                      , ServerMapPacket.Reader                      , V1_16_4 to 0x25, V1_18_2 to 0x27, V1_19_0 to 0x24, V1_19_1 to 0x26)
             .register(ServerTradePacket::class                    , ServerTradePacket.Reader                    , V1_16_4 to 0x26, V1_18_2 to 0x28, V1_19_0 to 0x25, V1_19_1 to 0x27)

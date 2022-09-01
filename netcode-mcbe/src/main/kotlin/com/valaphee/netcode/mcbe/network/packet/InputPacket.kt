@@ -18,14 +18,20 @@ package com.valaphee.netcode.mcbe.network.packet
 
 import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.Float3
+import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcbe.network.Packet
 import com.valaphee.netcode.mcbe.network.PacketBuffer
 import com.valaphee.netcode.mcbe.network.PacketHandler
 import com.valaphee.netcode.mcbe.network.Restrict
 import com.valaphee.netcode.mcbe.network.Restriction
-import com.valaphee.netcode.mcbe.network.V1_16_201
+import com.valaphee.netcode.mcbe.network.V1_16_100
+import com.valaphee.netcode.mcbe.network.V1_16_210
 import com.valaphee.netcode.mcbe.network.V1_19_000
 import com.valaphee.netcode.mcbe.world.entity.player.User
+import com.valaphee.netcode.mcbe.world.inventory.InventoryRequest
+import com.valaphee.netcode.mcbe.world.inventory.readInventoryRequest
+import com.valaphee.netcode.mcbe.world.inventory.writeInventoryRequest
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -42,7 +48,9 @@ class InputPacket(
     val inputInteractionModel: InputInteractionModel,
     val virtualRealityGazeDirection: Float3? = null,
     val tick: Long,
-    val positionDelta: Float3
+    val positionDelta: Float3,
+    val inventoryRequest: InventoryRequest?,
+    val blockActions: List<BlockAction>?
 ) : Packet() {
     enum class PlayMode {
         Normal,
@@ -101,6 +109,12 @@ class InputPacket(
         PerformInventoryRequest
     }
 
+    data class BlockAction(
+        val action: PlayerActionPacket.Action,
+        val blockPosition: Int3?,
+        val blockFace: Int
+    )
+
     override val id get() = 0x90
 
     override fun write(buffer: PacketBuffer, version: Int) {
@@ -113,18 +127,27 @@ class InputPacket(
         buffer.writeVarUInt(playMode.ordinal)
         if (version >= V1_19_000) buffer.writeVarUInt(inputInteractionModel.ordinal)
         if (playMode == PlayMode.VirtualReality) buffer.writeFloat3(virtualRealityGazeDirection!!)
-        if (version >= V1_16_201) {
+        if (version >= V1_16_100) {
             buffer.writeVarULong(tick)
             buffer.writeFloat3(positionDelta)
         }
-        /*if (version >= V1_16_210) {
-            if (input.equals(Input.PerformItemInteraction)) {
+        if (version >= V1_16_210) {
+            if (input.equals(Input.PerformItemInteraction)) TODO()
+            if (input.equals(Input.PerformInventoryRequest)) buffer.writeInventoryRequest(inventoryRequest!!, version)
+            if (input.equals(Input.PerformBlockActions)) blockActions!!.let {
+                buffer.writeVarInt(it.size)
+                it.forEach {
+                    buffer.writeVarInt(it.action.ordinal)
+                    when (it.action) {
+                        PlayerActionPacket.Action.StartBreak, PlayerActionPacket.Action.AbortBreak, PlayerActionPacket.Action.ContinueBreak, PlayerActionPacket.Action.BlockPredictDestroy, PlayerActionPacket.Action.BlockContinueDestroy -> {
+                            buffer.writeBlockPosition(it.blockPosition!!)
+                            buffer.writeVarInt(it.blockFace)
+                        }
+                        else -> Unit
+                    }
+                }
             }
-            if (input.equals(Input.PerformInventoryRequest)) {
-            }
-            if (input.equals(Input.PerformBlockActions)) {
-            }
-        }*/
+        }
     }
 
     override fun handle(handler: PacketHandler) = handler.input(this)
@@ -137,29 +160,48 @@ class InputPacket(
             val position = buffer.readFloat3()
             val move = buffer.readFloat2()
             val headRotationYaw = buffer.readFloatLE()
-            val input = buffer.readVarULongFlags<InputPacket.Input>()
+            val input = buffer.readVarULongFlags<Input>()
             val inputMode = User.InputMode.values()[buffer.readVarUInt()]
-            val playMode = InputPacket.PlayMode.values()[buffer.readVarUInt()]
-            val inputInteractionModel = if (version >= V1_19_000) InputPacket.InputInteractionModel.values()[buffer.readVarUInt()] else InputPacket.InputInteractionModel.Classic
-            val virtualRealityGazeDirection = if (playMode == InputPacket.PlayMode.VirtualReality) buffer.readFloat3() else null
+            val playMode = PlayMode.values()[buffer.readVarUInt()]
+            val inputInteractionModel = if (version >= V1_19_000) InputInteractionModel.values()[buffer.readVarUInt()] else InputInteractionModel.Classic
+            val virtualRealityGazeDirection = if (playMode == PlayMode.VirtualReality) buffer.readFloat3() else null
             val tick: Long
             val positionDelta: Float3
-            if (version >= V1_16_201) {
+            if (version >= V1_16_100) {
                 tick = buffer.readVarULong()
                 positionDelta = buffer.readFloat3()
             } else {
                 tick = 0L
                 positionDelta = Float3.Zero
             }
-            /*if (version >= V1_16_210) {
-                if (input.equals(InputPacket.Input.PerformItemInteraction)) {
-                }
-                if (input.equals(InputPacket.Input.PerformInventoryRequest)) {
-                }
-                if (input.equals(InputPacket.Input.PerformBlockActions)) {
-                }
-            }*/
-            return InputPacket(rotation, position, move, headRotationYaw, input, inputMode, playMode, inputInteractionModel, virtualRealityGazeDirection, tick, positionDelta)
+            val inventoryRequest: InventoryRequest?
+            val blockActions: List<BlockAction>?
+            if (version >= V1_16_210) {
+                if (input.equals(Input.PerformItemInteraction)) TODO()
+                inventoryRequest = if (input.equals(Input.PerformInventoryRequest)) buffer.readInventoryRequest(version) else null
+                blockActions = if (input.equals(Input.PerformBlockActions)) {
+                    LazyList(buffer.readVarInt()) {
+                        val action = PlayerActionPacket.Action.values()[buffer.readVarInt()];
+                        val blockPosition: Int3?
+                        val blockFace: Int
+                        when (action) {
+                            PlayerActionPacket.Action.StartBreak, PlayerActionPacket.Action.AbortBreak, PlayerActionPacket.Action.ContinueBreak, PlayerActionPacket.Action.BlockPredictDestroy, PlayerActionPacket.Action.BlockContinueDestroy -> {
+                                blockPosition = buffer.readBlockPosition()
+                                blockFace = buffer.readVarInt()
+                            }
+                            else -> {
+                                blockPosition = null
+                                blockFace = 0
+                            }
+                        }
+                        BlockAction(action, blockPosition, blockFace)
+                    }
+                } else null
+            } else {
+                inventoryRequest = null
+                blockActions = null
+            }
+            return InputPacket(rotation, position, move, headRotationYaw, input, inputMode, playMode, inputInteractionModel, virtualRealityGazeDirection, tick, positionDelta, inventoryRequest, blockActions)
         }
     }
 }
