@@ -19,7 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.world.SoundCategory
+import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
@@ -47,6 +47,6 @@ class ServerStatisticsPacket(
     override fun toString() = "ServerStatisticsPacket(statistics=$statistics)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerSoundPacket(buffer.readVarInt(), SoundCategory.values()[buffer.readVarInt()], buffer.readInt3().toMutableFloat3().scale(1 / 8.0f), buffer.readFloat(), buffer.readFloat())
+        override fun read(buffer: PacketBuffer, version: Int) = ServerStatisticsPacket(LazyList(buffer.readVarInt()) { Statistic(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt()) })
     }
 }
