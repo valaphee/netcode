@@ -23,8 +23,8 @@ import com.valaphee.netcode.mcbeautomation.Event
  * @author Kevin Ludwig
  */
 data class PlayerTeleportedEvent(
-    @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("cause") val cause: Int,
-    @get:JsonProperty("itemType") val item: Int,
-    @get:JsonProperty("metersTravelled") val distance: Float
+    @JsonProperty("player") val player: Entity,
+    @JsonProperty("cause") val cause: Int,
+    @JsonProperty("itemType") val item: Int,
+    @JsonProperty("metersTravelled") val distance: Float
 ) : Event()

@@ -27,5 +27,5 @@ abstract class Event
  * @author Kevin Ludwig
  */
 data class EventRequest(
-    @get:JsonProperty("eventName") val eventName: String
+    @JsonProperty("eventName") val eventName: String
 )

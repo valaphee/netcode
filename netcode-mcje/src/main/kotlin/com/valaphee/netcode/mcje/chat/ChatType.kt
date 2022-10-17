@@ -23,17 +23,17 @@ import net.kyori.adventure.text.format.Style
  * @author Kevin Ludwig
  */
 class ChatType(
-    @get:JsonProperty("chat") val chat: Text?,
-    @get:JsonProperty("overlay") val overlay: Text?,
-    @get:JsonProperty("narration") val narration: Narration?
+    @JsonProperty("chat") val chat: Text?,
+    @JsonProperty("overlay") val overlay: Text?,
+    @JsonProperty("narration") val narration: Narration?
 ) {
     class Text(
-        @get:JsonProperty("decoration") val decoration: Decoration?,
+        @JsonProperty("decoration") val decoration: Decoration?,
     )
 
     class Narration(
-        @get:JsonProperty("decoration") val decoration: Decoration?,
-        @get:JsonProperty("priority") val priority: Priority?
+        @JsonProperty("decoration") val decoration: Decoration?,
+        @JsonProperty("priority") val priority: Priority?
     ) {
         enum class Priority {
             @JsonProperty("chat") Chat,
@@ -42,9 +42,9 @@ class ChatType(
     }
 
     class Decoration(
-        @get:JsonProperty("translation_key") val translationKey: String,
-        @get:JsonProperty("parameters") val parameters: List<Parameter>,
-        @get:JsonProperty("style") val style: Style,
+        @JsonProperty("translation_key") val translationKey: String,
+        @JsonProperty("parameters") val parameters: List<Parameter>,
+        @JsonProperty("style") val style: Style,
     ) {
         enum class Parameter {
             @JsonProperty("team_name") TeamName,

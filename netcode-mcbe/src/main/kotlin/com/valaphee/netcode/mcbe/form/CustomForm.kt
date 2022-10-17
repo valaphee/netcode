@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
  */
 data class CustomForm(
     override val title: String,
-    @get:JsonProperty("content") val elements: List<Element>
+    @JsonProperty("content") val elements: List<Element>
 ) : Form<Map<String, Any?>>() {
     override fun parseResponse(response: Any?) = (response as List<*>).mapIndexed { i, answer -> Pair(elements[i].text, elements[i].parseResponse(answer)) }.toMap()
 }
@@ -57,8 +57,8 @@ data class Label(
 
 data class Dropdown(
     override val text: String,
-    @get:JsonProperty("options") val values: List<String>,
-    @get:JsonProperty("default") var valueIndex: Int = 0
+    @JsonProperty("options") val values: List<String>,
+    @JsonProperty("default") var valueIndex: Int = 0
 ) : Element {
     override fun parseResponse(answer: Any?): Any {
         valueIndex = answer as Int
@@ -68,8 +68,8 @@ data class Dropdown(
 
 data class Input(
     override val text: String,
-    @get:JsonProperty("placeholder") val placeholder: String,
-    @get:JsonProperty("default") var value: String = ""
+    @JsonProperty("placeholder") val placeholder: String,
+    @JsonProperty("default") var value: String = ""
 ) : Element {
     override fun parseResponse(answer: Any?): Any {
         value = answer as String
@@ -79,10 +79,10 @@ data class Input(
 
 data class Slider(
     override val text: String,
-    @get:JsonProperty("min") val minimum: Number,
-    @get:JsonProperty("max") val maximum: Number,
-    @get:JsonProperty("step") val step: Number,
-    @get:JsonProperty("default") var value: Number
+    @JsonProperty("min") val minimum: Number,
+    @JsonProperty("max") val maximum: Number,
+    @JsonProperty("step") val step: Number,
+    @JsonProperty("default") var value: Number
 ) : Element {
     override fun parseResponse(answer: Any?): Any {
         value = answer as Number
@@ -92,8 +92,8 @@ data class Slider(
 
 data class StepSlider(
     override val text: String,
-    @get:JsonProperty("steps") val values: List<String>,
-    @get:JsonProperty("default") var valueIndex: Int = 0
+    @JsonProperty("steps") val values: List<String>,
+    @JsonProperty("default") var valueIndex: Int = 0
 ) : Element {
     override fun parseResponse(answer: Any?): Any {
         valueIndex = answer as Int
@@ -103,7 +103,7 @@ data class StepSlider(
 
 data class Toggle(
     override val text: String,
-    @get:JsonProperty("default") var value: Boolean = false
+    @JsonProperty("default") var value: Boolean = false
 ) : Element {
     override fun parseResponse(answer: Any?): Any {
         value = answer as Boolean

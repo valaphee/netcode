@@ -23,8 +23,8 @@ import com.valaphee.netcode.mcbeautomation.Event
  * @author Kevin Ludwig
  */
 data class ItemUsedEvent(
-    @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("item") val item: Item,
-    @get:JsonProperty("useMethod") val method: Int,
-    @get:JsonProperty("count") val count: Int
+    @JsonProperty("player") val player: Entity,
+    @JsonProperty("item") val item: Item,
+    @JsonProperty("useMethod") val method: Int,
+    @JsonProperty("count") val count: Int
 ) : Event()

@@ -23,15 +23,15 @@ import com.valaphee.netcode.mcbeautomation.Event
  * @author Kevin Ludwig
  */
 data class ItemCraftedEvent(
-    @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("item") val item: ItemStack,
-    @get:JsonProperty("count") val count: Int,
-    @get:JsonProperty("usedCraftingTable") val usedCraftingTable: Boolean,
-    @get:JsonProperty("usedSearchBar") val usedSearchBar: Boolean,
-    @get:JsonProperty("startingTabId") val startingTabId: Int,
-    @get:JsonProperty("endingTabId") val endingTabId: Int,
-    @get:JsonProperty("numberOfTabsChanged") val numberOfTabsChanged: Int,
-    @get:JsonProperty("recipeBookShown") val recipeBookOpen: Boolean,
-    @get:JsonProperty("hasCraftableFilterOn") val recipeBookFilterActive: Boolean,
-    @get:JsonProperty("craftedAutomatically") val auto: Boolean
+    @JsonProperty("player") val player: Entity,
+    @JsonProperty("item") val item: ItemStack,
+    @JsonProperty("count") val count: Int,
+    @JsonProperty("usedCraftingTable") val usedCraftingTable: Boolean,
+    @JsonProperty("usedSearchBar") val usedSearchBar: Boolean,
+    @JsonProperty("startingTabId") val startingTabId: Int,
+    @JsonProperty("endingTabId") val endingTabId: Int,
+    @JsonProperty("numberOfTabsChanged") val numberOfTabsChanged: Int,
+    @JsonProperty("recipeBookShown") val recipeBookOpen: Boolean,
+    @JsonProperty("hasCraftableFilterOn") val recipeBookFilterActive: Boolean,
+    @JsonProperty("craftedAutomatically") val auto: Boolean
 ) : Event()

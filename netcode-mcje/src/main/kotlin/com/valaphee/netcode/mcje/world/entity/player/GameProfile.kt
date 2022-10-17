@@ -33,21 +33,21 @@ import java.util.UUID
 @JsonSerialize(using = GameProfile.Serializer::class)
 /*@JsonDeserialize(using = GameProfile.Deserializer::class)*/
 data class GameProfile(
-    @get:JsonProperty("id") @get:JsonSerialize(using = UuidSerializer::class) @get:JsonDeserialize(using = UuidDeserializer::class) val userId: UUID?,
-    @get:JsonProperty("name") val userName: String?,
-    @get:JsonProperty("properties") val properties: List<Property>? = null
+    @JsonProperty("id") @get:JsonSerialize(using = UuidSerializer::class) @get:JsonDeserialize(using = UuidDeserializer::class) val userId: UUID?,
+    @JsonProperty("name") val userName: String?,
+    @JsonProperty("properties") val properties: List<Property>? = null
 ) {
     data class Property(
-        @get:JsonProperty("name") val name: String,
-        @get:JsonProperty("value") val value: String,
-        @get:JsonProperty("signature") val signature: String? = null
+        @JsonProperty("name") val name: String,
+        @JsonProperty("value") val value: String,
+        @JsonProperty("signature") val signature: String? = null
     ) {
         data class Textures(
-            @get:JsonProperty("textures") val textures: Map<String, Texture>
+            @JsonProperty("textures") val textures: Map<String, Texture>
         ) {
             data class Texture(
-                @get:JsonProperty("url") val url: String,
-                @get:JsonProperty("metadata") val metadata: Map<String, String>?
+                @JsonProperty("url") val url: String,
+                @JsonProperty("metadata") val metadata: Map<String, String>?
             )
         }
     }

@@ -23,10 +23,10 @@ import com.valaphee.netcode.mcbeautomation.Event
  * @author Kevin Ludwig
  */
 data class BlockPlacedEvent(
-    @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("block") val block: Block,
-    @get:JsonProperty("tool") val tool: ItemStack,
-    @get:JsonProperty("placementMethod") val method: Int,
-    @get:JsonProperty("count") val count: Int,
-    @get:JsonProperty("placedUnderWater") val underwater: Boolean,
+    @JsonProperty("player") val player: Entity,
+    @JsonProperty("block") val block: Block,
+    @JsonProperty("tool") val tool: ItemStack,
+    @JsonProperty("placementMethod") val method: Int,
+    @JsonProperty("count") val count: Int,
+    @JsonProperty("placedUnderWater") val underwater: Boolean,
 ) : Event()

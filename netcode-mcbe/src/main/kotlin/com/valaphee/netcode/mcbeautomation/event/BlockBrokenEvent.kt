@@ -23,10 +23,10 @@ import com.valaphee.netcode.mcbeautomation.Event
  * @author Kevin Ludwig
  */
 data class BlockBrokenEvent(
-    @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("block") val block: Block,
-    @get:JsonProperty("tool") val tool: ItemStack,
-    @get:JsonProperty("destructionMethod") val method: Int,
-    @get:JsonProperty("count") val count: Int,
-    @get:JsonProperty("variant") val variant: Int
+    @JsonProperty("player") val player: Entity,
+    @JsonProperty("block") val block: Block,
+    @JsonProperty("tool") val tool: ItemStack,
+    @JsonProperty("destructionMethod") val method: Int,
+    @JsonProperty("count") val count: Int,
+    @JsonProperty("variant") val variant: Int
 ) : Event()

@@ -31,7 +31,7 @@ import java.util.UUID
 @JsonTypeName("minecraft:recipe_shaped")
 class ShapedRecipe : Recipe {
     data class Description(
-        @get:JsonProperty("identifier") val key: String
+        @JsonProperty("identifier") val key: String
     )
 
     val description: Description

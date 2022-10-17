@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @author Kevin Ludwig
  */
 data class Block(
-    @get:JsonProperty("namespace") val namespace: String,
-    @get:JsonProperty("id") val id: String,
-    @get:JsonProperty("aux") val aux: Int
+    @JsonProperty("namespace") val namespace: String,
+    @JsonProperty("id") val id: String,
+    @JsonProperty("aux") val aux: Int
 )

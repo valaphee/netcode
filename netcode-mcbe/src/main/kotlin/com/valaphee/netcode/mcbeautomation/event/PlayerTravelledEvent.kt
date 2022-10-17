@@ -23,10 +23,10 @@ import com.valaphee.netcode.mcbeautomation.Event
  * @author Kevin Ludwig
  */
 data class PlayerTravelledEvent(
-    @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("travelMethod") val method: Int,
-    @get:JsonProperty("metersTravelled") val distance: Float,
-    @get:JsonProperty("isUnderwater") val underwater: Boolean,
-    @get:JsonProperty("newBiome") val biome: Int,
-    @get:JsonProperty("vehicle") val vehicle: Entity?,
+    @JsonProperty("player") val player: Entity,
+    @JsonProperty("travelMethod") val method: Int,
+    @JsonProperty("metersTravelled") val distance: Float,
+    @JsonProperty("isUnderwater") val underwater: Boolean,
+    @JsonProperty("newBiome") val biome: Int,
+    @JsonProperty("vehicle") val vehicle: Entity?,
 ) : Event()

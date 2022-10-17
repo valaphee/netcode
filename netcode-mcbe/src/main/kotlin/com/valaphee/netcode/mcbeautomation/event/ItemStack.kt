@@ -22,17 +22,17 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @author Kevin Ludwig
  */
 data class ItemStack(
-    @get:JsonProperty("namespace") val namespace: String,
-    @get:JsonProperty("id") val key: String,
-    @get:JsonProperty("aux") val aux: Int,
-    @get:JsonProperty("stackSize") val count: Int,
-    @get:JsonProperty("maxStackSize") val maximumCount: Int,
-    @get:JsonProperty("freeStackSize") val remainingCount: Int,
-    @get:JsonProperty("enchantments") val enchantments: List<Enchantment>
+    @JsonProperty("namespace") val namespace: String,
+    @JsonProperty("id") val key: String,
+    @JsonProperty("aux") val aux: Int,
+    @JsonProperty("stackSize") val count: Int,
+    @JsonProperty("maxStackSize") val maximumCount: Int,
+    @JsonProperty("freeStackSize") val remainingCount: Int,
+    @JsonProperty("enchantments") val enchantments: List<Enchantment>
 ) {
     class Enchantment(
-        @get:JsonProperty("type") val id: Int,
-        @get:JsonProperty("name") val name: String,
-        @get:JsonProperty("level") val value: Int
+        @JsonProperty("type") val id: Int,
+        @JsonProperty("name") val name: String,
+        @JsonProperty("level") val value: Int
     )
 }

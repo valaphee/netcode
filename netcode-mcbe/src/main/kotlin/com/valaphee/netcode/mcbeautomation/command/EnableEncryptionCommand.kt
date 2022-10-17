@@ -37,7 +37,7 @@ data class EnableEncryptionCommand(
  * @author Kevin Ludwig
  */
 data class EnableEncryptionCommandResponse(
-    @get:JsonProperty("publicKey") val publicKey: String,
-    @get:JsonProperty("statusCode") val statusCode: Int,
-    @get:JsonProperty("statusMessage") val statusMessage: String
+    @JsonProperty("publicKey") val publicKey: String,
+    @JsonProperty("statusCode") val statusCode: Int,
+    @JsonProperty("statusMessage") val statusMessage: String
 ) : CommandResponse()

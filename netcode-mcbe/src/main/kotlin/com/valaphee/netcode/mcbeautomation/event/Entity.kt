@@ -23,12 +23,12 @@ import com.valaphee.foundry.math.Float3
  * @author Kevin Ludwig
  */
 data class Entity(
-    @get:JsonProperty("id") val id: Long,
-    @get:JsonProperty("type") val type: String,
-    @get:JsonProperty("name") val name: String,
-    @get:JsonProperty("dimension") val dimension: Int,
-    @get:JsonProperty("position") val position: Float3,
-    @get:JsonProperty("yRot") val yaw: Float,
-    @get:JsonProperty("variant") val variant: Int,
-    @get:JsonProperty("color") val color: String
+    @JsonProperty("id") val id: Long,
+    @JsonProperty("type") val type: String,
+    @JsonProperty("name") val name: String,
+    @JsonProperty("dimension") val dimension: Int,
+    @JsonProperty("position") val position: Float3,
+    @JsonProperty("yRot") val yaw: Float,
+    @JsonProperty("variant") val variant: Int,
+    @JsonProperty("color") val color: String
 )

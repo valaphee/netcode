@@ -23,7 +23,7 @@ import com.valaphee.netcode.mcbeautomation.Event
  * @author Kevin Ludwig
  */
 data class PlayerMessageEvent(
-    @get:JsonProperty("type") val type: String,
-    @get:JsonProperty("sender") val sender: String,
-    @get:JsonProperty("message") val message: String
+    @JsonProperty("type") val type: String,
+    @JsonProperty("sender") val sender: String,
+    @JsonProperty("message") val message: String
 ) : Event()

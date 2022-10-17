@@ -25,13 +25,13 @@ import com.valaphee.netcode.mcbe.pack.Data
  */
 @JsonTypeName("minecraft:recipe_brewing_container")
 data class BrewingContainerRecipe(
-    @get:JsonProperty("description") val description: Description,
-    @get:JsonProperty("tags") val tags: List<String>,
-    @get:JsonProperty("input") val input: String,
-    @get:JsonProperty("reagent") val reagent: String,
-    @get:JsonProperty("output") val output: String
+    @JsonProperty("description") val description: Description,
+    @JsonProperty("tags") val tags: List<String>,
+    @JsonProperty("input") val input: String,
+    @JsonProperty("reagent") val reagent: String,
+    @JsonProperty("output") val output: String
 ) : Data() {
     data class Description(
-        @get:JsonProperty("identifier") val key: String
+        @JsonProperty("identifier") val key: String
     )
 }

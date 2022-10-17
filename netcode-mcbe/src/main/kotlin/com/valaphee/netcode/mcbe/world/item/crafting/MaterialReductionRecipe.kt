@@ -28,12 +28,12 @@ import com.valaphee.netcode.mcbe.world.item.ItemStack
  */
 @JsonTypeName("minecraft:recipe_material_reduction")
 data class MaterialReductionRecipe(
-    @get:JsonProperty("description") val description: Description,
-    @get:JsonProperty("tags") val tags: List<String>,
-    @get:JsonProperty("input") @get:JsonSerialize(using = SingleItemSerializer::class) @get:JsonDeserialize(using = SingleItemDeserializer::class) val input: ItemStack,
-    @get:JsonProperty("output") val output: List<ItemStack>,
+    @JsonProperty("description") val description: Description,
+    @JsonProperty("tags") val tags: List<String>,
+    @JsonProperty("input") @get:JsonSerialize(using = SingleItemSerializer::class) @get:JsonDeserialize(using = SingleItemDeserializer::class) val input: ItemStack,
+    @JsonProperty("output") val output: List<ItemStack>,
 ) : Data() {
     data class Description(
-        @get:JsonProperty("identifier") val key: String
+        @JsonProperty("identifier") val key: String
     )
 }

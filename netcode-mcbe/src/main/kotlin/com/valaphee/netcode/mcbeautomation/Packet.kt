@@ -23,14 +23,14 @@ import java.util.UUID
  * @author Kevin Ludwig
  */
 data class Packet(
-    @get:JsonProperty("header") val header: Header,
-    @get:JsonProperty("body") val body: Any?
+    @JsonProperty("header") val header: Header,
+    @JsonProperty("body") val body: Any?
 ) {
     data class Header(
-        @get:JsonProperty("messagePurpose") val messagePurpose: MessagePurpose,
-        @get:JsonProperty("requestId") val requestId: UUID?,
-        @get:JsonProperty("eventName") val eventName: String?,
-        @get:JsonProperty("version") val version: Int,
+        @JsonProperty("messagePurpose") val messagePurpose: MessagePurpose,
+        @JsonProperty("requestId") val requestId: UUID?,
+        @JsonProperty("eventName") val eventName: String?,
+        @JsonProperty("version") val version: Int,
     ) {
         enum class MessagePurpose {
             @JsonProperty("commandRequest") CommandRequest,

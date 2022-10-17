@@ -29,16 +29,16 @@ import java.util.UUID
  */
 @JsonTypeName("minecraft:recipe_shapeless")
 data class ShapelessRecipe(
-    @get:JsonProperty("description") val description: Description,
-    @get:JsonProperty("ingredients") @get:JsonSerialize(contentUsing = IngredientSerializer::class) @get:JsonDeserialize(contentUsing = IngredientDeserializer::class) val input: List<ItemStack>,
-    @get:JsonProperty("result") val output: ItemStack,
+    @JsonProperty("description") val description: Description,
+    @JsonProperty("ingredients") @get:JsonSerialize(contentUsing = IngredientSerializer::class) @get:JsonDeserialize(contentUsing = IngredientDeserializer::class) val input: List<ItemStack>,
+    @JsonProperty("result") val output: ItemStack,
     @get:JsonIgnore val id: UUID = UUID.randomUUID(),
-    @get:JsonProperty("tags") val tags: List<String>,
-    @get:JsonProperty("priority") val priority: Int = 0,
+    @JsonProperty("tags") val tags: List<String>,
+    @JsonProperty("priority") val priority: Int = 0,
     @get:JsonIgnore val netId: Int = 0
 ) : Recipe() {
     class Description(
-        @get:JsonProperty("identifier") val key: String
+        @JsonProperty("identifier") val key: String
     )
 
     constructor(id: UUID, key: String, input: List<ItemStack>, output: ItemStack, tag: String, priority: Int, netId: Int) : this(Description(key), input, output, id, listOf(tag), priority, netId)

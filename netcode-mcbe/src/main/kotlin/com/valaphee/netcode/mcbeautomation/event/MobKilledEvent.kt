@@ -23,14 +23,14 @@ import com.valaphee.netcode.mcbeautomation.Event
  * @author Kevin Ludwig
  */
 data class MobKilledEvent(
-    @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("victim") val victim: Entity,
-    @get:JsonProperty("killMethodType") val method: Int,
-    @get:JsonProperty("isMonster") val monster: Boolean,
-    @get:JsonProperty("armorHead") val armorHead: ItemStack,
-    @get:JsonProperty("armorTorso") val armorTorso: ItemStack,
-    @get:JsonProperty("armorLegs") val armorLegs: ItemStack,
-    @get:JsonProperty("armorFeet") val armorFeet: ItemStack,
-    @get:JsonProperty("weapon") val weapon: ItemStack,
-    @get:JsonProperty("playerIsHiddenFrom") val ambush: Boolean
+    @JsonProperty("player") val player: Entity,
+    @JsonProperty("victim") val victim: Entity,
+    @JsonProperty("killMethodType") val method: Int,
+    @JsonProperty("isMonster") val monster: Boolean,
+    @JsonProperty("armorHead") val armorHead: ItemStack,
+    @JsonProperty("armorTorso") val armorTorso: ItemStack,
+    @JsonProperty("armorLegs") val armorLegs: ItemStack,
+    @JsonProperty("armorFeet") val armorFeet: ItemStack,
+    @JsonProperty("weapon") val weapon: ItemStack,
+    @JsonProperty("playerIsHiddenFrom") val ambush: Boolean
 ) : Event()

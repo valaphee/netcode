@@ -23,9 +23,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
  */
 data class Modal(
     override val title: String,
-    @get:JsonProperty("content") val content: String,
-    @get:JsonProperty("button1") val yesButtonText: String,
-    @get:JsonProperty("button2") val noButtonText: String
+    @JsonProperty("content") val content: String,
+    @JsonProperty("button1") val yesButtonText: String,
+    @JsonProperty("button2") val noButtonText: String
 ) : Form<Boolean>() {
     override fun parseResponse(response: Any?) = response as Boolean
 }

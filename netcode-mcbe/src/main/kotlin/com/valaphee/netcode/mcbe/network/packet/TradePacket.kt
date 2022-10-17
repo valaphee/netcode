@@ -46,23 +46,23 @@ class TradePacket(
     val data: Data
 ) : Packet() {
     data class Data(
-        @get:JsonProperty("Recipes") val offers: List<Offer>,
-        @get:JsonProperty("TierExpRequirements") val tierExperienceRequirements: Map<Int, Int>
+        @JsonProperty("Recipes") val offers: List<Offer>,
+        @JsonProperty("TierExpRequirements") val tierExperienceRequirements: Map<Int, Int>
     ) {
         data class Offer(
-            @get:JsonProperty("buyA") val buyA: ItemStack?,
-            @get:JsonProperty("buyCountA") val buyCountA: Int,
-            @get:JsonProperty("priceMultiplierA") val priceMultiplierA: Float,
-            @get:JsonProperty("sell") val sell: ItemStack?,
-            @get:JsonProperty("buyB") val buyB: ItemStack?,
-            @get:JsonProperty("buyCountB") val buyCountB: Int?,
-            @get:JsonProperty("priceMultiplierB") val priceMultiplierB: Float,
-            @get:JsonProperty("tier") val tier: Int,
-            @get:JsonProperty("uses") val sold: Int,
-            @get:JsonProperty("maxUses") val stock: Int,
-            @get:JsonProperty("traderExp") val experience: Int,
-            @get:JsonProperty("reward") val reward: Boolean,
-            @get:JsonProperty("demand") val demand: Int
+            @JsonProperty("buyA") val buyA: ItemStack?,
+            @JsonProperty("buyCountA") val buyCountA: Int,
+            @JsonProperty("priceMultiplierA") val priceMultiplierA: Float,
+            @JsonProperty("sell") val sell: ItemStack?,
+            @JsonProperty("buyB") val buyB: ItemStack?,
+            @JsonProperty("buyCountB") val buyCountB: Int?,
+            @JsonProperty("priceMultiplierB") val priceMultiplierB: Float,
+            @JsonProperty("tier") val tier: Int,
+            @JsonProperty("uses") val sold: Int,
+            @JsonProperty("maxUses") val stock: Int,
+            @JsonProperty("traderExp") val experience: Int,
+            @JsonProperty("reward") val reward: Boolean,
+            @JsonProperty("demand") val demand: Int
         )
     }
 

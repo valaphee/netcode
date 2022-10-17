@@ -22,8 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @author Kevin Ludwig
  */
 data class Signature(
-    @get:JsonProperty("path") val path: String,
-    @get:JsonProperty("hash") val hash: ByteArray
+    @JsonProperty("path") val path: String,
+    @JsonProperty("hash") val hash: ByteArray
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

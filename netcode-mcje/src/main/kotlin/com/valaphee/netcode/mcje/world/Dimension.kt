@@ -22,19 +22,19 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @author Kevin Ludwig
  */
 data class Dimension(
-    @get:JsonProperty("ambient_light") val ambientLight: Float,
-    @get:JsonProperty("bed_works") val bedWorks: Boolean,
-    @get:JsonProperty("coordinate_scale") val coordinateScale: Double,
-    @get:JsonProperty("effects") val effects: String,
-    @get:JsonProperty("has_ceiling") val hasCeiling: Boolean,
-    @get:JsonProperty("has_raids") val hasRaids: Boolean,
-    @get:JsonProperty("has_skylight") val hasSkylight: Boolean,
-    @get:JsonProperty("height") val height: Int?,
-    @get:JsonProperty("infiniburn") val infinburn: String,
-    @get:JsonProperty("logical_height") val logicalHeight: Int,
-    @get:JsonProperty("min_y") val minY: Int?,
-    @get:JsonProperty("natural") val natural: Boolean,
-    @get:JsonProperty("piglin_safe") val piglinSafe: Boolean,
-    @get:JsonProperty("respawn_anchor_works") val respawnAnchorWorks: Boolean,
-    @get:JsonProperty("ultrawarm") val ultrawarm: Boolean
+    @JsonProperty("ambient_light") val ambientLight: Float,
+    @JsonProperty("bed_works") val bedWorks: Boolean,
+    @JsonProperty("coordinate_scale") val coordinateScale: Double,
+    @JsonProperty("effects") val effects: String,
+    @JsonProperty("has_ceiling") val hasCeiling: Boolean,
+    @JsonProperty("has_raids") val hasRaids: Boolean,
+    @JsonProperty("has_skylight") val hasSkylight: Boolean,
+    @JsonProperty("height") val height: Int?,
+    @JsonProperty("infiniburn") val infinburn: String,
+    @JsonProperty("logical_height") val logicalHeight: Int,
+    @JsonProperty("min_y") val minY: Int?,
+    @JsonProperty("natural") val natural: Boolean,
+    @JsonProperty("piglin_safe") val piglinSafe: Boolean,
+    @JsonProperty("respawn_anchor_works") val respawnAnchorWorks: Boolean,
+    @JsonProperty("ultrawarm") val ultrawarm: Boolean
 )

@@ -58,18 +58,18 @@ class ServerWorldPacket(
     val deathLocation: DeathLocation?
 ) : Packet<ServerPlayPacketHandler>() {
     data class Registries(
-        @get:JsonProperty("minecraft:dimension_type") val dimensions: Registry<Dimension>,
-        @get:JsonProperty("minecraft:worldgen/biome") val biomes: Registry<Biome>,
-        @get:JsonProperty("minecraft:chat_type") val chatTypes: Registry<ChatType>?
+        @JsonProperty("minecraft:dimension_type") val dimensions: Registry<Dimension>,
+        @JsonProperty("minecraft:worldgen/biome") val biomes: Registry<Biome>,
+        @JsonProperty("minecraft:chat_type") val chatTypes: Registry<ChatType>?
     ) {
         data class Registry<T>(
-            @get:JsonProperty("type") val key: String,
-            @get:JsonProperty("value") val value: List<Entry<T>>
+            @JsonProperty("type") val key: String,
+            @JsonProperty("value") val value: List<Entry<T>>
         ) {
             data class Entry<T>(
-                @get:JsonProperty("id") val id: Int,
-                @get:JsonProperty("name") val key: String,
-                @get:JsonProperty("element") val value: T
+                @JsonProperty("id") val id: Int,
+                @JsonProperty("name") val key: String,
+                @JsonProperty("element") val value: T
             )
         }
     }

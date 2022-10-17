@@ -23,13 +23,13 @@ import com.valaphee.netcode.mcbeautomation.Event
  * @author Kevin Ludwig
  */
 data class MobInteractedEvent(
-    @get:JsonProperty("player") val player: Entity,
-    @get:JsonProperty("mob") val mob: Entity,
-    @get:JsonProperty("interactionType") val method: Int
+    @JsonProperty("player") val player: Entity,
+    @JsonProperty("mob") val mob: Entity,
+    @JsonProperty("interactionType") val method: Int
 ) : Event() {
     data class Mob(
-        @get:JsonProperty("color") val color: Int,
-        @get:JsonProperty("type") val type: Int,
-        @get:JsonProperty("variant") val variant: Int
+        @JsonProperty("color") val color: Int,
+        @JsonProperty("type") val type: Int,
+        @JsonProperty("variant") val variant: Int
     )
 }

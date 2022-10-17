@@ -30,7 +30,7 @@ class BlockState {
     @JsonCreator
     constructor(
         @JsonProperty("name") blockKey: String,
-        @JsonProperty("states") states: Map<String, Any>
+        @JsonProperty("states") states: Map<String, Any> = emptyMap()
     ) {
         this.blockKey = blockKey
         this.states = states

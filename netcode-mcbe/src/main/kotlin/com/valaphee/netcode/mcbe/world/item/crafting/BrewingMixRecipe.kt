@@ -35,14 +35,14 @@ import com.valaphee.netcode.util.Int2ObjectOpenHashBiMap
  */
 @JsonTypeName("minecraft:recipe_brewing_mix")
 data class BrewingMixRecipe(
-    @get:JsonProperty("description") val description: Description,
-    @get:JsonProperty("tags") val tags: List<String>,
-    @get:JsonProperty("input") @get:JsonSerialize(using = PotionSerializer::class) @get:JsonDeserialize(using = PotionDeserializer::class) val input: ItemStack,
-    @get:JsonProperty("reagent") @get:JsonSerialize(using = SingleItemSerializer::class) @get:JsonDeserialize(using = SingleItemDeserializer::class) val reagent: ItemStack,
-    @get:JsonProperty("output") @get:JsonSerialize(using = PotionSerializer::class) @get:JsonDeserialize(using = PotionDeserializer::class) val output: ItemStack
+    @JsonProperty("description") val description: Description,
+    @JsonProperty("tags") val tags: List<String>,
+    @JsonProperty("input") @get:JsonSerialize(using = PotionSerializer::class) @get:JsonDeserialize(using = PotionDeserializer::class) val input: ItemStack,
+    @JsonProperty("reagent") @get:JsonSerialize(using = SingleItemSerializer::class) @get:JsonDeserialize(using = SingleItemDeserializer::class) val reagent: ItemStack,
+    @JsonProperty("output") @get:JsonSerialize(using = PotionSerializer::class) @get:JsonDeserialize(using = PotionDeserializer::class) val output: ItemStack
 ) : Data() {
     data class Description(
-        @get:JsonProperty("identifier") val key: String
+        @JsonProperty("identifier") val key: String
     )
 
     object PotionSerializer : JsonSerializer<ItemStack>() {

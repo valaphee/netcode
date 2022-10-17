@@ -24,35 +24,35 @@ import java.util.UUID
  * @author Kevin Ludwig
  */
 data class Status(
-    @get:JsonProperty("version") val version: Version,
-    @get:JsonProperty("modinfo") val mods: Mods?,
-    @get:JsonProperty("players") val players: Players,
-    @get:JsonProperty("description") val description: Component,
-    @get:JsonProperty("favicon") val favicon: String?
+    @JsonProperty("version") val version: Version,
+    @JsonProperty("modinfo") val mods: Mods?,
+    @JsonProperty("players") val players: Players,
+    @JsonProperty("description") val description: Component,
+    @JsonProperty("favicon") val favicon: String?
 ) {
     data class Version(
-        @get:JsonProperty("name") val name: String,
-        @get:JsonProperty("protocol") val protocol: Int
+        @JsonProperty("name") val name: String,
+        @JsonProperty("protocol") val protocol: Int
     )
 
     data class Players(
-        @get:JsonProperty("max") val maximum: Int,
-        @get:JsonProperty("online") val current: Int,
-        @get:JsonProperty("sample") val sample: List<Sample>?
+        @JsonProperty("max") val maximum: Int,
+        @JsonProperty("online") val current: Int,
+        @JsonProperty("sample") val sample: List<Sample>?
     ) {
         data class Sample(
-            @get:JsonProperty("id") val id: UUID,
-            @get:JsonProperty("name") val name: String
+            @JsonProperty("id") val id: UUID,
+            @JsonProperty("name") val name: String
         )
     }
 
     data class Mods(
-        @get:JsonProperty("type") val type: String,
-        @get:JsonProperty("modlist") val mods: List<Mod>?
+        @JsonProperty("type") val type: String,
+        @JsonProperty("modlist") val mods: List<Mod>?
     ) {
         data class Mod(
-            @get:JsonProperty("modid") val name: String,
-            @get:JsonProperty("version") val version: String
+            @JsonProperty("modid") val name: String,
+            @JsonProperty("version") val version: String
         )
     }
 }

@@ -22,6 +22,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @author Kevin Ludwig
  */
 data class Error(
-    @get:JsonProperty("statusCode") val statusCode: Int,
-    @get:JsonProperty("statusMessage") val statusMessage: String
+    @JsonProperty("statusCode") val statusCode: Int,
+    @JsonProperty("statusMessage") val statusMessage: String
 )

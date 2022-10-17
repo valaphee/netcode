@@ -83,16 +83,16 @@ data class Appearance(
     }
 
     data class PersonaPiece(
-        @get:JsonProperty("PieceId") val id: String,
-        @get:JsonProperty("PieceType") val type: String,
-        @get:JsonProperty("PackId") val packId: String,
-        @get:JsonProperty("IsDefault") val default: Boolean,
-        @get:JsonProperty("ProductId") val productId: String
+        @JsonProperty("PieceId") val id: String,
+        @JsonProperty("PieceType") val type: String,
+        @JsonProperty("PackId") val packId: String,
+        @JsonProperty("IsDefault") val default: Boolean,
+        @JsonProperty("ProductId") val productId: String
     )
 
     data class PersonaPieceTint(
-        @get:JsonProperty("PieceType") val type: String,
-        @get:JsonProperty("Colors") val colors: List<String>
+        @JsonProperty("PieceType") val type: String,
+        @JsonProperty("Colors") val colors: List<String>
     )
 
     val skinWidth get() = skinImage.width

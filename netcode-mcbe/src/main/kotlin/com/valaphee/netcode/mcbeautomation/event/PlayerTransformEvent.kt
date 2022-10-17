@@ -23,5 +23,5 @@ import com.valaphee.netcode.mcbeautomation.Event
  * @author Kevin Ludwig
  */
 data class PlayerTransformEvent(
-    @get:JsonProperty("player") val player: Entity,
+    @JsonProperty("player") val player: Entity,
 ) : Event()
