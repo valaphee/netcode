@@ -20,10 +20,12 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_19_0
+import com.valaphee.netcode.mcje.network.V1_19_3
 import com.valaphee.netcode.mcje.world.GameMode
 import com.valaphee.netcode.mcje.world.entity.player.GameProfile
 import com.valaphee.netcode.util.LazyList
 import net.kyori.adventure.text.Component
+import java.util.UUID
 
 /**
  * @author Kevin Ludwig
@@ -33,14 +35,16 @@ class ServerPlayerListPacket(
     val entries: List<Entry>
 ) : Packet<ServerPlayPacketHandler>() {
     enum class Action {
-        Add, UpdateGameMode, UpdateLatency, UpdateCustomName, Remove
+        Add, InitializeChat, UpdateGameMode, UpdateListed, UpdateLatency, UpdateCustomName, Remove
     }
 
     data class Entry(
         val gameProfile: GameProfile,
         val gameMode: GameMode? = null,
+        val listed: Boolean = false,
         val latency: Int = 0,
         val customName: Component? = null,
+        val sessionId: UUID? = null,
         val signature: Signature? = null
     )  {
         data class Signature(
@@ -51,7 +55,7 @@ class ServerPlayerListPacket(
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(action.ordinal)
+        if (version >= V1_19_3 && action != Action.Remove) buffer.writeVarInt(action.ordinal)
         buffer.writeVarInt(entries.size)
         entries.forEach {
             buffer.writeUuid(it.gameProfile.userId!!)
@@ -67,13 +71,24 @@ class ServerPlayerListPacket(
                             buffer.writeString(it)
                         } ?: buffer.writeBoolean(false)
                     }
-                    buffer.writeVarInt(it.gameMode!!.ordinal)
-                    buffer.writeVarInt(it.latency)
-                    it.customName?.let {
-                        buffer.writeBoolean(true)
-                        buffer.writeComponent(it)
-                    } ?: buffer.writeBoolean(false)
-                    if (version >= V1_19_0) it.signature?.let {
+                    if (version < V1_19_3) {
+                        buffer.writeVarInt(it.gameMode!!.ordinal)
+                        buffer.writeVarInt(it.latency)
+                        it.customName?.let {
+                            buffer.writeBoolean(true)
+                            buffer.writeComponent(it)
+                        } ?: buffer.writeBoolean(false)
+                        if (version >= V1_19_0) it.signature?.let {
+                            buffer.writeBoolean(true)
+                            buffer.writeLong(it.expiresAt)
+                            buffer.writeByteArray(it.publicKey)
+                            buffer.writeByteArray(it.signature)
+                        } ?: buffer.writeBoolean(false)
+                    }
+                }
+                Action.InitializeChat -> {
+                    buffer.writeUuid(it.sessionId!!)
+                    it.signature?.let {
                         buffer.writeBoolean(true)
                         buffer.writeLong(it.expiresAt)
                         buffer.writeByteArray(it.publicKey)
@@ -81,6 +96,7 @@ class ServerPlayerListPacket(
                     } ?: buffer.writeBoolean(false)
                 }
                 Action.UpdateGameMode -> buffer.writeVarInt(it.gameMode!!.ordinal)
+                Action.UpdateListed -> buffer.writeBoolean(it.listed)
                 Action.UpdateLatency -> buffer.writeVarInt(it.latency)
                 Action.UpdateCustomName -> {
                     it.customName?.let {
@@ -97,13 +113,33 @@ class ServerPlayerListPacket(
 
     override fun toString() = "ServerPlayerListPacket(action=$action, entries=$entries)"
 
-    object Reader : Packet.Reader {
+    object UpdateReader : Reader {
         override fun read(buffer: PacketBuffer, version: Int): ServerPlayerListPacket {
             val action = Action.values()[buffer.readVarInt()]
             val entries = LazyList(buffer.readVarInt()) {
                 when (action) {
-                    Action.Add -> Entry(GameProfile(buffer.readUuid(), buffer.readString(16), LazyList(buffer.readVarInt()) { GameProfile.Property(buffer.readString(), buffer.readString(), if (buffer.readBoolean()) buffer.readString() else null) }), checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())), buffer.readVarInt(), if (buffer.readBoolean()) buffer.readComponent() else null, if (version >= V1_19_0 && buffer.readBoolean()) Entry.Signature(buffer.readLong(), buffer.readByteArray(), buffer.readByteArray()) else null)
+                    Action.Add -> {
+                        val gameProfile = GameProfile(buffer.readUuid(), buffer.readString(16), LazyList(buffer.readVarInt()) { GameProfile.Property(buffer.readString(), buffer.readString(), if (buffer.readBoolean()) buffer.readString() else null) })
+                        val gameMode: GameMode?
+                        val latency: Int
+                        val customName: Component?
+                        val signature: Entry.Signature?
+                        if (version >= V1_19_3) {
+                            gameMode = null
+                            latency = 0
+                            customName = null
+                            signature = null
+                        } else {
+                            gameMode = checkNotNull(GameMode.byIdOrNull(buffer.readVarInt()))
+                            latency = buffer.readVarInt()
+                            customName = if (buffer.readBoolean()) buffer.readComponent() else null
+                            signature = if (version >= V1_19_0 && buffer.readBoolean()) Entry.Signature(buffer.readLong(), buffer.readByteArray(), buffer.readByteArray()) else null
+                        }
+                        Entry(gameProfile, gameMode, false, latency, customName, null, signature)
+                    }
+                    Action.InitializeChat ->  Entry(GameProfile(buffer.readUuid(), null), sessionId = buffer.readUuid(), signature = if (buffer.readBoolean()) Entry.Signature(buffer.readLong(), buffer.readByteArray(), buffer.readByteArray()) else null)
                     Action.UpdateGameMode -> Entry(GameProfile(buffer.readUuid(), null), gameMode = checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())))
+                    Action.UpdateListed -> Entry(GameProfile(buffer.readUuid(), null), listed = buffer.readBoolean())
                     Action.UpdateLatency -> Entry(GameProfile(buffer.readUuid(), null), latency = buffer.readVarInt())
                     Action.UpdateCustomName -> Entry(GameProfile(buffer.readUuid(), null), customName = if (buffer.readBoolean()) buffer.readComponent() else null)
                     Action.Remove -> Entry(GameProfile(buffer.readUuid(), null))
@@ -111,5 +147,9 @@ class ServerPlayerListPacket(
             }
             return ServerPlayerListPacket(action, entries)
         }
+    }
+
+    object RemoveReader : Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerListPacket(Action.Remove, LazyList(buffer.readVarInt()) { Entry(GameProfile(buffer.readUuid(), null)) })
     }
 }

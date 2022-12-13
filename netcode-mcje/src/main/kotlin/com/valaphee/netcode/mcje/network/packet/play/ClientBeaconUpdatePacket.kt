@@ -19,18 +19,29 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
+import com.valaphee.netcode.mcje.network.V1_19_0
 
 /**
  * @author Kevin Ludwig
  */
 class ClientBeaconUpdatePacket(
-    val primaryEffectId: Int,
-    val secondaryEffectId: Int
+    val primaryEffectId: Int?,
+    val secondaryEffectId: Int?
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(primaryEffectId)
-        buffer.writeVarInt(secondaryEffectId)
+        if (version >= V1_19_0) {
+            primaryEffectId?.let {
+                buffer.writeBoolean(true)
+                buffer.writeVarInt(it)
+            } ?: buffer.writeBoolean(false)
+            secondaryEffectId?.let {
+                buffer.writeBoolean(true)
+                buffer.writeVarInt(it)
+            } ?: buffer.writeBoolean(false)
+        } else {
+            buffer.writeVarInt(primaryEffectId!!)
+            buffer.writeVarInt(secondaryEffectId!!)
+        }
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.beaconUpdate(this)
@@ -38,6 +49,6 @@ class ClientBeaconUpdatePacket(
     override fun toString() = "ClientBeaconUpdatePacket(primaryEffectId=$primaryEffectId, secondaryEffectId=$secondaryEffectId)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ClientBeaconUpdatePacket(buffer.readVarInt(), buffer.readVarInt())
+        override fun read(buffer: PacketBuffer, version: Int) = ClientBeaconUpdatePacket(if (version < V1_19_0 || buffer.readBoolean()) buffer.readVarInt() else null, if (version < V1_19_0 || buffer.readBoolean()) buffer.readVarInt() else null)
     }
 }

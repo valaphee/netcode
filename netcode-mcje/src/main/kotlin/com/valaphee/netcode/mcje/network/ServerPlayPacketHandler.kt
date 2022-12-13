@@ -39,6 +39,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ServerCraftPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerCustomPayloadPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerDifficultyPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerDisconnectPacket
+import com.valaphee.netcode.mcje.network.packet.play.ServerDisguisedChatPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntitiesRemovePacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityAddPacket
 import com.valaphee.netcode.mcje.network.packet.play.ServerEntityAnimationPacket
@@ -311,4 +312,6 @@ interface ServerPlayPacketHandler : PacketHandler {
     fun recipes(packet: ServerRecipesPacket) = other(packet)
 
     fun tags(packet: ServerTagsPacket) = other(packet)
+
+    fun disguisedChat(serverDisguisedChatPacket: ServerDisguisedChatPacket)
 }

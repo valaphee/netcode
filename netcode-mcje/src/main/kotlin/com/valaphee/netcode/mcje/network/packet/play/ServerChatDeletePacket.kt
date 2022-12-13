@@ -16,28 +16,29 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.valaphee.netcode.mcje.chat.Signature
+import com.valaphee.netcode.mcje.chat.readSignature
+import com.valaphee.netcode.mcje.chat.writeSignature
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.network.V1_19_0
-import net.kyori.adventure.text.Component
-import java.util.UUID
+import com.valaphee.netcode.mcje.network.V1_19_3
 
 /**
  * @author Kevin Ludwig
  */
 class ServerChatDeletePacket(
-    val signature: ByteArray
+    val signature: Signature
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeByteArray(signature)
+        if (version >= V1_19_3) buffer.writeSignature(signature) else buffer.writeByteArray(signature.signature!!)
     }
 
     override fun handle(handler: ServerPlayPacketHandler) = handler.chatDelete(this)
 
-    override fun toString() = "ServerChatDeletePacket(signature=${signature.contentToString()})"
+    override fun toString() = "ServerChatDeletePacket(signature=$signature)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerChatDeletePacket(buffer.readByteArray())
+        override fun read(buffer: PacketBuffer, version: Int) = ServerChatDeletePacket(if (version >= V1_19_3) buffer.readSignature() else Signature(1, buffer.readByteArray()))
     }
 }

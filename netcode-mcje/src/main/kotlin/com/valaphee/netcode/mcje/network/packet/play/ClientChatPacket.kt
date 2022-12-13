@@ -21,7 +21,9 @@ import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.V1_19_0
 import com.valaphee.netcode.mcje.network.V1_19_1
+import com.valaphee.netcode.mcje.network.V1_19_3
 import com.valaphee.netcode.util.LazyList
+import java.util.BitSet
 import java.util.UUID
 
 /**
@@ -33,28 +35,39 @@ class ClientChatPacket(
     val salt: Long,
     val signature: ByteArray?,
     val preview: Boolean,
-    val lastSeenMessages: List<Pair<UUID, ByteArray>>,
-    val lastReceivedMessage: Pair<UUID, ByteArray>?
+    val lastSeenMessages: List<Pair<UUID, ByteArray>>?,
+    val lastReceivedMessage: Pair<UUID, ByteArray>?,
+    val offset: Int,
+    val acknowledgedMessages: BitSet?
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeString(message)
-        if (version >= V1_19_0) {
+        if (version >= V1_19_3) {
+            buffer.writeLong(time)
+            buffer.writeLong(salt)
+            signature?.let {
+                buffer.writeBoolean(true)
+                buffer.writeBytes(it)
+            } ?: buffer.writeBoolean(false)
+            buffer.writeVarInt(offset)
+            // TODO acknowledgedMessages
+        } else if (version >= V1_19_0) {
             buffer.writeLong(time)
             buffer.writeLong(salt)
             buffer.writeByteArray(signature!!)
             buffer.writeBoolean(preview)
-        }
-        if (version >= V1_19_1) {
-            buffer.writeVarInt(lastSeenMessages.size)
-            lastSeenMessages.forEach {
-                buffer.writeUuid(it.first)
-                buffer.writeByteArray(it.second)
+            if (version >= V1_19_1) {
+                buffer.writeVarInt(lastSeenMessages!!.size)
+                lastSeenMessages.forEach {
+                    buffer.writeUuid(it.first)
+                    buffer.writeByteArray(it.second)
+                }
+                lastReceivedMessage?.let {
+                    buffer.writeBoolean(true)
+                    buffer.writeUuid(it.first)
+                    buffer.writeByteArray(it.second)
+                } ?: buffer.writeBoolean(false)
             }
-            lastReceivedMessage?.let {
-                buffer.writeBoolean(true)
-                buffer.writeUuid(it.first)
-                buffer.writeByteArray(it.second)
-            } ?: buffer.writeBoolean(false)
         }
     }
 
@@ -69,27 +82,44 @@ class ClientChatPacket(
             val salt: Long
             val signature: ByteArray?
             val preview: Boolean
-            if (version >= V1_19_0) {
+            val lastSeenMessages: List<Pair<UUID, ByteArray>>?
+            val lastReceivedMessage: Pair<UUID, ByteArray>?
+            val offset: Int
+            val acknowledgedMessages: BitSet?
+            if (version >= V1_19_3) {
+                time = buffer.readLong()
+                salt = buffer.readLong()
+                signature = if (buffer.readBoolean()) ByteArray(256).also(buffer::readBytes) else null
+                preview = false
+                lastSeenMessages = null
+                lastReceivedMessage = null
+                offset = buffer.readVarInt()
+                acknowledgedMessages = null // TODO acknowledgedMessages
+            } else if (version >= V1_19_0) {
                 time = buffer.readLong()
                 salt = buffer.readLong()
                 signature = buffer.readByteArray()
                 preview = buffer.readBoolean()
+                if (version >= V1_19_1) {
+                    lastSeenMessages = LazyList(buffer.readVarInt()) { buffer.readUuid() to buffer.readByteArray() }
+                    lastReceivedMessage = if (buffer.readBoolean()) buffer.readUuid() to buffer.readByteArray() else null
+                } else {
+                    lastSeenMessages = emptyList()
+                    lastReceivedMessage = null
+                }
+                offset = 0
+                acknowledgedMessages = null
             } else {
                 time = 0
                 salt = 0
                 signature = null
                 preview = false
-            }
-            val lastSeenMessages: List<Pair<UUID, ByteArray>>
-            val lastReceivedMessage: Pair<UUID, ByteArray>?
-            if (version >= V1_19_1) {
-                lastSeenMessages = LazyList(buffer.readVarInt()) { buffer.readUuid() to buffer.readByteArray() }
-                lastReceivedMessage = if (buffer.readBoolean()) buffer.readUuid() to buffer.readByteArray() else null
-            } else {
                 lastSeenMessages = emptyList()
                 lastReceivedMessage = null
+                offset = 0
+                acknowledgedMessages = null
             }
-            return ClientChatPacket(message, time, salt, signature, preview, lastSeenMessages, lastReceivedMessage)
+            return ClientChatPacket(message, time, salt, signature, preview, lastSeenMessages, lastReceivedMessage, offset, acknowledgedMessages)
         }
     }
 }

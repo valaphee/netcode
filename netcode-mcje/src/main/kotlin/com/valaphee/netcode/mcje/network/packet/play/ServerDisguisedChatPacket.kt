@@ -19,36 +19,30 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
-import com.valaphee.netcode.mcje.network.V1_19_3
 import net.kyori.adventure.text.Component
 
 /**
  * @author Kevin Ludwig
  */
-class ServerServerDataPacket(
-    val description: Component?,
-    val favicon: String?,
-    val playerChatPreview: Boolean,
-    val enforceSecureChat: Boolean
+class ServerDisguisedChatPacket(
+    val message: Component,
+    val chatType: Int,
+    val name: Component,
+    val targetName: Component?
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        description?.let {
+        buffer.writeComponent(message)
+        buffer.writeVarInt(chatType)
+        buffer.writeComponent(name)
+        targetName?.let { 
             buffer.writeBoolean(true)
             buffer.writeComponent(it)
         } ?: buffer.writeBoolean(false)
-        favicon?.let {
-            buffer.writeBoolean(true)
-            buffer.writeString(it)
-        } ?: buffer.writeBoolean(false)
-        if (version < V1_19_3) buffer.writeBoolean(playerChatPreview)
-        buffer.writeBoolean(enforceSecureChat)
     }
 
-    override fun handle(handler: ServerPlayPacketHandler) = handler.serverData(this)
-
-    override fun toString() = "ServerServerDataPacket(description=$description, favicon=$favicon, playerChatPreview=$playerChatPreview, enforceSecureChat=$enforceSecureChat)"
+    override fun handle(handler: ServerPlayPacketHandler) = handler.disguisedChat(this)
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerServerDataPacket(if (buffer.readBoolean()) buffer.readComponent() else null, if (buffer.readBoolean()) buffer.readString() else null, if (version < V1_19_3) buffer.readBoolean() else false, buffer.readBoolean())
+        override fun read(buffer: PacketBuffer, version: Int) = ServerDisguisedChatPacket(buffer.readComponent(), buffer.readVarInt(), buffer.readComponent(), if (buffer.readBoolean()) buffer.readComponent() else null)
     }
 }

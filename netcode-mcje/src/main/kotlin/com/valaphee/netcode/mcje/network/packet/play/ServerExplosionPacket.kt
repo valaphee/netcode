@@ -16,26 +16,27 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.valaphee.foundry.math.Double3
 import com.valaphee.foundry.math.Float3
 import com.valaphee.foundry.math.Int3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import com.valaphee.netcode.mcje.network.V1_18_2
+import com.valaphee.netcode.mcje.network.V1_19_3
 import com.valaphee.netcode.util.LazyList
 
 /**
  * @author Kevin Ludwig
  */
 class ServerExplosionPacket(
-    val position: Float3,
+    val position: Double3,
     val radius: Float,
     val affectedBlocks: List<Int3>,
     val velocity: Float3
 ) : Packet<ServerPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeFloat3(position)
+        if (version >= V1_19_3) buffer.writeDouble3(position) else buffer.writeFloat3(position.toFloat3())
         buffer.writeFloat(radius)
         if (version >= V1_18_2) buffer.writeVarInt(affectedBlocks.size) else buffer.writeInt(affectedBlocks.size)
         affectedBlocks.forEach { (x, y, z) ->
@@ -51,6 +52,6 @@ class ServerExplosionPacket(
     override fun toString() = "ServerExplosionPacket(position=$position, radius=$radius, affectedBlocks=$affectedBlocks, velocity=$velocity)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerExplosionPacket(buffer.readFloat3(), buffer.readFloat(), LazyList(if (version >= V1_18_2) buffer.readVarInt() else buffer.readInt()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) }, buffer.readFloat3())
+        override fun read(buffer: PacketBuffer, version: Int) = ServerExplosionPacket(if (version >= V1_19_3) buffer.readDouble3() else buffer.readFloat3().toDouble3(), buffer.readFloat(), LazyList(if (version >= V1_18_2) buffer.readVarInt() else buffer.readInt()) { Int3(buffer.readByte().toInt(), buffer.readByte().toInt(), buffer.readByte().toInt()) }, buffer.readFloat3())
     }
 }

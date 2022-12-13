@@ -19,6 +19,7 @@ package com.valaphee.netcode.mcje.network.packet.play
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
+import com.valaphee.netcode.mcje.network.V1_19_3
 import com.valaphee.netcode.util.LazyList
 import java.util.UUID
 
@@ -26,27 +27,46 @@ import java.util.UUID
  * @author Kevin Ludwig
  */
 class ClientChatAcknowledgePacket(
-    val lastSeenMessages: List<Pair<UUID, ByteArray>>,
-    val lastReceivedMessage: Pair<UUID, ByteArray>?
+    val lastSeenMessages: List<Pair<UUID, ByteArray>>?,
+    val lastReceivedMessage: Pair<UUID, ByteArray>?,
+    val offset: Int
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeVarInt(lastSeenMessages.size)
-        lastSeenMessages.forEach {
-            buffer.writeUuid(it.first)
-            buffer.writeByteArray(it.second)
+        if (version >= V1_19_3) {
+            buffer.writeVarInt(offset)
+        } else {
+            buffer.writeVarInt(lastSeenMessages!!.size)
+            lastSeenMessages.forEach {
+                buffer.writeUuid(it.first)
+                buffer.writeByteArray(it.second)
+            }
+            lastReceivedMessage?.let {
+                buffer.writeBoolean(true)
+                buffer.writeUuid(it.first)
+                buffer.writeByteArray(it.second)
+            } ?: buffer.writeBoolean(false)
         }
-        lastReceivedMessage?.let {
-            buffer.writeBoolean(true)
-            buffer.writeUuid(it.first)
-            buffer.writeByteArray(it.second)
-        } ?: buffer.writeBoolean(false)
     }
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.chatAcknowledge(this)
 
-    override fun toString() = "ClientChatAcknowledgePacket(lastSeenMessages=$lastSeenMessages, lastReceivedMessage=$lastReceivedMessage)"
+    override fun toString() = "ClientChatAcknowledgePacket(lastSeenMessages=$lastSeenMessages, lastReceivedMessage=$lastReceivedMessage, offset=$offset)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ClientChatAcknowledgePacket(LazyList(buffer.readVarInt()) { buffer.readUuid() to buffer.readByteArray() }, if (buffer.readBoolean()) buffer.readUuid() to buffer.readByteArray() else null)
+        override fun read(buffer: PacketBuffer, version: Int): ClientChatAcknowledgePacket {
+            val lastSeenMessages: List<Pair<UUID, ByteArray>>?
+            val lastReceivedMessage: Pair<UUID, ByteArray>?
+            val offset: Int
+            if (version >= V1_19_3) {
+                lastSeenMessages = LazyList(buffer.readVarInt()) { buffer.readUuid() to buffer.readByteArray() }
+                lastReceivedMessage = if (buffer.readBoolean()) buffer.readUuid() to buffer.readByteArray() else null
+                offset = 0
+            } else {
+                lastSeenMessages = null
+                lastReceivedMessage = null
+                offset = buffer.readVarInt()
+            }
+            return ClientChatAcknowledgePacket(lastSeenMessages, lastReceivedMessage, offset)
+        }
     }
 }
