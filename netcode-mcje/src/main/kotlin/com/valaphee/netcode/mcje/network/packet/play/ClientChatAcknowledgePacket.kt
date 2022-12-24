@@ -58,8 +58,8 @@ class ClientChatAcknowledgePacket(
             val lastReceivedMessage: Pair<UUID, ByteArray>?
             val offset: Int
             if (version >= V1_19_3) {
-                lastSeenMessages = LazyList(buffer.readVarInt()) { buffer.readUuid() to buffer.readByteArray() }
-                lastReceivedMessage = if (buffer.readBoolean()) buffer.readUuid() to buffer.readByteArray() else null
+                lastSeenMessages = LazyList(buffer.readVarInt()) { buffer.readUuid() to buffer.readByteArray(256) }
+                lastReceivedMessage = if (buffer.readBoolean()) buffer.readUuid() to buffer.readByteArray(256) else null
                 offset = 0
             } else {
                 lastSeenMessages = null

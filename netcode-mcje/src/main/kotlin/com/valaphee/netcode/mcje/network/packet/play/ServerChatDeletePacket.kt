@@ -39,6 +39,6 @@ class ServerChatDeletePacket(
     override fun toString() = "ServerChatDeletePacket(signature=$signature)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerChatDeletePacket(if (version >= V1_19_3) buffer.readSignature() else Signature(1, buffer.readByteArray()))
+        override fun read(buffer: PacketBuffer, version: Int) = ServerChatDeletePacket(if (version >= V1_19_3) buffer.readSignature() else Signature(1, buffer.readByteArray(256)))
     }
 }

@@ -16,26 +16,30 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.valaphee.netcode.mcje.chat.Session
+import com.valaphee.netcode.mcje.chat.readSession
+import com.valaphee.netcode.mcje.chat.writeSession
 import com.valaphee.netcode.mcje.network.ClientPlayPacketHandler
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.util.NamespacedKey
+import java.util.UUID
 
-/**
- * @author Kevin Ludwig
- */
-class ClientRecipeBookDisplayPacket(
-    val recipeKey: NamespacedKey
+class ClientChatSessionPacket(
+    val sessionId: UUID,
+    val session: Session
 ) : Packet<ClientPlayPacketHandler>() {
     override fun write(buffer: PacketBuffer, version: Int) {
-        buffer.writeNamespacedKey(recipeKey)
+        buffer.writeUuid(sessionId)
+        buffer.writeSession(session)
     }
 
-    override fun handle(handler: ClientPlayPacketHandler) = handler.recipeBookDisplay(this)
+    override fun handle(handler: ClientPlayPacketHandler) {
+        handler.chatSession(this)
+    }
 
-    override fun toString() = "ClientRecipeBookDisplayPacket(recipeKey=$recipeKey)"
+    override fun toString() = "ClientChatSessionPacket(sessionId=$sessionId, session=$session)"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ClientRecipeBookDisplayPacket(buffer.readNamespacedKey())
+        override fun read(buffer: PacketBuffer, version: Int) = ClientChatSessionPacket(buffer.readUuid(), buffer.readSession())
     }
 }

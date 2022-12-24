@@ -45,6 +45,6 @@ class ServerPlayerChatHeaderPacket(
     override fun toString() = "ServerPlayerChatHeaderPacket(previousSignature=${previousSignature?.contentToString()}, userId=$userId, headerSignature=${headerSignature.contentToString()}, bodyDigest=${bodyDigest.contentToString()})"
 
     object Reader : Packet.Reader {
-        override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerChatHeaderPacket(if (buffer.readBoolean()) buffer.readByteArray() else null, buffer.readUuid(), buffer.readByteArray(), buffer.readByteArray())
+        override fun read(buffer: PacketBuffer, version: Int) = ServerPlayerChatHeaderPacket(if (buffer.readBoolean()) buffer.readByteArray(256) else null, buffer.readUuid(), buffer.readByteArray(256), buffer.readByteArray(32))
     }
 }

@@ -173,6 +173,8 @@ interface ServerPlayPacketHandler : PacketHandler {
 
     fun disconnect(packet: ServerDisconnectPacket) = other(packet)
 
+    fun disguisedChat(packet: ServerDisguisedChatPacket) = other(packet)
+
     fun entityEvent(packet: ServerEntityEventPacket) = other(packet)
 
     fun explosion(packet: ServerExplosionPacket) = other(packet)
@@ -312,6 +314,4 @@ interface ServerPlayPacketHandler : PacketHandler {
     fun recipes(packet: ServerRecipesPacket) = other(packet)
 
     fun tags(packet: ServerTagsPacket) = other(packet)
-
-    fun disguisedChat(serverDisguisedChatPacket: ServerDisguisedChatPacket)
 }

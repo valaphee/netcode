@@ -16,6 +16,9 @@
 
 package com.valaphee.netcode.mcje.network.packet.play
 
+import com.valaphee.netcode.mcje.chat.Session
+import com.valaphee.netcode.mcje.chat.readSession
+import com.valaphee.netcode.mcje.chat.writeSession
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
@@ -45,14 +48,8 @@ class ServerPlayerListPacket(
         val latency: Int = 0,
         val customName: Component? = null,
         val sessionId: UUID? = null,
-        val signature: Signature? = null
-    )  {
-        data class Signature(
-            val expiresAt: Long,
-            val publicKey: ByteArray,
-            val signature: ByteArray
-        )
-    }
+        val session: Session? = null
+    )
 
     override fun write(buffer: PacketBuffer, version: Int) {
         if (version >= V1_19_3 && action != Action.Remove) buffer.writeVarInt(action.ordinal)
@@ -78,21 +75,17 @@ class ServerPlayerListPacket(
                             buffer.writeBoolean(true)
                             buffer.writeComponent(it)
                         } ?: buffer.writeBoolean(false)
-                        if (version >= V1_19_0) it.signature?.let {
+                        if (version >= V1_19_0) it.session?.let {
                             buffer.writeBoolean(true)
-                            buffer.writeLong(it.expiresAt)
-                            buffer.writeByteArray(it.publicKey)
-                            buffer.writeByteArray(it.signature)
+                            buffer.writeSession(it)
                         } ?: buffer.writeBoolean(false)
                     }
                 }
                 Action.InitializeChat -> {
                     buffer.writeUuid(it.sessionId!!)
-                    it.signature?.let {
+                    it.session?.let {
                         buffer.writeBoolean(true)
-                        buffer.writeLong(it.expiresAt)
-                        buffer.writeByteArray(it.publicKey)
-                        buffer.writeByteArray(it.signature)
+                        buffer.writeSession(it)
                     } ?: buffer.writeBoolean(false)
                 }
                 Action.UpdateGameMode -> buffer.writeVarInt(it.gameMode!!.ordinal)
@@ -123,21 +116,21 @@ class ServerPlayerListPacket(
                         val gameMode: GameMode?
                         val latency: Int
                         val customName: Component?
-                        val signature: Entry.Signature?
+                        val session: Session?
                         if (version >= V1_19_3) {
                             gameMode = null
                             latency = 0
                             customName = null
-                            signature = null
+                            session = null
                         } else {
                             gameMode = checkNotNull(GameMode.byIdOrNull(buffer.readVarInt()))
                             latency = buffer.readVarInt()
                             customName = if (buffer.readBoolean()) buffer.readComponent() else null
-                            signature = if (version >= V1_19_0 && buffer.readBoolean()) Entry.Signature(buffer.readLong(), buffer.readByteArray(), buffer.readByteArray()) else null
+                            session = if (version >= V1_19_0 && buffer.readBoolean()) buffer.readSession() else null
                         }
-                        Entry(gameProfile, gameMode, false, latency, customName, null, signature)
+                        Entry(gameProfile, gameMode, false, latency, customName, null, session)
                     }
-                    Action.InitializeChat ->  Entry(GameProfile(buffer.readUuid(), null), sessionId = buffer.readUuid(), signature = if (buffer.readBoolean()) Entry.Signature(buffer.readLong(), buffer.readByteArray(), buffer.readByteArray()) else null)
+                    Action.InitializeChat ->  Entry(GameProfile(buffer.readUuid(), null), sessionId = buffer.readUuid(), session = if (buffer.readBoolean()) buffer.readSession() else null)
                     Action.UpdateGameMode -> Entry(GameProfile(buffer.readUuid(), null), gameMode = checkNotNull(GameMode.byIdOrNull(buffer.readVarInt())))
                     Action.UpdateListed -> Entry(GameProfile(buffer.readUuid(), null), listed = buffer.readBoolean())
                     Action.UpdateLatency -> Entry(GameProfile(buffer.readUuid(), null), latency = buffer.readVarInt())

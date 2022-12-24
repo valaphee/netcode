@@ -30,34 +30,41 @@ class ClientRecipeBookPacket(
     val action: Action,
     val recipeId: Int,
     val recipeKey: NamespacedKey?,
-    val craftingBookOpen: Boolean,
-    val craftingBookFilterActive: Boolean,
-    val smeltingBookOpen: Boolean,
-    val smeltingBookFilterActive: Boolean,
-    val blastingBookOpen: Boolean,
-    val blastingBookFilterActive: Boolean,
-    val smokingBookOpen: Boolean,
-    val smokingBookFilterActive: Boolean
+    val states: Map<Type, State>,
 ) : Packet<ClientPlayPacketHandler>() {
     enum class Action {
-        Display, State
+        Display, SetState
+    }
+
+    enum class Type {
+        Crafting, Smelting, Blasting, Smoking
+    }
+
+    data class State(
+        val open: Boolean,
+        val filterActive: Boolean
+    )
+
+    override val reader get() = when (action) {
+        Action.Display -> DisplayReader
+        Action.SetState -> SetStateReader
     }
 
     override fun write(buffer: PacketBuffer, version: Int) {
         buffer.writeVarInt(action.ordinal)
         when (action) {
             Action.Display -> if (version >= V1_13_0) buffer.writeNamespacedKey(recipeKey!!) else buffer.writeInt(recipeId)
-            Action.State -> {
-                buffer.writeBoolean(craftingBookOpen)
-                buffer.writeBoolean(craftingBookFilterActive)
+            Action.SetState -> {
+                buffer.writeBoolean(states[Type.Crafting]!!.open)
+                buffer.writeBoolean(states[Type.Crafting]!!.filterActive)
                 if (version >= V1_13_0) {
-                    buffer.writeBoolean(smeltingBookOpen)
-                    buffer.writeBoolean(smeltingBookFilterActive)
+                    buffer.writeBoolean(states[Type.Smelting]!!.open)
+                    buffer.writeBoolean(states[Type.Smelting]!!.filterActive)
                     if (version >= V1_14_0) {
-                        buffer.writeBoolean(blastingBookOpen)
-                        buffer.writeBoolean(blastingBookFilterActive)
-                        buffer.writeBoolean(smokingBookOpen)
-                        buffer.writeBoolean(smokingBookFilterActive)
+                        buffer.writeBoolean(states[Type.Blasting]!!.open)
+                        buffer.writeBoolean(states[Type.Blasting]!!.filterActive)
+                        buffer.writeBoolean(states[Type.Smoking]!!.open)
+                        buffer.writeBoolean(states[Type.Smoking]!!.filterActive)
                     }
                 }
             }
@@ -66,21 +73,14 @@ class ClientRecipeBookPacket(
 
     override fun handle(handler: ClientPlayPacketHandler) = handler.recipeBook(this)
 
-    override fun toString() = "ClientRecipeBookPacket(action=$action, recipeId=$recipeId, recipeKey=$recipeKey, craftingBookOpen=$craftingBookOpen, craftingBookFilterActive=$craftingBookFilterActive, smeltingBookOpen=$smeltingBookOpen, smeltingBookFilterActive=$smeltingBookFilterActive, blastingBookOpen=$blastingBookOpen, blastingBookFilterActive=$blastingBookFilterActive, smokingBookOpen=$smokingBookOpen, smokingBookFilterActive=$smokingBookFilterActive)"
+    override fun toString() = "ClientRecipeBookPacket(action=$action, recipeId=$recipeId, recipeKey=$recipeKey, states=$states)"
 
     object Reader : Packet.Reader {
         override fun read(buffer: PacketBuffer, version: Int): ClientRecipeBookPacket {
             val action = Action.values()[buffer.readVarInt()]
             val recipeId: Int
             val recipeKey: NamespacedKey?
-            val craftingBookOpen: Boolean
-            val craftingBookFilterActive: Boolean
-            val smeltingBookOpen: Boolean
-            val smeltingBookFilterActive: Boolean
-            val blastingBookOpen: Boolean
-            val blastingBookFilterActive: Boolean
-            val smokingBookOpen: Boolean
-            val smokingBookFilterActive: Boolean
+            val states = mutableMapOf<Type, State>()
             when (action) {
                 Action.Display -> {
                     if (version >= V1_13_0) {
@@ -90,45 +90,29 @@ class ClientRecipeBookPacket(
                         recipeId = buffer.readInt()
                         recipeKey = null
                     }
-                    craftingBookOpen = false
-                    craftingBookFilterActive = false
-                    smeltingBookOpen = false
-                    smeltingBookFilterActive = false
-                    blastingBookOpen = false
-                    blastingBookFilterActive = false
-                    smokingBookOpen = false
-                    smokingBookFilterActive = false
                 }
-                Action.State -> {
+                Action.SetState -> {
                     recipeId = 0
                     recipeKey = null
-                    craftingBookOpen = buffer.readBoolean()
-                    craftingBookFilterActive = buffer.readBoolean()
+                    states[Type.Crafting] = State(buffer.readBoolean(), buffer.readBoolean())
                     if (version >= V1_13_0) {
-                        smeltingBookOpen = buffer.readBoolean()
-                        smeltingBookFilterActive = buffer.readBoolean()
+                        states[Type.Smelting] = State(buffer.readBoolean(), buffer.readBoolean())
                         if (version >= V1_14_0) {
-                            blastingBookOpen = buffer.readBoolean()
-                            blastingBookFilterActive = buffer.readBoolean()
-                            smokingBookOpen = buffer.readBoolean()
-                            smokingBookFilterActive = buffer.readBoolean()
-                        } else {
-                            blastingBookOpen = false
-                            blastingBookFilterActive = false
-                            smokingBookOpen = false
-                            smokingBookFilterActive = false
+                            states[Type.Blasting] = State(buffer.readBoolean(), buffer.readBoolean())
+                            states[Type.Smoking] = State(buffer.readBoolean(), buffer.readBoolean())
                         }
-                    } else {
-                        smeltingBookOpen = false
-                        smeltingBookFilterActive = false
-                        blastingBookOpen = false
-                        blastingBookFilterActive = false
-                        smokingBookOpen = false
-                        smokingBookFilterActive = false
                     }
                 }
             }
-            return ClientRecipeBookPacket(action, recipeId, recipeKey, craftingBookOpen, craftingBookFilterActive, smeltingBookOpen, smeltingBookFilterActive, blastingBookOpen, blastingBookFilterActive, smokingBookOpen, smokingBookFilterActive)
+            return ClientRecipeBookPacket(action, recipeId, recipeKey, states)
         }
+    }
+
+    object DisplayReader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientRecipeBookPacket(Action.Display, 0, buffer.readNamespacedKey(), emptyMap())
+    }
+
+    object SetStateReader : Packet.Reader {
+        override fun read(buffer: PacketBuffer, version: Int) = ClientRecipeBookPacket(Action.SetState, 0, null, mutableMapOf(Type.values()[buffer.readVarInt()] to State(buffer.readBoolean(), buffer.readBoolean())))
     }
 }

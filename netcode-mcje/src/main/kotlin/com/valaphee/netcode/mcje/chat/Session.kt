@@ -18,40 +18,38 @@ package com.valaphee.netcode.mcje.chat
 
 import com.valaphee.netcode.mcje.network.PacketBuffer
 
-data class Signature(
-    val id: Int,
-    val signature: ByteArray?
+data class Session(
+    val expiresAt: Long,
+    val publicKey: ByteArray,
+    val signature: ByteArray
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Signature
+        other as Session
 
-        if (id != other.id) return false
-        if (signature != null) {
-            if (other.signature == null) return false
-            if (!signature.contentEquals(other.signature)) return false
-        } else if (other.signature != null) return false
+        if (expiresAt != other.expiresAt) return false
+        if (!publicKey.contentEquals(other.publicKey)) return false
+        if (!signature.contentEquals(other.signature)) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = id
-        result = 31 * result + (signature?.contentHashCode() ?: 0)
+        var result = expiresAt.hashCode()
+        result = 31 * result + publicKey.contentHashCode()
+        result = 31 * result + signature.contentHashCode()
         return result
     }
 
-    override fun toString() = "Signature(id=$id)"
+    override fun toString() = "Session(expiresAt=$expiresAt)"
 }
 
-fun PacketBuffer.readSignature(): Signature {
-    val id = readVarInt()
-    return Signature(id, if (id != 0) ByteArray(256).also(::readBytes) else null)
-}
+fun PacketBuffer.readSession() = Session(readLong(), readByteArray(), readByteArray(256))
 
-fun PacketBuffer.writeSignature(value: Signature) {
-    writeVarInt(value.id)
-    if (value.id != 0) writeBytes(value.signature!!)
+fun PacketBuffer.writeSession(value: Session) {
+    writeLong(value.expiresAt)
+    writeByteArray(value.publicKey)
+    writeByteArray(value.signature)
 }

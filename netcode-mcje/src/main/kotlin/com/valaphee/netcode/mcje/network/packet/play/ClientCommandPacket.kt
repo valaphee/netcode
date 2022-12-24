@@ -96,11 +96,11 @@ class ClientCommandPacket(
                 offset = buffer.readVarInt()
                 acknowledgedMessages = null // TODO acknowledgedMessages
             } else {
-                signatures = LazyList(buffer.readVarInt()) { buffer.readString() to buffer.readByteArray() }
+                signatures = LazyList(buffer.readVarInt()) { buffer.readString() to buffer.readByteArray(256) }
                 preview = buffer.readBoolean()
                 if (version >= V1_19_1) {
-                    lastSeenMessages = LazyList(buffer.readVarInt()) { buffer.readUuid() to buffer.readByteArray() }
-                    lastReceivedMessage = if (buffer.readBoolean()) buffer.readUuid() to buffer.readByteArray() else null
+                    lastSeenMessages = LazyList(buffer.readVarInt()) { buffer.readUuid() to buffer.readByteArray(256) }
+                    lastReceivedMessage = if (buffer.readBoolean()) buffer.readUuid() to buffer.readByteArray(256) else null
                 } else {
                     lastSeenMessages = null
                     lastReceivedMessage = null

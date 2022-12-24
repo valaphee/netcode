@@ -21,7 +21,6 @@ import com.valaphee.foundry.math.Float2
 import com.valaphee.foundry.math.MutableDouble3
 import com.valaphee.netcode.mcje.network.Packet
 import com.valaphee.netcode.mcje.network.PacketBuffer
-import com.valaphee.netcode.mcje.network.Packet.Reader
 import com.valaphee.netcode.mcje.network.ServerPlayPacketHandler
 import java.util.UUID
 

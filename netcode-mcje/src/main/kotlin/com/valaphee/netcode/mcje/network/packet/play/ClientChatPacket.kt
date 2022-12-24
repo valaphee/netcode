@@ -98,11 +98,11 @@ class ClientChatPacket(
             } else if (version >= V1_19_0) {
                 time = buffer.readLong()
                 salt = buffer.readLong()
-                signature = buffer.readByteArray()
+                signature = buffer.readByteArray(256)
                 preview = buffer.readBoolean()
                 if (version >= V1_19_1) {
-                    lastSeenMessages = LazyList(buffer.readVarInt()) { buffer.readUuid() to buffer.readByteArray() }
-                    lastReceivedMessage = if (buffer.readBoolean()) buffer.readUuid() to buffer.readByteArray() else null
+                    lastSeenMessages = LazyList(buffer.readVarInt()) { buffer.readUuid() to buffer.readByteArray(256) }
+                    lastReceivedMessage = if (buffer.readBoolean()) buffer.readUuid() to buffer.readByteArray(256) else null
                 } else {
                     lastSeenMessages = emptyList()
                     lastReceivedMessage = null

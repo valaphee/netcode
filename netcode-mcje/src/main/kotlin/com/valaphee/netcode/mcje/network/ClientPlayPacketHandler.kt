@@ -26,6 +26,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientBookEditPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientChatAcknowledgePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientChatPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientChatPreviewPacket
+import com.valaphee.netcode.mcje.network.packet.play.ClientChatSessionPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientCommandBlockMinecartUpdatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientCommandBlockUpdatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientCommandPacket
@@ -47,9 +48,7 @@ import com.valaphee.netcode.mcje.network.packet.play.ClientKeepAlivePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientLocationPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientPlayerActionPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientPongPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookDisplayPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookPacket
-import com.valaphee.netcode.mcje.network.packet.play.ClientRecipeBookStatePacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientResourcePackStatusPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientSettingsPacket
 import com.valaphee.netcode.mcje.network.packet.play.ClientSignUpdatePacket
@@ -133,11 +132,9 @@ interface ClientPlayPacketHandler : PacketHandler {
 
     fun pong(packet: ClientPongPacket) = other(packet)
 
+    fun chatSession(packet: ClientChatSessionPacket) = other(packet)
+
     fun recipeBook(packet: ClientRecipeBookPacket) = other(packet)
-
-    fun recipeBookDisplay(packet: ClientRecipeBookDisplayPacket) = other(packet)
-
-    fun recipeBookState(packet: ClientRecipeBookStatePacket) = other(packet)
 
     fun itemName(packet: ClientItemNamePacket) = other(packet)
 

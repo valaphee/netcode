@@ -82,7 +82,7 @@ class PacketBuffer(
     }
 
     fun readVarLong(): Long {
-        var value: Long = 0
+        var value = 0L
         var shift = 0
         while (shift <= 70) {
             val head = readByte().toInt()
@@ -110,9 +110,7 @@ class PacketBuffer(
         val length = readVarInt()
         check(length <= readableBytes()) { "Length of $length exceeds ${readableBytes()}" }
         check(length <= maximumLength) { "Length of $length exceeds $maximumLength" }
-        val bytes = ByteArray(length)
-        readBytes(bytes)
-        return bytes
+        return ByteArray(length).apply(this::readBytes)
     }
 
     fun writeByteArray(value: ByteArray) {
@@ -120,7 +118,11 @@ class PacketBuffer(
         writeBytes(value)
     }
 
-    fun readString(maximumLength: Int = Short.MAX_VALUE.toInt()) = String(readByteArray(maximumLength), StandardCharsets.UTF_8)
+    fun readString(maximumLength: Int = Short.MAX_VALUE.toInt()): String {
+        val value = String(readByteArray(maximumLength * 3), StandardCharsets.UTF_8)
+        check(value.length <= maximumLength) { "Length of ${value.length} exceeds $maximumLength" }
+        return value
+    }
 
     fun writeString(value: String) {
         writeByteArray(value.toByteArray(StandardCharsets.UTF_8))

@@ -77,7 +77,7 @@ class ServerPlayerChatPacket(
                 teamName = if (buffer.readBoolean()) buffer.readComponent() else null
                 time = buffer.readLong()
                 salt = buffer.readLong()
-                signature = buffer.readByteArray()
+                signature = buffer.readByteArray(256)
             } else {
                 userName = null
                 teamName = null
